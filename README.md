@@ -34,4 +34,4 @@ Read [docs/GROUP_INSTRUCTIONS.md](docs/GROUP_INSTRUCTIONS.md), [docs/API_SPECS.m
 
 ## Deployment
 
-The site is designed for GitHub Pages. See [docs/SETUP.md](docs/SETUP.md) for local setup and deployment instructions.
+The site is designed for GitHub Pages. See [docs/setup.html](docs/setup.html) for the visual setup guide and local deployment instructions.
