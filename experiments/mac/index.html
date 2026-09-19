@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Virtual Cryptography Laboratory experiment">
+    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+  </head>
+  <body>
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Experiment Title</h1>
+        <p id="exp-description">Brief description</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+      </nav>
+
+      <main class="content-area">
+        <section id="theory" class="tab-content active" data-tab-panel="theory">
+          <!-- Group fills this section with theory and algorithm details. -->
+          <div class="content-placeholder">
+            <h2>Theory</h2>
+            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+          </div>
+        </section>
+
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <!-- Group fills this section with numbered procedure steps. -->
+          <div class="content-placeholder">
+            <h2>Procedure</h2>
+            <p>Add the guided steps learners will follow here.</p>
+          </div>
+        </section>
+
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="simulation-controls">
+            <!-- Group adds experiment-specific input fields and buttons here. -->
+            <h2>Simulation controls</h2>
+            <p>Add inputs and controls for the experiment simulation.</p>
+          </div>
+          <div class="simulation-output" aria-live="polite">
+            <!-- Group adds result displays here. -->
+            <h2>Simulation output</h2>
+            <p>Results will appear here after the simulation runs.</p>
+          </div>
+        </section>
+
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <!-- Group adds quiz questions and answer controls here. -->
+          <div class="quiz-panel">
+            <h2>Knowledge check</h2>
+            <p>Add experiment-specific quiz questions here.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+/* Virtual Cryptography Laboratory Portal design tokens */
+:root {
+	color-scheme: light;
+
+	--color-primary: #8B6F5E;
+	--color-primary-dark: #7C5D52;
+	--color-secondary: #0D5FCC;
+	--color-secondary-dark: #09499D;
+	--color-accent: #E8D5C4;
+	--color-text: #2C2C2C;
+	--color-background: #FEFDFB;
+	--color-surface: #FFFFFF;
+	--color-surface-muted: #F7F0EB;
+	--color-border: #C9AFA0;
+	--color-border-strong: #A98774;
+	--color-text-muted: #665B55;
+	--color-on-primary: #FFFFFF;
+	--color-on-secondary: #FFFFFF;
+
+	--space-1: 8px;
+	--space-2: 16px;
+	--space-3: 24px;
+	--space-4: 32px;
+	--space-5: 48px;
+	--space-6: 64px;
+
+	--font-size-sm: 14px;
+	--font-size-md: 16px;
+	--font-size-lg: 18px;
+	--font-size-xl: 22px;
+	--font-size-2xl: 28px;
+	--font-size-3xl: 36px;
+	--line-height-tight: 1.2;
+	--line-height-body: 1.6;
+
+	--radius-sm: 6px;
+	--radius-md: 12px;
+	--radius-lg: 18px;
+	--shadow-sm: 0 4px 12px rgb(76 51 39 / 8%);
+	--shadow-md: 0 12px 28px rgb(76 51 39 / 14%);
+	--content-width: 1200px;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+		--color-primary: #A98D7B;
+		--color-primary-dark: #8B6F5E;
+		--color-secondary: #4C8CE8;
+		--color-secondary-dark: #2D6EC9;
+		--color-accent: #513F35;
+		--color-text: #F6F0EC;
+		--color-background: #211B18;
+		--color-surface: #2D2420;
+		--color-surface-muted: #382C26;
+		--color-border: #735B4C;
+		--color-border-strong: #A98774;
+		--color-text-muted: #D0C1B8;
+		--color-on-primary: #211B18;
+		--color-on-secondary: #FFFFFF;
+		--shadow-sm: 0 4px 12px rgb(0 0 0 / 20%);
+		--shadow-md: 0 12px 28px rgb(0 0 0 / 30%);
+	}
+}

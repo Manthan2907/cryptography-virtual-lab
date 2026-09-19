@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="A virtual laboratory for learning practical cryptography experiments.">
+		<title>Virtual Cryptography Laboratory</title>
+		<link rel="stylesheet" href="css/variables.css">
+		<link rel="stylesheet" href="css/theme.css">
+	</head>
+	<body>
+		<header class="site-header">
+			<div class="header-inner">
+				<a class="brand" href="index.html" aria-label="Virtual Cryptography Laboratory home">
+					<span class="brand-mark" aria-hidden="true">VC</span>
+					<span>
+						<span class="brand-title">Virtual Cryptography Laboratory</span>
+						<span class="brand-subtitle">CSS TH ISE · Cryptographic Security Systems</span>
+					</span>
+				</a>
+				<nav class="header-nav" aria-label="Primary navigation">
+					<a href="#experiments">Experiments</a>
+					<a href="docs/SETUP.md">Setup Guide</a>
+				</nav>
+			</div>
+		</header>
+
+		<main>
+			<section class="hero" aria-labelledby="hero-title">
+				<div class="page-section">
+					<p class="eyebrow">University Practical Laboratory</p>
+					<h1 id="hero-title">Explore the systems that keep information secure.</h1>
+					<p>Run guided, browser-based experiments to understand hashing, authentication, encryption, attacks, and secure communication protocols.</p>
+					<div class="hero-meta" aria-label="Laboratory details">
+						<span class="meta-chip">16 experiments</span>
+						<span class="meta-chip">Client-side learning</span>
+						<span class="meta-chip">Course workspace</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="experiments-section page-section" id="experiments" aria-labelledby="experiments-title">
+				<div class="section-heading">
+					<div>
+						<h2 id="experiments-title">Experiment browser</h2>
+						<p>Choose a laboratory module to begin.</p>
+					</div>
+					<p aria-label="Experiment count">16 modules</p>
+				</div>
+
+				<div class="experiment-grid">
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Hashing</span><span class="badge badge-difficulty">Beginner</span></div><h3>MD5</h3><p>Observe message digest generation and avalanche behavior.</p><a class="button button-primary" href="experiments/md5/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Hashing</span><span class="badge badge-difficulty">Beginner</span></div><h3>SHA-1</h3><p>Compare fixed-length hashing and collision-resistance concepts.</p><a class="button button-primary" href="experiments/sha1/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Public Key</span><span class="badge badge-difficulty">Advanced</span></div><h3>RSA</h3><p>Explore key generation, encryption, and digital signatures.</p><a class="button button-primary" href="experiments/rsa/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Authentication</span><span class="badge badge-difficulty">Intermediate</span></div><h3>MAC</h3><p>Learn how message authentication codes protect integrity.</p><a class="button button-primary" href="experiments/mac/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Authentication</span><span class="badge badge-difficulty">Intermediate</span></div><h3>HMAC</h3><p>Build keyed hashes from a message and shared secret.</p><a class="button button-primary" href="experiments/hmac/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Protocols</span><span class="badge badge-difficulty">Advanced</span></div><h3>Kerberos</h3><p>Trace ticket-based authentication between trusted services.</p><a class="button button-primary" href="experiments/kerberos/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Protocols</span><span class="badge badge-difficulty">Advanced</span></div><h3>Needham-Schroeder</h3><p>Visualize a classic challenge-response key exchange.</p><a class="button button-primary" href="experiments/needham-schroeder/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Password Security</span><span class="badge badge-difficulty">Intermediate</span></div><h3>bcrypt</h3><p>Study adaptive password hashing and work factors.</p><a class="button button-primary" href="experiments/bcrypt/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Password Security</span><span class="badge badge-difficulty">Advanced</span></div><h3>Argon2</h3><p>Investigate memory-hard password hashing parameters.</p><a class="button button-primary" href="experiments/argon2/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Password Security</span><span class="badge badge-difficulty">Advanced</span></div><h3>Argon2id</h3><p>Compare hybrid resistance to GPU and side-channel attacks.</p><a class="button button-primary" href="experiments/argon2id/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Classical</span><span class="badge badge-difficulty">Beginner</span></div><h3>Classical Encryption</h3><p>Experiment with substitution and transposition ciphers.</p><a class="button button-primary" href="experiments/classical-encryption/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Mathematics</span><span class="badge badge-difficulty">Intermediate</span></div><h3>Extended Euclidean</h3><p>Calculate modular inverses used throughout cryptography.</p><a class="button button-primary" href="experiments/extended-euclidean/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Attacks</span><span class="badge badge-difficulty">Intermediate</span></div><h3>Brute Force</h3><p>Measure how search-space size affects key recovery.</p><a class="button button-primary" href="experiments/brute-force/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Attacks</span><span class="badge badge-difficulty">Intermediate</span></div><h3>Dictionary Attack</h3><p>Explore password weakness through word-list strategies.</p><a class="button button-primary" href="experiments/dictionary-attack/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Attacks</span><span class="badge badge-difficulty">Advanced</span></div><h3>Frequency Analysis</h3><p>Use language statistics to investigate classical ciphers.</p><a class="button button-primary" href="experiments/frequency-analysis/index.html">Open Lab</a></article>
+					<article class="experiment-card"><div class="card-badges"><span class="badge">Protocols</span><span class="badge badge-difficulty">Advanced</span></div><h3>SSL/TLS</h3><p>Follow the handshake that establishes a secure channel.</p><a class="button button-primary" href="experiments/ssl-tls/index.html">Open Lab</a></article>
+				</div>
+			</section>
+		</main>
+
+		<footer class="site-footer">
+			<p>Virtual Cryptography Laboratory · CSS TH ISE · Academic learning environment</p>
+		</footer>
+	</body>
+</html>
