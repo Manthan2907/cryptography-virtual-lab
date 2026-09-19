@@ -10,6 +10,7 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
   background: var(--color-background);
   color: var(--color-text);
   font-family: Georgia, "Times New Roman", serif;
@@ -274,6 +275,7 @@ button {
 
   .tab-btn {
     flex: 1 1 calc(50% - 4px);
+    min-height: 48px;
   }
 }
 

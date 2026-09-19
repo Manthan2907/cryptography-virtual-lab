@@ -8,6 +8,7 @@ html {
 
 body {
 	margin: 0;
+	overflow-x: hidden;
 	background: var(--color-background);
 	color: var(--color-text);
 	font-family: Georgia, "Times New Roman", serif;
@@ -276,7 +277,15 @@ a {
 
 	.header-nav {
 		width: 100%;
+		flex-wrap: wrap;
 		justify-content: space-between;
+	}
+
+	.header-nav a {
+		flex: 1 1 auto;
+		min-height: 42px;
+		padding: 10px 12px;
+		text-align: center;
 	}
 
 	.hero {
