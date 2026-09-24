@@ -1,0 +1,686 @@
+/* IIT Kharagpur Virtual Labs UI Theme & Needham-Schroeder Experiment Stylesheet */
+
+:root {
+  --vlab-primary-blue: #257ba0;
+  --vlab-primary-blue-hover: #1d6280;
+  --vlab-orange: #f37021;
+  --vlab-bg-light: #ffffff;
+  --vlab-bg-cream: #f9f9f9;
+  --vlab-text-main: #333333;
+  --vlab-text-muted: #666666;
+  --vlab-border: #dcdcdc;
+  --vlab-reset-btn: #e5e5e5;
+  --vlab-reset-text: #333333;
+  --vlab-success-green: #2e7d32;
+  --vlab-success-bg: #e8f5e9;
+  --vlab-error-red: #c62828;
+  --vlab-error-bg: #ffebee;
+  --vlab-info-bg: #e3f2fd;
+  --vlab-font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--vlab-font-family);
+  background-color: #ffffff;
+  color: var(--vlab-text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. Header Bar */
+.vlab-header {
+  background-color: var(--vlab-bg-light);
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.vlab-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.vlab-hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--vlab-text-main);
+  user-select: none;
+}
+
+.vlab-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vlab-logo-icon {
+  width: 42px;
+  height: 42px;
+}
+
+.vlab-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.vlab-logo-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--vlab-primary-blue);
+  line-height: 1.1;
+}
+
+.vlab-logo-subtitle {
+  font-size: 0.75rem;
+  color: var(--vlab-text-muted);
+}
+
+.vlab-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.vlab-star-rating {
+  color: #ffc107;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.vlab-header-btn {
+  background-color: var(--vlab-primary-blue);
+  color: #ffffff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+}
+
+.vlab-header-btn:hover {
+  background-color: var(--vlab-primary-blue-hover);
+}
+
+/* 2. Orange Stripe */
+.vlab-orange-stripe {
+  height: 4px;
+  background-color: var(--vlab-orange);
+  width: 100%;
+}
+
+/* 3. Main Container Layout */
+.vlab-main-container {
+  max-width: 1350px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 1.25rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Breadcrumb */
+.vlab-breadcrumb {
+  font-size: 1.05rem;
+  color: var(--vlab-primary-blue);
+  margin-bottom: 1rem;
+}
+
+.vlab-breadcrumb span.sep {
+  color: var(--vlab-text-muted);
+  margin: 0 0.35rem;
+}
+
+/* Page Layout: Sidebar + Main Content */
+.vlab-content-grid {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .vlab-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sidebar Navigation */
+.vlab-sidebar {
+  border-right: 1px solid var(--vlab-border);
+  padding-right: 1rem;
+}
+
+.vlab-sidebar-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vlab-nav-item {
+  width: 100%;
+}
+
+.vlab-nav-link {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  color: var(--vlab-primary-blue);
+  font-size: 1.02rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+}
+
+.vlab-nav-link:hover {
+  color: var(--vlab-orange);
+  background-color: rgba(243, 112, 33, 0.05);
+}
+
+.vlab-nav-link.active {
+  color: var(--vlab-orange);
+  font-weight: 700;
+  position: relative;
+}
+
+/* Centered Page Title */
+.vlab-page-title {
+  text-align: center;
+  color: var(--vlab-primary-blue);
+  font-size: 1.7rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Tab Panels */
+.vlab-tab-panel {
+  display: none;
+}
+
+.vlab-tab-panel.active {
+  display: block;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typography & Section Styles inside Tabs */
+.vlab-section-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222222;
+  margin: 1.2rem 0 0.8rem 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vlab-paragraph {
+  font-size: 0.98rem;
+  color: var(--vlab-text-main);
+  margin-bottom: 1rem;
+}
+
+/* Cards & Controls */
+.vlab-card {
+  background-color: #ffffff;
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.vlab-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--vlab-primary-blue);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Controls Form */
+.sim-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.sim-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sim-field-group label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--vlab-text-muted);
+}
+
+.sim-select, .sim-input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  outline: none;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.sim-select:focus, .sim-input:focus {
+  border-color: var(--vlab-primary-blue);
+}
+
+/* Buttons */
+.vlab-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.btn-vlab-primary {
+  background-color: var(--vlab-primary-blue);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-vlab-primary:hover {
+  background-color: var(--vlab-primary-blue-hover);
+}
+
+.btn-vlab-reset {
+  background-color: var(--vlab-reset-btn);
+  color: var(--vlab-reset-text);
+  border: 1px solid #cccccc;
+  padding: 0.55rem 1.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.btn-vlab-reset:hover {
+  background-color: #d8d8d8;
+}
+
+.btn-vlab-primary:disabled, .btn-vlab-reset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 4. Visual Canvas Topology */
+.topology-container {
+  position: relative;
+  min-height: 330px;
+  background-color: var(--vlab-bg-cream);
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.topology-svg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.topology-svg-path {
+  fill: none;
+  stroke: #bbbbbb;
+  stroke-width: 2.5;
+  stroke-dasharray: 6, 6;
+  transition: stroke 0.3s ease;
+}
+
+.topology-svg-path.active {
+  stroke: var(--vlab-primary-blue);
+  stroke-dasharray: none;
+  stroke-width: 3;
+}
+
+/* Nodes */
+.entity-card {
+  position: absolute;
+  z-index: 5;
+  width: 220px;
+  background: #ffffff;
+  border: 2px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: border-color 0.3s, transform 0.2s;
+}
+
+.entity-card:hover {
+  transform: translateY(-2px);
+}
+
+.entity-card.highlight {
+  border-color: var(--vlab-primary-blue);
+  box-shadow: 0 0 12px rgba(37, 123, 160, 0.3);
+}
+
+.entity-card.kdc {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.entity-card.alice {
+  bottom: 20px;
+  left: 30px;
+}
+
+.entity-card.bob {
+  bottom: 20px;
+  right: 30px;
+}
+
+.entity-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid #eeeeee;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.entity-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--vlab-primary-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.entity-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--vlab-primary-blue);
+}
+
+.entity-role {
+  font-size: 0.72rem;
+  color: var(--vlab-text-muted);
+}
+
+.entity-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  background-color: #eee;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.entity-badge.status-idle { background-color: #eeeeee; color: #555555; }
+.entity-badge.status-waiting { background-color: #fff3e0; color: #e65100; }
+.entity-badge.status-encrypting { background-color: #e3f2fd; color: #0d47a1; }
+.entity-badge.status-decrypting { background-color: #f3e5f5; color: #4a148c; }
+.entity-badge.status-authenticated { background-color: var(--vlab-success-bg); color: var(--vlab-success-green); }
+
+.entity-key-table {
+  width: 100%;
+  font-size: 0.75rem;
+  border-collapse: collapse;
+  background-color: var(--vlab-bg-cream);
+  border-radius: 4px;
+  padding: 0.35rem;
+}
+
+.entity-key-table td {
+  padding: 0.2rem 0.4rem;
+}
+
+.entity-key-name {
+  font-weight: 600;
+  color: var(--vlab-text-muted);
+}
+
+.entity-key-val {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--vlab-primary-blue);
+  text-align: right;
+}
+
+/* Animated Envelope Packet */
+.visual-packet {
+  position: absolute;
+  z-index: 10;
+  padding: 0.35rem 0.7rem;
+  background-color: var(--vlab-orange);
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(243, 112, 33, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease;
+}
+
+.visual-packet.active {
+  opacity: 1;
+}
+
+/* Message Inspector */
+.inspector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 850px) {
+  .inspector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inspector-ciphertext {
+  background-color: #1e1e1e;
+  color: #4fc3f7;
+  padding: 0.85rem;
+  border-radius: 4px;
+  font-family: 'Consolas', monospace;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  border-left: 4px solid var(--vlab-orange);
+}
+
+.inspector-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.inspector-table th, .inspector-table td {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--vlab-border);
+  text-align: left;
+}
+
+.inspector-table th {
+  background-color: var(--vlab-bg-cream);
+  color: var(--vlab-primary-blue);
+  font-weight: 700;
+}
+
+.inspector-explanation {
+  background-color: var(--vlab-info-bg);
+  border-left: 4px solid var(--vlab-primary-blue);
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  margin-top: 1rem;
+}
+
+/* 5. Pretest & Posttest Question Cards */
+.quiz-question-card {
+  background: #ffffff;
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.quiz-question-text {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #222222;
+  margin-bottom: 0.85rem;
+}
+
+.quiz-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quiz-option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: background-color 0.2s;
+}
+
+.quiz-option-item:hover {
+  background-color: var(--vlab-bg-cream);
+}
+
+.quiz-option-item.correct {
+  background-color: var(--vlab-success-bg);
+  border-color: var(--vlab-success-green);
+  color: var(--vlab-success-green);
+  font-weight: 600;
+}
+
+.quiz-option-item.incorrect {
+  background-color: var(--vlab-error-bg);
+  border-color: var(--vlab-error-red);
+  color: var(--vlab-error-red);
+}
+
+.quiz-explanation {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  display: none;
+}
+
+.quiz-explanation.visible {
+  display: block;
+}
+
+.quiz-explanation.correct {
+  background-color: var(--vlab-success-bg);
+  color: var(--vlab-success-green);
+  border-left: 4px solid var(--vlab-success-green);
+}
+
+.quiz-explanation.incorrect {
+  background-color: var(--vlab-error-bg);
+  color: var(--vlab-error-red);
+  border-left: 4px solid var(--vlab-error-red);
+}
+
+/* Footer */
+.vlab-footer {
+  background-color: #111111;
+  color: #ffffff;
+  padding: 2rem;
+  margin-top: 3rem;
+  font-size: 0.88rem;
+}
+
+.vlab-footer-grid {
+  max-width: 1350px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.vlab-footer-column h4 {
+  font-size: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid #333333;
+  padding-bottom: 0.35rem;
+}
+
+.vlab-footer-column ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.vlab-footer-column a {
+  color: #aaa;
+  text-decoration: none;
+}
+
+.vlab-footer-column a:hover {
+  color: var(--vlab-orange);
+}

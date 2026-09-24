@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Needham-Schroeder Symmetric Key Protocol - Virtual Labs</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Header Bar -->
+  <header class="vlab-header">
+    <div class="vlab-header-left">
+      <div class="vlab-hamburger" title="Toggle Navigation Menu">≡</div>
+      <div class="vlab-logo-group">
+        <svg class="vlab-logo-icon" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18" fill="#257ba0" opacity="0.1"/>
+          <path d="M12 28L18 16H22L28 28H12Z" stroke="#257ba0" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="20" cy="14" r="3" fill="#f37021"/>
+          <circle cx="20" cy="24" r="2" fill="#257ba0"/>
+        </svg>
+        <div class="vlab-logo-text">
+          <div class="vlab-logo-title">Virtual Labs</div>
+          <div class="vlab-logo-subtitle">An MoE Govt of India Initiative</div>
+        </div>
+      </div>
+    </div>
+    <div class="vlab-header-right">
+      <div class="vlab-star-rating" title="4.8 out of 5 stars">★★★★☆</div>
+      <button class="vlab-header-btn">Rate Me</button>
+      <button class="vlab-header-btn">Report a Bug</button>
+    </div>
+  </header>
+
+  <!-- Solid 4px Orange Brand Divider -->
+  <div class="vlab-orange-stripe"></div>
+
+  <!-- Main Container -->
+  <div class="vlab-main-container">
+    
+    <!-- Breadcrumb Navigation -->
+    <nav class="vlab-breadcrumb">
+      Computer Science and Engineering <span class="sep">&gt;</span> Cryptography &amp; Network Security <span class="sep">&gt;</span> Experiments
+    </nav>
+
+    <!-- Centered Page Title -->
+    <h1 class="vlab-page-title">Needham-Schroeder Symmetric Key Protocol</h1>
+
+    <!-- Sidebar & Content Grid -->
+    <div class="vlab-content-grid">
+      
+      <!-- Left Sidebar Navigation Menu -->
+      <aside class="vlab-sidebar">
+        <ul class="vlab-sidebar-menu">
+          <li class="vlab-nav-item"><button class="vlab-nav-link active" data-tab="aim">Aim</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="theory">Theory</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="pretest">Pretest</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="procedure">Procedure</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="simulation">Simulation</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="posttest">Posttest</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="references">References</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="contributors">Contributors</button></li>
+          <li class="vlab-nav-item"><button class="vlab-nav-link" data-tab="feedback">Feedback</button></li>
+        </ul>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="vlab-main-content">
+
+        <!-- 1. AIM TAB -->
+        <section id="tab-aim" class="vlab-tab-panel active">
+          <h2 class="vlab-section-heading">Estimated Time</h2>
+          <p class="vlab-paragraph">1 hour</p>
+
+          <h2 class="vlab-section-heading">Learning Objective of the Experiment</h2>
+          <p class="vlab-paragraph">
+            To identify, trace, and analyze the steps of the <strong>Needham-Schroeder Symmetric Key Protocol</strong> for establishing a shared secret key ($K_{AB}$) and achieving mutual authentication between two untrusted network nodes via a trusted Key Distribution Center (KDC).
+          </p>
+          <ul style="margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.98rem; color: #333;">
+            <li style="margin-bottom: 0.4rem;">Understand the role of a centralized Key Distribution Center (KDC) in symmetric cryptography.</li>
+            <li style="margin-bottom: 0.4rem;">Analyze the usage of nonces ($N_A, N_B$) to guarantee payload freshness and prevent replay attacks.</li>
+            <li style="margin-bottom: 0.4rem;">Observe ticket generation $\{K_{AB}, A\}_{K_B}$ and ticket forwarding mechanics.</li>
+            <li style="margin-bottom: 0.4rem;">Evaluate challenge-response nonce verification ($N_B - 1$) for mutual authentication.</li>
+          </ul>
+        </section>
+
+        <!-- 2. THEORY TAB -->
+        <section id="tab-theory" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">🔍 Overview of Symmetric Key Establishment</h2>
+          <p class="vlab-paragraph">
+            In symmetric cryptography, two communicating parties (Alice and Bob) must share a secret key $K_{AB}$ to secure their messages. However, pre-sharing individual symmetric keys between every pair of users in a network of $N$ users requires $O(N^2)$ secret keys. A <strong>Key Distribution Center (KDC)</strong> solves this scalability problem by requiring each user to share only one master key with the KDC ($K_A$ for Alice, $K_B$ for Bob).
+          </p>
+
+          <h2 class="vlab-section-heading">📌 Protocol Message Breakdown</h2>
+          <p class="vlab-paragraph">The Needham-Schroeder symmetric protocol consists of 5 distinct message transmissions:</p>
+
+          <div style="background-color: var(--vlab-bg-cream); border-left: 4px solid var(--vlab-orange); padding: 1rem; border-radius: 4px; margin-bottom: 1.2rem; font-family: monospace; font-size: 0.95rem;">
+            <div><strong>Step 1 (A → S):</strong> A, B, N_A</div>
+            <div style="margin-top:0.4rem;"><strong>Step 2 (S → A):</strong> { N_A, B, K_AB, { K_AB, A }_{K_B} }_{K_A}</div>
+            <div style="margin-top:0.4rem;"><strong>Step 3 (A → B):</strong> { K_AB, A }_{K_B}</div>
+            <div style="margin-top:0.4rem;"><strong>Step 4 (B → A):</strong> { N_B }_{K_AB}</div>
+            <div style="margin-top:0.4rem;"><strong>Step 5 (A → B):</strong> { f(N_B) }_{K_AB} &nbsp;(where f(N_B) = N_B - 1)</div>
+          </div>
+
+          <h2 class="vlab-section-heading">⚠️ Cryptographic Properties & Vulnerabilities</h2>
+          <p class="vlab-paragraph">
+            <strong>Freshness Guarantee:</strong> Alice verifies that Step 2 contains her original nonce $N_A$. Because $N_A$ is encrypted under $K_A$, only KDC could have generated this response.
+          </p>
+          <p class="vlab-paragraph">
+            <strong>The Denning-Sacco Vulnerability (1981):</strong> Step 3's ticket $\{K_{AB}, A\}_{K_B}$ does not contain a timestamp or Bob-generated nonce. If an adversary compromises an old session key $K_{AB,old}$, she can replay $\{K_{AB,old}, A\}_{K_B}$ to Bob, who cannot verify its freshness. Modern implementations (such as Kerberos) solve this by embedding encrypted timestamps into tickets.
+          </p>
+        </section>
+
+        <!-- 3. PRETEST TAB -->
+        <section id="tab-pretest" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">📝 Pretest Questions</h2>
+          <p class="vlab-paragraph">Test your baseline knowledge of symmetric cryptography and Key Distribution Centers before running the experiment.</p>
+          
+          <div id="pretestQuestionsContainer"></div>
+
+          <div class="vlab-btn-group">
+            <button id="btnPretestSubmit" class="btn-vlab-primary">Submit Pretest</button>
+            <button id="btnPretestReset" class="btn-vlab-reset">Reset Options</button>
+          </div>
+          <div id="pretestScore" style="display:none; margin-top:1rem;"></div>
+        </section>
+
+        <!-- 4. PROCEDURE TAB -->
+        <section id="tab-procedure" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">📝 Simulation Instructions</h2>
+          <p class="vlab-paragraph">Follow these steps to configure, run, and inspect the Needham-Schroeder Symmetric Key Protocol in the interactive workspace:</p>
+
+          <div style="display:flex; flex-direction:column; gap:1rem; margin-top:1rem;">
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-blue); margin-bottom:0.4rem;">Step 1: Configure Identities & Nonce Mode</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Select the Client A identity (Alice), Client B identity (Bob), and choose the Nonce Generation Mode: <strong>Auto 16-bit Hex</strong> (randomized nonces) or <strong>Fixed Demo Values</strong>.
+              </p>
+            </div>
+
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-blue); margin-bottom:0.4rem;">Step 2: Initialize Protocol Handshake</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Click <strong>"Initialize Handshake"</strong>. This triggers Step 1 ($A \to S$), transmitting Alice's request payload containing her ID, Bob's ID, and fresh nonce $N_A$.
+              </p>
+            </div>
+
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-blue); margin-bottom:0.4rem;">Step 3: Step-by-Step Execution</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Click <strong>"Next Step"</strong> to advance through Steps 2 to 5. Observe the animated envelope traversing between nodes and real-time state badge updates (*Encrypting*, *Decrypting*, *Authenticated*).
+              </p>
+            </div>
+
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-blue); margin-bottom:0.4rem;">Step 4: Inspect Message Payloads</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Review the <strong>Message Inspector Panel</strong> at the bottom of the simulation tab to analyze raw ciphertext, mathematical formulas, decrypted field tables, and cryptographic explanations.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. SIMULATION TAB (PRIMARY WORKSPACE) -->
+        <section id="tab-simulation" class="vlab-tab-panel">
+          
+          <!-- Configuration Form Card -->
+          <div class="vlab-card">
+            <div class="vlab-card-title">⚙️ Protocol Parameters & Configuration</div>
+            
+            <div class="sim-controls-grid">
+              <div class="sim-field-group">
+                <label for="selectAlice">Client A Identity (Alice):</label>
+                <select id="selectAlice" class="sim-select">
+                  <option value="Alice" selected>Alice (User_101)</option>
+                  <option value="Client_A">Client_A (Node_A)</option>
+                  <option value="Department_HR">Department_HR</option>
+                </select>
+              </div>
+
+              <div class="sim-field-group">
+                <label for="selectBob">Client B Identity (Bob):</label>
+                <select id="selectBob" class="sim-select">
+                  <option value="Bob" selected>Bob (User_202)</option>
+                  <option value="Client_B">Client_B (Node_B)</option>
+                  <option value="Finance_Server">Finance_Server</option>
+                </select>
+              </div>
+
+              <div class="sim-field-group">
+                <label for="selectNonceMode">Nonce Generation Mode:</label>
+                <select id="selectNonceMode" class="sim-select">
+                  <option value="auto" selected>Auto 16-bit Hex Nonces (Random)</option>
+                  <option value="fixed">Fixed Demo Values (NA=0x4F92, NB=0x8A1C)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="vlab-btn-group">
+              <button id="btnInitHandshake" class="btn-vlab-primary">Initialize Handshake</button>
+              <button id="btnNextStep" class="btn-vlab-primary" style="background-color:var(--vlab-orange);">Next Step</button>
+              <button id="btnResetSim" class="btn-vlab-reset">Reset</button>
+            </div>
+          </div>
+
+          <!-- Visual Canvas / Node Topology -->
+          <div class="topology-container">
+            <svg class="topology-svg-canvas">
+              <!-- Path Alice to KDC -->
+              <path id="pathAliceKdc" d="M 160 230 Q 300 90 480 80" class="topology-svg-path active" />
+              <!-- Path KDC to Alice -->
+              <path id="pathKdcAlice" d="M 480 110 Q 300 130 190 230" class="topology-svg-path active" />
+              <!-- Path Alice to Bob -->
+              <path id="pathAliceBob" d="M 220 250 L 780 250" class="topology-svg-path active" />
+            </svg>
+
+            <!-- Entity 1: Alice -->
+            <div class="entity-card alice" id="cardAlice">
+              <div class="entity-header">
+                <div class="entity-icon-circle">A</div>
+                <div>
+                  <div class="entity-name" id="nameAlice">Alice</div>
+                  <div class="entity-role">Initiator (Client A)</div>
+                </div>
+              </div>
+              <span class="entity-badge status-idle" id="badgeAlice">Idle</span>
+              <table class="entity-key-table">
+                <tr><td class="entity-key-name">Master K_A:</td><td class="entity-key-val" id="valAliceKA">0x9A4F8B2C</td></tr>
+                <tr><td class="entity-key-name">Session K_AB:</td><td class="entity-key-val" id="valAliceKAB">None</td></tr>
+              </table>
+            </div>
+
+            <!-- Entity 2: KDC -->
+            <div class="entity-card kdc" id="cardKdc">
+              <div class="entity-header">
+                <div class="entity-icon-circle" style="background:#f37021;">S</div>
+                <div>
+                  <div class="entity-name">Key Distribution Center</div>
+                  <div class="entity-role">Server S (Trusted Authority)</div>
+                </div>
+              </div>
+              <span class="entity-badge status-idle" id="badgeKdc">Listening</span>
+              <table class="entity-key-table">
+                <tr><td class="entity-key-name">Master K_A:</td><td class="entity-key-val" id="valKdcKA">0x9A4F8B2C</td></tr>
+                <tr><td class="entity-key-name">Master K_B:</td><td class="entity-key-val" id="valKdcKB">0x3C81D5E9</td></tr>
+                <tr><td class="entity-key-name">Issued K_AB:</td><td class="entity-key-val" id="valKdcKAB">None</td></tr>
+              </table>
+            </div>
+
+            <!-- Entity 3: Bob -->
+            <div class="entity-card bob" id="cardBob">
+              <div class="entity-header">
+                <div class="entity-icon-circle">B</div>
+                <div>
+                  <div class="entity-name" id="nameBob">Bob</div>
+                  <div class="entity-role">Responder (Client B)</div>
+                </div>
+              </div>
+              <span class="entity-badge status-idle" id="badgeBob">Idle</span>
+              <table class="entity-key-table">
+                <tr><td class="entity-key-name">Master K_B:</td><td class="entity-key-val" id="valBobKB">0x3C81D5E9</td></tr>
+                <tr><td class="entity-key-name">Session K_AB:</td><td class="entity-key-val" id="valBobKAB">None</td></tr>
+              </table>
+            </div>
+
+            <!-- Animated Packet -->
+            <div class="visual-packet" id="visualPacket">Step 1</div>
+          </div>
+
+          <!-- Message Inspector Panel -->
+          <div class="vlab-card">
+            <div class="vlab-card-title" id="inspectorTitle">Message Inspector</div>
+            
+            <div style="font-size:0.85rem; font-weight:700; color:var(--vlab-text-muted); margin-bottom:0.3rem;">Mathematical Structure:</div>
+            <div class="inspector-ciphertext" id="inspectorMath" style="color:#ffb74d; margin-bottom:0.75rem;">
+              A → S : A, B, N_A
+            </div>
+
+            <div style="font-size:0.85rem; font-weight:700; color:var(--vlab-text-muted); margin-bottom:0.3rem;">Raw Ciphertext / Transmission:</div>
+            <div class="inspector-ciphertext" id="inspectorCiphertext">
+              No active payload. Click "Initialize Handshake" to begin.
+            </div>
+
+            <div style="font-size:0.85rem; font-weight:700; color:var(--vlab-text-muted); margin-bottom:0.4rem;">Decrypted Field Breakdown:</div>
+            <table class="inspector-table">
+              <thead>
+                <tr>
+                  <th>Field Parameter</th>
+                  <th>Value</th>
+                  <th>Key Used</th>
+                  <th>Security Purpose</th>
+                </tr>
+              </thead>
+              <tbody id="inspectorTableBody">
+                <tr>
+                  <td colspan="4" style="text-align:center; color:#888;">Execute steps to inspect decrypted parameters.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="inspector-explanation" id="inspectorExplain">
+              The Needham-Schroeder symmetric key protocol establishes mutual authentication and a shared session key K_AB using a trusted Server S.
+            </div>
+          </div>
+
+        </section>
+
+        <!-- 6. POSTTEST TAB -->
+        <section id="tab-posttest" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">📝 Posttest Assessment</h2>
+          <p class="vlab-paragraph">Evaluate your understanding of nonces, ticket encryption, and protocol security vulnerabilities.</p>
+
+          <div id="posttestQuestionsContainer"></div>
+
+          <div class="vlab-btn-group">
+            <button id="btnPosttestSubmit" class="btn-vlab-primary">Submit Posttest</button>
+            <button id="btnPosttestReset" class="btn-vlab-reset">Reset Options</button>
+          </div>
+          <div id="posttestScore" style="display:none; margin-top:1rem;"></div>
+        </section>
+
+        <!-- 7. REFERENCES TAB -->
+        <section id="tab-references" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">📖 References &amp; Further Reading</h2>
+          <ul style="margin-left: 1.5rem; line-height: 1.8; color: #333;">
+            <li><strong>Needham, R. M., &amp; Schroeder, M. D. (1978).</strong> <em>Using encryption for authentication in large networks of computers.</em> Communications of the ACM, 21(12), 993-999.</li>
+            <li><strong>Denning, D. E., &amp; Sacco, G. M. (1981).</strong> <em>Timestamps in key distribution protocols.</em> Communications of the ACM, 24(8), 533-536.</li>
+            <li><strong>Stallings, W. (2017).</strong> <em>Cryptography and Network Security: Principles and Practice.</em> Pearson Education (7th Edition).</li>
+            <li><strong>Menezes, A. J., van Oorschot, P. C., &amp; Vanstone, S. A. (1996).</strong> <em>Handbook of Applied Cryptography.</em> CRC Press.</li>
+          </ul>
+        </section>
+
+        <!-- 8. CONTRIBUTORS TAB -->
+        <section id="tab-contributors" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">👥 Experiment Contributors</h2>
+          <div class="vlab-card">
+            <h4 style="color:var(--vlab-primary-blue);">Department of Computer Science and Engineering</h4>
+            <p class="vlab-paragraph" style="margin-top:0.4rem;">
+              <strong>Developer:</strong> Virtual Cryptography Development Team<br>
+              <strong>Institute:</strong> IIT Kharagpur Virtual Labs Initiative<br>
+              <strong>Sponsor:</strong> Ministry of Education (MoE), Govt of India
+            </p>
+          </div>
+        </section>
+
+        <!-- 9. FEEDBACK TAB -->
+        <section id="tab-feedback" class="vlab-tab-panel">
+          <h2 class="vlab-section-heading">💬 Experiment Feedback</h2>
+          <div class="vlab-card">
+            <form id="vlabFeedbackForm" onsubmit="event.preventDefault(); alert('Thank you for your feedback!');">
+              <div class="sim-field-group" style="margin-bottom:1rem;">
+                <label for="fbUserName">Your Name:</label>
+                <input type="text" id="fbUserName" class="sim-input" placeholder="Enter your name">
+              </div>
+
+              <div class="sim-field-group" style="margin-bottom:1rem;">
+                <label for="fbEmail">Email Address:</label>
+                <input type="email" id="fbEmail" class="sim-input" placeholder="Enter your email">
+              </div>
+
+              <div class="sim-field-group" style="margin-bottom:1rem;">
+                <label for="fbComments">Comments / Bugs / Suggestions:</label>
+                <textarea id="fbComments" class="sim-input" rows="4" placeholder="Share your experience..."></textarea>
+              </div>
+
+              <button type="submit" class="btn-vlab-primary">Submit Feedback</button>
+            </form>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="vlab-footer">
+    <div class="vlab-footer-grid">
+      <div class="vlab-footer-column">
+        <h4>Community Links</h4>
+        <ul>
+          <li><a href="#">Sakshat Portal</a></li>
+          <li><a href="#">Virtual Labs Global</a></li>
+          <li><a href="#">Ministry of Education</a></li>
+        </ul>
+      </div>
+
+      <div class="vlab-footer-column">
+        <h4>Contact Us</h4>
+        <ul>
+          <li>Phone: General Information: 011-26582050</li>
+          <li>Email: support@vlabs.ac.in</li>
+          <li>Address: IIT Kharagpur / IIT Delhi</li>
+        </ul>
+      </div>
+
+      <div class="vlab-footer-column">
+        <h4>Follow Us</h4>
+        <ul>
+          <li><a href="#">Twitter / X</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">YouTube Channel</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
