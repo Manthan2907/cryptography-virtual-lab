@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RSA Digital Signature experiment">
+    <title>RSA Digital Signature | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+  </head>
+  <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">RSA Digital Signature</h1>
+        <p id="exp-description">Generate an RSA digital signature for a given message and verify the signature using the corresponding public key.</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+      </nav>
+
+      <main class="content-area">
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> Generate an RSA digital signature for a given message and verify the signature using the corresponding public key.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Understand asymmetric authentication and non-repudiation.</li>
+              <li>Examine the mathematical inverse relationship between encryption with public key and signing with private key.</li>
+              <li>Verify signature integrity and detect altered messages.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder">
+            <h2>Theory</h2>
+            <p>A digital signature is a cryptographic value that guarantees authenticity, non-repudiation, and integrity. In an RSA signature scheme, the signer computes <em>S = M<sup>d</sup> mod n</em> using their private key <em>d</em>. Any verifier who possesses the signer's public key <em>(e, n)</em> can verify the message by evaluating whether <em>S<sup>e</sup> mod n == M</em>.</p>
+          </div>
+        </section>
+
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-placeholder">
+            <h2>Procedure</h2>
+            <ol>
+              <li>Generate prime numbers <em>p</em> and <em>q</em> to compute modulus <em>n = p &times; q</em>.</li>
+              <li>Calculate Euler's totient &phi;(<em>n</em>) and choose public exponent <em>e</em>.</li>
+              <li>Compute private key <em>d = e<sup>-1</sup> mod &phi;(n)</em>.</li>
+              <li>Sign message text with private key <em>d</em>.</li>
+              <li>Verify signature with public key <em>e</em>.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="simulation-controls">
+            <h2>Simulation Controls</h2>
+            <label for="plainMsg">Message Text:</label>
+            <input type="text" id="plainMsg" value="Approve Transaction #9872">
+            <button type="button" id="btnRsaSign">Sign and Verify</button>
+          </div>
+          <div class="simulation-output" aria-live="polite">
+            <h2>Simulation Output</h2>
+            <div id="rsaSigOutput">Click Sign and Verify to run simulation...</div>
+          </div>
+        </section>
+
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="quiz-panel">
+            <h2>Assessment / Quiz</h2>
+            <p>1. Can a third party forge an RSA signature without knowing private key <em>d</em>?</p>
+            <p>2. What security service does a digital signature provide that symmetric MAC does not?</p>
+          </div>
+        </section>
+
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>Rivest, Shamir, &amp; Adleman, <em>A Method for Obtaining Digital Signatures and Public-Key Cryptosystems</em>.</li>
+              <li>NIST SP 800-56B.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Feedback</h2>
+            <p>Please share your feedback regarding this experiment simulation.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="../../js/vendor/forge.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

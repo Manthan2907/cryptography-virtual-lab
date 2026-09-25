@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Password Hashing Comparison experiment">
+    <title>Password Hashing Comparison | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+  </head>
+  <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Password Hashing Comparison</h1>
+        <p id="exp-description">Compare MD5, SHA-1, SHA-256, bcrypt, scrypt, and Argon2 for password hashing and analyze their security characteristics.</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+      </nav>
+
+      <main class="content-area">
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> Compare MD5, SHA-1, SHA-256, bcrypt, scrypt, and Argon2 for password hashing and analyze their security characteristics.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Contrast fast general-purpose hashes against slow, adaptive password key derivation functions.</li>
+              <li>Evaluate the vulnerability of unsalted and fast hashes to GPU dictionary attacks and rainbow tables.</li>
+              <li>Understand the role of computational cost factors, memory hardness, and salt in password defense.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder">
+            <h2>Theory</h2>
+            <p>General-purpose hash functions (MD5, SHA-1, SHA-256) are engineered to be extremely fast for verifying file integrity. However, when used for password storage, their speed enables attackers to compute billions of guesses per second on consumer GPUs. Modern password storage requires slow, adaptive algorithms: bcrypt (computational hardness), scrypt (memory hardness), and Argon2 (PHC winner resisting both GPU and cache side-channel attacks).</p>
+          </div>
+        </section>
+
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-placeholder">
+            <h2>Procedure</h2>
+            <ol>
+              <li>Enter a test password.</li>
+              <li>Click "Run Benchmark Comparison".</li>
+              <li>Inspect execution times, output formats, and hardware resistance metrics in the comparison table.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="simulation-controls">
+            <h2>Simulation Controls</h2>
+            <label for="cmpPassword">Password to Benchmark:</label>
+            <input type="text" id="cmpPassword" value="SuperSecureP@ssw0rd!2026">
+            <button type="button" id="btnBenchmark">Run Benchmark Comparison</button>
+          </div>
+          <div class="simulation-output" aria-live="polite">
+            <h2>Simulation Output</h2>
+            <div id="cmpOutput">Click Run Benchmark to generate comparison...</div>
+          </div>
+        </section>
+
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="quiz-panel">
+            <h2>Assessment / Quiz</h2>
+            <p>1. Why are fast hash functions like SHA-256 dangerous for password storage?</p>
+            <p>2. What is memory hardness, and which algorithm introduced it?</p>
+          </div>
+        </section>
+
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>OWASP Password Storage Cheat Sheet.</li>
+              <li>Biryukov, Dinu, &amp; Khovratovich, <em>Argon2: New Generation of Memory-Hard Functions for Password Hashing</em>.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Feedback</h2>
+            <p>Please share your feedback regarding this experiment simulation.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="../../js/vendor/crypto-js.min.js"></script>
+    <script src="../../js/vendor/bcrypt.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

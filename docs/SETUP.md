@@ -28,19 +28,26 @@ On Windows, `py -m http.server 8000` can be used when `python3` is not available
 
 ## Branch Structure
 
-The integration branch is `main`. Experiment branches are isolated by group:
+The integration branch is `main`. Experiment branches are isolated by group as assigned in the allotment sheet:
 
 ```text
+group-cryptographic-hash-functions
+group-properties-hash-functions
 group-md5
 group-sha1
-group-rsa
 group-mac
 group-hmac
-group-kerberos
 group-needham-schroeder
+group-kerberos
+group-rsa
+group-rsa-digital-signature-hash
 group-bcrypt
 group-argon2
 group-argon2id
+group-password-hashing-comparison
+group-rsa-digital-signature
+group-access-control-fundamentals
+group-access-control-list
 group-classical-encryption
 group-extended-euclidean
 group-brute-force
@@ -49,11 +56,24 @@ group-frequency-analysis
 group-ssl-tls
 ```
 
-Start work from the matching branch and never develop directly on `main`:
+Start work from your assigned branch and never develop directly on `main`:
 
 ```bash
+git checkout group-<your-experiment-name>
+# Example:
 git checkout group-md5
 ```
+
+## Bundled Client-Side Cryptography Libraries
+
+The repository vendors client-side cryptography libraries in `js/vendor/`:
+
+- `js/vendor/crypto-js.min.js`: MD5, SHA-1, SHA-256, HMAC, AES
+- `js/vendor/forge.min.js`: RSA keypair generation, signing, verification, TLS
+- `js/vendor/bcrypt.min.js`: bcrypt password hashing with adaptive cost factor
+- `js/vendor/hash-wasm.min.js`: Argon2, Argon2i, Argon2id WebAssembly hashing
+
+See `js/vendor/README.md` for copy-paste code snippets.
 
 ## GitHub Pages
 

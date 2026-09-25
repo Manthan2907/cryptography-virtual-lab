@@ -78,25 +78,32 @@ py -m http.server 8000</div><p>Open <code>http://localhost:8000</code>.</p></div
       <h2>4. Branch Structure</h2>
       <p><code>main</code> belongs to the integration team. Each group uses its matching branch and experiment folder.</p>
       <div class="tree">cryptography-virtual-lab/
-├── main                         ← integration team
-└── group-md5                    ← MD5 group
-    group-sha1                   ← SHA-1 group
-    group-rsa                    ← RSA group
-    group-mac                    ← MAC group
-    group-hmac                   ← HMAC group
-    group-kerberos               ← Kerberos group
-    group-needham-schroeder      ← Needham-Schroeder group
-    group-bcrypt                 ← bcrypt group
-    group-argon2                 ← Argon2 group
-    group-argon2id               ← Argon2id group
-    group-classical-encryption   ← Classical Encryption group
-    group-extended-euclidean     ← Extended Euclidean group
-    group-brute-force            ← Brute Force group
-    group-dictionary-attack      ← Dictionary Attack group
-    group-frequency-analysis     ← Frequency Analysis group
-    group-ssl-tls                ← SSL/TLS group</div>
-      <div class="code">git checkout group-md5</div>
-      <p>Replace <code>group-md5</code> with your assigned branch. Never develop directly on <code>main</code>.</p>
+├── main                                     ← integration team
+└── group-cryptographic-hash-functions       ← Cryptographic Hash Functions group
+    group-properties-hash-functions          ← Properties of Secure Hash Function group
+    group-md5                                ← MD5 group
+    group-sha1                               ← SHA-1 group
+    group-mac                                ← MAC group
+    group-hmac                               ← HMAC group
+    group-needham-schroeder                  ← Needham-Schroeder group
+    group-kerberos                           ← Kerberos group
+    group-rsa                                ← RSA Digital Signature group
+    group-rsa-digital-signature-hash         ← RSA with Hash group
+    group-bcrypt                             ← bcrypt group
+    group-argon2                             ← Argon2 group
+    group-argon2id                           ← Argon2id group
+    group-password-hashing-comparison        ← Password Hashing Comparison group
+    group-rsa-digital-signature              ← RSA Signature (Standalone) group
+    group-access-control-fundamentals        ← Access Control Fundamentals group
+    group-access-control-list                ← Access Control List (ACL) group
+    group-classical-encryption               ← Classical Encryption group
+    group-extended-euclidean                 ← Extended Euclidean group
+    group-brute-force                        ← Brute Force group
+    group-dictionary-attack                  ← Dictionary Attack group
+    group-frequency-analysis                 ← Frequency Analysis group
+    group-ssl-tls                            ← SSL/TLS Handshake group</div>
+      <div class="code">git checkout group-&lt;your-experiment-name&gt;</div>
+      <p>Replace with your assigned branch. Never develop directly on <code>main</code>. Bundled client libraries available in <code>js/vendor/</code> (CryptoJS, Forge, bcrypt, Hash-WASM).</p>
     </section>
 
     <section class="section" id="verify">

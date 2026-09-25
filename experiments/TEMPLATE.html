@@ -9,56 +9,104 @@
     <link rel="stylesheet" href="../../css/experiment.css">
   </head>
   <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
     <div class="experiment-container">
       <header class="exp-header">
-        <a class="back-link" href="../../index.html">&larr; Back to experiment browser</a>
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
         <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <p id="exp-description">Brief description of the experiment</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
+        <!-- a. Aim and objectives -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> Add the primary aim of the experiment here.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Understand the algorithmic foundation of the cryptographic mechanism.</li>
+              <li>Implement and simulate the algorithm with interactive parameters.</li>
+              <li>Analyze security properties, edge cases, and vulnerability defenses.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- b. Relevant theoretical concepts -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
           <div class="content-placeholder">
             <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+            <p>Add background terminology, mathematical equations, algorithm block diagrams, and working steps here.</p>
           </div>
         </section>
 
+        <!-- c. Step-by-step procedure -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
           <div class="content-placeholder">
             <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+            <ol>
+              <li>Select or enter input text/keys in the simulation controls.</li>
+              <li>Configure algorithm parameters (cost factor, key size, or mode).</li>
+              <li>Click the execute button to run the interactive computation.</li>
+              <li>Observe intermediate registers, state changes, and final cryptographic output.</li>
+            </ol>
           </div>
         </section>
 
+        <!-- d. Interactive simulation / implementation -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
+            <h2>Simulation Controls</h2>
             <p>Add inputs and controls for the experiment simulation.</p>
           </div>
           <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
+            <h2>Simulation Output</h2>
             <p>Results will appear here after the simulation runs.</p>
           </div>
         </section>
 
+        <!-- e. Assessment / Quiz -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <h2>Self Assessment &amp; Quiz</h2>
+            <p>Add multiple choice or short-answer questions to assess student understanding.</p>
+          </div>
+        </section>
+
+        <!-- f. References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>William Stallings, <em>Cryptography and Network Security: Principles and Practice</em>, Pearson.</li>
+              <li>NIST Cryptographic Standards and Guidelines (FIPS PUB).</li>
+              <li>RFC documentation and algorithm specifications.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- g. Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Experiment Feedback</h2>
+            <p>Please share your feedback to help us improve this virtual lab simulation.</p>
           </div>
         </section>
       </main>

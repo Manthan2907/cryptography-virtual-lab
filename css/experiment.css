@@ -18,6 +18,32 @@ body {
   line-height: var(--line-height-body);
 }
 
+/* Fr. CRCE College Header Banner Strip */
+.college-banner-strip {
+  background: #ffffff;
+  padding: 6px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 2px solid var(--color-primary-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.college-banner-strip a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.college-banner-img {
+  max-width: 100%;
+  max-height: 64px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
 button,
 input,
 textarea,

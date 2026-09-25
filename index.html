@@ -1,76 +1,741 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="A virtual laboratory for learning practical cryptography experiments.">
-		<title>Virtual Cryptography Laboratory</title>
-		<link rel="stylesheet" href="css/variables.css">
-		<link rel="stylesheet" href="css/theme.css">
-	</head>
-	<body>
-		<header class="site-header">
-			<div class="header-inner">
-				<a class="brand" href="index.html" aria-label="Virtual Cryptography Laboratory home">
-					<span class="brand-mark" aria-hidden="true">VC</span>
-					<span>
-						<span class="brand-title">Virtual Cryptography Laboratory</span>
-						<span class="brand-subtitle">CSS TH ISE · Cryptographic Security Systems</span>
-					</span>
-				</a>
-				<nav class="header-nav" aria-label="Primary navigation">
-					<a href="#experiments">Experiments</a>
-					<a href="docs/setup.html">Setup Guide</a>
-				</nav>
-			</div>
-		</header>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Virtual Cryptography Laboratory - Department of Computer Engineering, Fr. Conceicao Rodrigues College of Engineering (Fr. CRCE), Bandra, Mumbai.">
+    <title>Cryptography Virtual Laboratory | Fr. Conceicao Rodrigues College of Engineering</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Portal Theme Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/theme.css">
+  </head>
+  <body>
+    <!-- Unified Laboratory Header Frame -->
+    <header class="site-unified-header">
+      <div class="header-container">
+        <div class="header-left-col">
+          <div class="brand-badge" aria-hidden="true">VCL</div>
+          <div>
+            <a href="index.html" class="portal-brand-link">
+              <h1 class="portal-main-title">Virtual Cryptography Laboratory</h1>
+            </a>
+            <div class="portal-course-tag">
+              <span class="class-tag">TE COMPS C</span>
+              <span class="tag-sep">&bull;</span>
+              <span class="course-full-name">Cryptography and System Security (CSS)</span>
+            </div>
+            <p class="portal-college-sub">Fr. Conceicao Rodrigues College of Engineering, Bandra &bull; Department of Computer Engineering</p>
+          </div>
+        </div>
+        <div class="header-right-col">
+          <a href="index.html" class="college-banner-card" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+            <img src="assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-header-logo">
+          </a>
+        </div>
+      </div>
+    </header>
 
-		<main>
-			<section class="hero" aria-labelledby="hero-title">
-				<div class="page-section">
-					<p class="eyebrow">University Practical Laboratory</p>
-					<h1 id="hero-title">Explore the systems that keep information secure.</h1>
-					<p>Run guided, browser-based experiments to understand hashing, authentication, encryption, attacks, and secure communication protocols.</p>
-					<div class="hero-meta" aria-label="Laboratory details">
-						<span class="meta-chip">16 experiments</span>
-						<span class="meta-chip">Client-side learning</span>
-						<span class="meta-chip">Course workspace</span>
-					</div>
-				</div>
-			</section>
+    <!-- 4. Main Portal Layout -->
+    <div class="portal-layout">
+      <!-- Left Sidebar Menu -->
+      <aside class="portal-sidebar" aria-label="Laboratory Portal Navigation">
+        <ul class="sidebar-menu-list">
+          <li>
+            <button type="button" class="sidebar-tab-btn active" data-tab="introduction">Introduction</button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-tab-btn" data-tab="objective">Objective</button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-tab-btn" data-tab="experiments">List of experiments</button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-tab-btn" data-tab="target-audience">Target Audience</button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-tab-btn" data-tab="course-alignment">Course Alignment</button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-tab-btn" data-tab="setup-guide">Setup Guide</button>
+          </li>
+        </ul>
+      </aside>
 
-			<section class="experiments-section page-section" id="experiments" aria-labelledby="experiments-title">
-				<div class="section-heading">
-					<div>
-						<h2 id="experiments-title">Experiment browser</h2>
-						<p>Choose a laboratory module to begin.</p>
-					</div>
-					<p aria-label="Experiment count">16 modules</p>
-				</div>
+      <!-- Main Content Area -->
+      <main class="portal-content" id="mainContent">
 
-				<div class="experiment-grid">
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Hashing</span><span class="badge badge-difficulty">Beginner</span></div><h3>MD5</h3><p>Observe message digest generation and avalanche behavior.</p><a class="button button-primary" href="experiments/md5/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Hashing</span><span class="badge badge-difficulty">Beginner</span></div><h3>SHA-1</h3><p>Compare fixed-length hashing and collision-resistance concepts.</p><a class="button button-primary" href="experiments/sha1/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Public Key</span><span class="badge badge-difficulty">Advanced</span></div><h3>RSA</h3><p>Explore key generation, encryption, and digital signatures.</p><a class="button button-primary" href="experiments/rsa/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Authentication</span><span class="badge badge-difficulty">Intermediate</span></div><h3>MAC</h3><p>Learn how message authentication codes protect integrity.</p><a class="button button-primary" href="experiments/mac/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Authentication</span><span class="badge badge-difficulty">Intermediate</span></div><h3>HMAC</h3><p>Build keyed hashes from a message and shared secret.</p><a class="button button-primary" href="experiments/hmac/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Protocols</span><span class="badge badge-difficulty">Advanced</span></div><h3>Kerberos</h3><p>Trace ticket-based authentication between trusted services.</p><a class="button button-primary" href="experiments/kerberos/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Protocols</span><span class="badge badge-difficulty">Advanced</span></div><h3>Needham-Schroeder</h3><p>Visualize a classic challenge-response key exchange.</p><a class="button button-primary" href="experiments/needham-schroeder/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Password Security</span><span class="badge badge-difficulty">Intermediate</span></div><h3>bcrypt</h3><p>Study adaptive password hashing and work factors.</p><a class="button button-primary" href="experiments/bcrypt/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Password Security</span><span class="badge badge-difficulty">Advanced</span></div><h3>Argon2</h3><p>Investigate memory-hard password hashing parameters.</p><a class="button button-primary" href="experiments/argon2/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Password Security</span><span class="badge badge-difficulty">Advanced</span></div><h3>Argon2id</h3><p>Compare hybrid resistance to GPU and side-channel attacks.</p><a class="button button-primary" href="experiments/argon2id/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Classical</span><span class="badge badge-difficulty">Beginner</span></div><h3>Classical Encryption</h3><p>Experiment with substitution and transposition ciphers.</p><a class="button button-primary" href="experiments/classical-encryption/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Mathematics</span><span class="badge badge-difficulty">Intermediate</span></div><h3>Extended Euclidean</h3><p>Calculate modular inverses used throughout cryptography.</p><a class="button button-primary" href="experiments/extended-euclidean/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Attacks</span><span class="badge badge-difficulty">Intermediate</span></div><h3>Brute Force</h3><p>Measure how search-space size affects key recovery.</p><a class="button button-primary" href="experiments/brute-force/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Attacks</span><span class="badge badge-difficulty">Intermediate</span></div><h3>Dictionary Attack</h3><p>Explore password weakness through word-list strategies.</p><a class="button button-primary" href="experiments/dictionary-attack/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Attacks</span><span class="badge badge-difficulty">Advanced</span></div><h3>Frequency Analysis</h3><p>Use language statistics to investigate classical ciphers.</p><a class="button button-primary" href="experiments/frequency-analysis/index.html">Open Lab</a></article>
-					<article class="experiment-card"><div class="card-badges"><span class="badge">Protocols</span><span class="badge badge-difficulty">Advanced</span></div><h3>SSL/TLS</h3><p>Follow the handshake that establishes a secure channel.</p><a class="button button-primary" href="experiments/ssl-tls/index.html">Open Lab</a></article>
-				</div>
-			</section>
-		</main>
+        <!-- TAB 1: INTRODUCTION (Active by default) -->
+        <section id="introduction" class="tab-panel-view active" aria-labelledby="intro-heading">
+          <h1 class="content-h1 center" id="intro-heading">Cryptography</h1>
+          
+          <p class="content-lead">
+            Welcome to the Cryptography lab. In this lab, we will do virtual experiments to understand the basic mathematical foundations of cryptography, to gain insightful experience by working with fundamental cryptographic applications and to train in the art of design and analysis of information security protocols.
+          </p>
 
-		<footer class="site-footer">
-			<p>Virtual Cryptography Laboratory · CSS TH ISE · Academic learning environment</p>
-		</footer>
-	</body>
+          <div class="academic-callout">
+            <strong>Academic Context:</strong> Developed for TE Computer Engineering (CCSS TH ISE &middot; Virtual Lab Development) at Fr. Conceicao Rodrigues College of Engineering (Fr. CRCE), Bandra, Mumbai.
+          </div>
+
+          <h2 class="content-h2">About the Virtual Laboratory</h2>
+          <p>
+            This virtual laboratory provides a standardized, interactive platform where engineering students can explore cryptographic ciphers, hash mechanisms, authentication handshakes, and cryptanalytic attacks through browser-based execution. All modules are designed to run client-side without external dependencies.
+          </p>
+
+          <p style="margin-top: 28px;">
+            To explore the assigned experiments, navigate to the <button type="button" class="inline-tab-link" data-tab="experiments">List of experiments</button> tab. For group branching and contribution instructions, refer to the <button type="button" class="inline-tab-link" data-tab="setup-guide">Setup Guide</button>.
+          </p>
+        </section>
+
+        <!-- TAB 2: OBJECTIVE -->
+        <section id="objective" class="tab-panel-view" aria-labelledby="obj-heading">
+          <h1 class="content-h1 center" id="obj-heading">Objective</h1>
+          <p class="content-lead">
+            The primary objectives of the Cryptography Virtual Laboratory are to provide students with rigorous conceptual and practical knowledge in information security:
+          </p>
+
+          <div class="objective-cards-grid">
+            <div class="objective-item-card">
+              <h3>1. Theoretical Foundations</h3>
+              <p>Understand mathematical concepts underlying classical and modern cryptography including modular arithmetic, prime factorization, and discrete logarithms.</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>2. Practical Implementation</h3>
+              <p>Simulate symmetric ciphers, asymmetric key generation (RSA), cryptographic hashes (MD5, SHA-1), and authentication codes (MAC, HMAC).</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>3. Security Protocol Analysis</h3>
+              <p>Trace message sequences, nonce challenges, and session key exchanges in Kerberos, Needham-Schroeder, and SSL/TLS handshakes.</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>4. Vulnerability &amp; Cryptanalysis</h3>
+              <p>Conduct safe simulations of brute force, dictionary cracking, and frequency analysis to understand cipher weaknesses and defense strategies.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: LIST OF EXPERIMENTS (Matches Image 1 Card Grid) -->
+        <section id="experiments" class="tab-panel-view" aria-labelledby="exp-heading">
+          <div class="section-heading-bar">
+            <div>
+              <h2 id="exp-heading">Experiment browser</h2>
+              <p>Choose a laboratory module to begin.</p>
+            </div>
+            <span class="exp-count-badge" id="moduleCountBadge">23 modules</span>
+          </div>
+
+          <!-- Filter & Search Controls -->
+          <div class="filter-panel">
+            <div class="filter-group">
+              <span class="filter-label">Filter by Category</span>
+              <div class="filter-chips">
+                <button type="button" class="filter-chip active" data-category="all">All (23)</button>
+                <button type="button" class="filter-chip" data-category="hashing">Hashing</button>
+                <button type="button" class="filter-chip" data-category="authentication">Authentication</button>
+                <button type="button" class="filter-chip" data-category="public-key">Public Key</button>
+                <button type="button" class="filter-chip" data-category="protocols">Protocols</button>
+                <button type="button" class="filter-chip" data-category="password-security">Password Security</button>
+                <button type="button" class="filter-chip" data-category="access-control">Access Control</button>
+                <button type="button" class="filter-chip" data-category="classical">Classical</button>
+                <button type="button" class="filter-chip" data-category="mathematics">Mathematics</button>
+                <button type="button" class="filter-chip" data-category="attacks">Attacks</button>
+              </div>
+            </div>
+            <input type="text" id="expSearchInput" class="search-filter-input" placeholder="Search by topic, algorithm, keyword, or student name...">
+          </div>
+
+          <!-- All 23 Experiment Cards (Image 1 Style) -->
+          <div class="experiment-grid" id="experimentGrid">
+            
+            <!-- 1 -->
+            <div class="experiment-card" data-category="hashing">
+              <div class="card-badges">
+                <span class="badge">Hashing</span>
+                <span class="badge badge-difficulty">Beginner</span>
+              </div>
+              <h3>Cryptographic Hash Functions</h3>
+              <p class="exp-desc">Generate fixed-length hash digests for variable messages and analyze one-way property and avalanche behavior.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Reeven Menezes (10746), Stewin Mathias (10745) &bull; <em>group-cryptographic-hash-functions</em>
+              </div>
+              <a href="experiments/cryptographic-hash-functions/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 2 -->
+            <div class="experiment-card" data-category="hashing">
+              <div class="card-badges">
+                <span class="badge">Hashing</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Properties of Secure Hash</h3>
+              <p class="exp-desc">Analyze preimage resistance, second-preimage resistance, collision resistance, and avalanche effect concepts.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Sherwin Gonsalves (10731), Ojas Manjrekar (10744) &bull; <em>group-properties-hash-functions</em>
+              </div>
+              <a href="experiments/properties-hash-functions/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 3 -->
+            <div class="experiment-card" data-category="hashing">
+              <div class="card-badges">
+                <span class="badge">Hashing</span>
+                <span class="badge badge-difficulty">Beginner</span>
+              </div>
+              <h3>MD5</h3>
+              <p class="exp-desc">Observe message digest generation, 128-bit hash transformation, and sensitivity to input modifications.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Nicole Dabre (10717), Alciya Dodti (10722), Larissa dabreo (10718) &bull; <em>group-md5</em>
+              </div>
+              <a href="experiments/md5/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 4 -->
+            <div class="experiment-card" data-category="hashing">
+              <div class="card-badges">
+                <span class="badge">Hashing</span>
+                <span class="badge badge-difficulty">Beginner</span>
+              </div>
+              <h3>SHA-1</h3>
+              <p class="exp-desc">Compare fixed-length 160-bit hashing and collision-resistance concepts against earlier message digest standards.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Ruth Dmello (10721), Swar (10713), Tanush Chavan (10710), Aaron Deniz (10719) &bull; <em>group-sha1</em>
+              </div>
+              <a href="experiments/sha1/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 5 -->
+            <div class="experiment-card" data-category="authentication">
+              <div class="card-badges">
+                <span class="badge">Authentication</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>MAC</h3>
+              <p class="exp-desc">Learn how message authentication codes protect integrity and authenticity with a shared secret symmetric key.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Asher (10715), Aarna Chopdekar (10712), Slora Bar (10708) &bull; <em>group-mac</em>
+              </div>
+              <a href="experiments/mac/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 6 -->
+            <div class="experiment-card" data-category="authentication">
+              <div class="card-badges">
+                <span class="badge">Authentication</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>HMAC</h3>
+              <p class="exp-desc">Build keyed hashes from a message and shared secret using RFC 2104 nested hashing constructions.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Arya Chavan (10709), Cajetan Dsouza (10723), Shreyas Divekar (10720), Jadern Crasto (10716), Wendell Dsouza (10724) &bull; <em>group-hmac</em>
+              </div>
+              <a href="experiments/hmac/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 7 -->
+            <div class="experiment-card" data-category="protocols">
+              <div class="card-badges">
+                <span class="badge">Protocols</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>Needham-Schroeder</h3>
+              <p class="exp-desc">Visualize a classic challenge-response symmetric key exchange protocol with a trusted Key Distribution Center.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Rohit Ahir (10706), Niranjan Shanbhag (10759), Vihan Shah (10758), Jeremiah Yangal (10767) &bull; <em>group-needham-schroeder</em>
+              </div>
+              <a href="experiments/needham-schroeder/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 8 -->
+            <div class="experiment-card" data-category="protocols">
+              <div class="card-badges">
+                <span class="badge">Protocols</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>Kerberos</h3>
+              <p class="exp-desc">Trace ticket-based authentication between trusted services involving AS, TGS, and application resource servers.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Dev Dinesh Saroj (10755), Manthan Pagaria (10748), Aditya Pisal (10923), Kamesh Nerpagar (10922) &bull; <em>group-kerberos</em>
+              </div>
+              <a href="experiments/kerberos/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 9 -->
+            <div class="experiment-card" data-category="public-key">
+              <div class="card-badges">
+                <span class="badge">Public Key</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>RSA as a Digital Signature</h3>
+              <p class="exp-desc">Explore key generation, modular exponentiation, private key signing, and public key verification.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Arnav Potale (10754), Joel Wilson (10747), Omkar Patil (10749) &bull; <em>group-rsa</em>
+              </div>
+              <a href="experiments/rsa/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 10 -->
+            <div class="experiment-card" data-category="public-key">
+              <div class="card-badges">
+                <span class="badge">Public Key</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>RSA Signature with Hash</h3>
+              <p class="exp-desc">Hash messages using secure cryptographic digests, sign the hash with RSA private exponent, and verify integrity.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Rahul Senapati (10757), Eva Gonsalves (10921), Aisha fernandes (10920), Royson Rodrigues (10925) &bull; <em>group-rsa-digital-signature-hash</em>
+              </div>
+              <a href="experiments/rsa-digital-signature-hash/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 11 -->
+            <div class="experiment-card" data-category="password-security">
+              <div class="card-badges">
+                <span class="badge">Password Security</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>bcrypt</h3>
+              <p class="exp-desc">Study adaptive password hashing, salt generation, and tunable work factors to defend against GPU cracking.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Shwet Shigwan (10763), Daksh shetty (10761) &bull; <em>group-bcrypt</em>
+              </div>
+              <a href="experiments/bcrypt/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 12 -->
+            <div class="experiment-card" data-category="password-security">
+              <div class="card-badges">
+                <span class="badge">Password Security</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>Argon2</h3>
+              <p class="exp-desc">Simulate memory-hard password hashing with configurable memory cost, iterations, and parallelism parameters.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Aarya Sawant (10756), Disha Shetty (10762), Lebron Pereira (10751) &bull; <em>group-argon2</em>
+              </div>
+              <a href="experiments/argon2/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 13 -->
+            <div class="experiment-card" data-category="password-security">
+              <div class="card-badges">
+                <span class="badge">Password Security</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>Argon2id</h3>
+              <p class="exp-desc">Configure hybrid Argon2id password hashing combining resistance against side-channel and GPU cracking attacks.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Chris Pereira (10750), Ephraim T Philip (10752), Shaaunak Pitale (10753) &bull; <em>group-argon2id</em>
+              </div>
+              <a href="experiments/argon2id/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 14 -->
+            <div class="experiment-card" data-category="password-security">
+              <div class="card-badges">
+                <span class="badge">Password Security</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Password Hashing Comparison</h3>
+              <p class="exp-desc">Benchmark and compare MD5, SHA-256, bcrypt, scrypt, and Argon2 for security and hardware attack resistance.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Anaay Vakharkar (10766), Diva Sharma (10760) &bull; <em>group-password-hashing-comparison</em>
+              </div>
+              <a href="experiments/password-hashing-comparison/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 15 -->
+            <div class="experiment-card" data-category="public-key">
+              <div class="card-badges">
+                <span class="badge">Public Key</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>RSA Digital Signature</h3>
+              <p class="exp-desc">Standalone implementation of RSA key pair generation, message encryption, and signature validation.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Priyanka thapa (10764), Sakshi (10895) &bull; <em>group-rsa-digital-signature</em>
+              </div>
+              <a href="experiments/rsa-digital-signature/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 16 -->
+            <div class="experiment-card" data-category="access-control">
+              <div class="card-badges">
+                <span class="badge">Access Control</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Access Control Fundamentals</h3>
+              <p class="exp-desc">Simulate subject-object permissions, discretionary access control (DAC), and reference monitor authorization.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Sameer (10924), Sven Tuscano (10765) &bull; <em>group-access-control-fundamentals</em>
+              </div>
+              <a href="experiments/access-control-fundamentals/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 17 -->
+            <div class="experiment-card" data-category="access-control">
+              <div class="card-badges">
+                <span class="badge">Access Control</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Access Control List (ACL)</h3>
+              <p class="exp-desc">Manage and evaluate fine-grained user and group access control lists with read, write, and execute permissions.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Daksh Gurav (10734), Rahul Kewat (10742) &bull; <em>group-access-control-list</em>
+              </div>
+              <a href="experiments/access-control-list/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 18 -->
+            <div class="experiment-card" data-category="classical">
+              <div class="card-badges">
+                <span class="badge">Classical</span>
+                <span class="badge badge-difficulty">Beginner</span>
+              </div>
+              <h3>Classical Encryption Techniques</h3>
+              <p class="exp-desc">Explore substitution ciphers (Caesar, Affine, Playfair) and transposition ciphers (Rail Fence, Columnar).</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Soah Fernandes (10728), Kinjal Goyal (10732), Vedant Kanekar (10740) &bull; <em>group-classical-encryption</em>
+              </div>
+              <a href="experiments/classical-encryption/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 19 -->
+            <div class="experiment-card" data-category="mathematics">
+              <div class="card-badges">
+                <span class="badge">Mathematics</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Extended Euclidean Algorithm</h3>
+              <p class="exp-desc">Compute greatest common divisor gcd(a, b) and modular multiplicative inverse a^-1 mod m step-by-step.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Nemi Gada (10729), Aaron Emmaty (10725) &bull; <em>group-extended-euclidean</em>
+              </div>
+              <a href="experiments/extended-euclidean/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 20 -->
+            <div class="experiment-card" data-category="attacks">
+              <div class="card-badges">
+                <span class="badge">Attacks</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Brute Force Attack</h3>
+              <p class="exp-desc">Exhaustively iterate through key spaces to crack ciphers and analyze exponential complexity vs key length.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Maria Joanna (10737), Crisann Lobo (10743) &bull; <em>group-brute-force</em>
+              </div>
+              <a href="experiments/brute-force/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 21 -->
+            <div class="experiment-card" data-category="attacks">
+              <div class="card-badges">
+                <span class="badge">Attacks</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Dictionary Attack</h3>
+              <p class="exp-desc">Execute wordlist lookups against hashed passwords to demonstrate vulnerability of low-entropy passwords.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Rishal Fernandes (10727), Bliss Gonsalves (10730) &bull; <em>group-dictionary-attack</em>
+              </div>
+              <a href="experiments/dictionary-attack/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 22 -->
+            <div class="experiment-card" data-category="attacks">
+              <div class="card-badges">
+                <span class="badge">Attacks</span>
+                <span class="badge badge-difficulty">Intermediate</span>
+              </div>
+              <h3>Frequency Analysis</h3>
+              <p class="exp-desc">Perform letter and n-gram frequency distributions on substitution ciphertext to break encryption without keys.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Sanika Gunjal (10733), Shivam Jha (10736), Wayne Falco (10726) &bull; <em>group-frequency-analysis</em>
+              </div>
+              <a href="experiments/frequency-analysis/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- 23 -->
+            <div class="experiment-card" data-category="protocols">
+              <div class="card-badges">
+                <span class="badge">Protocols</span>
+                <span class="badge badge-difficulty">Advanced</span>
+              </div>
+              <h3>SSL / TLS Overview &amp; Handshake</h3>
+              <p class="exp-desc">Simulate client/server TLS handshake negotiation, certificate validation, and symmetric session key generation.</p>
+              <div class="exp-allotment-text">
+                <strong>Allotted:</strong> Jace Jaison (10711), Ahamed Wafiq (10705) &bull; <em>group-ssl-tls</em>
+              </div>
+              <a href="experiments/ssl-tls/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TAB 4: TARGET AUDIENCE -->
+        <section id="target-audience" class="tab-panel-view" aria-labelledby="target-heading">
+          <h1 class="content-h1 center" id="target-heading">Target Audience</h1>
+          <p class="content-lead">
+            The Cryptography Virtual Laboratory caters to academic learners and faculty in the discipline of Computer Science &amp; Engineering:
+          </p>
+          <div class="objective-cards-grid">
+            <div class="objective-item-card">
+              <h3>Undergraduate Students</h3>
+              <p>Third Year Computer Engineering students enrolled in Cryptography &amp; System Security (Course Code: CSC504 / ISE) completing laboratory requirements.</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>Postgraduate Scholars</h3>
+              <p>Researchers analyzing lightweight encryption, cryptographic hashing, side-channel resilience, and access control models.</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>Faculty &amp; Evaluators</h3>
+              <p>Teachers conducting laboratory demonstrations, practical evaluation, and automated continuous assessment across assigned groups.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 5: COURSE ALIGNMENT -->
+        <section id="course-alignment" class="tab-panel-view" aria-labelledby="alignment-heading">
+          <h1 class="content-h1 center" id="alignment-heading">Course Alignment</h1>
+          <p class="content-lead">
+            This virtual laboratory is aligned with the Mumbai University syllabus and AICTE model curriculum for <strong>Cryptography and System Security (CSS)</strong>:
+          </p>
+          <div class="curriculum-table-wrapper">
+            <table class="curriculum-table">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Course Topic</th>
+                  <th>Mapped Virtual Lab Experiments</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Module 1</strong></td>
+                  <td>Introduction to Cryptography &amp; Number Theory</td>
+                  <td>Classical Encryption Techniques, Extended Euclidean Algorithm</td>
+                </tr>
+                <tr>
+                  <td><strong>Module 2</strong></td>
+                  <td>Asymmetric Key Cryptosystems &amp; Digital Signatures</td>
+                  <td>RSA as Digital Signature, RSA Digital Signature with Hash, RSA Standalone</td>
+                </tr>
+                <tr>
+                  <td><strong>Module 3</strong></td>
+                  <td>Cryptographic Hashes &amp; Message Authentication</td>
+                  <td>Cryptographic Hash Functions, Properties of Secure Hash Function, MD5, SHA-1, MAC, HMAC</td>
+                </tr>
+                <tr>
+                  <td><strong>Module 4</strong></td>
+                  <td>Authentication Protocols &amp; Key Management</td>
+                  <td>Needham-Schroeder Protocol, Kerberos Authentication Protocol</td>
+                </tr>
+                <tr>
+                  <td><strong>Module 5</strong></td>
+                  <td>Transport &amp; Network Layer Security</td>
+                  <td>SSL / TLS Overview &amp; Handshake Simulation</td>
+                </tr>
+                <tr>
+                  <td><strong>Module 6</strong></td>
+                  <td>Password Hardening, Access Control &amp; Cryptanalysis</td>
+                  <td>Bcrypt, Argon2, Argon2id, Password Hashing Comparison, Access Control Fundamentals, ACL, Brute Force, Dictionary Attack, Frequency Analysis</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TAB 6: SETUP GUIDE -->
+        <section id="setup-guide" class="tab-panel-view" aria-labelledby="setup-heading">
+          <h1 class="content-h1 center" id="setup-heading">Student Setup &amp; Branching Guide</h1>
+          <p class="content-lead">
+            Each student group is assigned a dedicated branch on GitHub. Do not develop directly on <code>main</code>.
+          </p>
+
+          <h2 class="content-h2">1. Clone Repository &amp; Start Local Server</h2>
+          <pre class="guide-code-box">git clone https://github.com/Manthan2907/cryptography-virtual-lab.git
+cd cryptography-virtual-lab
+python -m http.server 8000</pre>
+          <p>Open <code>http://localhost:8000</code> in your browser.</p>
+
+          <h2 class="content-h2">2. Check Out Your Assigned Group Branch</h2>
+          <pre class="guide-code-box">git checkout group-&lt;experiment-name&gt;
+# Example for MD5 group:
+git checkout group-md5</pre>
+          <p>All 23 assigned group branches:</p>
+          <pre class="guide-code-box" style="font-size: 0.82rem; max-height: 200px; overflow-y: auto;">group-cryptographic-hash-functions
+group-properties-hash-functions
+group-md5
+group-sha1
+group-mac
+group-hmac
+group-needham-schroeder
+group-kerberos
+group-rsa
+group-rsa-digital-signature-hash
+group-bcrypt
+group-argon2
+group-argon2id
+group-password-hashing-comparison
+group-rsa-digital-signature
+group-access-control-fundamentals
+group-access-control-list
+group-classical-encryption
+group-extended-euclidean
+group-brute-force
+group-dictionary-attack
+group-frequency-analysis
+group-ssl-tls</pre>
+
+          <h2 class="content-h2">3. Bundled Client Libraries (in <code>js/vendor/</code>)</h2>
+          <p>
+            All groups have access to bundled client libraries without requiring Node.js or npm:
+          </p>
+          <div class="objective-cards-grid">
+            <div class="objective-item-card">
+              <h3>CryptoJS</h3>
+              <p><code>js/vendor/crypto-js.min.js</code> &mdash; MD5, SHA-1, SHA-256, HMAC, AES</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>Node-Forge</h3>
+              <p><code>js/vendor/forge.min.js</code> &mdash; RSA keypair generation, signing, verification, TLS</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>bcryptjs</h3>
+              <p><code>js/vendor/bcrypt.min.js</code> &mdash; Adaptive password hashing with cost factors</p>
+            </div>
+            <div class="objective-item-card">
+              <h3>Hash-WASM</h3>
+              <p><code>js/vendor/hash-wasm.min.js</code> &mdash; Argon2, Argon2i, Argon2id WebAssembly hashing</p>
+            </div>
+          </div>
+
+          <p style="margin-top: 24px;">
+            <a href="docs/setup.html" target="_blank" rel="noopener noreferrer" class="button button-primary" style="display:inline-flex; width:auto;">
+              Open Complete Printable Setup Guide &rarr;
+            </a>
+          </p>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div style="width: min(calc(100% - 48px), var(--content-width)); margin: 0 auto;">
+        <p style="margin: 0 0 6px;">
+          <strong>Virtual Cryptography Laboratory</strong> &middot; Department of Computer Engineering
+        </p>
+        <p style="margin: 0; font-size: 0.85rem; color: var(--color-primary);">
+          Fr. Conceicao Rodrigues College of Engineering &bull; Bandra, Mumbai &bull; Autonomous Institution affiliated with University of Mumbai
+        </p>
+      </div>
+    </footer>
+
+    <!-- Interactive Tab Navigation and Experiment Filter Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const sidebarButtons = document.querySelectorAll('.sidebar-tab-btn');
+        const inlineTabLinks = document.querySelectorAll('.inline-tab-link');
+        const tabPanels = document.querySelectorAll('.tab-panel-view');
+
+        function switchTab(tabId) {
+          // Update sidebar active state
+          sidebarButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+          });
+
+          // Show targeted tab panel
+          tabPanels.forEach(panel => {
+            panel.classList.toggle('active', panel.id === tabId);
+          });
+
+          // Update URL hash without jumping
+          if (history.replaceState) {
+            history.replaceState(null, null, '#' + tabId);
+          }
+
+          // Smooth scroll to main area if tab was clicked from lower links
+          const mainArea = document.querySelector('.portal-layout');
+          if (mainArea && window.scrollY > 300) {
+            mainArea.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+
+        // Attach listeners to sidebar buttons
+        sidebarButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            if (tab) switchTab(tab);
+          });
+        });
+
+        // Attach listeners to inline links
+        inlineTabLinks.forEach(link => {
+          link.addEventListener('click', () => {
+            const tab = link.getAttribute('data-tab');
+            if (tab) switchTab(tab);
+          });
+        });
+
+        // Check URL hash on page load
+        const currentHash = window.location.hash.replace('#', '');
+        if (currentHash && document.getElementById(currentHash)) {
+          switchTab(currentHash);
+        } else {
+          switchTab('introduction');
+        }
+
+        // Experiment Category Filter and Search
+        const filterChips = document.querySelectorAll('.filter-chip');
+        const searchInput = document.getElementById('expSearchInput');
+        const cards = document.querySelectorAll('.experiment-card');
+        const badge = document.getElementById('moduleCountBadge');
+
+        let activeCategory = 'all';
+        let searchTerm = '';
+
+        function applyFilter() {
+          let visibleCount = 0;
+          cards.forEach(card => {
+            const category = card.getAttribute('data-category') || '';
+            const text = card.textContent.toLowerCase();
+
+            const matchesCategory = (activeCategory === 'all' || category.toLowerCase() === activeCategory.toLowerCase());
+            const matchesSearch = (searchTerm === '' || text.includes(searchTerm));
+
+            if (matchesCategory && matchesSearch) {
+              card.style.display = 'flex';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+
+          if (badge) {
+            badge.textContent = visibleCount + ' module' + (visibleCount === 1 ? '' : 's');
+          }
+        }
+
+        filterChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            filterChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            activeCategory = chip.getAttribute('data-category') || 'all';
+            applyFilter();
+          });
+        });
+
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value.trim().toLowerCase();
+            applyFilter();
+          });
+        }
+      });
+    </script>
+  </body>
 </html>

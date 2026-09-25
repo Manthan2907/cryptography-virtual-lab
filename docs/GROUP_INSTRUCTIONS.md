@@ -36,8 +36,8 @@ Keep the existing IDs, tab buttons, shared asset paths, and outer layout intact.
 - `index.html` at the repository root
 - `css/`
 - `js/common.js`
-- `js/router.js`
-- `js/experiments.json`
+- `js/vendor/`
+- `assets/`
 - `.github/`
 - `docs/`
 - Any other group's folder
