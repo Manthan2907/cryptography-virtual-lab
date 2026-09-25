@@ -124,7 +124,7 @@
               <h2 id="exp-heading">Experiment browser</h2>
               <p>Choose a laboratory module to begin.</p>
             </div>
-            <span class="exp-count-badge" id="moduleCountBadge">23 modules</span>
+            <span class="exp-count-badge" id="moduleCountBadge">24 modules</span>
           </div>
 
           <!-- Filter & Search Controls -->
@@ -132,7 +132,7 @@
             <div class="filter-group">
               <span class="filter-label">Filter by Category</span>
               <div class="filter-chips">
-                <button type="button" class="filter-chip active" data-category="all">All (23)</button>
+                <button type="button" class="filter-chip active" data-category="all">All (24)</button>
                 <button type="button" class="filter-chip" data-category="hashing">Hashing</button>
                 <button type="button" class="filter-chip" data-category="authentication">Authentication</button>
                 <button type="button" class="filter-chip" data-category="public-key">Public Key</button>
@@ -147,327 +147,341 @@
             <input type="text" id="expSearchInput" class="search-filter-input" placeholder="Search by topic, algorithm, keyword, or student name...">
           </div>
 
-          <!-- All 23 Experiment Cards (Image 1 Style) -->
+          <!-- All 24 Teams Experiment Cards -->
           <div class="experiment-grid" id="experimentGrid">
             
-            <!-- 1 -->
+            <!-- Team 1 -->
             <div class="experiment-card" data-category="hashing">
               <div class="card-badges">
                 <span class="badge">Hashing</span>
-                <span class="badge badge-difficulty">Beginner</span>
+                <span class="badge badge-difficulty">Team 1 &bull; Beginner</span>
               </div>
               <h3>Cryptographic Hash Functions</h3>
-              <p class="exp-desc">Generate fixed-length hash digests for variable messages and analyze one-way property and avalanche behavior.</p>
+              <p class="exp-desc">Study and implement a cryptographic hash function to generate a fixed-length hash value for a given input message.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Reeven Menezes (10746), Stewin Mathias (10745) &bull; <em>group-cryptographic-hash-functions</em>
+                <strong>Assigned:</strong> Reeven Menezes (10746), Stewin Mathias (10745) &bull; <em>group-cryptographic-hash-functions</em>
               </div>
               <a href="experiments/cryptographic-hash-functions/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 2 -->
+            <!-- Team 2 -->
             <div class="experiment-card" data-category="hashing">
               <div class="card-badges">
                 <span class="badge">Hashing</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 2 &bull; Intermediate</span>
               </div>
-              <h3>Properties of Secure Hash</h3>
-              <p class="exp-desc">Analyze preimage resistance, second-preimage resistance, collision resistance, and avalanche effect concepts.</p>
+              <h3>Properties of Secure Hash Function</h3>
+              <p class="exp-desc">Analyze the properties of a secure cryptographic hash function, including preimage resistance, second-preimage resistance, collision resistance, and avalanche effect.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Sherwin Gonsalves (10731), Ojas Manjrekar (10744) &bull; <em>group-properties-hash-functions</em>
+                <strong>Assigned:</strong> Sherwin Gonsalves (10731), Ojas Manjrekar (10744) &bull; <em>group-properties-hash-functions</em>
               </div>
               <a href="experiments/properties-hash-functions/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 3 -->
+            <!-- Team 3 -->
             <div class="experiment-card" data-category="hashing">
               <div class="card-badges">
                 <span class="badge">Hashing</span>
-                <span class="badge badge-difficulty">Beginner</span>
+                <span class="badge badge-difficulty">Team 3 &bull; Beginner</span>
               </div>
               <h3>MD5</h3>
-              <p class="exp-desc">Observe message digest generation, 128-bit hash transformation, and sensitivity to input modifications.</p>
+              <p class="exp-desc">Generate the MD5 hash value for a given input message and analyze the effect of changing the input on the resulting hash value.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Nicole Dabre (10717), Alciya Dodti (10722), Larissa dabreo (10718) &bull; <em>group-md5</em>
+                <strong>Assigned:</strong> Nicole Dabre (10717), Alciya Dodti (10722), Larissa Dabreo (10718) &bull; <em>group-md5</em>
               </div>
               <a href="experiments/md5/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 4 -->
+            <!-- Team 4 -->
             <div class="experiment-card" data-category="hashing">
               <div class="card-badges">
                 <span class="badge">Hashing</span>
-                <span class="badge badge-difficulty">Beginner</span>
+                <span class="badge badge-difficulty">Team 4 &bull; Beginner</span>
               </div>
               <h3>SHA-1</h3>
-              <p class="exp-desc">Compare fixed-length 160-bit hashing and collision-resistance concepts against earlier message digest standards.</p>
+              <p class="exp-desc">Generate the SHA-1 hash value for a given input message and study its output characteristics and sensitivity to input changes.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Ruth Dmello (10721), Swar (10713), Tanush Chavan (10710), Aaron Deniz (10719) &bull; <em>group-sha1</em>
+                <strong>Assigned:</strong> Ruth Dmello (10721), Swar (10713), Tanush Chavan (10710) &bull; <em>group-sha1</em>
               </div>
               <a href="experiments/sha1/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 5 -->
+            <!-- Team 5 -->
             <div class="experiment-card" data-category="authentication">
               <div class="card-badges">
                 <span class="badge">Authentication</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 5 &bull; Intermediate</span>
               </div>
               <h3>MAC</h3>
-              <p class="exp-desc">Learn how message authentication codes protect integrity and authenticity with a shared secret symmetric key.</p>
+              <p class="exp-desc">Generate and verify a Message Authentication Code (MAC) for a given message using a shared secret key.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Asher (10715), Aarna Chopdekar (10712), Slora Bar (10708) &bull; <em>group-mac</em>
+                <strong>Assigned:</strong> Aaron Deniz (10719), Asher (10715), Aarna Chopdekar (10712) &bull; <em>group-mac</em>
               </div>
               <a href="experiments/mac/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 6 -->
+            <!-- Team 6 -->
             <div class="experiment-card" data-category="authentication">
               <div class="card-badges">
                 <span class="badge">Authentication</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 6 &bull; Intermediate</span>
               </div>
               <h3>HMAC</h3>
-              <p class="exp-desc">Build keyed hashes from a message and shared secret using RFC 2104 nested hashing constructions.</p>
+              <p class="exp-desc">Generate and verify an HMAC for a given message using a secret key and analyze the effect of modifying the message or key.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Arya Chavan (10709), Cajetan Dsouza (10723), Shreyas Divekar (10720), Jadern Crasto (10716), Wendell Dsouza (10724) &bull; <em>group-hmac</em>
+                <strong>Assigned:</strong> Slora Bar (10708), Arya Chavan (10709), Cajetan Dsouza (10723) &bull; <em>group-hmac</em>
               </div>
               <a href="experiments/hmac/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 7 -->
+            <!-- Team 7 -->
+            <div class="experiment-card" data-category="authentication">
+              <div class="card-badges">
+                <span class="badge">Authentication</span>
+                <span class="badge badge-difficulty">Team 7 &bull; Intermediate</span>
+              </div>
+              <h3>HMAC</h3>
+              <p class="exp-desc">Generate and verify an HMAC for a given message using a secret key and analyze the effect of modifying the message or key.</p>
+              <div class="exp-allotment-text">
+                <strong>Assigned:</strong> Shreyas Divekar (10720), Jadern Crasto (10716), Wendell Dsouza (10724) &bull; <em>group-hmac</em>
+              </div>
+              <a href="experiments/hmac/index.html" class="button button-primary">Open Lab</a>
+            </div>
+
+            <!-- Team 8 -->
             <div class="experiment-card" data-category="protocols">
               <div class="card-badges">
                 <span class="badge">Protocols</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 8 &bull; Advanced</span>
               </div>
-              <h3>Needham-Schroeder</h3>
-              <p class="exp-desc">Visualize a classic challenge-response symmetric key exchange protocol with a trusted Key Distribution Center.</p>
+              <h3>Needham-Schroeder Symmetric Key Protocol</h3>
+              <p class="exp-desc">Simulate the Needham-Schroeder symmetric-key authentication protocol and demonstrate the establishment of a shared session key between two communicating entities.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Rohit Ahir (10706), Niranjan Shanbhag (10759), Vihan Shah (10758), Jeremiah Yangal (10767) &bull; <em>group-needham-schroeder</em>
+                <strong>Assigned:</strong> Rohit Ahir (10706), Niranjan Shanbhag (10759), Vihan Shah (10758), Jeremiah Yangal (10767) &bull; <em>group-needham-schroeder</em>
               </div>
               <a href="experiments/needham-schroeder/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 8 -->
+            <!-- Team 9 -->
             <div class="experiment-card" data-category="protocols">
               <div class="card-badges">
                 <span class="badge">Protocols</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 9 &bull; Advanced</span>
               </div>
-              <h3>Kerberos</h3>
-              <p class="exp-desc">Trace ticket-based authentication between trusted services involving AS, TGS, and application resource servers.</p>
+              <h3>Kerberos Authentication Protocol</h3>
+              <p class="exp-desc">Simulate the Kerberos authentication protocol and demonstrate the authentication process involving the Authentication Server, Ticket Granting Server, and service server.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Dev Dinesh Saroj (10755), Manthan Pagaria (10748), Aditya Pisal (10923), Kamesh Nerpagar (10922) &bull; <em>group-kerberos</em>
+                <strong>Assigned:</strong> Dev Dinesh Saroj (10755), Manthan Pagaria (10748), Aditya Pisal (10923), Kamesh Nerpagar (10922) &bull; <em>group-kerberos</em>
               </div>
               <a href="experiments/kerberos/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 9 -->
+            <!-- Team 10 -->
             <div class="experiment-card" data-category="public-key">
               <div class="card-badges">
                 <span class="badge">Public Key</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 10 &bull; Advanced</span>
               </div>
               <h3>RSA as a Digital Signature</h3>
-              <p class="exp-desc">Explore key generation, modular exponentiation, private key signing, and public key verification.</p>
+              <p class="exp-desc">Generate an RSA digital signature for a given message and verify the signature using the corresponding public key.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Arnav Potale (10754), Joel Wilson (10747), Omkar Patil (10749) &bull; <em>group-rsa</em>
+                <strong>Assigned:</strong> Arnav Potale (10754), Joel Wilson (10747), Omkar Patil (10749) &bull; <em>group-rsa</em>
               </div>
               <a href="experiments/rsa/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 10 -->
+            <!-- Team 11 -->
             <div class="experiment-card" data-category="public-key">
               <div class="card-badges">
                 <span class="badge">Public Key</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 11 &bull; Advanced</span>
               </div>
-              <h3>RSA Signature with Hash</h3>
-              <p class="exp-desc">Hash messages using secure cryptographic digests, sign the hash with RSA private exponent, and verify integrity.</p>
+              <h3>RSA Digital Signature with Hash</h3>
+              <p class="exp-desc">Generate the hash of a message, create an RSA digital signature using the hash, and verify the signature using the corresponding public key.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Rahul Senapati (10757), Eva Gonsalves (10921), Aisha fernandes (10920), Royson Rodrigues (10925) &bull; <em>group-rsa-digital-signature-hash</em>
+                <strong>Assigned:</strong> Rahul Senapati (10757), Eva Gonsalves (10921), Aisha Fernandes (10920), Royson Rodrigues (10925) &bull; <em>group-rsa-digital-signature-hash</em>
               </div>
               <a href="experiments/rsa-digital-signature-hash/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 11 -->
+            <!-- Team 12 -->
             <div class="experiment-card" data-category="password-security">
               <div class="card-badges">
                 <span class="badge">Password Security</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 12 &bull; Intermediate</span>
               </div>
-              <h3>bcrypt</h3>
-              <p class="exp-desc">Study adaptive password hashing, salt generation, and tunable work factors to defend against GPU cracking.</p>
+              <h3>Bcrypt</h3>
+              <p class="exp-desc">Implement bcrypt password hashing and verification and analyze the effect of the cost factor on computational complexity.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Shwet Shigwan (10763), Daksh shetty (10761) &bull; <em>group-bcrypt</em>
+                <strong>Assigned:</strong> Shwet Shigwan (10763), Daksh Shetty (10761) &bull; <em>group-bcrypt</em>
               </div>
               <a href="experiments/bcrypt/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 12 -->
+            <!-- Team 13 -->
             <div class="experiment-card" data-category="password-security">
               <div class="card-badges">
                 <span class="badge">Password Security</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 13 &bull; Advanced</span>
               </div>
               <h3>Argon2</h3>
-              <p class="exp-desc">Simulate memory-hard password hashing with configurable memory cost, iterations, and parallelism parameters.</p>
+              <p class="exp-desc">Implement Argon2 password hashing and verification and analyze the effect of memory cost, time cost, and parallelism parameters.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Aarya Sawant (10756), Disha Shetty (10762), Lebron Pereira (10751) &bull; <em>group-argon2</em>
+                <strong>Assigned:</strong> Aarya Sawant (10756), Disha Shetty (10762) &bull; <em>group-argon2</em>
               </div>
               <a href="experiments/argon2/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 13 -->
+            <!-- Team 14 -->
             <div class="experiment-card" data-category="password-security">
               <div class="card-badges">
                 <span class="badge">Password Security</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 14 &bull; Advanced</span>
               </div>
               <h3>Argon2id</h3>
-              <p class="exp-desc">Configure hybrid Argon2id password hashing combining resistance against side-channel and GPU cracking attacks.</p>
+              <p class="exp-desc">Implement Argon2id for password hashing and compare its output and computational parameters with conventional hash functions.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Chris Pereira (10750), Ephraim T Philip (10752), Shaaunak Pitale (10753) &bull; <em>group-argon2id</em>
+                <strong>Assigned:</strong> Lebron Pereira (10751), Chris Pereira (10750), Ephraim T Philip (10752), Shaaunak Pitale (10753) &bull; <em>group-argon2id</em>
               </div>
               <a href="experiments/argon2id/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 14 -->
+            <!-- Team 15 -->
             <div class="experiment-card" data-category="password-security">
               <div class="card-badges">
                 <span class="badge">Password Security</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 15 &bull; Intermediate</span>
               </div>
               <h3>Password Hashing Comparison</h3>
-              <p class="exp-desc">Benchmark and compare MD5, SHA-256, bcrypt, scrypt, and Argon2 for security and hardware attack resistance.</p>
+              <p class="exp-desc">Compare MD5, SHA-1, SHA-256, bcrypt, scrypt, and Argon2 for password hashing and analyze their security characteristics.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Anaay Vakharkar (10766), Diva Sharma (10760) &bull; <em>group-password-hashing-comparison</em>
+                <strong>Assigned:</strong> Anaay Vakharkar (10766), Diva Sharma (10760) &bull; <em>group-password-hashing-comparison</em>
               </div>
               <a href="experiments/password-hashing-comparison/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 15 -->
+            <!-- Team 16 -->
             <div class="experiment-card" data-category="public-key">
               <div class="card-badges">
                 <span class="badge">Public Key</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 16 &bull; Advanced</span>
               </div>
               <h3>RSA Digital Signature</h3>
-              <p class="exp-desc">Standalone implementation of RSA key pair generation, message encryption, and signature validation.</p>
+              <p class="exp-desc">Study and implement RSA Digital Signature mechanism for authenticating message origin and integrity.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Priyanka thapa (10764), Sakshi (10895) &bull; <em>group-rsa-digital-signature</em>
+                <strong>Assigned:</strong> Priyanka Thapa (10764), Sakshi (10895) &bull; <em>group-rsa-digital-signature</em>
               </div>
               <a href="experiments/rsa-digital-signature/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 16 -->
+            <!-- Team 17 -->
             <div class="experiment-card" data-category="access-control">
               <div class="card-badges">
                 <span class="badge">Access Control</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 17 &bull; Intermediate</span>
               </div>
               <h3>Access Control Fundamentals</h3>
-              <p class="exp-desc">Simulate subject-object permissions, discretionary access control (DAC), and reference monitor authorization.</p>
+              <p class="exp-desc">Study and implement an access control mechanism to determine whether a subject is permitted to perform a requested operation on an object.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Sameer (10924), Sven Tuscano (10765) &bull; <em>group-access-control-fundamentals</em>
+                <strong>Assigned:</strong> Sameer (10924), Sven Tuscano (10765) &bull; <em>group-access-control-fundamentals</em>
               </div>
               <a href="experiments/access-control-fundamentals/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 17 -->
+            <!-- Team 18 -->
             <div class="experiment-card" data-category="access-control">
               <div class="card-badges">
                 <span class="badge">Access Control</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 18 &bull; Intermediate</span>
               </div>
               <h3>Access Control List (ACL)</h3>
-              <p class="exp-desc">Manage and evaluate fine-grained user and group access control lists with read, write, and execute permissions.</p>
+              <p class="exp-desc">Implement an Access Control List and demonstrate authorization based on assigned permissions.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Daksh Gurav (10734), Rahul Kewat (10742) &bull; <em>group-access-control-list</em>
+                <strong>Assigned:</strong> Daksh Gurav (10734), Rahul Kewat (10742) &bull; <em>group-access-control-list</em>
               </div>
               <a href="experiments/access-control-list/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 18 -->
+            <!-- Team 19 -->
             <div class="experiment-card" data-category="classical">
               <div class="card-badges">
                 <span class="badge">Classical</span>
-                <span class="badge badge-difficulty">Beginner</span>
+                <span class="badge badge-difficulty">Team 19 &bull; Beginner</span>
               </div>
-              <h3>Classical Encryption Techniques</h3>
-              <p class="exp-desc">Explore substitution ciphers (Caesar, Affine, Playfair) and transposition ciphers (Rail Fence, Columnar).</p>
+              <h3>All Classical Encryption Techniques</h3>
+              <p class="exp-desc">Implement and demonstrate classical substitution and transposition encryption techniques.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Soah Fernandes (10728), Kinjal Goyal (10732), Vedant Kanekar (10740) &bull; <em>group-classical-encryption</em>
+                <strong>Assigned:</strong> Soah Fernandes (10728), Kinjal Goyal (10732), Vedant Kanekar (10740) &bull; <em>group-classical-encryption</em>
               </div>
               <a href="experiments/classical-encryption/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 19 -->
+            <!-- Team 20 -->
             <div class="experiment-card" data-category="mathematics">
               <div class="card-badges">
                 <span class="badge">Mathematics</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 20 &bull; Intermediate</span>
               </div>
               <h3>Extended Euclidean Algorithm</h3>
-              <p class="exp-desc">Compute greatest common divisor gcd(a, b) and modular multiplicative inverse a^-1 mod m step-by-step.</p>
+              <p class="exp-desc">Implement the Extended Euclidean Algorithm for modular multiplicative inverse computation.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Nemi Gada (10729), Aaron Emmaty (10725) &bull; <em>group-extended-euclidean</em>
+                <strong>Assigned:</strong> Nemi Gada (10729), Aaron Emmaty (10725) &bull; <em>group-extended-euclidean</em>
               </div>
               <a href="experiments/extended-euclidean/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 20 -->
+            <!-- Team 21 -->
             <div class="experiment-card" data-category="attacks">
               <div class="card-badges">
                 <span class="badge">Attacks</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 21 &bull; Intermediate</span>
               </div>
               <h3>Brute Force Attack</h3>
-              <p class="exp-desc">Exhaustively iterate through key spaces to crack ciphers and analyze exponential complexity vs key length.</p>
+              <p class="exp-desc">Implement a brute-force attack on a small key space and determine the key by systematically testing possible keys.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Maria Joanna (10737), Crisann Lobo (10743) &bull; <em>group-brute-force</em>
+                <strong>Assigned:</strong> Maria Joanna (10737), Crisann Lobo (10743) &bull; <em>group-brute-force</em>
               </div>
               <a href="experiments/brute-force/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 21 -->
+            <!-- Team 22 -->
             <div class="experiment-card" data-category="attacks">
               <div class="card-badges">
                 <span class="badge">Attacks</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 22 &bull; Intermediate</span>
               </div>
               <h3>Dictionary Attack</h3>
-              <p class="exp-desc">Execute wordlist lookups against hashed passwords to demonstrate vulnerability of low-entropy passwords.</p>
+              <p class="exp-desc">Simulate a dictionary attack by testing a predefined set of candidate passwords against a stored password hash.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Rishal Fernandes (10727), Bliss Gonsalves (10730) &bull; <em>group-dictionary-attack</em>
+                <strong>Assigned:</strong> Rishal Fernandes (10727), Bliss Gonsalves (10730) &bull; <em>group-dictionary-attack</em>
               </div>
               <a href="experiments/dictionary-attack/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 22 -->
+            <!-- Team 23 -->
             <div class="experiment-card" data-category="attacks">
               <div class="card-badges">
                 <span class="badge">Attacks</span>
-                <span class="badge badge-difficulty">Intermediate</span>
+                <span class="badge badge-difficulty">Team 23 &bull; Intermediate</span>
               </div>
               <h3>Frequency Analysis</h3>
-              <p class="exp-desc">Perform letter and n-gram frequency distributions on substitution ciphertext to break encryption without keys.</p>
+              <p class="exp-desc">Perform frequency analysis on a ciphertext generated using a substitution cipher and use character-frequency information to identify the plaintext.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Sanika Gunjal (10733), Shivam Jha (10736), Wayne Falco (10726) &bull; <em>group-frequency-analysis</em>
+                <strong>Assigned:</strong> Sanika Gunjal (10733), Shivam Jha (10736) &bull; <em>group-frequency-analysis</em>
               </div>
               <a href="experiments/frequency-analysis/index.html" class="button button-primary">Open Lab</a>
             </div>
 
-            <!-- 23 -->
+            <!-- Team 24 -->
             <div class="experiment-card" data-category="protocols">
               <div class="card-badges">
                 <span class="badge">Protocols</span>
-                <span class="badge badge-difficulty">Advanced</span>
+                <span class="badge badge-difficulty">Team 24 &bull; Advanced</span>
               </div>
-              <h3>SSL / TLS Overview &amp; Handshake</h3>
-              <p class="exp-desc">Simulate client/server TLS handshake negotiation, certificate validation, and symmetric session key generation.</p>
+              <h3>SSL/TLS Overview</h3>
+              <p class="exp-desc">Study and simulate the basic architecture and working of SSL/TLS protocol between a client and a server. Simulate the SSL/TLS handshake process and demonstrate the sequence of messages exchanged between client and server.</p>
               <div class="exp-allotment-text">
-                <strong>Allotted:</strong> Jace Jaison (10711), Ahamed Wafiq (10705) &bull; <em>group-ssl-tls</em>
+                <strong>Assigned:</strong> Wayne Falco (10726), Jace Jaison (10711), Ahamed Wafiq (10705) &bull; <em>group-ssl-tls</em>
               </div>
               <a href="experiments/ssl-tls/index.html" class="button button-primary">Open Lab</a>
             </div>
