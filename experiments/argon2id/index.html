@@ -33,45 +33,102 @@
 
       <main class="content-area">
         <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
-          </div>
+          <h2>Aim</h2>
+          <p>To implement Argon2id for password hashing and compare its output and computational parameters with conventional hash functions (MD5, SHA-1, SHA-256, PBKDF2 and bcrypt).</p>
+
+          <h2>Theory</h2>
+          <p>A hash function converts a password into a fixed-length string called a digest. It is one-way, so the original password cannot be read back from the digest. A website stores only the digest. At login, it hashes the entered password and checks whether the two digests match.</p>
+          <p>Fast general-purpose hashes such as MD5, SHA-1 and SHA-256 were designed for speed. That is a weakness for passwords. Think of a fast hash as a rubber stamp: an attacker with a GPU can stamp billions of guesses every second and test them against a stolen database. Password hashing therefore needs a function that is deliberately slow and expensive.</p>
+          <p>A salt is a random value added to the password before hashing. Two users with the same password get different digests, and precomputed tables (rainbow tables) become useless. The salt is stored next to the hash and is not secret.</p>
+          <p>Argon2 won the Password Hashing Competition in 2015 and is standardised in RFC 9106. It is memory-hard: every hash needs a large block of RAM that must be filled and re-read many times. GPUs and custom chips have very little memory per core, so an attacker cannot run thousands of guesses in parallel cheaply. Argon2 has three variants. Argon2d is fast and resists GPU cracking but leaks timing information. Argon2i resists side-channel attacks but is weaker against GPUs. Argon2id combines both: the first pass behaves like Argon2i and the later passes behave like Argon2d. It is the recommended variant for password hashing.</p>
+          <p>Argon2id has three cost parameters. The memory size (m) is the RAM used in KB. The iterations (t) is the number of passes over that memory. The parallelism (p) is the number of lanes or threads. Raising m or t makes each guess slower for both the server and the attacker, so the values are chosen to keep login time acceptable, for example about 100 to 500 ms.</p>
+          <p>bcrypt is slow because of its cost factor but uses only about 4 KB of memory, so it is still weaker than Argon2id against GPUs. PBKDF2 is slow through many iterations but uses almost no memory.</p>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
-          </div>
+          <h2>Procedure</h2>
+          <ol>
+            <li>Open the Simulation tab and type a password in the Password box. A sample password is already filled in.</li>
+            <li>Set the Argon2id parameters using the Memory, Iterations and Parallelism sliders.</li>
+            <li>Click "Hash with Argon2id". Note the encoded hash, which contains the parameters, the random salt and the digest, and note the time taken.</li>
+            <li>Type the same password in the Verify box and click "Verify". The result should be a match. Change one character and verify again. The result should be no match.</li>
+            <li>Click "Hash with Argon2id" again with the same password. Observe that the hash is different because a new random salt is used.</li>
+            <li>Click "Compare with other hashes". Read the table for output size, time, guesses per second and time needed for one billion guesses.</li>
+            <li>Increase Memory and Iterations and compare again. Observe that Argon2id becomes slower while MD5, SHA-1 and SHA-256 stay almost instant.</li>
+          </ol>
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <style>
+            #simulation .a2-row{margin:10px 0}
+            #simulation .a2-row label{display:block;font-weight:600;margin-bottom:4px}
+            #simulation .a2-row input[type="text"]{width:100%;max-width:420px;padding:8px;box-sizing:border-box}
+            #simulation .a2-row input[type="range"]{width:100%;max-width:420px}
+            #simulation .a2-btns button{margin:4px 6px 4px 0;padding:8px 14px;cursor:pointer}
+            #simulation pre{white-space:pre-wrap;word-break:break-all}
+            #simulation .a2-scroll{overflow-x:auto}
+            #simulation table{border-collapse:collapse;width:100%;font-size:13px}
+            #simulation th,#simulation td{border:1px solid rgba(128,128,128,.6);padding:6px;text-align:left;word-break:break-all}
+          </style>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
             <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+            <div class="a2-row">
+              <label for="a2-pw">Password</label>
+              <input id="a2-pw" type="text" value="correct horse battery staple" autocomplete="off">
+            </div>
+            <div class="a2-row">
+              <label for="a2-mem">Memory: <span id="a2-mem-val">16384</span> KB</label>
+              <input id="a2-mem" type="range" min="1024" max="65536" step="1024" value="16384">
+            </div>
+            <div class="a2-row">
+              <label for="a2-it">Iterations: <span id="a2-it-val">3</span></label>
+              <input id="a2-it" type="range" min="1" max="10" step="1" value="3">
+            </div>
+            <div class="a2-row">
+              <label for="a2-par">Parallelism: <span id="a2-par-val">1</span></label>
+              <input id="a2-par" type="range" min="1" max="4" step="1" value="1">
+            </div>
+            <div class="a2-btns">
+              <button id="a2-hash-btn" type="button">Hash with Argon2id</button>
+              <button id="a2-compare-btn" type="button">Compare with other hashes</button>
+              <button id="a2-reset-btn" type="button">Reset</button>
+            </div>
+            <div class="a2-row">
+              <label for="a2-vpw">Verify a password against the last Argon2id hash</label>
+              <input id="a2-vpw" type="text" placeholder="Type password to verify" autocomplete="off">
+            </div>
+            <div class="a2-btns">
+              <button id="a2-verify-btn" type="button">Verify</button>
+            </div>
           </div>
           <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
             <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+            <p id="a2-status">Results will appear here after the simulation runs.</p>
+            <pre id="a2-hash"></pre>
+            <p id="a2-meta"></p>
+            <p id="a2-verify"></p>
+            <div class="a2-scroll" id="a2-table"></div>
           </div>
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
             <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <div id="a2-quiz"></div>
+            <div class="a2-btns">
+              <button id="a2-quiz-submit" type="button">Submit answers</button>
+              <button id="a2-quiz-reset" type="button">Try again</button>
+            </div>
+            <p id="a2-quiz-result" aria-live="polite"></p>
           </div>
         </section>
       </main>
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="../../js/vendor/crypto-js.min.js"></script>
+    <script src="../../js/vendor/bcrypt.min.js"></script>
+    <script src="../../js/vendor/hash-wasm.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
