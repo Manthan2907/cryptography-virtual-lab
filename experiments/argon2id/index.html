@@ -63,7 +63,7 @@
           <h3>Aim</h3>
           <p>To implement Argon2id password hashing and verification, and to compare its output and computational parameters with conventional hash functions (MD5, SHA-1, SHA-256 and PBKDF2-SHA256).</p>
           <h3>Objectives</h3>
-          <p>After this experiment you should be able to: (1) hash a password with Argon2id and read the encoded result; (2) explain how memory cost, time cost and parallelism change the work done; (3) verify a password against a stored hash; (4) explain why fast general-purpose hashes are unsuitable for storing passwords.</p>
+          <p>After this experiment you should be able to: (1) hash a password with Argon2id and read the encoded result; (2) explain how memory cost, time cost and parallelism change the work done; (3) verify a password against a stored hash; (4) explain why fast general-purpose hashes are unsuitable for storing passwords; (5) show, with a simulated dictionary attack, how salting and memory cost slow an attacker.</p>
           <h3>Hashing versus encryption</h3>
           <p>Encryption is reversible with a key. A hash function is one-way: it maps any input to a fixed-length digest and there is no key to undo it. Systems therefore store a hash of the password, never the password itself. At login the entered password is hashed again and the two results are compared.</p>
           <h3>Why SHA-256 or MD5 alone is not enough</h3>
@@ -78,6 +78,8 @@
           <p>Argon2id output is normally stored as one string: <span class="a2-mono">$argon2id$v=19$m=19456,t=2,p=1$&lt;salt&gt;$&lt;hash&gt;</span>. It holds the algorithm, version (19 = 0x13), the parameters, the salt and the digest, all base64 (salt and digest without padding). To verify, the library reads the parameters and salt from the string, hashes the entered password with them and compares the digests.</p>
           <h3>Comparison with conventional hashes</h3>
           <p>MD5 (128-bit) and SHA-1 (160-bit) are broken for collision resistance and are very fast. SHA-256 is secure as a general hash but still fast. PBKDF2 repeats HMAC many times, which adds CPU cost but not memory cost. Argon2id adds memory cost as well, which is why it is preferred for new systems.</p>
+          <h3>Attack lab and memory hardness</h3>
+          <p>In a dictionary attack the attacker hashes each word of a wordlist and compares it with the stolen hashes. Against an unsalted fast hash, one hash per guess is checked against every user at once. Against salted Argon2id, each guess must be recomputed for every user's own salt, and each computation needs m KiB of memory. A GPU has thousands of cores but a fixed amount of RAM, so the number of guesses it can run at once is roughly its memory divided by m, not its core count. A slow hash only delays the attacker; a long, unpredictable password is still required.</p>
           <h3>References</h3>
           <p>[1] A. Biryukov, D. Dinu, D. Khovratovich, "Argon2: the memory-hard function for password hashing and other applications", 2015. [2] RFC 9106, "Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications", 2021. [3] OWASP Password Storage Cheat Sheet. [4] NIST SP 800-132, Recommendation for Password-Based Key Derivation (PBKDF2). [5] hash-wasm library documentation (bundled in js/vendor).</p>
         </section>
@@ -89,10 +91,11 @@
             <li>Click <strong>Random salt</strong> to generate a 16-byte salt (or type your own salt of at least 8 characters).</li>
             <li>Set the Argon2id parameters: memory cost (KiB), time cost (iterations) and parallelism. The defaults follow OWASP's minimum recommendation.</li>
             <li>Click <strong>Generate Argon2id hash</strong>. Read the encoded hash, its parsed fields, and the measured time. The run is added to the observation table.</li>
-            <li>Watch the <strong>Memory fill visualizer</strong>: blue squares are the data-independent first half of pass 1, orange squares are data-dependent work, and later passes overwrite memory again.</li>
+            <li>Watch the <strong>Memory fill visualizer</strong>: blue squares are the data-independent first half of pass 1, orange squares are data-dependent work, and later passes overwrite memory again. It is a schematic of the schedule, not real block values.</li>
             <li>Change one parameter at a time (for example memory 4096 then 65536) and generate again. Compare the measured times in the observation table.</li>
             <li>In <strong>Verify password</strong>, enter the correct password and click Verify (MATCH), then a wrong password (NO MATCH).</li>
             <li>Click <strong>Run comparison</strong> to hash the same password with MD5, SHA-1, SHA-256, PBKDF2-SHA256 and Argon2id, and read the comparison table.</li>
+            <li>In the <strong>Attack lab</strong>, click <strong>Launch dictionary attack</strong>. Note which users are cracked under SHA-256 and under Argon2id, and compare the guesses per second. Then change m (for example 4096 then 65536), launch again, and read the GPU calculator.</li>
             <li>Open the <strong>Quiz</strong> tab, answer all questions and submit to see your score.</li>
           </ol>
         </section>
@@ -159,6 +162,7 @@
             <button id="a2-clear" type="button" class="a2-btn">Clear observations</button>
             <h2 style="margin-top:24px">Comparison with conventional hashes</h2>
             <div id="a2-cmp"><p>Click <strong>Run comparison</strong> to hash the password with each algorithm.</p></div>
+            <!-- The Attack lab section is added here by attack-lab.js -->
           </div>
         </section>
 
@@ -178,5 +182,6 @@
     <script src="../../js/vendor/crypto-js.min.js"></script>
     <script src="../../js/vendor/hash-wasm.min.js"></script>
     <script src="script.js"></script>
+    <script src="attack-lab.js"></script>
   </body>
 </html>

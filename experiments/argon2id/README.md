@@ -1,3 +1,4 @@
+
 # Argon2id Password Hashing
 
 **Group:** Argon2id (branch `group-argon2id`)
@@ -11,7 +12,15 @@
 **Short Description:** Implement Argon2id for password hashing and compare its output and computational parameters with conventional hash functions.
 
 ## Aim
-Implement Argon2id password hashing and verification, and compare its output and cost parameters with MD5, SHA-1, SHA-256 and PBKDF2-SHA256.
+Implement Argon2id password hashing and verification, and compare its output and cost parameters with MD5, SHA-1, SHA-256 and PBKDF2-SHA256. Demonstrate with a simulated dictionary attack why salting and memory cost slow an attacker.
+
+## Files
+| File | Purpose |
+|---|---|
+| `index.html` | Page: Theory, Procedure, Simulation and Quiz tabs |
+| `script.js` | Argon2id hashing, verification, comparison, visualizer and quiz |
+| `attack-lab.js` | Attack lab (dictionary attack on SHA-256 vs Argon2id) and GPU memory calculator. Loaded after `script.js` |
+| `README.md` | This file |
 
 ## Required Libraries
 Bundled in `js/vendor/`, no installation needed:
@@ -35,6 +44,7 @@ Open `http://localhost:8000/experiments/argon2id/index.html`. Stop the server wi
 | Time cost t | Whole number, 1 to 10 |
 | Parallelism p | Whole number, 1 to 4 |
 | Verify: stored hash, password | Hash must start with `$argon2id$` and have 6 parts |
+| Attack lab: GPU memory (GiB), GPU cores | Positive numbers; illustrative assumptions (defaults 24 GiB, 10000 cores) |
 
 ## Outputs
 - Argon2id encoded hash `$argon2id$v=19$m=..,t=..,p=..$salt$hash` with parsed fields (version, m, t, p, salt, 32-byte digest in hex)
@@ -43,6 +53,8 @@ Open `http://localhost:8000/experiments/argon2id/index.html`. Stop the server wi
 - Observation table of previous runs
 - Memory fill visualizer (schematic of the lane/slice/pass schedule, blue = data-independent first half of pass 1, orange = data-dependent), presets, copy button and avalanche bit-difference view
 - Comparison table: MD5, SHA-1, SHA-256, PBKDF2-SHA256 (600000 iterations), Argon2id with output length, cost parameters, measured time and suitability
+- Attack lab: a stolen-database table for four users (SHA-256 unsalted vs Argon2id salted), which users were cracked by a 10-word dictionary, guesses per second and time for 1 billion guesses in this browser
+- GPU calculator: how many Argon2id guesses fit in the entered GPU memory at the current m, and a rough time estimate
 
 ## Test Cases
 Expected hash values are not listed for Argon2id because they depend on the salt and library; check the properties instead.
@@ -66,6 +78,9 @@ Expected hash values are not listed for Argon2id because they depend on the salt
 | 15 | Click a preset (Light / OWASP minimum / Heavy) | m, t, p fields update and the visualizer replays |
 | 16 | Generate twice with different passwords | Bit-difference line shows roughly 50% of 256 bits differ, changed hex highlighted |
 | 17 | Run comparison | Guesses-per-second column and the SHA-256 vs Argon2id speed gap line appear |
+| 18 | Attack lab: Launch dictionary attack (defaults) | alice, dave and bob CRACKED under both; carol safe under both; alice and dave SHA-256 hashes identical, Argon2id hashes different |
+| 19 | Attack lab: launch with m = 4096, then m = 65536 | Argon2id guesses per second is lower at 65536; the GPU calculator shows fewer parallel guesses |
+| 20 | Attack lab: change GPU memory (GiB) | Parallel guesses and time estimate update |
 
 ## Known Limitations
 - Timings are measured in the browser, vary between devices and runs, and are not a benchmark. Fast hashes are averaged over 200 runs; PBKDF2 and Argon2id are single runs.
@@ -73,4 +88,5 @@ Expected hash values are not listed for Argon2id because they depend on the salt
 - Parallelism sets the number of lanes in the hash; hash-wasm runs in a single thread, so p may not reduce time.
 - Salt is typed as UTF-8 text; real systems store random bytes.
 - bcrypt and scrypt are not in the comparison (bcrypt has its own experiment; scrypt is not bundled).
+- The Attack lab uses a 10-word wordlist and 4 fixed users. It runs real hashes in the browser, but the GPU calculator uses illustrative hardware numbers and is not a benchmark of real attackers.
 - Educational tool: do not enter real passwords.
