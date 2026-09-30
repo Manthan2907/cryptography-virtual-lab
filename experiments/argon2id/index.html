@@ -15,9 +15,9 @@
       .quiz-panel fieldset label { font-weight: 400; margin-bottom: 4px; }
       .a2-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-2); }
       .a2-hint { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: 4px !important; }
-      .a2-err { color: #9b1c1c; font-weight: 700; margin-top: var(--space-2) !important; }
-      .a2-ok { color: #1e6b34; font-weight: 700; }
-      .a2-bad { color: #9b1c1c; font-weight: 700; }
+      .a2-err { color: #ff9a8f; font-weight: 700; margin-top: var(--space-2) !important; }
+      .a2-ok { color: #8ee29c; font-weight: 700; }
+      .a2-bad { color: #ff9a8f; font-weight: 700; }
       .a2-mono { font-family: "Courier New", monospace; word-break: break-all; font-size: 0.9em; }
       .a2-table-wrap { overflow-x: auto; margin-top: var(--space-2); }
       .a2-table { border-collapse: collapse; width: 100%; font-size: var(--font-size-sm); }
@@ -26,6 +26,11 @@
       .a2-steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: Arial, sans-serif; font-size: var(--font-size-sm); margin: 0 0 var(--space-2); }
       .a2-steps span { padding: 4px 10px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); background: var(--color-surface); }
       .simulation-controls textarea { min-height: 70px; }
+      .a2-stage { perspective: 900px; overflow: hidden; background: #241a17; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 8px; }
+      .a2-stage canvas { width: 100%; height: auto; display: block; transform: rotateX(28deg); transition: transform .15s ease; transform-origin: 50% 60%; }
+      .a2-key { display: inline-block; width: 12px; height: 12px; margin: 0 4px 0 12px; vertical-align: middle; }
+      .a2-btn { padding: 6px 12px; border: 0; border-radius: var(--radius-sm); background: var(--color-secondary); color: var(--color-on-secondary); font-family: Arial, sans-serif; font-weight: 700; margin: 8px 8px 0 0; cursor: pointer; }
+      .a2-presets button { margin-right: 8px; }
       #theory h3 { color: var(--color-primary-dark); margin: var(--space-3) 0 var(--space-1); }
     </style>
   </head>
@@ -84,6 +89,7 @@
             <li>Click <strong>Random salt</strong> to generate a 16-byte salt (or type your own salt of at least 8 characters).</li>
             <li>Set the Argon2id parameters: memory cost (KiB), time cost (iterations) and parallelism. The defaults follow OWASP's minimum recommendation.</li>
             <li>Click <strong>Generate Argon2id hash</strong>. Read the encoded hash, its parsed fields, and the measured time. The run is added to the observation table.</li>
+            <li>Watch the <strong>Memory fill visualizer</strong>: blue squares are the data-independent first half of pass 1, orange squares are data-dependent work, and later passes overwrite memory again.</li>
             <li>Change one parameter at a time (for example memory 4096 then 65536) and generate again. Compare the measured times in the observation table.</li>
             <li>In <strong>Verify password</strong>, enter the correct password and click Verify (MATCH), then a wrong password (NO MATCH).</li>
             <li>Click <strong>Run comparison</strong> to hash the same password with MD5, SHA-1, SHA-256, PBKDF2-SHA256 and Argon2id, and read the comparison table.</li>
@@ -122,6 +128,8 @@
               </div>
             </div>
             <p class="a2-hint">Memory is limited to 64 MiB so the browser does not freeze. Higher values take longer; the first run also loads the WebAssembly module.</p>
+            <p class="a2-hint">Presets:</p>
+            <div class="a2-presets"><button type="button" data-preset="4096,1,1">Light (4 MiB, t=1)</button><button type="button" data-preset="19456,2,1">OWASP minimum (19 MiB, t=2)</button><button type="button" data-preset="65536,3,2">Heavy (64 MiB, t=3, p=2)</button></div>
             <button id="a2-hash" type="button">Generate Argon2id hash</button>
             <button id="a2-compare" type="button">Run comparison</button>
             <p id="a2-error" class="a2-err" role="alert"></p>
@@ -136,12 +144,19 @@
 
           <div class="simulation-output" aria-live="polite">
             <h2>Simulation output</h2>
+            <h2>Memory fill visualizer</h2>
+            <p class="a2-hint">A schematic of the work schedule for your current m, t and p: memory is split into p lanes, each pass covers 4 slices, and each square stands for a group of 1 KiB blocks. It shows the schedule, not the real block values. Move the mouse over it to tilt.</p>
+            <div class="a2-stage" id="a2-stage"><canvas id="a2-cv" width="640" height="300" role="img" aria-label="Memory fill schedule for the current Argon2id parameters"></canvas></div>
+            <p id="a2-cvinfo" class="a2-hint"></p>
+            <p class="a2-hint"><span class="a2-key" style="background:#5b8def;margin-left:0"></span>data-independent (Argon2i-style, first half of pass 1)<span class="a2-key" style="background:#e8a24a"></span>data-dependent (Argon2d-style)<span class="a2-key" style="background:#f2bd7c"></span>later passes</p>
+            <button id="a2-play" type="button" class="a2-btn">Replay</button>
+            <label class="a2-hint" style="display:inline"><input id="a2-3d" type="checkbox" checked style="width:auto"> 3D tilt</label>
             <div id="a2-out"><p>Results will appear here after you generate a hash.</p></div>
             <div id="a2-verify-out"></div>
             <h2 style="margin-top:24px">Observations</h2>
             <p class="a2-hint">Times are measured in this browser and depend on your device. Compare runs on the same device only.</p>
             <div class="a2-table-wrap" id="a2-obs"></div>
-            <button id="a2-clear" type="button" style="margin-top:8px;padding:6px 12px">Clear observations</button>
+            <button id="a2-clear" type="button" class="a2-btn">Clear observations</button>
             <h2 style="margin-top:24px">Comparison with conventional hashes</h2>
             <div id="a2-cmp"><p>Click <strong>Run comparison</strong> to hash the password with each algorithm.</p></div>
           </div>

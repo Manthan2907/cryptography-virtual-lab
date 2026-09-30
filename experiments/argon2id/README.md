@@ -41,6 +41,7 @@ Open `http://localhost:8000/experiments/argon2id/index.html`. Stop the server wi
 - Measured elapsed time in the browser
 - Verification result: MATCH or NO MATCH
 - Observation table of previous runs
+- Memory fill visualizer (schematic of the lane/slice/pass schedule, blue = data-independent first half of pass 1, orange = data-dependent), presets, copy button and avalanche bit-difference view
 - Comparison table: MD5, SHA-1, SHA-256, PBKDF2-SHA256 (600000 iterations), Argon2id with output length, cost parameters, measured time and suitability
 
 ## Test Cases
@@ -62,6 +63,9 @@ Expected hash values are not listed for Argon2id because they depend on the salt
 | 12 | Verify with text that is not an Argon2id hash | Error message |
 | 13 | Password `abc`, Run comparison | MD5 `900150983cd24fb0d6963f7d28e17f72`, SHA-1 `a9993e364706816aba3e25717850c26c9cd0d89d`, SHA-256 `ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad` |
 | 14 | Quiz: answer all, Submit | Score and per-question feedback; Try again resets |
+| 15 | Click a preset (Light / OWASP minimum / Heavy) | m, t, p fields update and the visualizer replays |
+| 16 | Generate twice with different passwords | Bit-difference line shows roughly 50% of 256 bits differ, changed hex highlighted |
+| 17 | Run comparison | Guesses-per-second column and the SHA-256 vs Argon2id speed gap line appear |
 
 ## Known Limitations
 - Timings are measured in the browser, vary between devices and runs, and are not a benchmark. Fast hashes are averaged over 200 runs; PBKDF2 and Argon2id are single runs.

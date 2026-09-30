@@ -98,16 +98,18 @@
     if (v.error) { showError(v.error); return; }
     if (!libsReady()) return;
     setBusy(true);
+    playViz();
     $('a2-out').replaceChildren(el('p', 'Computing Argon2id (' + v.m + ' KiB, t=' + v.t + ', p=' + v.p + ')...'));
     try {
       var r = await argon2idHash(v);
       var f = parseEncoded(r.encoded);
       lastEncoded = r.encoded;
+      var hexNow = b64ToHex(f.hashB64);
       $('a2-vhash').value = r.encoded;
       var out = $('a2-out');
       out.replaceChildren(
         el('p', 'Argon2id encoded hash:'),
-        el('p', r.encoded, 'a2-mono'),
+        el('p', r.encoded, 'a2-mono'), copyBtn(),
         makeTable(['Field', 'Value'], [
           ['Algorithm', 'argon2id'],
           ['Version', f.version + ' (v=19 means 0x13)'],
@@ -117,7 +119,8 @@
           ['Salt (UTF-8 bytes, base64)', { text: f.saltB64, mono: true }],
           ['Digest (32 bytes, hex)', { text: b64ToHex(f.hashB64), mono: true }],
           ['Measured time (this browser)', fmtMs(r.ms)]
-        ])
+        ]),
+        avalanche(hexNow)
       );
       obsRows.push([String(obsRows.length + 1), v.m + ' KiB', String(v.t), String(v.p), fmtMs(r.ms), { text: b64ToHex(f.hashB64).slice(0, 16) + '...', mono: true }]);
       if (obsRows.length > 12) obsRows.shift();
@@ -199,14 +202,82 @@
       rows.push(['Argon2id', 'Memory-hard password hash under test', 'Encoded string (32-byte digest)', 'Salt + m=' + v.m + ' KiB, t=' + v.t + ', p=' + v.p, fmtMs(a.ms) + ' (1 run)', 'Yes: recommended', a.encoded]);
 
       $('a2-cmp').replaceChildren(
-        makeTable(['Algorithm', 'Why included', 'Output', 'Cost parameters', 'Measured time', 'Suitable for passwords?', 'Output value'],
-          rows.map(function (r) { r[6] = { text: r[6], mono: true }; return r; })),
+        makeTable(['Algorithm', 'Why included', 'Output', 'Cost parameters', 'Measured time', 'Guesses per second (1 thread, this browser)', 'Suitable for passwords?', 'Output value'],
+          rows.map(function (r) { r[6] = { text: r[6], mono: true }; var mm = /^([\d.]+) ms/.exec(r[4]); var g = mm && +mm[1] > 0 ? 1000 / +mm[1] : 0; r.splice(5, 0, g ? (g >= 1000 ? Math.round(g).toLocaleString() : g.toFixed(1)) + ' /s' : '-'); return r; })),
+        el('p', 'On this run SHA-256 tests about ' + Math.max(1, Math.round(a.ms / sha256.ms)).toLocaleString() + 'x more guesses per second than Argon2id with your settings (single thread, measured in this browser). That gap is what makes Argon2id expensive for an attacker.', 'a2-ok'),
         el('p', 'Times are measured in your browser on this run and vary between devices and runs. Fast hashes are averaged over ' + N + ' runs because one run is too short to time. Argon2id memory use is the configured m value, not a measured figure: browsers do not report per-call memory.', 'a2-hint')
       );
     } catch (e) {
       showError('Comparison failed: ' + (e && e.message ? e.message : e));
     }
     setBusy(false);
+  }
+
+
+  /* ---------- extras: copy, avalanche, visualizer ---------- */
+  var prevDigest = '';
+  function copyBtn() {
+    var b = el('button', 'Copy hash', 'a2-btn');
+    b.type = 'button';
+    b.addEventListener('click', function () {
+      var p = navigator.clipboard ? navigator.clipboard.writeText(lastEncoded) : Promise.reject();
+      p.then(function () { b.textContent = 'Copied!'; }, function () { b.textContent = 'Copy failed'; });
+      setTimeout(function () { b.textContent = 'Copy hash'; }, 1500);
+    });
+    return b;
+  }
+  function avalanche(hex) {
+    var box = el('div');
+    if (prevDigest) {
+      var bits = 0, line = el('p', undefined, 'a2-mono');
+      for (var i = 0; i < hex.length; i++) {
+        var x = parseInt(hex[i], 16) ^ parseInt(prevDigest[i], 16);
+        bits += [0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4][x];
+        var sp = el('span', hex[i]);
+        if (x) sp.style.cssText = 'background:#e8a24a;color:#2b1f1c';
+        line.appendChild(sp);
+      }
+      box.appendChild(el('p', bits === 0
+        ? 'Identical to the previous run: the same password, salt and parameters always give the same hash.'
+        : 'Compared with the previous run: ' + bits + ' of 256 bits differ (' + Math.round(bits / 2.56) + '%). About 50% is expected for an unrelated digest (avalanche effect). Changed hex characters are highlighted.', 'a2-hint'));
+      box.appendChild(line);
+    }
+    prevDigest = hex;
+    return box;
+  }
+
+  var cv = $('a2-cv'), cx = cv.getContext('2d'), anim = 0, PAL = ['#e8a24a', '#f2bd7c', '#f8d8ac', '#ffe9cf'], PER = 256;
+  function vparams() {
+    var m = Number($('a2-mem').value), t = Number($('a2-iter').value), p = Number($('a2-par').value);
+    return { m: m > 0 ? Math.min(m, 65536) : 19456, t: t >= 1 ? Math.min(Math.floor(t), 10) : 2, p: p >= 1 ? Math.min(Math.floor(p), 4) : 1 };
+  }
+  function drawViz(s, v) {
+    var W = cv.width, H = cv.height, gap = 10, sw = (W - gap * 5) / 4, lh = (H - gap * (v.p + 1)) / v.p;
+    var cw = sw / 16 - 1.5, ch = Math.min(16, lh / 4 - 1.5), laneH = 4 * (ch + 1.5);
+    cx.clearRect(0, 0, W, H);
+    for (var l = 0; l < v.p; l++) {
+      var y0 = gap + (lh - laneH) / 2 + l * (lh + gap);
+      for (var sl = 0; sl < 4; sl++) for (var c = 0; c < 64; c++) {
+        var idx = sl * 64 + c, col = '#3a2e2a';
+        if (s > idx) {
+          var k = Math.min(v.t - 1, Math.floor((s - idx - 1) / PER));
+          col = (k === 0 && sl < 2) ? '#5b8def' : PAL[Math.min(k, 3)];
+        }
+        cx.fillStyle = col;
+        cx.fillRect(gap + sl * (sw + gap) + (c % 16) * (cw + 1.5), y0 + Math.floor(c / 16) * (ch + 1.5), cw, ch);
+      }
+    }
+    var total = v.t * PER, cur = Math.max(0, Math.ceil(Math.min(s, total)) - 1), pass = Math.min(v.t - 1, Math.floor(cur / PER)), slice = Math.floor((cur % PER) / 64);
+    var blocks = Math.floor(v.m / (4 * v.p)) * 4 * v.p;
+    $('a2-cvinfo').textContent = 'Memory ' + v.m + ' KiB = ' + blocks + ' blocks of 1 KiB, ' + v.p + ' lane(s) x 4 slices, each square is about ' + (blocks / (v.p * PER)).toFixed(1) + ' blocks. ' +
+      (s >= total ? 'Finished ' + v.t + ' pass(es).' : 'Pass ' + (pass + 1) + '/' + v.t + ', slice ' + (slice + 1) + '/4: ' + ((pass === 0 && slice < 2) ? 'data-independent (Argon2i-style) access.' : 'data-dependent (Argon2d-style) access.'));
+  }
+  function staticViz() { cancelAnimationFrame(anim); var v = vparams(); drawViz(v.t * PER, v); }
+  function playViz() {
+    cancelAnimationFrame(anim);
+    var v = vparams(), total = v.t * PER, s = 0;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { drawViz(total, v); return; }
+    (function f() { s = Math.min(total, s + Math.max(1, total / 150)); drawViz(s, v); if (s < total) anim = requestAnimationFrame(f); })();
   }
 
   /* ---------- quiz ---------- */
@@ -273,6 +344,24 @@
     $('a2-clear').addEventListener('click', function () { obsRows = []; renderObs(); });
     $('a2-qsubmit').addEventListener('click', submitQuiz);
     $('a2-qreset').addEventListener('click', renderQuiz);
+    var stage = $('a2-stage');
+    stage.addEventListener('mousemove', function (e) {
+      if (!$('a2-3d').checked) return;
+      var r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      cv.style.transform = 'rotateX(' + (28 - y * 24) + 'deg) rotateY(' + (x * 30) + 'deg)';
+    });
+    stage.addEventListener('mouseleave', function () { cv.style.transform = $('a2-3d').checked ? 'rotateX(28deg)' : 'none'; });
+    $('a2-3d').addEventListener('change', function () { cv.style.transform = this.checked ? 'rotateX(28deg)' : 'none'; });
+    $('a2-play').addEventListener('click', playViz);
+    ['a2-mem', 'a2-iter', 'a2-par'].forEach(function (id) { $(id).addEventListener('input', staticViz); });
+    document.querySelectorAll('[data-preset]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var a = b.getAttribute('data-preset').split(',');
+        $('a2-mem').value = a[0]; $('a2-iter').value = a[1]; $('a2-par').value = a[2];
+        playViz();
+      });
+    });
+    staticViz();
     renderObs();
     renderQuiz();
   });
