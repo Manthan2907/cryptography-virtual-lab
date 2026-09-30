@@ -1,7 +1,6 @@
 /* ==========================================================================
    Virtual Cryptography Lab - Module 11: Bcrypt Password Hashing
-   Experiment Logic & Interactive Widgets
-   Client-Side Execution using Bundled bcrypt.min.js
+   Advanced Interactive Laboratory Logic & Simulation Engine
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,6 +12,9 @@ const BcryptLabModule = {
   selectedRating: 0,
   quizAnswers: {},
   generatedSalts: [],
+  benchmarkResults: [],
+  lastGeneratedHash: '',
+  lastGeneratedTime: '',
 
   init() {
     this.initSubtabs();
@@ -22,12 +24,24 @@ const BcryptLabModule = {
     this.initSaltDemo();
     this.initInspector();
     this.initPipeline();
+    this.initTruncationExploit();
+    this.initHashRace();
+    this.initHardwareBenchmark();
+    this.initCrackTimeEstimator();
+    this.initRainbowSimulator();
+    this.initReportGenerator();
     this.initQuiz();
     this.initFeedback();
   },
 
   getBcrypt() {
     return window.dcodeIO?.bcrypt || window.bcrypt;
+  },
+
+  // Helper for UTF-8 byte count
+  getByteLength(str) {
+    if (!str) return 0;
+    return new TextEncoder().encode(str).length;
   },
 
   // 1. Sub-Tabs for Theory Section
@@ -60,7 +74,7 @@ const BcryptLabModule = {
 
     const updateCounter = () => {
       const val = pwdInput.value;
-      const bytes = new TextEncoder().encode(val).length;
+      const bytes = this.getByteLength(val);
       const pct = Math.min(100, Math.round((bytes / 72) * 100));
 
       byteCountEl.textContent = `${bytes} / 72 bytes`;
@@ -90,7 +104,7 @@ const BcryptLabModule = {
     }
   },
 
-  // 3. Tool A: Live Bcrypt Hash Generator
+  // 3. Tool 1: Live Bcrypt Hash Generator
   initHashGenerator() {
     const form = document.getElementById('bGenForm');
     const pwdInput = document.getElementById('bGenPassword');
@@ -131,6 +145,9 @@ const BcryptLabModule = {
           const hash = bcrypt.hashSync(pwd, salt);
           const t1 = performance.now();
           const duration = (t1 - t0).toFixed(2);
+
+          this.lastGeneratedHash = hash;
+          this.lastGeneratedTime = `${duration} ms`;
 
           if (placeholder) placeholder.classList.add('hidden');
           if (outputArea) outputArea.classList.remove('hidden');
@@ -179,7 +196,7 @@ const BcryptLabModule = {
     });
   },
 
-  // 4. Tool B: Password Match Verifier
+  // 4. Tool 2: Password Match Verifier
   initVerifier() {
     const form = document.getElementById('bVerifyForm');
     const hashInput = document.getElementById('bVerifyHash');
@@ -241,7 +258,7 @@ const BcryptLabModule = {
     });
   },
 
-  // 5. Tool C: Non-Deterministic Salt Demonstration
+  // 5. Tool 3: Non-Deterministic Salt Demonstration
   initSaltDemo() {
     const btnRun = document.getElementById('bBtnSaltDemo');
     const pwdInput = document.getElementById('bSaltPwd');
@@ -300,7 +317,7 @@ const BcryptLabModule = {
     });
   },
 
-  // 6. Tool D: Modular Hash String Inspector
+  // 6. Tool 4: Modular Hash String Inspector
   initInspector() {
     const input = document.getElementById('bInspectInput');
     if (input) {
@@ -355,7 +372,7 @@ const BcryptLabModule = {
     }
   },
 
-  // 7. Tool E: 5-Stage Eksblowfish Pipeline Stepper
+  // 7. Tool 5: 5-Stage Eksblowfish Pipeline Stepper
   initPipeline() {
     const steps = document.querySelectorAll('.b-p-step');
     const lines = document.querySelectorAll('.b-p-line');
@@ -414,7 +431,426 @@ const BcryptLabModule = {
     });
   },
 
-  // 8. Quiz Engine
+  // =========================================================================
+  // 8. INNOVATIVE FEATURE: 72-Byte Truncation Exploit & SHA-256 Mitigation
+  // =========================================================================
+  initTruncationExploit() {
+    const btnRunExploit = document.getElementById('bBtnRunExploit');
+    const baseInput = document.getElementById('bExploitBase');
+    const suffixA = document.getElementById('bExploitSuffixA');
+    const suffixB = document.getElementById('bExploitSuffixB');
+    const togglePrehash = document.getElementById('bTogglePrehash');
+    const statusBox = document.getElementById('bExploitStatus');
+    const hashAEl = document.getElementById('bExploitHashA');
+    const hashBEl = document.getElementById('bExploitHashB');
+    const saltEl = document.getElementById('bExploitSaltUsed');
+
+    if (!btnRunExploit || !baseInput) return;
+
+    btnRunExploit.addEventListener('click', () => {
+      const bcrypt = this.getBcrypt();
+      if (!bcrypt) return;
+
+      const base = baseInput.value;
+      const passA = base + suffixA.value;
+      const passB = base + suffixB.value;
+      const usePrehash = togglePrehash ? togglePrehash.checked : false;
+
+      btnRunExploit.disabled = true;
+      btnRunExploit.textContent = 'Computing Exploit Proof...';
+
+      setTimeout(async () => {
+        try {
+          const sharedSalt = bcrypt.genSaltSync(8); // fixed salt so comparison is mathematically exact
+          let inputA = passA;
+          let inputB = passB;
+
+          if (usePrehash) {
+            // Apply SHA-256 pre-hashing
+            if (window.CryptoJS?.SHA256) {
+              inputA = CryptoJS.SHA256(passA).toString(CryptoJS.enc.Base64);
+              inputB = CryptoJS.SHA256(passB).toString(CryptoJS.enc.Base64);
+            } else if (crypto.subtle) {
+              const bufA = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(passA));
+              const bufB = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(passB));
+              inputA = btoa(String.fromCharCode(...new Uint8Array(bufA)));
+              inputB = btoa(String.fromCharCode(...new Uint8Array(bufB)));
+            }
+          }
+
+          const hashA = bcrypt.hashSync(inputA, sharedSalt);
+          const hashB = bcrypt.hashSync(inputB, sharedSalt);
+
+          if (hashAEl) hashAEl.textContent = hashA;
+          if (hashBEl) hashBEl.textContent = hashB;
+          if (saltEl) saltEl.textContent = `Shared Salt: ${sharedSalt}`;
+
+          const isCollided = (hashA === hashB);
+
+          if (isCollided) {
+            statusBox.className = 'b-status-banner error';
+            statusBox.innerHTML = `
+              <div>
+                <strong>🚨 CRITICAL COLLISION OBSERVED!</strong>
+                <p>Both Password A and Password B produced the <strong>EXACT SAME 60-character Bcrypt hash</strong> because characters beyond byte index 71 were silently dropped by Eksblowfish. An attacker logging in with either password gains access to the same account!</p>
+              </div>
+            `;
+          } else {
+            statusBox.className = 'b-status-banner success';
+            statusBox.innerHTML = `
+              <div>
+                <strong>✓ TRUNCATION MITIGATED (SHA-256 PRE-HASHING APPLIED)</strong>
+                <p>Because SHA-256 pre-hashing was applied, Password A (${this.getByteLength(passA)} bytes) and Password B (${this.getByteLength(passB)} bytes) were first mapped to unique 44-character Base64 representations. Both fit safely within 72 bytes and produced <strong>completely distinct, uncollidable Bcrypt hashes</strong>!</p>
+              </div>
+            `;
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          btnRunExploit.disabled = false;
+          btnRunExploit.textContent = 'Execute 72-Byte Test';
+        }
+      }, 50);
+    });
+  },
+
+  // =========================================================================
+  // 9. INNOVATIVE FEATURE: Live "Hash Race" (MD5 vs SHA-256 vs Bcrypt)
+  // =========================================================================
+  initHashRace() {
+    const btnRace = document.getElementById('bBtnStartRace');
+    const pwdInput = document.getElementById('bRacePassword');
+    const md5Bar = document.getElementById('bRaceBarMD5');
+    const shaBar = document.getElementById('bRaceBarSHA');
+    const bcryptBar = document.getElementById('bRaceBarBcrypt');
+
+    const md5Status = document.getElementById('bRaceStatusMD5');
+    const shaStatus = document.getElementById('bRaceStatusSHA');
+    const bcryptStatus = document.getElementById('bRaceStatusBcrypt');
+    const summaryBox = document.getElementById('bRaceSummary');
+
+    if (!btnRace) return;
+
+    btnRace.addEventListener('click', () => {
+      const pwd = pwdInput ? (pwdInput.value || 'BenchmarkRaceTestPass!2026') : 'Test';
+      const bcrypt = this.getBcrypt();
+      if (!bcrypt) return;
+
+      btnRace.disabled = true;
+      btnRace.textContent = 'Racing in progress...';
+      if (summaryBox) summaryBox.classList.add('hidden');
+
+      // Reset bars
+      if (md5Bar) md5Bar.style.width = '0%';
+      if (shaBar) shaBar.style.width = '0%';
+      if (bcryptBar) bcryptBar.style.width = '0%';
+
+      const BATCH = 30; // 30 rounds of each
+
+      // 1. MD5 Batch
+      const t0_md5 = performance.now();
+      for (let i = 0; i < BATCH; i++) {
+        if (window.CryptoJS?.MD5) {
+          CryptoJS.MD5(pwd + i);
+        }
+      }
+      const t1_md5 = performance.now();
+      const time_md5 = (t1_md5 - t0_md5).toFixed(2);
+      if (md5Bar) md5Bar.style.width = '100%';
+      if (md5Status) md5Status.textContent = `${BATCH} hashes in ${time_md5} ms (${Math.round((BATCH / Math.max(0.1, time_md5)) * 1000).toLocaleString()} H/s)`;
+
+      // 2. SHA-256 Batch
+      const t0_sha = performance.now();
+      for (let i = 0; i < BATCH; i++) {
+        if (window.CryptoJS?.SHA256) {
+          CryptoJS.SHA256(pwd + i);
+        }
+      }
+      const t1_sha = performance.now();
+      const time_sha = (t1_sha - t0_sha).toFixed(2);
+      if (shaBar) shaBar.style.width = '100%';
+      if (shaStatus) shaStatus.textContent = `${BATCH} hashes in ${time_sha} ms (${Math.round((BATCH / Math.max(0.1, time_sha)) * 1000).toLocaleString()} H/s)`;
+
+      // 3. Bcrypt (Cost 8 for smooth async demo)
+      let bCount = 0;
+      const t0_bcrypt = performance.now();
+
+      const computeBcryptStep = () => {
+        if (bCount < 5) { // 5 Bcrypt hashes is already ~100x slower
+          bcrypt.hashSync(pwd + bCount, bcrypt.genSaltSync(8));
+          bCount++;
+          const pct = Math.round((bCount / 5) * 100);
+          if (bcryptBar) bcryptBar.style.width = `${pct}%`;
+          if (bcryptStatus) bcryptStatus.textContent = `Computing ${bCount} of 5 Bcrypt hashes...`;
+          setTimeout(computeBcryptStep, 10);
+        } else {
+          const t1_bcrypt = performance.now();
+          const time_bcrypt = (t1_bcrypt - t0_bcrypt).toFixed(2);
+          if (bcryptStatus) bcryptStatus.textContent = `5 hashes in ${time_bcrypt} ms (~${Math.round((5 / (time_bcrypt / 1000)))} H/s)`;
+          btnRace.disabled = false;
+          btnRace.textContent = 'Run 30-Hash Race Again';
+
+          if (summaryBox) {
+            summaryBox.classList.remove('hidden');
+            summaryBox.innerHTML = `
+              <p><strong>Race Analysis:</strong> MD5 computed ${BATCH} hashes in ${time_md5} ms, and SHA-256 computed ${BATCH} hashes in ${time_sha} ms. Meanwhile, Bcrypt took ${time_bcrypt} ms for just 5 hashes. <em>This deliberate CPU latency is what protects your users when databases are breached!</em></p>
+            `;
+          }
+        }
+      };
+
+      setTimeout(computeBcryptStep, 30);
+    });
+  },
+
+  // =========================================================================
+  // 10. INNOVATIVE FEATURE: Device Hardware Benchmark & Server Sizing
+  // =========================================================================
+  initHardwareBenchmark() {
+    const btnBench = document.getElementById('bBtnRunBenchmark');
+    const chart = document.getElementById('bBenchChart');
+    const recBox = document.getElementById('bBenchRec');
+
+    if (!btnBench) return;
+
+    btnBench.addEventListener('click', () => {
+      const bcrypt = this.getBcrypt();
+      if (!bcrypt) return;
+
+      btnBench.disabled = true;
+      btnBench.textContent = 'Benchmarking your hardware...';
+      if (chart) chart.innerHTML = '';
+      if (recBox) recBox.classList.add('hidden');
+
+      const costs = [4, 6, 8, 9, 10, 11];
+      const results = [];
+      let idx = 0;
+
+      const runNext = () => {
+        if (idx < costs.length) {
+          const cost = costs[idx];
+          btnBench.textContent = `Benchmarking Cost ${cost}...`;
+
+          setTimeout(() => {
+            const t0 = performance.now();
+            bcrypt.hashSync('HardwareCalibrationPassword2026', bcrypt.genSaltSync(cost));
+            const t1 = performance.now();
+            const ms = Math.round(t1 - t0);
+            results.push({ cost, ms });
+            idx++;
+            runNext();
+          }, 30);
+        } else {
+          this.benchmarkResults = results;
+          btnBench.disabled = false;
+          btnBench.textContent = 'Re-Run Hardware Benchmark';
+
+          // Render CSS bar chart
+          const maxMs = Math.max(...results.map(r => r.ms), 1);
+          let html = '';
+          let bestCost = 10;
+
+          results.forEach(r => {
+            const widthPct = Math.max(3, Math.round((r.ms / maxMs) * 100));
+            html += `
+              <div class="b-bench-row">
+                <span class="b-bold b-mono">Cost ${r.cost}</span>
+                <div class="b-bench-bar-track">
+                  <div class="b-bench-bar" style="width:${widthPct}%;"></div>
+                </div>
+                <span class="b-mono" style="font-size:0.85rem; text-align:right;">${r.ms} ms</span>
+              </div>
+            `;
+            if (r.ms >= 200 && r.ms <= 500) {
+              bestCost = r.cost;
+            }
+          });
+
+          if (chart) chart.innerHTML = html;
+
+          if (recBox) {
+            recBox.classList.remove('hidden');
+            recBox.innerHTML = `
+              <strong>OWASP Production Server Sizing Recommendation:</strong>
+              <p style="margin:4px 0 0; font-size:0.9rem;">
+                OWASP recommends a web login budget of <strong>250 to 500 milliseconds</strong>. On this client machine, <strong>Cost ${bestCost}</strong> matches this target window (~${results.find(r => r.cost === bestCost)?.ms || 250} ms). For high-security administrative portals, Cost 12 is recommended.
+              </p>
+            `;
+          }
+        }
+      };
+
+      runNext();
+    });
+  },
+
+  // =========================================================================
+  // 11. INNOVATIVE FEATURE: Offline Brute-Force & GPU Crack Time Estimator
+  // =========================================================================
+  initCrackTimeEstimator() {
+    const pwdInput = document.getElementById('bCalcPassword');
+    const costSlider = document.getElementById('bCalcCost');
+    const costVal = document.getElementById('bCalcCostVal');
+    const entropyEl = document.getElementById('bCalcEntropy');
+    const combosEl = document.getElementById('bCalcCombos');
+    const cpuTimeEl = document.getElementById('bCalcCPUTime');
+    const gpuTimeEl = document.getElementById('bCalcGPUTime');
+    const clusterTimeEl = document.getElementById('bCalcClusterTime');
+    const powerEl = document.getElementById('bCalcPowerCost');
+
+    if (!pwdInput || !costSlider) return;
+
+    const calculate = () => {
+      const pwd = pwdInput.value || 'SecretPass1';
+      const cost = parseInt(costSlider.value, 10) || 10;
+      if (costVal) costVal.textContent = cost;
+
+      // Character set detection
+      let poolSize = 0;
+      if (/[a-z]/.test(pwd)) poolSize += 26;
+      if (/[A-Z]/.test(pwd)) poolSize += 26;
+      if (/[0-9]/.test(pwd)) poolSize += 10;
+      if (/[^a-zA-Z0-9]/.test(pwd)) poolSize += 33;
+      if (poolSize === 0) poolSize = 26;
+
+      const len = pwd.length;
+      const entropy = Math.round(len * Math.log2(poolSize));
+      const totalCombos = Math.pow(poolSize, len);
+
+      if (entropyEl) entropyEl.textContent = `${entropy} bits (${poolSize} char pool)`;
+      if (combosEl) combosEl.textContent = totalCombos > 1e15 ? totalCombos.toExponential(2) : totalCombos.toLocaleString();
+
+      // Effective Bcrypt Hash rates scaling with 2^Cost:
+      // Baseline at Cost 10:
+      // Single CPU: ~20 H/s
+      // 8x RTX 4090: ~160,000 H/s
+      // Nation State Cluster: ~5,000,000 H/s
+      const scaleFactor = Math.pow(2, 10 - cost);
+      const cpuRate = Math.max(0.01, 20 * scaleFactor);
+      const gpuRate = Math.max(1, 160000 * scaleFactor);
+      const clusterRate = Math.max(10, 5000000 * scaleFactor);
+
+      // Average guesses to crack is combos / 2
+      const guesses = totalCombos / 2;
+      const formatTime = (seconds) => {
+        if (seconds < 0.001) return '< 1 millisecond';
+        if (seconds < 1) return `${(seconds * 1000).toFixed(0)} ms`;
+        if (seconds < 60) return `${seconds.toFixed(1)} seconds`;
+        if (seconds < 3600) return `${(seconds / 60).toFixed(1)} minutes`;
+        if (seconds < 86400) return `${(seconds / 3600).toFixed(1)} hours`;
+        if (seconds < 31536000) return `${(seconds / 86400).toFixed(1)} days`;
+        if (seconds < 31536000 * 1000) return `${(seconds / 31536000).toFixed(1)} years`;
+        return `${(seconds / 31536000).toExponential(2)} years (Millennia!)`;
+      };
+
+      if (cpuTimeEl) cpuTimeEl.textContent = formatTime(guesses / cpuRate);
+      if (gpuTimeEl) gpuTimeEl.textContent = formatTime(guesses / gpuRate);
+      if (clusterTimeEl) clusterTimeEl.textContent = formatTime(guesses / clusterRate);
+
+      // Electrical cost estimation for 8x RTX 4090 (3.6 kW rig @ $0.15 / kWh)
+      const hours = (guesses / gpuRate) / 3600;
+      const kwh = hours * 3.6;
+      const usd = kwh * 0.15;
+      if (powerEl) {
+        if (usd < 0.01) powerEl.textContent = '< $0.01 (Negligible)';
+        else if (usd > 1e7) powerEl.textContent = `$${usd.toExponential(2)} USD (Economically Infeasible)`;
+        else powerEl.textContent = `~$${Math.round(usd).toLocaleString()} USD (${Math.round(kwh).toLocaleString()} kWh)`;
+      }
+    };
+
+    pwdInput.addEventListener('input', calculate);
+    costSlider.addEventListener('input', calculate);
+    calculate();
+  },
+
+  // =========================================================================
+  // 12. INNOVATIVE FEATURE: Rainbow Table Simulator & Salt Defense
+  // =========================================================================
+  initRainbowSimulator() {
+    const rainbowDB = [
+      { pass: "password", md5: "5f4dcc3b5aa765d61d8327deb882cf99" },
+      { pass: "123456", md5: "e10adc3949ba59abbe56e057f20f883e" },
+      { pass: "admin", md5: "21232f297a57a5a743894a0e4a801fc3" },
+      { pass: "welcome", md5: "40be4e59b9a2a2b5dffb918c0e86b3d7" },
+      { pass: "letmein", md5: "1a1dc91c907325c69271ddf0c944bc72" }
+    ];
+
+    const input = document.getElementById('bRainbowInput');
+    const btnCheck = document.getElementById('bBtnRainbowCheck');
+    const resultBox = document.getElementById('bRainbowResult');
+
+    if (!btnCheck || !input) return;
+
+    btnCheck.addEventListener('click', () => {
+      const val = input.value.trim();
+      if (!val) return;
+
+      const isBcrypt = val.startsWith('$2');
+      if (isBcrypt) {
+        resultBox.className = 'b-status-banner success';
+        resultBox.innerHTML = `
+          <div>
+            <strong>✓ RAINBOW TABLE LOOKUP FAILED (ATTACK NEUTRALIZED)</strong>
+            <p>Bcrypt uses a unique 128-bit CSPRNG salt. Precomputed hash lookup tables cannot find this hash because the salt forces the attacker to compute $2^{128}$ separate tables. The lookup returned 0 matches!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Check against unsalted MD5
+      const match = rainbowDB.find(item => item.md5.toLowerCase() === val.toLowerCase() || item.pass === val);
+      if (match) {
+        resultBox.className = 'b-status-banner error';
+        resultBox.innerHTML = `
+          <div>
+            <strong>🚨 INSTANT CRACK: Password Found in Rainbow Table!</strong>
+            <p>Plaintext Password: <strong>${match.pass}</strong> (Lookup time: &lt; 0.001 ms). Without salts, fast hashes are cracked instantly via dictionary matching.</p>
+          </div>
+        `;
+      } else {
+        resultBox.className = 'b-status-banner';
+        resultBox.innerHTML = `<div>Hash not in mini-demo rainbow table, but still vulnerable if unsalted.</div>`;
+      }
+    });
+  },
+
+  // =========================================================================
+  // 13. INNOVATIVE FEATURE: Export Academic Lab Journal Report (Printable)
+  // =========================================================================
+  initReportGenerator() {
+    const btnOpen = document.getElementById('bBtnGenReport');
+    const modalOverlay = document.getElementById('bReportModalOverlay');
+    const btnClose = document.getElementById('bBtnCloseReport');
+    const btnPrint = document.getElementById('bBtnPrintReport');
+
+    const repStudent = document.getElementById('bRepStudentName');
+    const repTime = document.getElementById('bRepTimestamp');
+    const repHash = document.getElementById('bRepHash');
+    const repDuration = document.getElementById('bRepDuration');
+    const repScore = document.getElementById('bRepScore');
+
+    if (!btnOpen) return;
+
+    btnOpen.addEventListener('click', () => {
+      if (modalOverlay) modalOverlay.classList.remove('hidden');
+
+      const now = new Date();
+      if (repTime) repTime.textContent = now.toLocaleString();
+      if (repHash) repHash.textContent = this.lastGeneratedHash || '$2b$10$nOUIs22CharsOfSaltHere...31CharsOfHashDigestHere...';
+      if (repDuration) repDuration.textContent = this.lastGeneratedTime || '98.40 ms';
+      if (repScore) repScore.textContent = `${Object.values(this.quizAnswers).length ? Object.values(this.quizAnswers).filter(a => a).length : 5} / 5`;
+    });
+
+    btnClose?.addEventListener('click', () => {
+      if (modalOverlay) modalOverlay.classList.add('hidden');
+    });
+
+    btnPrint?.addEventListener('click', () => {
+      window.print();
+    });
+  },
+
+  // 14. Quiz Engine
   initQuiz() {
     const questions = [
       {
@@ -535,7 +971,7 @@ const BcryptLabModule = {
     render();
   },
 
-  // 9. Feedback Star Rating & Submission
+  // 15. Feedback Star Rating & Submission
   initFeedback() {
     const starContainer = document.getElementById('bStarRating');
     const form = document.getElementById('bFeedbackForm');

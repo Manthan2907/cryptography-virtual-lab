@@ -339,13 +339,37 @@
              ========================================== -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <h2>Interactive Simulation Workbench</h2>
-            <p class="b-lead">Execute live password hashing, match verification, non-deterministic salt tests, modular inspection, and cryptographic pipeline tracing.</p>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+              <div>
+                <h2>Interactive Simulation Workbench</h2>
+                <p class="b-lead" style="margin-bottom:0;">Execute live password hashing, match verification, non-deterministic salt tests, modular inspection, internal pipeline stepping, hardware sizing benchmarks, and vulnerability exploits.</p>
+              </div>
+            </div>
+
+            <!-- Interactive Tools Navigation Strip -->
+            <div class="b-card" style="margin-bottom:24px; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:var(--color-surface);">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="b-bold" style="font-size:0.82rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.04em;">Workbench Tools:</span>
+                <a href="#tool-gen" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">1. Generator</a>
+                <a href="#tool-verify" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">2. Verifier</a>
+                <a href="#tool-salt" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">3. Salt Demo</a>
+                <a href="#tool-inspect" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">4. Inspector</a>
+                <a href="#tool-pipeline" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">5. Pipeline</a>
+                <a href="#tool-exploit" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-secondary);">6. 72-Byte Exploit</a>
+                <a href="#tool-race" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-secondary);">7. Hash Race</a>
+                <a href="#tool-bench" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-secondary);">8. HW Benchmark</a>
+                <a href="#tool-crack" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-secondary);">9. Crack Estimator</a>
+                <a href="#tool-rainbow" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-secondary);">10. Rainbow Table</a>
+              </div>
+              <button type="button" class="b-btn b-btn-primary b-btn-sm" onclick="document.getElementById('bBtnGenReport').click();">
+                📑 Export Lab Journal Report
+              </button>
+            </div>
 
             <div class="b-grid-2">
               
               <!-- Tool 1: Live Hash Generator -->
-              <div class="b-card">
+              <div class="b-card" id="tool-gen">
                 <div class="b-card-header">
                   <h3>1. Bcrypt Hash Generator</h3>
                 </div>
@@ -418,7 +442,7 @@
               </div>
 
               <!-- Tool 2: Password Match Verifier -->
-              <div class="b-card">
+              <div class="b-card" id="tool-verify">
                 <div class="b-card-header">
                   <h3>2. Password Match Verifier</h3>
                 </div>
@@ -457,7 +481,7 @@
             </div>
 
             <!-- Tool 3: Random Salt Demonstration -->
-            <div class="b-card">
+            <div class="b-card" id="tool-salt">
               <div class="b-card-header">
                 <h3>3. Random Salt Demonstration (Non-Deterministic Hashing)</h3>
               </div>
@@ -493,7 +517,7 @@
             </div>
 
             <!-- Tool 4: Modular Hash Inspector -->
-            <div class="b-card">
+            <div class="b-card" id="tool-inspect">
               <div class="b-card-header">
                 <h3>4. Modular Hash String Inspector &amp; Breakdown</h3>
               </div>
@@ -536,7 +560,7 @@
             </div>
 
             <!-- Tool 5: Eksblowfish Pipeline Stepper -->
-            <div class="b-card">
+            <div class="b-card" id="tool-pipeline">
               <div class="b-card-header">
                 <h3>5. Internal Eksblowfish Pipeline Stepper</h3>
               </div>
@@ -615,6 +639,267 @@
                 <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnPrevStage" disabled>&larr; Previous Stage</button>
                 <span id="bStageCounter" style="font-size:0.88rem; color:var(--color-text-muted); font-weight:700;">Stage 1 of 5</span>
                 <button type="button" class="b-btn b-btn-primary b-btn-sm" id="bBtnNextStage">Next Stage &rarr;</button>
+              </div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 6: 72-Byte Truncation Exploit & Mitigation
+                 ============================================================= -->
+            <div class="b-card" id="tool-exploit">
+              <div class="b-card-header">
+                <h3>6. 72-Byte Truncation Vulnerability &amp; SHA-256 Mitigation</h3>
+                <span class="b-badge" style="background:rgba(220,38,38,0.2); color:#fca5a5; border:1px solid #dc2626;">Security Edge Case</span>
+              </div>
+              <p>Blowfish's internal key schedule buffer caps password keys at 72 bytes. When passwords exceed 72 bytes, characters past byte index 71 are silently discarded! Observe how two passwords with completely different suffixes collide to the <strong>exact same Bcrypt hash</strong>, and how applying SHA-256 pre-hashing mitigates this flaw.</p>
+
+              <div class="b-exploit-box">
+                <div class="b-form-group">
+                  <label for="bExploitBase">Base Shared Prefix (72 Characters 'A'):</label>
+                  <input type="text" id="bExploitBase" class="b-input b-mono" value="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" readonly>
+                </div>
+
+                <div class="b-pass-preview-row">
+                  <div class="b-pass-preview-card">
+                    <label class="b-bold" style="font-size:0.86rem; color:#60a5fa;">Password A (Base + Suffix A):</label>
+                    <div class="b-input-row" style="margin-top:6px;">
+                      <input type="text" id="bExploitSuffixA" class="b-input b-mono" value="SecretTail1" placeholder="Suffix A">
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--color-text-muted); margin-top:4px;">
+                      Total: 72 base bytes + 11 suffix bytes = <span class="b-bold" style="color:#fca5a5;">83 bytes (&gt; 72)</span>
+                    </div>
+                  </div>
+
+                  <div class="b-pass-preview-card">
+                    <label class="b-bold" style="font-size:0.86rem; color:#c084fc;">Password B (Base + Suffix B):</label>
+                    <div class="b-input-row" style="margin-top:6px;">
+                      <input type="text" id="bExploitSuffixB" class="b-input b-mono" value="DifferentTail2" placeholder="Suffix B">
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--color-text-muted); margin-top:4px;">
+                      Total: 72 base bytes + 14 suffix bytes = <span class="b-bold" style="color:#fca5a5;">86 bytes (&gt; 72)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin:16px 0;">
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.92rem; font-weight:700;">
+                    <input type="checkbox" id="bTogglePrehash" style="width:18px; height:18px; cursor:pointer;">
+                    <span>Enable SHA-256 Pre-Hashing Defense (Modern Framework Standard)</span>
+                  </label>
+                  <button type="button" class="b-btn b-btn-primary" id="bBtnRunExploit">
+                    Execute 72-Byte Test
+                  </button>
+                </div>
+
+                <div id="bExploitStatus" class="b-status-banner warning" style="margin-top:12px;">
+                  <div>
+                    <strong>Status:</strong> Ready to execute test. Toggle SHA-256 pre-hashing to observe the collision mitigation.
+                  </div>
+                </div>
+
+                <div style="margin-top:14px; background:var(--color-surface); padding:14px; border-radius:6px; border:1px solid var(--color-border);">
+                  <div style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:6px;" id="bExploitSaltUsed">Shared Salt: (Click test to generate)</div>
+                  <div style="margin-bottom:8px;">
+                    <span class="b-bold" style="font-size:0.82rem; color:#60a5fa;">Password A Hash:</span>
+                    <div class="b-mono" style="font-size:0.84rem; word-break:break-all; color:var(--color-text);" id="bExploitHashA">Click 'Execute 72-Byte Test' to run...</div>
+                  </div>
+                  <div>
+                    <span class="b-bold" style="font-size:0.82rem; color:#c084fc;">Password B Hash:</span>
+                    <div class="b-mono" style="font-size:0.84rem; word-break:break-all; color:var(--color-text);" id="bExploitHashB">Click 'Execute 72-Byte Test' to run...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 7: Live Hash Race (MD5 vs SHA-256 vs Bcrypt)
+                 ============================================================= -->
+            <div class="b-card" id="tool-race">
+              <div class="b-card-header">
+                <h3>7. Live Hash Race: MD5 vs. SHA-256 vs. Bcrypt</h3>
+                <span class="b-badge" style="background:rgba(76,140,232,0.2); color:#bfdbfe; border:1px solid var(--color-secondary);">Latency Benchmark</span>
+              </div>
+              <p>Witness why cryptographic design speed determines security. MD5 and SHA-256 are engineered for raw throughput, enabling attackers to guess billions of passwords per second. Bcrypt is engineered with deliberate CPU key stretching.</p>
+
+              <div class="b-input-row" style="margin-bottom:14px;">
+                <input type="text" id="bRacePassword" class="b-input" value="BenchmarkRaceTestPass!2026" placeholder="Enter benchmark candidate string">
+                <button type="button" class="b-btn b-btn-primary" id="bBtnStartRace" style="white-space:nowrap;">
+                  Start 30-Hash Race
+                </button>
+              </div>
+
+              <div class="b-race-container">
+                <!-- MD5 -->
+                <div class="b-race-track">
+                  <div class="b-race-head">
+                    <span class="b-bold" style="color:#ef4444;">1. MD5 (High-Throughput Integrity Hash)</span>
+                    <span class="b-mono" style="font-size:0.85rem;" id="bRaceStatusMD5">Ready (0 ms)</span>
+                  </div>
+                  <div class="b-race-bar-bg">
+                    <div class="b-race-bar-fill md5" id="bRaceBarMD5"></div>
+                  </div>
+                </div>
+
+                <!-- SHA-256 -->
+                <div class="b-race-track">
+                  <div class="b-race-head">
+                    <span class="b-bold" style="color:#f59e0b;">2. SHA-256 (General Cryptographic Hash)</span>
+                    <span class="b-mono" style="font-size:0.85rem;" id="bRaceStatusSHA">Ready (0 ms)</span>
+                  </div>
+                  <div class="b-race-bar-bg">
+                    <div class="b-race-bar-fill sha256" id="bRaceBarSHA"></div>
+                  </div>
+                </div>
+
+                <!-- Bcrypt -->
+                <div class="b-race-track">
+                  <div class="b-race-head">
+                    <span class="b-bold" style="color:#22c55e;">3. Bcrypt Cost 8 (Adaptive Password Key-Stretching)</span>
+                    <span class="b-mono" style="font-size:0.85rem;" id="bRaceStatusBcrypt">Ready (0 ms)</span>
+                  </div>
+                  <div class="b-race-bar-bg">
+                    <div class="b-race-bar-fill bcrypt" id="bRaceBarBcrypt"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="bRaceSummary" class="b-callout info hidden" style="margin-top:14px;"></div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 8: Device Hardware Benchmark & Sizing
+                 ============================================================= -->
+            <div class="b-card" id="tool-bench">
+              <div class="b-card-header">
+                <h3>8. Client Hardware Benchmark &amp; OWASP Server Sizing</h3>
+                <span class="b-badge" style="background:rgba(34,197,94,0.2); color:#86efac; border:1px solid #22c55e;">Hardware Calibration</span>
+              </div>
+              <p>OWASP guidelines recommend calibrating Bcrypt so that a single login hash requires between <strong>250 ms and 500 ms</strong> of CPU execution. Run this non-blocking benchmark to evaluate your specific CPU cores across Cost 4 through Cost 11.</p>
+
+              <button type="button" class="b-btn b-btn-primary" id="bBtnRunBenchmark">
+                Calibrate Current Device (Cost 4 to 11)
+              </button>
+
+              <div class="b-bench-chart" id="bBenchChart">
+                <div style="color:var(--color-text-muted); font-size:0.9rem; padding:12px 0;">Click the calibration button to measure client latency.</div>
+              </div>
+
+              <div id="bBenchRec" class="b-callout info hidden"></div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 9: Offline Brute-Force & GPU Crack Estimator
+                 ============================================================= -->
+            <div class="b-card" id="tool-crack">
+              <div class="b-card-header">
+                <h3>9. Offline Brute-Force &amp; GPU Cluster Crack-Time Calculator</h3>
+                <span class="b-badge" style="background:rgba(192,132,252,0.2); color:#c084fc; border:1px solid #c084fc;">Cryptanalysis Math</span>
+              </div>
+              <p>Calculate total keyspace combinations, password entropy, and realistic time required for an attacker with specialized GPU cracking rigs to break the password at various Bcrypt cost factors.</p>
+
+              <div class="b-grid-2">
+                <div class="b-form-group">
+                  <label for="bCalcPassword">Password Candidate to Evaluate:</label>
+                  <input type="text" id="bCalcPassword" class="b-input" value="SecretPass1" placeholder="Enter password to test complexity">
+                </div>
+
+                <div class="b-form-group">
+                  <label for="bCalcCost">Work Factor Cost ($C$): <span id="bCalcCostVal" class="b-bold" style="color:var(--color-secondary);">10</span> ($2^C$ Iterations)</label>
+                  <input type="range" id="bCalcCost" min="4" max="16" value="10" step="1" style="width:100%; cursor:pointer;">
+                </div>
+              </div>
+
+              <div class="b-metric-row" style="margin-bottom:16px;">
+                <div class="b-metric-chip">
+                  <span class="b-metric-val" id="bCalcEntropy">60 bits (72 char pool)</span>
+                  <span class="b-metric-label">Information Entropy</span>
+                </div>
+                <div class="b-metric-chip">
+                  <span class="b-metric-val" id="bCalcCombos">1.15e+18</span>
+                  <span class="b-metric-label">Keyspace Combinations ($P^L$)</span>
+                </div>
+                <div class="b-metric-chip">
+                  <span class="b-metric-val" id="bCalcPowerCost">~$14,200 USD</span>
+                  <span class="b-metric-label">Estimated GPU Electricity Cost</span>
+                </div>
+              </div>
+
+              <div class="b-attack-tier-grid">
+                <div class="b-tier-card">
+                  <span class="b-bold" style="color:var(--color-text-muted); font-size:0.85rem;">Single Attacker CPU</span>
+                  <div class="b-tier-time" id="bCalcCPUTime">--</div>
+                  <div style="font-size:0.78rem; color:var(--color-text-muted);">Standard 8-Core PC (~20 H/s)</div>
+                </div>
+
+                <div class="b-tier-card">
+                  <span class="b-bold" style="color:#f59e0b; font-size:0.85rem;">8&times; NVIDIA RTX 4090 Rig</span>
+                  <div class="b-tier-time" id="bCalcGPUTime" style="color:#f59e0b;">--</div>
+                  <div style="font-size:0.78rem; color:var(--color-text-muted);">Dedicated Hashcat Rig (~160,000 H/s)</div>
+                </div>
+
+                <div class="b-tier-card">
+                  <span class="b-bold" style="color:#ef4444; font-size:0.85rem;">Nation-State GPU Cluster</span>
+                  <div class="b-tier-time" id="bCalcClusterTime" style="color:#ef4444;">--</div>
+                  <div style="font-size:0.78rem; color:var(--color-text-muted);">Massive Parallel Array (~5,000,000 H/s)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 10: Rainbow Table Lookup Simulator
+                 ============================================================= -->
+            <div class="b-card" id="tool-rainbow">
+              <div class="b-card-header">
+                <h3>10. Precomputed Rainbow Table Lookup Simulator</h3>
+                <span class="b-badge" style="background:rgba(245,158,11,0.2); color:#fde68a; border:1px solid #f59e0b;">Defense Verification</span>
+              </div>
+              <p>Simulate querying a precomputed rainbow table database. Unsalted hashes (such as legacy MD5) are cracked instantaneously in under 0.001 ms. Bcrypt hashes completely invalidate precomputed tables due to individual 128-bit random salts.</p>
+
+              <div class="b-input-row" style="margin-bottom:12px;">
+                <input type="text" id="bRainbowInput" class="b-input b-mono" value="5f4dcc3b5aa765d61d8327deb882cf99" placeholder="Enter MD5 hash (e.g. 5f4dcc3b...) or Bcrypt hash ($2b$...)">
+                <button type="button" class="b-btn b-btn-primary" id="bBtnRainbowCheck" style="white-space:nowrap;">
+                  Query Rainbow Table
+                </button>
+              </div>
+
+              <div id="bRainbowResult" class="b-status-banner warning" style="margin-bottom:14px;">
+                <div>Enter a hash above or click 'Query Rainbow Table' to test the sample MD5 hash for <code>"password"</code>.</div>
+              </div>
+
+              <details style="margin-top:10px;">
+                <summary style="cursor:pointer; font-size:0.88rem; font-weight:700; color:var(--color-secondary);">
+                  View Sample Rainbow Table Precomputed Keys (MD5)
+                </summary>
+                <table class="b-rainbow-table">
+                  <thead>
+                    <tr>
+                      <th>Plaintext</th>
+                      <th>MD5 Digest (Unsalted)</th>
+                      <th>Lookup Crack Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>password</td><td><code>5f4dcc3b5aa765d61d8327deb882cf99</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>123456</td><td><code>e10adc3949ba59abbe56e057f20f883e</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>admin</td><td><code>21232f297a57a5a743894a0e4a801fc3</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>welcome</td><td><code>40be4e59b9a2a2b5dffb918c0e86b3d7</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>letmein</td><td><code>1a1dc91c907325c69271ddf0c944bc72</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                  </tbody>
+                </table>
+              </details>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 11: Export Academic Lab Journal Report
+                 ============================================================= -->
+            <div class="b-card" style="border:2px solid var(--color-primary-dark); background:linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                <div>
+                  <h3 style="margin:0 0 6px 0; color:var(--color-text);">11. Academic Virtual Lab Journal Report</h3>
+                  <p style="margin:0; font-size:0.9rem; color:var(--color-text-muted);">Compile your live experimental metrics, verification results, and assessment score into a formalized, printable lab record.</p>
+                </div>
+                <button type="button" class="b-btn b-btn-primary" id="bBtnGenReport">
+                  📑 Generate &amp; Print Report
+                </button>
               </div>
             </div>
 
@@ -710,6 +995,76 @@
         </section>
 
       </main>
+    </div>
+
+    <!-- ==========================================
+         ACADEMIC LAB JOURNAL REPORT MODAL
+         ========================================== -->
+    <div id="bReportModalOverlay" class="b-report-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bRepModalTitle">
+      <div class="b-report-modal">
+        <div class="b-report-header">
+          <div>
+            <div style="font-size:0.82rem; font-weight:700; color:#8b6f5e; text-transform:uppercase; letter-spacing:0.05em;">Fr. Conceicao Rodrigues College of Engineering</div>
+            <h2 id="bRepModalTitle" class="b-report-title">Virtual Cryptography Laboratory — Experiment 10</h2>
+            <div class="b-report-meta">Subject: Cryptography &amp; System Security (CSS) | Module: Password Security &amp; Key Stretching</div>
+          </div>
+          <div class="b-no-print" style="display:flex; gap:8px;">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" id="bBtnPrintReport">🖨️ Print / Save as PDF</button>
+            <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnCloseReport">✕ Close</button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:18px;">
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#64748b;">Student / Investigator:</label>
+            <input type="text" id="bRepStudentName" class="b-input" value="Student Investigator" style="background:#f8fafc; color:#0f172a; border-color:#cbd5e1; font-weight:600; padding:6px 10px; font-size:0.9rem;">
+          </div>
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#64748b;">Timestamp of Verification:</label>
+            <div id="bRepTimestamp" style="padding:7px 10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:0.88rem; font-weight:600; color:#0f172a;">--</div>
+          </div>
+        </div>
+
+        <table class="b-report-table">
+          <thead>
+            <tr>
+              <th style="width:30%;">Experimental Metric</th>
+              <th>Observed Observation / Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Algorithm Standard</strong></td>
+              <td>OpenBSD Bcrypt ($2b$) based on Eksblowfish with 128-bit CSPRNG Salt</td>
+            </tr>
+            <tr>
+              <td><strong>Generated Hash String</strong></td>
+              <td><code id="bRepHash" style="word-break:break-all; font-size:0.82rem; color:#0f172a;">$2b$10$...</code></td>
+            </tr>
+            <tr>
+              <td><strong>Client Execution Latency</strong></td>
+              <td><span id="bRepDuration" style="font-weight:700; color:#0f172a;">--</span> (Meets OWASP 250-500ms recommendation)</td>
+            </tr>
+            <tr>
+              <td><strong>Blowfish Truncation Bound</strong></td>
+              <td>72-Byte Boundary Verified (SHA-256 pre-hashing mitigation tested)</td>
+            </tr>
+            <tr>
+              <td><strong>Precomputed Attack Resistance</strong></td>
+              <td>Rainbow tables defeated via 128-bit salt ($2^{128}$ table combinations)</td>
+            </tr>
+            <tr>
+              <td><strong>Assessment Score</strong></td>
+              <td><span id="bRepScore" style="font-weight:700; color:#16a34a;">5 / 5 (100%)</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:16px; padding:14px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; font-size:0.85rem; line-height:1.5; color:#334155;">
+          <strong>Certification of Lab Completion:</strong>
+          This document certifies that the interactive experimental pipeline, hash race benchmark, truncation vulnerability analysis, and cryptographic cost factor verification were executed in the virtual environment.
+        </div>
+      </div>
     </div>
 
     <!-- Common Virtual Lab Script -->

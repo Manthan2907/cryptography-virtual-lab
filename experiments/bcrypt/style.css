@@ -73,6 +73,40 @@
   gap: 10px;
 }
 
+/* Tool Navigation Quick-Pills in Simulation */
+.b-tool-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--color-surface-muted, #382c26);
+  padding: 10px;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--color-border, #735b4c);
+}
+
+.b-tool-pill {
+  background: var(--color-surface, #2d2420);
+  border: 1px solid var(--color-border, #735b4c);
+  color: var(--color-text-muted, #d0c1b8);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.b-tool-pill:hover {
+  background: var(--color-primary-dark, #8b6f5e);
+  color: #ffffff;
+  border-color: var(--color-primary, #a98d7b);
+}
+
 /* Grids */
 .b-grid-2 {
   display: grid;
@@ -249,6 +283,22 @@
 }
 .b-btn-brown:hover {
   background: var(--color-primary, #a98d7b);
+}
+
+.b-btn-green {
+  background: #059669;
+  color: #ffffff;
+}
+.b-btn-green:hover {
+  background: #047857;
+}
+
+.b-btn-orange {
+  background: #d97706;
+  color: #ffffff;
+}
+.b-btn-orange:hover {
+  background: #b45309;
 }
 
 .b-btn-outline {
@@ -489,6 +539,213 @@
   animation: bFadeIn 0.3s ease-out;
 }
 
+/* 72-Byte Truncation Exploit Box */
+.b-exploit-box {
+  background: var(--color-background, #211b18);
+  border: 1px solid var(--color-border, #735b4c);
+  border-radius: var(--radius-md, 12px);
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.b-pass-preview-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 14px 0;
+}
+
+.b-pass-preview-card {
+  background: var(--color-surface, #2d2420);
+  border: 1px solid var(--color-border, #735b4c);
+  padding: 14px;
+  border-radius: var(--radius-sm, 6px);
+}
+
+.b-diff-cut {
+  background: rgba(220, 38, 38, 0.25);
+  color: #fca5a5;
+  border: 1px solid #dc2626;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+/* Hash Race Visualizer */
+.b-race-container {
+  margin-top: 16px;
+}
+
+.b-race-track {
+  background: var(--color-surface, #2d2420);
+  border: 1px solid var(--color-border, #735b4c);
+  padding: 16px 20px;
+  border-radius: var(--radius-sm, 6px);
+  margin-bottom: 12px;
+}
+
+.b-race-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.b-race-bar-bg {
+  width: 100%;
+  height: 12px;
+  background: var(--color-background, #211b18);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #735b4c);
+}
+
+.b-race-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  transition: width 0.15s ease-out;
+}
+
+.b-race-bar-fill.md5 { background: #ef4444; }
+.b-race-bar-fill.sha256 { background: #f59e0b; }
+.b-race-bar-fill.bcrypt { background: #22c55e; }
+
+/* Hardware Benchmark Graph */
+.b-bench-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.b-bench-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 100px;
+  align-items: center;
+  gap: 12px;
+}
+
+.b-bench-bar-track {
+  background: var(--color-background, #211b18);
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #735b4c);
+}
+
+.b-bench-bar {
+  height: 100%;
+  background: var(--color-secondary, #4c8ce8);
+  width: 0%;
+  transition: width 0.4s ease-out;
+}
+
+/* Offline Crack Estimator */
+.b-attack-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.b-tier-card {
+  background: var(--color-surface, #2d2420);
+  border: 1px solid var(--color-border, #735b4c);
+  padding: 16px;
+  border-radius: var(--radius-sm, 6px);
+  text-align: center;
+}
+
+.b-tier-time {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 8px 0 4px;
+  color: var(--color-secondary, #4c8ce8);
+}
+
+/* Rainbow Table Mini Simulator */
+.b-rainbow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-top: 14px;
+}
+
+.b-rainbow-table th, .b-rainbow-table td {
+  border: 1px solid var(--color-border, #735b4c);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.b-rainbow-table th {
+  background: var(--color-surface-muted, #382c26);
+}
+
+/* Lab Journal Printable Report Modal & Styling */
+.b-report-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.b-report-modal {
+  background: #ffffff;
+  color: #1e293b;
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 36px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  font-family: 'Open Sans', Arial, sans-serif;
+}
+
+.b-report-header {
+  border-bottom: 2px solid #8b6f5e;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.b-report-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #8b6f5e;
+  margin: 0 0 4px 0;
+}
+
+.b-report-meta {
+  font-size: 0.86rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.b-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+
+.b-report-table th, .b-report-table td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.b-report-table th {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
 /* Quiz Styles */
 .b-quiz-card {
   background: var(--color-surface, #2d2420);
@@ -644,7 +901,7 @@
 
 /* Responsive Media Queries */
 @media (max-width: 820px) {
-  .b-grid-2, .b-grid-3, .b-grid-4 {
+  .b-grid-2, .b-grid-3, .b-grid-4, .b-attack-tier-grid, .b-pass-preview-row {
     grid-template-columns: 1fr;
   }
   .b-metric-row {
@@ -653,5 +910,35 @@
   .b-input-row {
     flex-direction: column;
     align-items: stretch;
+  }
+  .b-bench-row {
+    grid-template-columns: 70px 1fr 70px;
+  }
+}
+
+/* Print Styles for Exported Report */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .b-report-modal, .b-report-modal * {
+    visibility: visible;
+  }
+  .b-report-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+    padding: 0;
+  }
+  .b-report-overlay {
+    position: static;
+    background: transparent;
+    padding: 0;
+  }
+  .b-no-print {
+    display: none !important;
   }
 }
