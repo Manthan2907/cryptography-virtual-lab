@@ -1,0 +1,920 @@
+/*
+ * Needham-Schroeder Symmetric Key Protocol Virtual Lab
+ * IIT Kharagpur Virtual Labs Interface Stylesheet
+ * Color Palette: Warm Brown (#764b38) & Soft Cream (#fdf8f5)
+ * Fonts: IBM Plex Sans & IBM Plex Mono
+ * Compact Single-Viewport Dashboard & Collapsible Sidebar Styles
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --vlab-primary-brown: #764b38;
+  --vlab-primary-hover: #5e3b2b;
+  --vlab-accent-brown: #8c5e4a;
+  --vlab-bg-cream: #fdf8f5;
+  --vlab-sidebar-bg: #f5ece5;
+  --vlab-card-bg: #ffffff;
+  --vlab-border: #e6dad1;
+  --vlab-border-dark: #c5b4a7;
+  --vlab-reset-btn: #f5ece5;
+  --vlab-reset-text: #764b38;
+  --vlab-btn-blue: #257ba0;
+  --vlab-btn-blue-hover: #1d6280;
+  --vlab-success-green: #2e7d32;
+  --vlab-success-bg: #e8f5e9;
+  --vlab-error-red: #c62828;
+  --vlab-error-bg: #ffebee;
+  --vlab-info-bg: #f0f7f4;
+  --vlab-code-bg: #282320;
+  --vlab-code-text: #e8dcd5;
+  --vlab-font-sans: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --vlab-font-mono: 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--vlab-font-sans);
+  background-color: var(--vlab-bg-cream);
+  color: var(--vlab-text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 1. Header Bar */
+.vlab-header {
+  background-color: var(--vlab-primary-brown);
+  color: #ffffff;
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  z-index: 110;
+}
+
+.vlab-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.vlab-menu-toggle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #ffffff;
+  user-select: none;
+  line-height: 1;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.vlab-menu-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.vlab-logo-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vlab-logo-icon {
+  width: 38px;
+  height: 38px;
+}
+
+.vlab-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.vlab-logo-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.2px;
+}
+
+.vlab-logo-subtitle {
+  font-size: 0.75rem;
+  color: #f2e4dc;
+  font-weight: 500;
+}
+
+.vlab-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.vlab-rating-container {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+.vlab-header-btn {
+  background-color: var(--vlab-btn-blue);
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 1.1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  font-family: var(--vlab-font-sans);
+}
+
+.vlab-header-btn:hover {
+  background-color: var(--vlab-btn-blue-hover);
+}
+
+/* 2. Brand Divider Stripe */
+.vlab-orange-stripe {
+  height: 4px;
+  background-color: var(--vlab-accent-brown);
+  width: 100%;
+}
+
+/* 3. Main Container Layout */
+.vlab-main-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Breadcrumb */
+.vlab-breadcrumb {
+  font-size: 0.95rem;
+  color: var(--vlab-primary-brown);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.vlab-breadcrumb span.sep {
+  color: var(--vlab-text-muted);
+  margin: 0 0.35rem;
+  font-weight: normal;
+}
+
+/* Page Title */
+.vlab-page-title {
+  text-align: center;
+  color: var(--vlab-primary-brown);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: -0.3px;
+}
+
+/* Layout Grid: Collapsible Sidebar + Main Content */
+.vlab-content-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.vlab-content-grid.sidebar-collapsed {
+  grid-template-columns: 0px 1fr;
+  gap: 0;
+}
+
+/* Sidebar Navigation */
+.vlab-sidebar {
+  border-right: 1px solid var(--vlab-border);
+  padding-right: 1rem;
+  overflow: hidden;
+  transition: opacity 0.25s ease, width 0.3s ease, padding 0.3s ease;
+  opacity: 1;
+  width: 220px;
+}
+
+.vlab-content-grid.sidebar-collapsed .vlab-sidebar {
+  opacity: 0;
+  width: 0;
+  padding-right: 0;
+  border-right: none;
+  pointer-events: none;
+}
+
+.vlab-sidebar-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.vlab-nav-item {
+  width: 100%;
+}
+
+.vlab-nav-link {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  color: var(--vlab-primary-brown);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+  font-family: var(--vlab-font-sans);
+}
+
+.vlab-nav-link:hover {
+  color: var(--vlab-primary-hover);
+  background-color: var(--vlab-sidebar-bg);
+}
+
+.vlab-nav-link.active {
+  color: var(--vlab-primary-brown);
+  font-weight: 700;
+  background-color: #ffffff;
+  border-left: 4px solid var(--vlab-primary-brown);
+  box-shadow: 0 1px 4px rgba(118, 75, 56, 0.08);
+}
+
+/* Main Content Area */
+.vlab-main-content {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tab Panels */
+.vlab-tab-panel {
+  display: none;
+}
+
+.vlab-tab-panel.active {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Headings */
+.vlab-section-heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--vlab-primary-brown);
+  margin: 1rem 0 0.6rem 0;
+  border-bottom: 2px solid var(--vlab-sidebar-bg);
+  padding-bottom: 0.3rem;
+}
+
+.vlab-paragraph {
+  font-size: 0.92rem;
+  color: var(--vlab-text-main);
+  margin-bottom: 0.85rem;
+}
+
+/* Common Card Containers */
+.vlab-card {
+  background-color: var(--vlab-card-bg);
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(118, 75, 56, 0.04);
+}
+
+.vlab-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--vlab-primary-brown);
+  border-bottom: 1px solid var(--vlab-sidebar-bg);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 4. Compact Single-Viewport Simulation Dashboard */
+.sim-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* Dashboard Top Card (Controls + Stepper Row) */
+.sim-top-card {
+  background-color: var(--vlab-card-bg);
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 2px 6px rgba(118, 75, 56, 0.04);
+}
+
+.sim-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.85rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--vlab-sidebar-bg);
+}
+
+.sim-field-group-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 160px;
+}
+
+.sim-field-group-inline label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--vlab-text-muted);
+}
+
+.sim-select-sm {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: 4px;
+  font-family: var(--vlab-font-sans);
+  font-size: 0.85rem;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.sim-select-sm:focus {
+  border-color: var(--vlab-primary-brown);
+}
+
+.vlab-btn-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-vlab-sm {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* Compact Stepper Pills Row */
+.stepper-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.step-pill-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 16px;
+  background-color: var(--vlab-sidebar-bg);
+  color: var(--vlab-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.step-pill-item.active {
+  background-color: var(--vlab-primary-brown);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(118, 75, 56, 0.2);
+}
+
+.step-pill-item.completed {
+  background-color: var(--vlab-accent-brown);
+  color: #ffffff;
+}
+
+.step-pill-num {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.step-pill-arrow {
+  color: var(--vlab-border-dark);
+  font-size: 0.75rem;
+}
+
+/* Collapsible Beginner Concepts Box */
+.fresher-collapsible-box {
+  display: none;
+  background-color: var(--vlab-info-bg);
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+  padding: 0.85rem;
+  margin-bottom: 0.85rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.fresher-collapsible-box.visible {
+  display: block;
+}
+
+.fresher-concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+}
+
+.fresher-concept-card {
+  background-color: #ffffff;
+  border: 1px solid #c8e6c9;
+  border-left: 4px solid var(--vlab-success-green);
+  border-radius: 4px;
+  padding: 0.65rem;
+}
+
+.fresher-concept-title {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--vlab-success-green);
+  margin-bottom: 0.25rem;
+}
+
+.fresher-concept-body {
+  font-size: 0.78rem;
+  color: var(--vlab-text-main);
+  line-height: 1.35;
+}
+
+/* 2-Column Dashboard Grid Split View */
+.sim-dashboard-grid {
+  display: grid;
+  grid-template-columns: 46% 54%;
+  gap: 1rem;
+  align-items: stretch;
+  min-height: 520px;
+}
+
+@media (max-width: 950px) {
+  .sim-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left Dashboard Column: Node Canvas */
+.sim-canvas-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.topology-container-compact {
+  position: relative;
+  min-height: 520px;
+  height: 100%;
+  background-color: var(--vlab-sidebar-bg);
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  overflow: hidden;
+  flex: 1;
+}
+
+.topology-svg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.topology-svg-path {
+  fill: none;
+  transition: stroke 0.3s ease, stroke-width 0.3s ease, opacity 0.3s ease;
+}
+
+/* Base permanent interconnection lines between all 3 nodes */
+.topology-svg-path.base-link {
+  stroke: #c8b7ad;
+  stroke-width: 2.2;
+  stroke-dasharray: 6, 5;
+}
+
+/* Active protocol step directional transmission line */
+.topology-svg-path.active-transmission {
+  stroke: var(--vlab-primary-brown);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  display: none;
+  filter: drop-shadow(0 2px 4px rgba(118, 75, 56, 0.3));
+}
+
+.topology-svg-path.active-transmission.visible {
+  display: block;
+}
+
+.topology-svg-path.active-transmission.animating {
+  stroke-dasharray: 9, 5;
+  animation: lineTransmissionFlow 0.85s linear infinite;
+}
+
+@keyframes lineTransmissionFlow {
+  from {
+    stroke-dashoffset: 28;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Interconnection channel text badges */
+.topology-channel-text {
+  font-family: var(--vlab-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  fill: #764b38;
+  text-anchor: middle;
+  dominant-baseline: central;
+  user-select: none;
+  pointer-events: none;
+  paint-order: stroke fill;
+  stroke: var(--vlab-sidebar-bg, #fdf8f5);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  letter-spacing: 0.25px;
+}
+
+/* Compact Entity Cards */
+.entity-card-compact {
+  position: absolute;
+  z-index: 5;
+  width: 195px;
+  background: #ffffff;
+  border: 1.5px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 0.65rem;
+  box-shadow: 0 2px 6px rgba(118, 75, 56, 0.05);
+  transition: border-color 0.3s, transform 0.2s;
+}
+
+.entity-card-compact.highlight {
+  border-color: var(--vlab-primary-brown);
+  box-shadow: 0 0 10px rgba(118, 75, 56, 0.25);
+}
+
+.entity-card-compact.kdc {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.entity-card-compact.alice {
+  bottom: 20px;
+  left: 15px;
+}
+
+.entity-card-compact.bob {
+  bottom: 20px;
+  right: 15px;
+}
+
+.entity-header-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-bottom: 1px solid var(--vlab-sidebar-bg);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+
+.entity-icon-circle-sm {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--vlab-primary-brown);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  font-family: var(--vlab-font-mono);
+}
+
+.entity-name-sm {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--vlab-primary-brown);
+}
+
+.entity-role-sm {
+  font-size: 0.68rem;
+  color: var(--vlab-text-muted);
+}
+
+.entity-badge-sm {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  background-color: var(--vlab-sidebar-bg);
+  color: var(--vlab-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.entity-badge-sm.status-idle { background-color: var(--vlab-sidebar-bg); color: var(--vlab-text-muted); }
+.entity-badge-sm.status-requesting { background-color: #e3f2fd; color: #0d47a1; }
+.entity-badge-sm.status-waiting { background-color: #fff3e0; color: #e65100; }
+.entity-badge-sm.status-encrypting { background-color: #f3e5f5; color: #4a148c; }
+.entity-badge-sm.status-decrypting { background-color: #ede7f6; color: #4a148c; }
+.entity-badge-sm.status-authenticated { background-color: var(--vlab-success-bg); color: var(--vlab-success-green); }
+
+.entity-key-table-sm {
+  width: 100%;
+  font-size: 0.68rem;
+  border-collapse: collapse;
+  background-color: var(--vlab-sidebar-bg);
+  border-radius: 3px;
+}
+
+.entity-key-table-sm td {
+  padding: 0.15rem 0.3rem;
+  vertical-align: top;
+}
+
+.entity-key-name-sm {
+  font-weight: 600;
+  color: var(--vlab-text-muted);
+  line-height: 1.2;
+}
+
+.entity-key-val-sm {
+  font-family: var(--vlab-font-mono);
+  font-weight: 700;
+  color: var(--vlab-primary-brown);
+  text-align: right;
+}
+
+/* Animated Data Packet */
+.visual-packet-sm {
+  position: absolute;
+  z-index: 10;
+  padding: 0.3rem 0.6rem;
+  background-color: var(--vlab-primary-brown);
+  color: #ffffff;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--vlab-font-mono);
+  box-shadow: 0 2px 6px rgba(118, 75, 56, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease;
+}
+
+.visual-packet-sm.active {
+  opacity: 1;
+}
+
+/* Right Dashboard Column: Inspector & Breakdown */
+.sim-inspector-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inspector-card-compact {
+  background-color: var(--vlab-card-bg);
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 2px 6px rgba(118, 75, 56, 0.04);
+}
+
+.inspector-code-block-sm {
+  background-color: var(--vlab-code-bg);
+  color: var(--vlab-code-text);
+  padding: 0.55rem 0.75rem;
+  border-radius: 4px;
+  font-family: var(--vlab-font-mono);
+  font-size: 0.78rem;
+  margin-bottom: 0.5rem;
+  overflow-x: auto;
+  border-left: 3px solid var(--vlab-primary-brown);
+  line-height: 1.4;
+}
+
+.inspector-table-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.inspector-table-compact th, .inspector-table-compact td {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--vlab-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.inspector-table-compact th {
+  background-color: var(--vlab-sidebar-bg);
+  color: var(--vlab-primary-brown);
+  font-weight: 700;
+}
+
+.story-callout-box {
+  background-color: var(--vlab-info-bg);
+  border-left: 4px solid var(--vlab-success-green);
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: #2b3a2e;
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+}
+
+/* Integrated Audit Console */
+.audit-console-compact {
+  height: 110px;
+  background-color: var(--vlab-code-bg);
+  color: var(--vlab-code-text);
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-family: var(--vlab-font-mono);
+  font-size: 0.72rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.audit-log-line {
+  line-height: 1.3;
+  border-bottom: 1px dashed #3a322d;
+  padding-bottom: 0.15rem;
+}
+
+.audit-tag {
+  font-weight: bold;
+  padding: 0.05rem 0.25rem;
+  border-radius: 3px;
+  margin: 0 0.2rem;
+}
+
+.audit-tag.INFO { background-color: #e3f2fd; color: #0d47a1; }
+.audit-tag.SUCCESS { background-color: var(--vlab-success-bg); color: var(--vlab-success-green); }
+.audit-tag.WARN { background-color: var(--vlab-error-bg); color: var(--vlab-error-red); }
+
+/* Quiz Styles */
+.quiz-question-card {
+  background: #ffffff;
+  border: 1px solid var(--vlab-border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.quiz-question-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--vlab-text-main);
+  margin-bottom: 0.85rem;
+}
+
+.quiz-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.quiz-option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.quiz-option-item:hover {
+  background-color: var(--vlab-sidebar-bg);
+}
+
+.quiz-option-item.correct {
+  background-color: var(--vlab-success-bg);
+  border-color: var(--vlab-success-green);
+  color: var(--vlab-success-green);
+  font-weight: 600;
+}
+
+.quiz-option-item.incorrect {
+  background-color: var(--vlab-error-bg);
+  border-color: var(--vlab-error-red);
+  color: var(--vlab-error-red);
+}
+
+.quiz-explanation {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  display: none;
+}
+
+.quiz-explanation.visible {
+  display: block;
+}
+
+.quiz-explanation.correct {
+  background-color: var(--vlab-success-bg);
+  color: var(--vlab-success-green);
+  border-left: 4px solid var(--vlab-success-green);
+}
+
+.quiz-explanation.incorrect {
+  background-color: var(--vlab-error-bg);
+  color: var(--vlab-error-red);
+  border-left: 4px solid var(--vlab-error-red);
+}
+
+/* Footer */
+.vlab-footer {
+  background-color: var(--vlab-primary-brown);
+  color: #ffffff;
+  padding: 1.75rem;
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+}
+
+.vlab-footer-grid {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.vlab-footer-column h4 {
+  font-size: 0.95rem;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 0.3rem;
+}
+
+.vlab-footer-column ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vlab-footer-column a {
+  color: #f2e4dc;
+  text-decoration: none;
+}
+
+.vlab-footer-column a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
