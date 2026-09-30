@@ -31,6 +31,58 @@
       .a2-key { display: inline-block; width: 12px; height: 12px; margin: 0 4px 0 12px; vertical-align: middle; }
       .a2-btn { padding: 6px 12px; border: 0; border-radius: var(--radius-sm); background: var(--color-secondary); color: var(--color-on-secondary); font-family: Arial, sans-serif; font-weight: 700; margin: 8px 8px 0 0; cursor: pointer; }
       .a2-presets button { margin-right: 8px; }
+      .ex-grid { display: grid; grid-template-columns: repeat(16, 1fr); gap: 2px; max-width: 480px; margin-top: var(--space-2); }
+      .ex-c { aspect-ratio: 1; background: #3a2e2a; border-radius: 2px; cursor: pointer; }
+      .ex-c.f { background: #8a6f5e; } .ex-c.anc { background: #6b5646; } .ex-c.prev { background: #5b8def; } .ex-c.ref { background: #e8a24a; }
+      .ex-c.sel { outline: 2px solid #fff; } .ex-c.gone { opacity: .25; }
+      /* Argon2id lab UI (same brown/beige theme) */
+      #simulation button, .pd-n { transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease; }
+      #simulation button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,.35); }
+      #simulation button:active:not(:disabled) { transform: translateY(0) scale(.98); }
+      #simulation button:disabled { opacity: .55; cursor: not-allowed; }
+      #a2-hash.busy, #a2-verify.busy { background: #8a6f5e; } #a2-hash.done, #a2-verify.done { background: #4f9a5f; }
+      #simulation .simulation-controls, #simulation .simulation-output { width: 100%; max-width: 100%; }
+      .pd { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; margin: 0 0 var(--space-3); }
+      .pd-n { flex: 1 1 105px; min-width: 96px; padding: 10px 8px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-surface); text-align: center; font-family: Arial, sans-serif; font-size: var(--font-size-sm); font-weight: 700; cursor: pointer; }
+      .pd-n small { display: block; font-weight: 400; color: var(--color-text-muted); margin-top: 4px; min-height: 1.2em; word-break: break-all; }
+      .pd-n.on { border-color: #e8a24a; box-shadow: 0 0 0 1px #e8a24a, 0 0 14px rgba(232,162,74,.35); }
+      .pd-n.act { border-color: #5b8def; box-shadow: 0 0 0 1px #5b8def, 0 0 16px rgba(91,141,239,.45); animation: pdp 1s ease-in-out infinite; }
+      .pd-n.ok, .pd-n.ready { border-color: #8ee29c; box-shadow: 0 0 14px rgba(142,226,156,.3); } .pd-n.bad { border-color: #ff9a8f; box-shadow: 0 0 14px rgba(255,154,143,.3); }
+      .pd-a { flex: 0 0 22px; align-self: center; height: 4px; border-radius: 2px; background: var(--color-border); position: relative; overflow: hidden; }
+      .pd-a.flow::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, #e8a24a, transparent); animation: pdf .8s linear infinite; }
+      @keyframes pdf { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+      @keyframes pdv { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
+      @keyframes pdp { 50% { box-shadow: 0 0 0 1px #5b8def, 0 0 24px rgba(91,141,239,.7); } }
+      .pgrid, .presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-2); }
+      .pc { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; background: var(--color-surface); transition: border-color .2s, box-shadow .2s; }
+      .pc:hover, .pc:focus-within { border-color: #e8a24a; box-shadow: 0 0 12px rgba(232,162,74,.2); }
+      .pc-h { font-size: var(--font-size-sm); font-weight: 700; letter-spacing: .04em; }
+      .pc-c { display: flex; gap: 8px; align-items: center; margin: 8px 0; } .pc-v { flex: 1; text-align: center; min-width: 0; } .pc-v b { display: block; font-size: 1.3em; } .pc-v input { text-align: center; margin-top: 2px; }
+      .pm { width: 38px; padding: 6px 0 !important; font-size: 1.2em; }
+      .pc input[type=range], #a2-speed { width: 100%; padding: 0; border: 0; background: none; accent-color: #e8a24a; }
+      .bump { animation: bump .25s ease; } @keyframes bump { 40% { transform: scale(1.12); color: #e8a24a; } }
+      .pcard { text-align: left; padding: 12px !important; border: 1px solid var(--color-border-strong) !important; background: var(--color-surface) !important; color: inherit !important; }
+      .pcard b { display: block; letter-spacing: .05em; } .pcard span { display: block; color: #e8a24a; } .pcard em { display: block; font-size: var(--font-size-sm); font-style: normal; color: var(--color-text-muted); margin-top: 4px; }
+      .pcard:hover:not(:disabled) { border-color: #e8a24a !important; } .pcard.active { border-color: #e8a24a !important; box-shadow: 0 0 0 1px #e8a24a, 0 0 14px rgba(232,162,74,.3); }
+      .sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; margin: var(--space-2) 0; background: var(--color-surface-muted); }
+      .sum small, .vst small { display: block; color: var(--color-text-muted); letter-spacing: .05em; font-size: .75em; } .sum b { font-size: 1.1em; }
+      .vz { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #241a17; padding: 8px; } .vz canvas { width: 100%; display: block; }
+      .vst { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 10px 0; }
+      .bar { height: 10px; border-radius: 5px; background: #3a2e2a; overflow: hidden; } .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #5b8def, #e8a24a); transition: width .12s linear; }
+      .lg span { display: inline-block; margin: 0 8px 6px 0; padding: 3px 8px; border: 1px solid transparent; border-radius: var(--radius-sm); opacity: .6; transition: all .2s; font-size: var(--font-size-sm); }
+      .lg span.on { opacity: 1; border-color: currentColor; background: rgba(255,255,255,.06); }
+      .what { border-left: 3px solid #e8a24a; padding: 8px 12px; margin: 8px 0; background: var(--color-surface-muted); }
+      .tip { display: inline-block; width: 18px; height: 18px; line-height: 16px; text-align: center; border-radius: 50%; border: 1px solid var(--color-border-strong); font-size: 12px; cursor: pointer; margin-left: 6px; font-weight: 700; font-family: Arial, sans-serif; }
+      #tipbox { position: absolute; z-index: 50; max-width: 280px; padding: 10px 12px; border: 1px solid #e8a24a; border-radius: var(--radius-md); background: #2b1f1c; box-shadow: 0 6px 18px rgba(0,0,0,.5); font-size: var(--font-size-sm); display: none; }
+      .vres { display: flex; gap: 12px; align-items: center; border: 1px solid; border-radius: var(--radius-md); padding: 12px; margin-top: 10px; }
+      .vres.ok { color: #8ee29c; background: rgba(142,226,156,.08); } .vres.bad { color: #ff9a8f; background: rgba(255,154,143,.08); animation: shake .35s; } .vres p { margin: 2px 0 0; }
+      .vi { width: 44px; height: 44px; flex: none; } .vi circle { fill: none; stroke: currentColor; stroke-width: 3; }
+      .vi path { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: drawp .5s .1s ease forwards; }
+      @keyframes drawp { to { stroke-dashoffset: 0; } } @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+      .cfrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-2); align-items: end; margin-bottom: var(--space-2); }
+      .cfb { display: grid; grid-template-columns: 24px 1fr 90px; gap: 8px; align-items: center; margin: 4px 0; } .cfb .bar i { transition: width .45s ease; }
+      @media (max-width: 640px) { .pd { flex-direction: column; } .pd-a { flex: 0 0 16px; width: 4px; height: 16px; align-self: center; } .pd-a.flow::after { background: linear-gradient(180deg, transparent, #e8a24a, transparent); animation-name: pdv; } }
+      @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
       #theory h3 { color: var(--color-primary-dark); margin: var(--space-3) 0 var(--space-1); }
     </style>
   </head>
@@ -91,7 +143,7 @@
             <li>Click <strong>Random salt</strong> to generate a 16-byte salt (or type your own salt of at least 8 characters).</li>
             <li>Set the Argon2id parameters: memory cost (KiB), time cost (iterations) and parallelism. The defaults follow OWASP's minimum recommendation.</li>
             <li>Click <strong>Generate Argon2id hash</strong>. Read the encoded hash, its parsed fields, and the measured time. The run is added to the observation table.</li>
-            <li>Watch the <strong>Memory fill visualizer</strong>: blue squares are the data-independent first half of pass 1, orange squares are data-dependent work, and later passes overwrite memory again. It is a schematic of the schedule, not real block values.</li>
+            <li>Watch the <strong>process diagram</strong> at the top light up (Password, Salt, m/t/p, Argon2id, Encoded hash, Verify) and the <strong>Memory visualizer</strong> fill: blue is the data-independent start of pass 1, orange is data-dependent, later passes are lighter. Use Play, Pause, Replay and the speed slider, and read the &ldquo;What is happening?&rdquo; panel. It is a schematic, not real block values.</li>
             <li>Change one parameter at a time (for example memory 4096 then 65536) and generate again. Compare the measured times in the observation table.</li>
             <li>In <strong>Verify password</strong>, enter the correct password and click Verify (MATCH), then a wrong password (NO MATCH).</li>
             <li>Click <strong>Run comparison</strong> to hash the same password with MD5, SHA-1, SHA-256, PBKDF2-SHA256 and Argon2id, and read the comparison table.</li>
@@ -101,9 +153,17 @@
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="pd" aria-label="Argon2id process">
+            <div class="pd-n" id="pd-pw" tabindex="0" data-tip="pw">Password<small>input</small></div><i class="pd-a"></i>
+            <div class="pd-n" id="pd-salt" tabindex="0" data-tip="salt">Salt<small>random, not secret</small></div><i class="pd-a"></i>
+            <div class="pd-n" id="pd-par" tabindex="0" data-tip="params">m, t, p<small id="pd-pars"></small></div><i class="pd-a"></i>
+            <div class="pd-n" id="pd-arg" tabindex="0" data-tip="argon2id">Argon2id<small id="pd-args">idle</small></div><i class="pd-a"></i>
+            <div class="pd-n" id="pd-enc" tabindex="0" data-tip="enc">Encoded hash<small id="pd-encs">not generated yet</small></div><i class="pd-a"></i>
+            <div class="pd-n" id="pd-ver" tabindex="0" data-tip="verify">Verify<small id="pd-vers">waiting</small></div>
+          </div>
+
           <div class="simulation-controls">
             <h2>Simulation controls</h2>
-            <p class="a2-steps" aria-hidden="true"><span>Password</span> + <span>Salt</span> + <span>m, t, p</span> &rarr; <span>Argon2id</span> &rarr; <span>Encoded hash</span> &rarr; <span>Verify</span></p>
             <div class="a2-row">
               <div>
                 <label for="a2-pw">Password</label>
@@ -116,53 +176,68 @@
                 <button id="a2-rand" type="button">Random salt</button>
               </div>
             </div>
-            <div class="a2-row">
-              <div>
-                <label for="a2-mem">Memory cost m (KiB, 8 to 65536)</label>
-                <input id="a2-mem" type="number" min="8" max="65536" step="1" value="19456">
-              </div>
-              <div>
-                <label for="a2-iter">Time cost t (iterations, 1 to 10)</label>
-                <input id="a2-iter" type="number" min="1" max="10" step="1" value="2">
-              </div>
-              <div>
-                <label for="a2-par">Parallelism p (lanes, 1 to 4)</label>
-                <input id="a2-par" type="number" min="1" max="4" step="1" value="1">
-              </div>
+            <div class="pgrid">
+              <div class="pc"><div class="pc-h">MEMORY COST (m)<span class="tip" tabindex="0" role="button" data-tip="m" aria-label="Explain">?</span></div><div class="pc-c"><button type="button" class="pm" data-p="m" data-d="-1" aria-label="Decrease MEMORY COST (m)">&minus;</button><div class="pc-v"><b id="pv-m"></b><input id="a2-mem" type="number" min="8" max="65536" step="1" value="19456" aria-label="Memory cost in KiB"></div><button type="button" class="pm" data-p="m" data-d="1" aria-label="Increase MEMORY COST (m)">+</button></div><input id="sl-m" type="range" min="0" max="100" value="87" aria-label="MEMORY COST (m) slider"><p class="a2-hint" id="pn-m"></p></div>
+              <div class="pc"><div class="pc-h">TIME COST (t)<span class="tip" tabindex="0" role="button" data-tip="t" aria-label="Explain">?</span></div><div class="pc-c"><button type="button" class="pm" data-p="t" data-d="-1" aria-label="Decrease TIME COST (t)">&minus;</button><div class="pc-v"><b id="pv-t"></b><input id="a2-iter" type="number" min="1" max="10" step="1" value="2" aria-label="Time cost in passes"></div><button type="button" class="pm" data-p="t" data-d="1" aria-label="Increase TIME COST (t)">+</button></div><input id="sl-t" type="range" min="1" max="10" value="2" aria-label="TIME COST (t) slider"><p class="a2-hint" id="pn-t"></p></div>
+              <div class="pc"><div class="pc-h">PARALLELISM (p)<span class="tip" tabindex="0" role="button" data-tip="p" aria-label="Explain">?</span></div><div class="pc-c"><button type="button" class="pm" data-p="p" data-d="-1" aria-label="Decrease PARALLELISM (p)">&minus;</button><div class="pc-v"><b id="pv-p"></b><input id="a2-par" type="number" min="1" max="4" step="1" value="1" aria-label="Parallelism in lanes"></div><button type="button" class="pm" data-p="p" data-d="1" aria-label="Increase PARALLELISM (p)">+</button></div><input id="sl-p" type="range" min="1" max="4" value="1" aria-label="PARALLELISM (p) slider"><p class="a2-hint" id="pn-p"></p></div>
             </div>
-            <p class="a2-hint">Memory is limited to 64 MiB so the browser does not freeze. Higher values take longer; the first run also loads the WebAssembly module.</p>
-            <p class="a2-hint">Presets:</p>
-            <div class="a2-presets"><button type="button" data-preset="4096,1,1">Light (4 MiB, t=1)</button><button type="button" data-preset="19456,2,1">OWASP minimum (19 MiB, t=2)</button><button type="button" data-preset="65536,3,2">Heavy (64 MiB, t=3, p=2)</button></div>
+            <p class="a2-hint">Memory is limited to 64 MiB so the browser does not freeze. No single parameter decides security; they work together and the salt must be unique.</p>
+            <div class="presets">
+              <button type="button" class="pcard" data-preset="4096,1,1"><b>LIGHT</b><span>4 MiB &bull; t=1</span><em>Quick to run, good for a first look.</em></button>
+              <button type="button" class="pcard" data-preset="19456,2,1"><b>OWASP MINIMUM</b><span>19 MiB &bull; t=2</span><em>The lab default, OWASP's minimum profile.</em></button>
+              <button type="button" class="pcard" data-preset="65536,3,2"><b>HEAVY</b><span>64 MiB &bull; t=3 &bull; p=2</span><em>Most work per guess this lab allows.</em></button>
+            </div>
+            <div class="sum" aria-label="Current configuration"><div><small>MEMORY</small><b id="sum-m"></b></div><div><small>TIME</small><b id="sum-t"></b></div><div><small>PARALLELISM</small><b id="sum-p"></b></div><div><small>SALT</small><b id="sum-s"></b></div></div>
             <button id="a2-hash" type="button">Generate Argon2id hash</button>
-            <button id="a2-compare" type="button">Run comparison</button>
             <p id="a2-error" class="a2-err" role="alert"></p>
+          </div>
+
+          <div class="simulation-output" aria-live="polite">
+            <h2>Memory visualizer</h2>
+            <p class="a2-hint">An educational schematic, not the real block values: each square stands for a group of 1 KiB blocks, rows are the four slices of a pass, and lanes are shown separately. Argon2id addresses memory data-independently for the first two slices of pass 1 and data-dependently after that. The animation shows the schedule, not actual cryptographic progress; the real hash is computed separately.</p>
+            <div class="vz"><canvas id="a2-cv" width="640" height="60" role="img" aria-label="Memory fill schedule for the current Argon2id parameters"></canvas></div>
+            <div class="vst">
+              <div><small>PASS <span class="tip" tabindex="0" role="button" data-tip="pass" aria-label="Explain">?</span></small><b id="st-pass"></b></div>
+              <div><small>LANES <span class="tip" tabindex="0" role="button" data-tip="lanes" aria-label="Explain">?</span></small><b id="st-lane"></b></div>
+              <div><small>PHASE</small><b id="st-phase"></b></div>
+              <div><small>VISUALIZATION PROGRESS</small><b id="st-prog"></b></div>
+              <div><small>ELAPSED (REAL)</small><b id="a2-el">&mdash;</b></div>
+            </div>
+            <div class="bar"><i id="st-bar"></i></div>
+            <p class="a2-hint">Memory: <span id="st-mem"></span> <span class="tip" tabindex="0" role="button" data-tip="blocks" aria-label="Explain">?</span> &nbsp; Block computations: <span id="st-blk"></span></p>
+            <p class="lg"><span id="lg-i" style="color:#5b8def">DATA-INDEPENDENT <span class="tip" tabindex="0" role="button" data-tip="indep" aria-label="Explain">?</span></span><span id="lg-d" style="color:#e8a24a">DATA-DEPENDENT <span class="tip" tabindex="0" role="button" data-tip="dep" aria-label="Explain">?</span></span><span id="lg-l" style="color:#f2bd7c">LATER PASSES</span></p>
+            <button id="a2-vplay" type="button" class="a2-btn">&#9654; Play</button><button id="a2-vpause" type="button" class="a2-btn">&#9208; Pause</button><button id="a2-vreplay" type="button" class="a2-btn">&#8635; Replay</button>
+            <p class="a2-hint" style="margin-top:12px"><label for="a2-speed" style="display:inline">Animation speed: Slow</label> &hellip; Fast</p>
+            <input id="a2-speed" type="range" min="0.5" max="3" step="0.25" value="1" style="max-width:320px">
+            <div class="what"><strong>What is happening?</strong><p id="a2-what" style="margin:4px 0 0"></p></div>
+
+            <h2 style="margin-top:24px">Generated hash</h2>
+            <div id="a2-out"><p>Results will appear here after you generate a hash.</p></div>
 
             <h2 style="margin-top:24px">Verify password</h2>
             <label for="a2-vhash">Stored Argon2id hash</label>
             <textarea id="a2-vhash" spellcheck="false" placeholder="Generate a hash first, or paste an $argon2id$... string"></textarea>
             <label for="a2-vpw" style="margin-top:8px">Password to check</label>
-            <input id="a2-vpw" type="password" autocomplete="off">
-            <button id="a2-verify" type="button">Verify</button>
-          </div>
-
-          <div class="simulation-output" aria-live="polite">
-            <h2>Simulation output</h2>
-            <h2>Memory fill visualizer</h2>
-            <p class="a2-hint">A schematic of the work schedule for your current m, t and p: memory is split into p lanes, each pass covers 4 slices, and each square stands for a group of 1 KiB blocks. It shows the schedule, not the real block values. Move the mouse over it to tilt.</p>
-            <div class="a2-stage" id="a2-stage"><canvas id="a2-cv" width="640" height="300" role="img" aria-label="Memory fill schedule for the current Argon2id parameters"></canvas></div>
-            <p id="a2-cvinfo" class="a2-hint"></p>
-            <p class="a2-hint"><span class="a2-key" style="background:#5b8def;margin-left:0"></span>data-independent (Argon2i-style, first half of pass 1)<span class="a2-key" style="background:#e8a24a"></span>data-dependent (Argon2d-style)<span class="a2-key" style="background:#f2bd7c"></span>later passes</p>
-            <button id="a2-play" type="button" class="a2-btn">Replay</button>
-            <label class="a2-hint" style="display:inline"><input id="a2-3d" type="checkbox" checked style="width:auto"> 3D tilt</label>
-            <div id="a2-out"><p>Results will appear here after you generate a hash.</p></div>
+            <input id="a2-vpw" type="password" autocomplete="off" placeholder="Enter password">
+            <button id="a2-verify" type="button">Verify password</button>
             <div id="a2-verify-out"></div>
+
+            <h2 style="margin-top:24px">Comparison</h2>
+            <p class="a2-hint">Compare two Argon2id configurations on your password and salt.</p>
+            <div class="cfrow">
+              <div><label for="cf-a">Configuration A</label><select id="cf-a"><option value="light" selected>Light (4 MiB, t=1, p=1)</option><option value="owasp">OWASP minimum (19 MiB, t=2, p=1)</option><option value="heavy">Heavy (64 MiB, t=3, p=2)</option><option value="cur">Current inputs</option></select></div>
+              <div><label for="cf-b">Configuration B</label><select id="cf-b"><option value="light">Light (4 MiB, t=1, p=1)</option><option value="owasp" selected>OWASP minimum (19 MiB, t=2, p=1)</option><option value="heavy">Heavy (64 MiB, t=3, p=2)</option><option value="cur">Current inputs</option></select></div>
+              <div><button id="a2-cfg" type="button">Compare A vs B</button></div>
+            </div>
+            <div id="cf-out"></div>
+            <p class="a2-hint" style="margin-top:16px">Or compare Argon2id with conventional hashes:</p>
+            <button id="a2-compare" type="button">Run comparison</button>
+            <div id="a2-cmp"><p>Click <strong>Run comparison</strong> to hash the password with each algorithm.</p></div>
+
             <h2 style="margin-top:24px">Observations</h2>
             <p class="a2-hint">Times are measured in this browser and depend on your device. Compare runs on the same device only.</p>
             <div class="a2-table-wrap" id="a2-obs"></div>
             <button id="a2-clear" type="button" class="a2-btn">Clear observations</button>
-            <h2 style="margin-top:24px">Comparison with conventional hashes</h2>
-            <div id="a2-cmp"><p>Click <strong>Run comparison</strong> to hash the password with each algorithm.</p></div>
-            <!-- The Attack lab section is added here by attack-lab.js -->
           </div>
         </section>
 
@@ -182,6 +257,6 @@
     <script src="../../js/vendor/crypto-js.min.js"></script>
     <script src="../../js/vendor/hash-wasm.min.js"></script>
     <script src="script.js"></script>
-    <script src="attack-lab.js"></script>
+    <script src="attack-lab.js"></script> <!-- optional add-on -->
   </body>
 </html>

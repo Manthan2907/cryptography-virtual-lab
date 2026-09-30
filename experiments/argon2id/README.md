@@ -1,4 +1,3 @@
-
 # Argon2id Password Hashing
 
 **Group:** Argon2id (branch `group-argon2id`)
@@ -18,7 +17,7 @@ Implement Argon2id password hashing and verification, and compare its output and
 | File | Purpose |
 |---|---|
 | `index.html` | Page: Theory, Procedure, Simulation and Quiz tabs |
-| `script.js` | Argon2id hashing, verification, comparison, visualizer and quiz |
+| `script.js` | Argon2id hashing (Web Worker with main-thread fallback), verification, comparison, process diagram, memory visualizer and quiz |
 | `attack-lab.js` | Attack lab (dictionary attack on SHA-256 vs Argon2id) and GPU memory calculator. Loaded after `script.js` |
 | `README.md` | This file |
 
@@ -51,7 +50,10 @@ Open `http://localhost:8000/experiments/argon2id/index.html`. Stop the server wi
 - Measured elapsed time in the browser
 - Verification result: MATCH or NO MATCH
 - Observation table of previous runs
-- Memory fill visualizer (schematic of the lane/slice/pass schedule, blue = data-independent first half of pass 1, orange = data-dependent), presets, copy button and avalanche bit-difference view
+- Animated process diagram (Password, Salt, m/t/p, Argon2id, Encoded hash, Verify) that plays on hashing and verification
+- Memory visualizer (canvas schematic, lanes = p, passes = t, phases: allocating, data-independent, data-dependent, later passes) with Play/Pause/Replay, speed slider, live stats and a "What is happening?" panel. It is a visualization, not real cryptographic progress
+- Parameter cards with -/+ buttons, sliders and hints, three preset cards, live configuration summary, "?" tooltips
+- Configuration comparison (A vs B) with animated bars, plus the algorithm comparison; copy button and avalanche view
 - Comparison table: MD5, SHA-1, SHA-256, PBKDF2-SHA256 (600000 iterations), Argon2id with output length, cost parameters, measured time and suitability
 - Attack lab: a stolen-database table for four users (SHA-256 unsalted vs Argon2id salted), which users were cracked by a 10-word dictionary, guesses per second and time for 1 billion guesses in this browser
 - GPU calculator: how many Argon2id guesses fit in the entered GPU memory at the current m, and a rough time estimate
@@ -75,12 +77,19 @@ Expected hash values are not listed for Argon2id because they depend on the salt
 | 12 | Verify with text that is not an Argon2id hash | Error message |
 | 13 | Password `abc`, Run comparison | MD5 `900150983cd24fb0d6963f7d28e17f72`, SHA-1 `a9993e364706816aba3e25717850c26c9cd0d89d`, SHA-256 `ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad` |
 | 14 | Quiz: answer all, Submit | Score and per-question feedback; Try again resets |
-| 15 | Click a preset (Light / OWASP minimum / Heavy) | m, t, p fields update and the visualizer replays |
+| 15 | Click a preset card | m, t, p values animate to the preset, the card shows active, the visualizer replays |
 | 16 | Generate twice with different passwords | Bit-difference line shows roughly 50% of 256 bits differ, changed hex highlighted |
 | 17 | Run comparison | Guesses-per-second column and the SHA-256 vs Argon2id speed gap line appear |
 | 18 | Attack lab: Launch dictionary attack (defaults) | alice, dave and bob CRACKED under both; carol safe under both; alice and dave SHA-256 hashes identical, Argon2id hashes different |
 | 19 | Attack lab: launch with m = 4096, then m = 65536 | Argon2id guesses per second is lower at 65536; the GPU calculator shows fewer parallel guesses |
 | 20 | Attack lab: change GPU memory (GiB) | Parallel guesses and time estimate update |
+| 21 | Generate | Diagram nodes light in order, button shows Hashing then Hash generated, hash text is revealed, Copy hash shows Copied |
+| 22 | Set p = 1, 2, 4 | Visualizer shows 1, 2 or 4 lanes |
+| 23 | Pause mid-run, then Play | Stats freeze while paused; the animation resumes from the same point |
+| 24 | Use - / + buttons and sliders | Values, summary card and visualizer update live; m stays between 8 x p and 65536 |
+| 25 | Verify right, then wrong password | Animated tick with "Password verified"; then warning with shake and "Password does not match" |
+| 26 | Compare A vs B | Animated bars for memory, t, p and measured time, with the timing disclaimer |
+| 27 | Click a "?" | Themed tooltip opens; Escape or a click elsewhere closes it |
 
 ## Known Limitations
 - Timings are measured in the browser, vary between devices and runs, and are not a benchmark. Fast hashes are averaged over 200 runs; PBKDF2 and Argon2id are single runs.
@@ -89,4 +98,7 @@ Expected hash values are not listed for Argon2id because they depend on the salt
 - Salt is typed as UTF-8 text; real systems store random bytes.
 - bcrypt and scrypt are not in the comparison (bcrypt has its own experiment; scrypt is not bundled).
 - The Attack lab uses a 10-word wordlist and 4 fixed users. It runs real hashes in the browser, but the GPU calculator uses illustrative hardware numbers and is not a benchmark of real attackers.
+- The memory visualizer is a schematic. Its progress is not tied to the real computation: it waits near the end until the real hash finishes, then completes.
+- The real hash runs in a Web Worker so the page stays responsive; if a worker cannot start, it falls back to the main thread and the animation may stutter.
+- `attack-lab.js` is an optional add-on and can be deleted with its script tag.
 - Educational tool: do not enter real passwords.
