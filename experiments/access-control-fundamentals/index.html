@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access Control Fundamentals experiment">
+    <title>Access Control Fundamentals | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+  </head>
+  <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Access Control Fundamentals</h1>
+        <p id="exp-description">Study and implement an access control mechanism to determine whether a subject is permitted to perform a requested operation on an object.</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+      </nav>
+
+      <main class="content-area">
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> Study and implement an access control mechanism to determine whether a subject is permitted to perform a requested operation on an object.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Distinguish between subjects, objects, operations, and permissions.</li>
+              <li>Examine Discretionary Access Control (DAC), Mandatory Access Control (MAC), and Role-Based Access Control (RBAC).</li>
+              <li>Simulate policy enforcement decisions and authorization checks.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder">
+            <h2>Theory</h2>
+            <p>Access control is the selective restriction of access to a place or other resource. In computer security, access control involves three primary abstractions: Subjects (active entities like users or processes), Objects (passive resources like files, records, or devices), and Operations (read, write, execute, delete). Security models include DAC (owner decides), MAC (security labels/clearance), and RBAC (roles determine rights).</p>
+          </div>
+        </section>
+
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-placeholder">
+            <h2>Procedure</h2>
+            <ol>
+              <li>Select the requesting Subject (User / Role).</li>
+              <li>Select the target Object (e.g., Financial_Report.pdf, System_Kernel.bin).</li>
+              <li>Select the requested Operation (Read, Write, Delete).</li>
+              <li>Click "Evaluate Access Request" to test the authorization engine.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="simulation-controls">
+            <h2>Simulation Controls</h2>
+            <label for="subRole">Subject Role:</label>
+            <select id="subRole">
+              <option value="guest">Guest</option>
+              <option value="student" selected>Student</option>
+              <option value="faculty">Faculty</option>
+              <option value="admin">Administrator</option>
+            </select>
+            <label for="targetObj" style="margin-top: 10px;">Target Object:</label>
+            <select id="targetObj">
+              <option value="public_syllabus">Public_Syllabus.pdf</option>
+              <option value="lab_assignment">Lab_Assignment_Grades.xlsx</option>
+              <option value="system_config">Server_Config.env</option>
+            </select>
+            <label for="opType" style="margin-top: 10px;">Operation:</label>
+            <select id="opType">
+              <option value="read">READ</option>
+              <option value="write">WRITE</option>
+              <option value="delete">DELETE</option>
+            </select>
+            <button type="button" id="btnEvalAccess">Evaluate Access Request</button>
+          </div>
+          <div class="simulation-output" aria-live="polite">
+            <h2>Simulation Output</h2>
+            <div id="accessOutput">Select parameters and evaluate request...</div>
+          </div>
+        </section>
+
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="quiz-panel">
+            <h2>Assessment / Quiz</h2>
+            <p>1. What is the fundamental difference between DAC and MAC?</p>
+            <p>2. In RBAC, are permissions assigned directly to users or to roles?</p>
+          </div>
+        </section>
+
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>NIST SP 800-162: Guide to Attribute Based Access Control (ABAC) Definition and Considerations.</li>
+              <li>Sandhu et al., <em>Role-Based Access Control Models</em>.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Feedback</h2>
+            <p>Please share your feedback regarding this experiment simulation.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

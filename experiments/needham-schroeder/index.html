@@ -1,152 +1,44 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Needham-Schroeder Symmetric Key Protocol - Virtual Labs</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Virtual Cryptography Laboratory experiment">
+    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
     <link rel="stylesheet" href="style.css?v=2" />
   </head>
   <body>
-    <!-- Top Header Bar -->
-    <header class="vlab-header">
-      <div class="vlab-header-left">
-        <div
-          class="vlab-menu-toggle"
-          id="btnToggleSidebar"
-          title="Toggle Sidebar Menu"
-        >
-          &#9776;
-        </div>
-        <div class="vlab-logo-block">
-          <svg class="vlab-logo-icon" viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="20" r="18" fill="#ffffff" opacity="0.2" />
-            <path
-              d="M12 28L18 16H22L28 28H12Z"
-              stroke="#ffffff"
-              stroke-width="2"
-              stroke-linejoin="round"
-            />
-            <circle cx="20" cy="14" r="3" fill="#f59e0b" />
-            <circle cx="20" cy="24" r="2" fill="#ffffff" />
-          </svg>
-          <div class="vlab-logo-text">
-            <div class="vlab-logo-title">Virtual Labs</div>
-            <div class="vlab-logo-subtitle">
-              An MoE Govt of India Initiative
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="vlab-header-right">
-        <div class="vlab-rating-container" title="4.8 out of 5 stars">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b">
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b">
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b">
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b">
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#d1d5db">
-            <path
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
-        </div>
-        <button class="vlab-header-btn">Rate Me</button>
-        <button class="vlab-header-btn">Report a Bug</button>
-      </div>
-    </header>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
 
-    <!-- Accent Divider Stripe -->
-    <div class="vlab-orange-stripe"></div>
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Needham-Schroeder Symmetric Key Protocol</h1>
+        <p id="exp-description">Virtual Labs - Cryptography</p>
+      </header>
 
-    <!-- Main Container -->
-    <div class="vlab-main-container">
-      <!-- Breadcrumb Navigation -->
-      <nav class="vlab-breadcrumb">
-        Computer Science and Engineering
-        <span class="sep">&gt;</span> Cryptography &amp; Network Security
-        <span class="sep">&gt;</span> Virtual Labs
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
-      <!-- Centered Page Title -->
-      <h1 class="vlab-page-title">Needham-Schroeder Symmetric Key Protocol</h1>
-
-      <!-- Sidebar & Content Grid -->
-      <div class="vlab-content-grid">
-        <!-- Left Sidebar Navigation Menu (9 Tabs) -->
-        <aside class="vlab-sidebar">
-          <ul class="vlab-sidebar-menu">
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link active" data-tab="aim">
-                Aim &amp; Objectives
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="theory">
-                Theory &amp; Beginner Guide
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="pretest">Pretest</button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="procedure">
-                Procedure
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="simulation">
-                Interactive Simulation
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="posttest">
-                Posttest
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="references">
-                References
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="contributors">
-                Contributors
-              </button>
-            </li>
-            <li class="vlab-nav-item">
-              <button class="vlab-nav-link" data-tab="feedback">
-                Feedback
-              </button>
-            </li>
-          </ul>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="vlab-main-content">
-          <!-- 1. AIM & OBJECTIVES TAB -->
-          <section id="tab-aim" class="vlab-tab-panel active">
-            <h2 class="vlab-section-heading">Estimated Time</h2>
+      <main class="content-area">
+        <!-- a. Aim and objectives -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <h2 class="vlab-section-heading">Estimated Time</h2>
             <p class="vlab-paragraph">1 hour</p>
 
             <h2 class="vlab-section-heading">
@@ -184,11 +76,11 @@
                 mutual authentication.
               </li>
             </ul>
-          </section>
+        </section>
 
-          <!-- 2. THEORY & BEGINNER GUIDE TAB -->
-          <section id="tab-theory" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">
+        <!-- b. Relevant theoretical concepts -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <h2 class="vlab-section-heading">
               Real-World Story Analogy: The Secure Bank Manager &amp; Sealed
               Envelopes
             </h2>
@@ -338,35 +230,11 @@
               Modern systems (like <strong>Kerberos</strong>) fix this by
               embedding encrypted timestamps inside tickets.
             </p>
-          </section>
+        </section>
 
-          <!-- 3. PRETEST TAB -->
-          <section id="tab-pretest" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">Pretest Questions</h2>
-            <p class="vlab-paragraph">
-              Evaluate your baseline knowledge of symmetric cryptography and Key
-              Distribution Centers prior to running the experiment.
-            </p>
-
-            <div id="pretestQuestionsContainer"></div>
-
-            <div class="vlab-btn-group">
-              <button id="btnPretestSubmit" class="btn-vlab-primary">
-                Submit Pretest
-              </button>
-              <button id="btnPretestReset" class="btn-vlab-reset">
-                Reset Options
-              </button>
-            </div>
-            <div
-              id="pretestScore"
-              style="display: none; margin-top: 1rem"
-            ></div>
-          </section>
-
-          <!-- 4. PROCEDURE TAB -->
-          <section id="tab-procedure" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">Simulation Instructions</h2>
+        <!-- c. Step-by-step procedure -->
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <h2 class="vlab-section-heading">Simulation Instructions</h2>
             <p class="vlab-paragraph">
               Follow these instructions to configure, run, and inspect the
               Needham-Schroeder protocol in the interactive simulation:
@@ -450,11 +318,11 @@
                 </p>
               </div>
             </div>
-          </section>
+        </section>
 
-          <!-- 5. INTERACTIVE SIMULATION TAB (SINGLE-VIEWPORT DASHBOARD) -->
-          <section id="tab-simulation" class="vlab-tab-panel">
-            <div class="sim-dashboard-container">
+        <!-- d. Interactive simulation / implementation -->
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="sim-dashboard-container">
               <!-- Top Dashboard Card: Controls & Stepper Row -->
               <div class="sim-top-card">
                 <div class="sim-controls-row">
@@ -915,36 +783,19 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </div></section>
 
-          <!-- 6. POSTTEST TAB -->
-          <section id="tab-posttest" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">Posttest Assessment</h2>
-            <p class="vlab-paragraph">
-              Assess your understanding of ticket decryption, nonce challenges,
-              and protocol security vulnerabilities.
-            </p>
+        <!-- e. Assessment / Quiz -->
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="quiz-panel">
+            <h2>Self Assessment &amp; Quiz</h2>
+            <p>Add multiple choice or short-answer questions to assess student understanding.</p>
+          </div>
+        </section>
 
-            <div id="posttestQuestionsContainer"></div>
-
-            <div class="vlab-btn-group">
-              <button id="btnPosttestSubmit" class="btn-vlab-primary">
-                Submit Posttest
-              </button>
-              <button id="btnPosttestReset" class="btn-vlab-reset">
-                Reset Options
-              </button>
-            </div>
-            <div
-              id="posttestScore"
-              style="display: none; margin-top: 1rem"
-            ></div>
-          </section>
-
-          <!-- 7. REFERENCES TAB -->
-          <section id="tab-references" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">
+        <!-- f. References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <h2 class="vlab-section-heading">
               References &amp; Further Reading
             </h2>
             <ul
@@ -981,113 +832,19 @@
                 (1996). <em>Handbook of Applied Cryptography.</em> CRC Press.
               </li>
             </ul>
-          </section>
+        </section>
 
-          <!-- 8. CONTRIBUTORS TAB -->
-          <section id="tab-contributors" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">Experiment Contributors</h2>
-            <div class="vlab-card">
-              <h4 style="color: var(--vlab-primary-brown); font-size: 0.95rem">
-                Department of Computer Science and Engineering
-              </h4>
-              <p
-                class="vlab-paragraph"
-                style="margin-top: 0.4rem; font-size: 0.9rem"
-              >
-                <strong>Developer:</strong> Niranjan Shanbhag, Vihan Shah, Jeremiah Yangal<br />
-                <strong>Institute:</strong> IIT Kharagpur Virtual Labs
-                Initiative<br />
-                <strong>Sponsor:</strong> Ministry of Education (MoE), Govt of
-                India
-              </p>
-            </div>
-          </section>
-
-          <!-- 9. FEEDBACK TAB -->
-          <section id="tab-feedback" class="vlab-tab-panel">
-            <h2 class="vlab-section-heading">Experiment Feedback</h2>
-            <div class="vlab-card">
-              <form
-                id="vlabFeedbackForm"
-                onsubmit="
-                  event.preventDefault();
-                  alert('Thank you for submitting your feedback.');
-                "
-              >
-                <div class="sim-field-group" style="margin-bottom: 1rem">
-                  <label for="fbUserName">Your Name:</label>
-                  <input
-                    type="text"
-                    id="fbUserName"
-                    class="sim-input"
-                    placeholder="Enter your name"
-                  />
-                </div>
-
-                <div class="sim-field-group" style="margin-bottom: 1rem">
-                  <label for="fbEmail">Email Address:</label>
-                  <input
-                    type="email"
-                    id="fbEmail"
-                    class="sim-input"
-                    placeholder="Enter your email"
-                  />
-                </div>
-
-                <div class="sim-field-group" style="margin-bottom: 1rem">
-                  <label for="fbComments"
-                    >Comments / Bug Reports / Suggestions:</label
-                  >
-                  <textarea
-                    id="fbComments"
-                    class="sim-input"
-                    rows="4"
-                    placeholder="Share your experience..."
-                  ></textarea>
-                </div>
-
-                <button type="submit" class="btn-vlab-primary">
-                  Submit Feedback
-                </button>
-              </form>
-            </div>
-          </section>
-        </main>
-      </div>
+        <!-- g. Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Experiment Feedback</h2>
+            <p>Please share your feedback to help us improve this virtual lab simulation.</p>
+          </div>
+        </section>
+      </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="vlab-footer">
-      <div class="vlab-footer-grid">
-        <div class="vlab-footer-column">
-          <h4>Community Links</h4>
-          <ul>
-            <li><a href="#">Sakshat Portal</a></li>
-            <li><a href="#">Virtual Labs Global</a></li>
-            <li><a href="#">Ministry of Education</a></li>
-          </ul>
-        </div>
-
-        <div class="vlab-footer-column">
-          <h4>Contact Us</h4>
-          <ul>
-            <li>Phone: General Information: 011-26582050</li>
-            <li>Email: support@vlabs.ac.in</li>
-            <li>Address: IIT Kharagpur / IIT Delhi</li>
-          </ul>
-        </div>
-
-        <div class="vlab-footer-column">
-          <h4>Follow Us</h4>
-          <ul>
-            <li><a href="#">Twitter / X</a></li>
-            <li><a href="#">Facebook</a></li>
-            <li><a href="#">YouTube Channel</a></li>
-          </ul>
-        </div>
-      </div>
-    </footer>
-
-    <script src="script.js?v=2"></script>
+    <script src="../../js/common.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

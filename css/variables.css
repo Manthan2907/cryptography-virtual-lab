@@ -1,0 +1,43 @@
+/* Virtual Cryptography Laboratory Portal Design Tokens */
+:root {
+	color-scheme: dark;
+
+	/* Signature Dark Coffee & Mocha Palette (Matches Reference Screenshots) */
+	--color-primary: #A98D7B;
+	--color-primary-dark: #8B6F5E;
+	--color-secondary: #4C8CE8;
+	--color-secondary-dark: #2D6EC9;
+	--color-accent: #513F35;
+	--color-text: #F6F0EC;
+	--color-background: #211B18;
+	--color-surface: #2D2420;
+	--color-surface-muted: #382C26;
+	--color-border: #735B4C;
+	--color-border-strong: #A98774;
+	--color-text-muted: #D0C1B8;
+	--color-on-primary: #211B18;
+	--color-on-secondary: #FFFFFF;
+
+	--space-1: 8px;
+	--space-2: 16px;
+	--space-3: 24px;
+	--space-4: 32px;
+	--space-5: 48px;
+	--space-6: 64px;
+
+	--font-size-sm: 14px;
+	--font-size-md: 16px;
+	--font-size-lg: 18px;
+	--font-size-xl: 22px;
+	--font-size-2xl: 28px;
+	--font-size-3xl: 36px;
+	--line-height-tight: 1.2;
+	--line-height-body: 1.65;
+
+	--radius-sm: 6px;
+	--radius-md: 12px;
+	--radius-lg: 18px;
+	--shadow-sm: 0 4px 12px rgb(0 0 0 / 20%);
+	--shadow-md: 0 12px 28px rgb(0 0 0 / 30%);
+	--content-width: 1280px;
+}

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access Control List (ACL) experiment">
+    <title>Access Control List (ACL) | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+  </head>
+  <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Access Control List (ACL)</h1>
+        <p id="exp-description">Implement an Access Control List and demonstrate authorization based on assigned permissions.</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+      </nav>
+
+      <main class="content-area">
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> Implement an Access Control List and demonstrate authorization based on assigned permissions.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Understand object-centric security structures (Access Control Lists) versus capability lists.</li>
+              <li>Add and modify Access Control Entries (ACEs) with fine-grained permissions (r, w, x).</li>
+              <li>Demonstrate real-time authorization checks and permission inheritance.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder">
+            <h2>Theory</h2>
+            <p>An Access Control List (ACL) is a list of permissions associated with a system resource (object). The list specifies who or what is allowed to access the object and what operations are allowed to be performed. Each entry in a typical ACL specifies a subject and an operation (e.g. <code>Alice: Read, Write</code>; <code>Bob: Read</code>; <code>All: None</code>).</p>
+          </div>
+        </section>
+
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-placeholder">
+            <h2>Procedure</h2>
+            <ol>
+              <li>View the active Access Control Entries (ACE) for the target file.</li>
+              <li>Optionally add a new user or modify permissions (Read, Write, Execute).</li>
+              <li>Simulate an access request from a chosen user.</li>
+              <li>Verify the authorization engine's Allow or Deny decision.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="simulation-controls">
+            <h2>Simulation Controls</h2>
+            <label for="aclUser">Select User:</label>
+            <select id="aclUser">
+              <option value="alice">Alice (Project Lead)</option>
+              <option value="bob">Bob (Developer)</option>
+              <option value="charlie">Charlie (Intern)</option>
+              <option value="eve">Eve (External Auditor)</option>
+            </select>
+            <label for="aclPerm" style="margin-top: 10px;">Requested Action on <code>/secure/database.db</code>:</label>
+            <select id="aclPerm">
+              <option value="read">READ</option>
+              <option value="write">WRITE</option>
+              <option value="execute">EXECUTE</option>
+            </select>
+            <button type="button" id="btnCheckAcl">Test ACL Authorization</button>
+          </div>
+          <div class="simulation-output" aria-live="polite">
+            <h2>Simulation Output</h2>
+            <div id="aclOutput">Select user and action to test...</div>
+          </div>
+        </section>
+
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="quiz-panel">
+            <h2>Assessment / Quiz</h2>
+            <p>1. In what way does an Access Control List differ from a Capability List?</p>
+            <p>2. What happens if a subject is not listed in any ACE of a secure object?</p>
+          </div>
+        </section>
+
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>POSIX Access Control Lists documentation.</li>
+              <li>RFC 2828: Internet Security Glossary.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Feedback</h2>
+            <p>Please share your feedback regarding this experiment simulation.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

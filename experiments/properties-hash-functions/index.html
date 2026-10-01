@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Properties of Secure Hash Function experiment">
+    <title>Properties of Secure Hash Function | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+  </head>
+  <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Properties of Secure Hash Function</h1>
+        <p id="exp-description">Analyze preimage resistance, second-preimage resistance, collision resistance, and the avalanche effect.</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+      </nav>
+
+      <main class="content-area">
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> Analyze the properties of a secure cryptographic hash function, including preimage resistance, second-preimage resistance, collision resistance, and avalanche effect.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Demonstrate how a tiny change in input results in a drastic change in output (avalanche effect).</li>
+              <li>Calculate Hamming distance and bit variation percentage between two hashes.</li>
+              <li>Contrast one-way security properties (preimage resistance vs collision resistance).</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder">
+            <h2>Theory</h2>
+            <p>A cryptographic hash function must satisfy three primary security properties: Preimage Resistance (one-way property), Second Preimage Resistance (weak collision resistance), and Collision Resistance (strong collision resistance). Furthermore, an ideal hash displays the Avalanche Effect: if an input bit is toggled, each output bit changes with 50% probability.</p>
+          </div>
+        </section>
+
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-placeholder">
+            <h2>Procedure</h2>
+            <ol>
+              <li>Enter Message 1 and Message 2 (differing by just one character).</li>
+              <li>Click "Analyze Avalanche Effect".</li>
+              <li>Examine the bitwise comparison and Hamming distance.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="simulation-controls">
+            <h2>Simulation Controls</h2>
+            <label for="msg1">Message 1:</label>
+            <input type="text" id="msg1" value="Cryptography Lab 2026">
+            <label for="msg2" style="margin-top: 10px;">Message 2 (Single character modification):</label>
+            <input type="text" id="msg2" value="Cryptography Lab 2027">
+            <button type="button" id="btnAnalyze">Analyze Avalanche Effect</button>
+          </div>
+          <div class="simulation-output" aria-live="polite">
+            <h2>Simulation Output</h2>
+            <div id="propOutput">Click Analyze to view hash comparisons...</div>
+          </div>
+        </section>
+
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="quiz-panel">
+            <h2>Assessment / Quiz</h2>
+            <p>1. What percentage of output bits should ideally flip if 1 bit of input is modified?</p>
+            <p>2. What is the difference between Preimage Resistance and Collision Resistance?</p>
+          </div>
+        </section>
+
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>Rogaway &amp; Shrimpton, <em>Cryptographic Hash-Function Basics</em>.</li>
+              <li>NIST Special Publication 800-107.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Feedback</h2>
+            <p>Please share your feedback regarding this experiment simulation.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="../../js/vendor/crypto-js.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
