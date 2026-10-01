@@ -6,7 +6,7 @@
  * Compact Single-Viewport Dashboard & Collapsible Sidebar Styles
  */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 :root {
   --vlab-primary-brown: #764b38;
@@ -28,8 +28,10 @@
   --vlab-info-bg: #f0f7f4;
   --vlab-code-bg: #282320;
   --vlab-code-text: #e8dcd5;
-  --vlab-font-sans: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --vlab-font-mono: 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
+  --vlab-font-sans:
+    "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  --vlab-font-mono: "IBM Plex Mono", "Consolas", "Courier New", monospace;
 }
 
 * {
@@ -57,7 +59,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 110;
 }
 
@@ -206,7 +208,10 @@ body {
   border-right: 1px solid var(--vlab-border);
   padding-right: 1rem;
   overflow: hidden;
-  transition: opacity 0.25s ease, width 0.3s ease, padding 0.3s ease;
+  transition:
+    opacity 0.25s ease,
+    width 0.3s ease,
+    padding 0.3s ease;
   opacity: 1;
   width: 220px;
 }
@@ -277,8 +282,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(2px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Section Headings */
@@ -421,7 +432,7 @@ body {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background-color: rgba(0,0,0,0.15);
+  background-color: rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -523,7 +534,10 @@ body {
 
 .topology-svg-path {
   fill: none;
-  transition: stroke 0.3s ease, stroke-width 0.3s ease, opacity 0.3s ease;
+  transition:
+    stroke 0.3s ease,
+    stroke-width 0.3s ease,
+    opacity 0.3s ease;
 }
 
 /* Base permanent interconnection lines between all 3 nodes */
@@ -587,7 +601,9 @@ body {
   border-radius: 6px;
   padding: 0.65rem;
   box-shadow: 0 2px 6px rgba(118, 75, 56, 0.05);
-  transition: border-color 0.3s, transform 0.2s;
+  transition:
+    border-color 0.3s,
+    transform 0.2s;
 }
 
 .entity-card-compact.highlight {
@@ -656,12 +672,30 @@ body {
   margin-bottom: 0.35rem;
 }
 
-.entity-badge-sm.status-idle { background-color: var(--vlab-sidebar-bg); color: var(--vlab-text-muted); }
-.entity-badge-sm.status-requesting { background-color: #e3f2fd; color: #0d47a1; }
-.entity-badge-sm.status-waiting { background-color: #fff3e0; color: #e65100; }
-.entity-badge-sm.status-encrypting { background-color: #f3e5f5; color: #4a148c; }
-.entity-badge-sm.status-decrypting { background-color: #ede7f6; color: #4a148c; }
-.entity-badge-sm.status-authenticated { background-color: var(--vlab-success-bg); color: var(--vlab-success-green); }
+.entity-badge-sm.status-idle {
+  background-color: var(--vlab-sidebar-bg);
+  color: var(--vlab-text-muted);
+}
+.entity-badge-sm.status-requesting {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+.entity-badge-sm.status-waiting {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+.entity-badge-sm.status-encrypting {
+  background-color: #f3e5f5;
+  color: #4a148c;
+}
+.entity-badge-sm.status-decrypting {
+  background-color: #ede7f6;
+  color: #4a148c;
+}
+.entity-badge-sm.status-authenticated {
+  background-color: var(--vlab-success-bg);
+  color: var(--vlab-success-green);
+}
 
 .entity-key-table-sm {
   width: 100%;
@@ -746,7 +780,8 @@ body {
   margin-top: 0.35rem;
 }
 
-.inspector-table-compact th, .inspector-table-compact td {
+.inspector-table-compact th,
+.inspector-table-compact td {
   padding: 0.4rem 0.5rem;
   border: 1px solid var(--vlab-border);
   text-align: left;
@@ -798,9 +833,18 @@ body {
   margin: 0 0.2rem;
 }
 
-.audit-tag.INFO { background-color: #e3f2fd; color: #0d47a1; }
-.audit-tag.SUCCESS { background-color: var(--vlab-success-bg); color: var(--vlab-success-green); }
-.audit-tag.WARN { background-color: var(--vlab-error-bg); color: var(--vlab-error-red); }
+.audit-tag.INFO {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+.audit-tag.SUCCESS {
+  background-color: var(--vlab-success-bg);
+  color: var(--vlab-success-green);
+}
+.audit-tag.WARN {
+  background-color: var(--vlab-error-bg);
+  color: var(--vlab-error-red);
+}
 
 /* Quiz Styles */
 .quiz-question-card {
@@ -898,7 +942,7 @@ body {
   font-size: 0.95rem;
   color: #ffffff;
   margin-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 0.3rem;
 }
 
@@ -917,4 +961,37 @@ body {
 .vlab-footer-column a:hover {
   color: #ffffff;
   text-decoration: underline;
+}
+
+/* Button Styles */
+.btn-vlab-primary {
+  background-color: var(--vlab-primary-brown);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-vlab-primary:hover {
+  background-color: var(--vlab-primary-hover);
+}
+
+.btn-vlab-reset {
+  background-color: var(--vlab-reset-btn);
+  color: var(--vlab-primary-brown);
+  border: 1px solid var(--vlab-border-dark);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-vlab-reset:hover {
+  background-color: #e2d1c3;
 }
