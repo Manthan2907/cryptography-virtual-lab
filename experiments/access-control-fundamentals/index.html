@@ -48,77 +48,209 @@
           </div>
         </section>
 
+        <style>
+          .theory-card {
+            border: 1px solid var(--color-border);
+            padding: 20px;
+            border-radius: 6px;
+            background: var(--color-surface-muted);
+          }
+          .theory-card h3 {
+            margin-top: 0;
+            color: var(--color-primary);
+          }
+          .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+          }
+          .btn-group input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          .btn-group label {
+            padding: 8px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            background: var(--color-surface);
+            color: var(--color-text-muted);
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            user-select: none;
+            font-weight: 400;
+          }
+          .btn-group label:hover {
+            border-color: var(--color-border-strong);
+          }
+          .btn-group input[type="radio"]:checked + label {
+            background: var(--color-secondary);
+            color: var(--color-on-secondary);
+            border-color: var(--color-secondary);
+            font-weight: 700;
+          }
+        </style>
+
         <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
           <div class="content-placeholder">
             <h2>Theory</h2>
-            <p>Access control is a fundamental component of data security that dictates who is allowed to access and use company information and resources. Through authentication and authorization, access control policies ensure that users are who they say they are and that they have appropriate access to company data.</p>
-            <p>In computer security, access control involves three primary abstractions: <strong>Subjects</strong>, <strong>Objects</strong>, and <strong>Operations</strong>. A <em>Subject</em> is an active entity, such as a user, process, or device, that requests access to a resource. An <em>Object</em> is a passive resource, such as a file, database record, network port, or hardware device, that is being accessed. An <em>Operation</em> is the specific action the subject wishes to perform on the object, typically categorized as Read, Write, Execute, or Delete.</p>
-            <h3>1. Discretionary Access Control (DAC)</h3>
-            <p>Discretionary Access Control (DAC) is a model where the owner of an object has complete control over it. The owner can grant or deny access to other subjects at their discretion. This is typically implemented using Access Control Lists (ACLs). While flexible, DAC can be vulnerable to compromised user accounts and malicious programs like Trojan horses, because any program run by a user inherits all of that user's privileges.</p>
-            <h3>2. Mandatory Access Control (MAC)</h3>
-            <p>Mandatory Access Control (MAC) is a strict, centrally managed access control model often used in high-security environments like government and military. In MAC, both subjects and objects are assigned security labels or clearances (e.g., Unclassified, Confidential, Secret, Top Secret). Access decisions are strictly enforced by the operating system based on these labels, following security rules such as the Bell-LaPadula model (for confidentiality) which dictates "no read up, no write down", or the Biba model (for integrity). Users cannot override these policies.</p>
-            <h3>3. Role-Based Access Control (RBAC)</h3>
-            <p>Role-Based Access Control (RBAC) simplifies management by grouping permissions into roles rather than assigning them directly to individual users. Users are then assigned to one or more roles (e.g., Administrator, Faculty, Student), and they inherit the permissions associated with those roles. This model aligns closely with organizational structures and greatly reduces the administrative overhead of managing user access, especially in large organizations. It enforces the principle of least privilege by ensuring users only have the access necessary for their specific job functions.</p>
+            <p style="font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;">
+              Access control is a fundamental component of data security that dictates who is allowed to access and use company information and resources. Through authentication and authorization, access control policies ensure that users are who they say they are and that they have appropriate access to company data.
+            </p>
+            
+            <div style="background: var(--color-surface); padding: 15px; border-left: 4px solid var(--color-primary); margin-bottom: 25px; border-radius: 0 4px 4px 0;">
+              <strong>The Core Abstractions:</strong>
+              <ul style="margin-top: 10px; margin-bottom: 0;">
+                <li><strong>Subject:</strong> An active entity (e.g., user, process, device) that requests access to a resource.</li>
+                <li><strong>Object:</strong> A passive resource (e.g., file, database record, hardware) that is being accessed.</li>
+                <li><strong>Operation:</strong> The specific action (Read, Write, Execute, Delete) requested by the subject.</li>
+              </ul>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+              <div class="theory-card">
+                <h3>1. Discretionary Access Control (DAC)</h3>
+                <p style="font-size: 0.95rem;">A model where the owner of an object has complete control over it. The owner can grant or deny access to other subjects at their discretion using Access Control Lists (ACLs).</p>
+                <p style="font-size: 0.85rem; opacity: 0.8;"><em>Vulnerability:</em> Can be compromised by malicious programs (like Trojans) since programs inherit the user's privileges.</p>
+              </div>
+
+              <div class="theory-card">
+                <h3>2. Mandatory Access Control (MAC)</h3>
+                <p style="font-size: 0.95rem;">A strict, centrally managed model used in high-security environments. Subjects and objects are assigned security clearances and classifications.</p>
+                <p style="font-size: 0.85rem; opacity: 0.8;"><em>Rules:</em> Enforces policies like Bell-LaPadula (confidentiality: "no read up, no write down") and Biba (integrity).</p>
+              </div>
+
+              <div class="theory-card">
+                <h3>3. Role-Based Access Control (RBAC)</h3>
+                <p style="font-size: 0.95rem;">Simplifies management by grouping permissions into predefined roles. Users are assigned roles and inherit the associated permissions.</p>
+                <p style="font-size: 0.85rem; opacity: 0.8;"><em>Advantage:</em> Aligns with organizational structures and naturally enforces the principle of least privilege.</p>
+              </div>
+            </div>
           </div>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
           <div class="content-placeholder">
             <h2>Procedure</h2>
-            <ol>
-              <li>Select the desired <strong>Access Control Model</strong> (DAC, MAC, or RBAC).</li>
-              <li>Enter the requesting <strong>Subject Identity</strong> (e.g., Alice, Bob, Admin).</li>
-              <li>Select the <strong>Subject Role/Clearance</strong> representing the user's privilege level.</li>
-              <li>Select the target <strong>Object</strong> you wish to access.</li>
-              <li>Select the requested <strong>Operation</strong> (Read, Write, Execute, Delete).</li>
-              <li>Click "Evaluate Access Request" to observe the authorization decision and audit log.</li>
-            </ol>
+            <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px;">
+              <ol style="line-height: 1.8; margin-bottom: 0;">
+                <li><strong>Select Model:</strong> Choose the desired Access Control Model (DAC, MAC, or RBAC) from the button group.</li>
+                <li><strong>Identify Subject:</strong> Enter the requesting Subject Identity (e.g., User A, Administrator).</li>
+                <li><strong>Assign Clearance/Role:</strong> Select the Subject Role representing their privilege tier.</li>
+                <li><strong>Target Object:</strong> Select the resource the subject intends to interact with.</li>
+                <li><strong>Determine Operation:</strong> Pick the action to perform (Read, Write, Execute, Delete).</li>
+                <li><strong>Evaluate & Observe:</strong> Click "Evaluate Access Request" and review the resulting authorization decision in the Audit Log.</li>
+              </ol>
+            </div>
           </div>
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
             <h2>Simulation Controls</h2>
-            <label for="acModel">Access Control Model:</label>
-            <select id="acModel" style="display: block; width: 100%; max-width: 300px; padding: 0.5rem; margin-top: 5px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
-              <option value="rbac" selected>Role-Based Access Control (RBAC)</option>
-              <option value="mac">Mandatory Access Control (MAC)</option>
-              <option value="dac">Discretionary Access Control (DAC)</option>
-            </select>
+            
+            <label>Access Control Model:</label>
+            <div class="btn-group" id="acModelGroup">
+              <input type="radio" id="model_rbac" name="acModel" value="rbac" checked>
+              <label for="model_rbac">Role-Based (RBAC)</label>
+              <input type="radio" id="model_mac" name="acModel" value="mac">
+              <label for="model_mac">Mandatory (MAC)</label>
+              <input type="radio" id="model_dac" name="acModel" value="dac">
+              <label for="model_dac">Discretionary (DAC)</label>
+            </div>
 
             <label for="subIdentity">Subject Identity:</label>
-            <input type="text" id="subIdentity" placeholder="e.g., Alice, Bob" style="display: block; width: 100%; max-width: 300px; padding: 0.5rem; margin-top: 5px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+            <input type="text" id="subIdentity" placeholder="e.g., Alice, Bob" style="display: block; width: 100%; max-width: 300px; margin-bottom: 5px;">
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0; margin-bottom: 15px;"><em>For DAC tests, try typing: <strong>Alice</strong> (owns Syllabus), <strong>Bob</strong> (owns Grades), <strong>Admin</strong> (owns Config), or <strong>Root</strong> (owns Kernel). Note: Capitalization does not matter.</em></p>
             
-            <label for="subRole">Subject Role/Clearance:</label>
-            <select id="subRole">
-              <option value="guest">Guest</option>
-              <option value="student" selected>Student</option>
-              <option value="faculty">Faculty</option>
-              <option value="admin">Administrator</option>
-            </select>
-            <label for="targetObj" style="margin-top: 10px;">Target Object:</label>
-            <select id="targetObj">
-              <option value="public_syllabus">Public_Syllabus.pdf</option>
-              <option value="lab_assignment">Lab_Assignment_Grades.xlsx</option>
-              <option value="system_config">Server_Config.env</option>
-              <option value="system_kernel">System_Kernel.bin</option>
-            </select>
-            <label for="opType" style="margin-top: 10px;">Operation:</label>
-            <select id="opType">
-              <option value="read">READ</option>
-              <option value="write">WRITE</option>
-              <option value="execute">EXECUTE</option>
-              <option value="delete">DELETE</option>
-            </select>
-            <button type="button" id="btnEvalAccess">Evaluate Access Request</button>
+            <label>Subject Role/Clearance:</label>
+            <div class="btn-group" id="subRoleGroup">
+              <input type="radio" id="role_guest" name="subRole" value="guest">
+              <label for="role_guest">Guest (Lvl 1)</label>
+              <input type="radio" id="role_student" name="subRole" value="student" checked>
+              <label for="role_student">Student (Lvl 2)</label>
+              <input type="radio" id="role_faculty" name="subRole" value="faculty">
+              <label for="role_faculty">Faculty (Lvl 3)</label>
+              <input type="radio" id="role_admin" name="subRole" value="admin">
+              <label for="role_admin">Administrator (Lvl 4)</label>
+            </div>
+
+            <label>Target Object:</label>
+            <div class="btn-group" id="targetObjGroup">
+              <input type="radio" id="obj_syllabus" name="targetObj" value="public_syllabus" checked>
+              <label for="obj_syllabus">Syllabus (Lvl 1)</label>
+              <input type="radio" id="obj_grades" name="targetObj" value="lab_assignment">
+              <label for="obj_grades">Grades (Lvl 2)</label>
+              <input type="radio" id="obj_config" name="targetObj" value="system_config">
+              <label for="obj_config">Config (Lvl 3)</label>
+              <input type="radio" id="obj_kernel" name="targetObj" value="system_kernel">
+              <label for="obj_kernel">Kernel (Lvl 4)</label>
+            </div>
+
+            <label>Requested Operation:</label>
+            <div class="btn-group" id="opTypeGroup">
+              <input type="radio" id="op_read" name="opType" value="read" checked>
+              <label for="op_read">Read</label>
+              <input type="radio" id="op_write" name="opType" value="write">
+              <label for="op_write">Write</label>
+              <input type="radio" id="op_execute" name="opType" value="execute">
+              <label for="op_execute">Execute</label>
+              <input type="radio" id="op_delete" name="opType" value="delete">
+              <label for="op_delete">Delete</label>
+            </div>
+            
+            <button type="button" id="btnEvalAccess" style="margin-top: 10px;">Evaluate Access Request</button>
           </div>
-          <div class="simulation-output" aria-live="polite">
+          <div class="simulation-output" aria-live="polite" style="position: relative;">
+            
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(33,27,24,0.85); z-index: 10; align-items: center; justify-content: center; flex-direction: column; border-radius: var(--radius-md);">
+              <div style="border: 4px solid var(--color-border); border-top: 4px solid var(--color-secondary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;"></div>
+              <p style="margin-top: 10px; font-weight: bold; color: var(--color-secondary);">Evaluating Policy...</p>
+            </div>
+            <style>
+              @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+              .btn-group label:active { transform: scale(0.95); }
+              button:active { transform: scale(0.98); }
+            </style>
+
             <h2>Simulation Output</h2>
-            <div id="accessOutput" style="margin-bottom: 20px;">Select parameters and evaluate request...</div>
+            
+            <!-- Visualizer -->
+            <div id="visualizer" style="display: flex; align-items: center; justify-content: center; gap: 24px; padding: 24px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 8px; margin-bottom: 20px; min-height: 120px;">
+              <div style="text-align: center;">
+                <div id="visSubjectIcon" style="font-size: 3rem; margin-bottom: 8px;">👤</div>
+                <div id="visSubject" style="font-weight: bold; font-size: 0.9rem; color: var(--color-text-muted);">Subject</div>
+              </div>
+              <div id="visLock" style="transition: transform 0.3s, color 0.3s; display: flex; flex-direction: column; align-items: center; margin: 0 10px;">
+                <span id="visLockIcon" style="font-size: 2.5rem; display: inline-block; padding: 8px 12px;">🔒</span>
+                <span id="visOp" style="font-size: 0.8rem; background: var(--color-surface-muted); color: var(--color-text-muted); padding: 2px 8px; border-radius: 4px; margin-top: 5px; border: 1px solid var(--color-border);">Operation</span>
+              </div>
+              <div style="text-align: center;">
+                <div id="visObjectIcon" style="font-size: 3rem; margin-bottom: 8px;">📄</div>
+                <div id="visObject" style="font-weight: bold; font-size: 0.9rem; color: var(--color-text-muted);">Object</div>
+              </div>
+            </div>
+
+            <div id="accessOutput" style="margin-bottom: 20px; color: var(--color-text-muted);">Select parameters and evaluate request...</div>
+            
             <h2>Audit Policy Log</h2>
-            <div style="max-height: 200px; overflow-y: auto; background: var(--bg-alt); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
-              <ul id="auditLog" style="list-style-type: none; padding: 0; margin: 0; font-family: monospace; font-size: 0.9rem;">
+            <div style="max-height: 200px; overflow-y: auto; background: var(--color-surface); padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin-bottom: 20px;">
+              <ul id="auditLog" style="list-style-type: none; padding: 0; margin: 0; font-family: monospace; font-size: 0.85rem;">
                 <!-- Log entries will be added here -->
+              </ul>
+            </div>
+
+            <h2>Expected Observations &amp; Results</h2>
+            <div style="background: var(--color-surface); border-left: 4px solid var(--color-primary); padding: 15px; font-size: 0.95rem; border-radius: 0 4px 4px 0; border: 1px solid var(--color-border); border-left: 4px solid var(--color-primary);">
+              <ul style="margin: 0; padding-left: 20px;">
+                <li style="margin-bottom: 5px;"><strong>DAC</strong>: Enter <em>Alice</em> as identity &mdash; she owns Syllabus, so all operations are granted.</li>
+                <li style="margin-bottom: 5px;"><strong>MAC</strong>: A Student (Lvl 2) cannot Read the Kernel (Lvl 4) &mdash; &ldquo;No Read Up&rdquo;.</li>
+                <li style="margin-bottom: 5px;"><strong>MAC</strong>: Write requires exact level match (integrity rule).</li>
+                <li><strong>RBAC</strong>: Faculty can read Config but not Kernel.</li>
               </ul>
             </div>
           </div>
