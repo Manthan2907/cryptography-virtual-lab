@@ -3,115 +3,438 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="Virtual Cryptography Laboratory Experiment Template">
+    <title>Experiment Title | Virtual Cryptography Laboratory</title>
+    <!-- Centralized Design Tokens & Experiment Stylesheet -->
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
   </head>
   <body>
-    <!-- Fr. CRCE Official College Header Banner -->
-    <div class="college-banner-strip">
-      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
-        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
-      </a>
-    </div>
-
-    <div class="experiment-container">
-      <header class="exp-header">
-        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description of the experiment</p>
-      </header>
-
-      <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
-        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
-        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
-        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
-        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
-        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
-      </nav>
-
-      <main class="content-area">
-        <!-- a. Aim and objectives -->
-        <section id="aim" class="tab-content active" data-tab-panel="aim">
-          <div class="content-placeholder">
-            <h2>Aim &amp; Objectives</h2>
-            <p><strong>Aim:</strong> Add the primary aim of the experiment here.</p>
-            <p><strong>Objectives:</strong></p>
-            <ul>
-              <li>Understand the algorithmic foundation of the cryptographic mechanism.</li>
-              <li>Implement and simulate the algorithm with interactive parameters.</li>
-              <li>Analyze security properties, edge cases, and vulnerability defenses.</li>
-            </ul>
+    <!-- 1. Main Header (Warm Earthy Coffee Brown) -->
+    <header class="exp-main-header">
+      <div class="header-inner">
+        <div class="header-left">
+          <a href="../../index.html#experiments" class="header-back-btn" aria-label="Back to experiment browser" title="Back to experiment browser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </a>
+          <div class="header-titles">
+            <h1 class="header-main-title">Computer Science Lab Manual</h1>
+            <div class="header-sub-breadcrumbs">
+              <span class="crumb-dot">&bull;</span>
+              <span>Cryptography &amp; System Security</span>
+              <span class="crumb-dot">&bull;</span>
+              <span>Experiment XX</span>
+              <span class="crumb-dot">&bull;</span>
+              <span id="headerExpSubtitle">Experiment Title</span>
+            </div>
           </div>
-        </section>
+        </div>
+        <div class="header-right">
+          <button type="button" class="header-share-btn" id="headerShareBtn" aria-label="Share this experiment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+    </header>
 
-        <!-- b. Relevant theoretical concepts -->
-        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add background terminology, mathematical equations, algorithm block diagrams, and working steps here.</p>
+    <!-- 2. Controls Toolbar (Cream Oatmeal Bar) -->
+    <section class="exp-controls-toolbar" aria-label="Experiment toolbar controls">
+      <div class="toolbar-inner">
+        <!-- Left Controls -->
+        <div class="toolbar-left">
+          <!-- Read Aloud Button -->
+          <button type="button" class="btn-read-aloud" id="readAloudBtn" aria-label="Read active section aloud">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>Read Aloud</span>
+          </button>
+
+          <!-- Speed Selector -->
+          <div class="toolbar-select-wrapper">
+            <select class="toolbar-select" id="readSpeedSelect" aria-label="Speech Speed">
+              <option value="0.75">Speed 0.75x</option>
+              <option value="1.0" selected>Speed 1x</option>
+              <option value="1.25">Speed 1.25x</option>
+              <option value="1.5">Speed 1.5x</option>
+              <option value="2.0">Speed 2x</option>
+            </select>
+            <svg class="toolbar-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </div>
-        </section>
 
-        <!-- c. Step-by-step procedure -->
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <ol>
-              <li>Select or enter input text/keys in the simulation controls.</li>
-              <li>Configure algorithm parameters (cost factor, key size, or mode).</li>
-              <li>Click the execute button to run the interactive computation.</li>
-              <li>Observe intermediate registers, state changes, and final cryptographic output.</li>
+          <!-- Voice Selector -->
+          <div class="toolbar-select-wrapper">
+            <select class="toolbar-select" id="readVoiceSelect" aria-label="Speech Voice">
+              <option value="auto">Voice: Auto</option>
+            </select>
+            <svg class="toolbar-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- Reset Button -->
+          <button type="button" class="toolbar-btn-compact" id="resetExpBtn" title="Reset state / Refresh" aria-label="Reset experiment state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+            </svg>
+          </button>
+
+          <!-- Zoom Controls -->
+          <button type="button" class="toolbar-btn-compact" id="zoomOutBtn" title="Decrease font size" aria-label="Decrease font size">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          <button type="button" class="toolbar-btn-compact" id="zoomInBtn" title="Increase font size" aria-label="Increase font size">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+
+          <!-- Page Stepper (1 / 7) -->
+          <div class="toolbar-page-stepper">
+            <span class="page-counter-text" id="pageCounterText">1 / 7</span>
+            <button type="button" class="toolbar-btn-compact" id="prevTabBtn" title="Previous page" aria-label="Previous page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="toolbar-btn-compact" id="nextTabBtn" title="Next page" aria-label="Next page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Filter Buttons -->
+        <div class="toolbar-right">
+          <button type="button" class="toolbar-filter-btn active" data-filter="all">All</button>
+          <button type="button" class="toolbar-filter-btn" data-filter="theory">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Theory</span>
+          </button>
+          <button type="button" class="toolbar-filter-btn" data-filter="interactive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Interactive</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Main Content Area (2-Column Grid) -->
+    <main class="exp-main-wrapper" id="mainContent">
+      <div class="exp-layout-grid">
+
+        <!-- ============================================================ -->
+        <!-- LEFT COLUMN: Main Experiment Card                            -->
+        <!-- ============================================================ -->
+        <div class="exp-main-card">
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 1: Aim & Objectives                                    -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-aim" class="tab-content-panel active" data-tab-panel="aim">
+            <span class="overview-badge">EXPERIMENT OVERVIEW</span>
+            <h2 class="exp-page-title">Aim &amp; Objectives</h2>
+            <p class="exp-page-lead">
+              Brief introduction and core domain context of the experiment.
+            </p>
+
+            <!-- Blue Highlight Callout Card (Experiment Title) -->
+            <div class="callout-experiment-title">
+              <div class="callout-header">
+                <span class="callout-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </span>
+                <span>Experiment Title</span>
+              </div>
+              <p class="callout-content">
+                <strong>Experiment Name:</strong> Add the official experiment description and primary problem statement.
+              </p>
+            </div>
+
+            <!-- Primary Aim -->
+            <h3 class="exp-section-heading">Primary Aim</h3>
+            <p class="exp-paragraph">
+              Detailed technical statement defining the expected learning outcomes and algorithmic properties to be investigated.
+            </p>
+
+            <!-- Educational Objectives -->
+            <h3 class="exp-section-heading">Educational Objectives</h3>
+            <div class="objectives-grid">
+              <div class="objective-card">
+                <h4 class="objective-card-title">1. Mathematical Principles</h4>
+                <p class="objective-card-body">
+                  Study the underlying algebraic structure, transformation functions, and cryptographic primitives.
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">2. Algorithm Implementation</h4>
+                <p class="objective-card-body">
+                  Trace state updates, key schedules, register transformations, and intermediate mathematical stages.
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">3. Security Analysis</h4>
+                <p class="objective-card-body">
+                  Validate security properties against known attacks, brute-force complexity, and cryptanalytic bounds.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 2: Theory                                              -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-theory" class="tab-content-panel" data-tab-panel="theory" hidden>
+            <span class="overview-badge">THEORETICAL FOUNDATION</span>
+            <h2 class="exp-page-title">Theoretical Concepts</h2>
+            <p class="exp-page-lead">
+              In-depth explanation of algorithmic mechanics, mathematical equations, and security guarantees.
+            </p>
+            <p class="exp-paragraph">
+              Add algorithm block diagrams, state transition models, and mathematical formulas here.
+            </p>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 3: Procedure                                           -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-procedure" class="tab-content-panel" data-tab-panel="procedure" hidden>
+            <span class="overview-badge">LABORATORY PROTOCOL</span>
+            <h2 class="exp-page-title">Procedure &bull; Step by Step</h2>
+            <p class="exp-page-lead">
+              Step-by-step instructions for operating the simulation controls and recording observations.
+            </p>
+            <ol style="padding-left: 20px; line-height: 1.8; color: var(--color-text);">
+              <li>Configure algorithm parameters and input values in the simulation panel.</li>
+              <li>Execute the computation step-by-step or run full execution.</li>
+              <li>Observe state changes, register transformations, and cryptographic outputs.</li>
+              <li>Record performance metrics, diffusion parameters, or verification results.</li>
             </ol>
-          </div>
-        </section>
+          </section>
 
-        <!-- d. Interactive simulation / implementation -->
-        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <h2>Simulation Controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
-          </div>
-          <div class="simulation-output" aria-live="polite">
-            <h2>Simulation Output</h2>
-            <p>Results will appear here after the simulation runs.</p>
-          </div>
-        </section>
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 4: Interactive Simulation                              -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-simulation" class="tab-content-panel" data-tab-panel="simulation" hidden>
+            <span class="overview-badge">INTERACTIVE WORKSPACE</span>
+            <h2 class="exp-page-title">Interactive Simulation</h2>
+            <p class="exp-page-lead">
+              Execute live cryptographic transformations and observe real-time algorithmic behavior.
+            </p>
+            <div class="sim-form-group">
+              <label for="sampleInput" class="sim-label">Sample Input:</label>
+              <input type="text" id="sampleInput" class="sim-input sim-input-mono" value="Sample Plaintext">
+            </div>
+            <div class="sim-actions-bar">
+              <button type="button" class="sim-btn-primary">Execute Simulation</button>
+            </div>
+            <div class="sim-result-box">
+              <h4 class="sim-result-title">Simulation Output:</h4>
+              <div class="sim-digest-display">
+                <span>Output values will appear here after execution...</span>
+              </div>
+            </div>
+          </section>
 
-        <!-- e. Assessment / Quiz -->
-        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <div class="quiz-panel">
-            <h2>Self Assessment &amp; Quiz</h2>
-            <p>Add multiple choice or short-answer questions to assess student understanding.</p>
-          </div>
-        </section>
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 5: Assessment / Quiz                                   -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-quiz" class="tab-content-panel" data-tab-panel="quiz" hidden>
+            <span class="overview-badge">KNOWLEDGE ASSESSMENT</span>
+            <h2 class="exp-page-title">Assessment &bull; Concept Quiz</h2>
+            <p class="exp-page-lead">
+              Evaluate your conceptual understanding of this cryptographic mechanism.
+            </p>
+            <div class="quiz-container">
+              <div class="quiz-card">
+                <div class="quiz-question-num">Question 1</div>
+                <p class="quiz-question-text">Sample conceptual question on algorithm principles?</p>
+                <div class="quiz-options-list">
+                  <label class="quiz-option-label">
+                    <input type="radio" name="sampleQ" value="A">
+                    <span>Option A description</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="sampleQ" value="B">
+                    <span>Option B description</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <!-- f. References -->
-        <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="content-placeholder">
-            <h2>References</h2>
-            <ul>
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 6: References & Literature                             -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-references" class="tab-content-panel" data-tab-panel="references" hidden>
+            <span class="overview-badge">ACADEMIC REFERENCES</span>
+            <h2 class="exp-page-title">References &amp; Literature</h2>
+            <p class="exp-page-lead">Standard references and publications.</p>
+            <ul style="padding-left: 20px; line-height: 1.8; color: var(--color-text);">
               <li>William Stallings, <em>Cryptography and Network Security: Principles and Practice</em>, Pearson.</li>
               <li>NIST Cryptographic Standards and Guidelines (FIPS PUB).</li>
-              <li>RFC documentation and algorithm specifications.</li>
             </ul>
-          </div>
-        </section>
+          </section>
 
-        <!-- g. Feedback -->
-        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Experiment Feedback</h2>
-            <p>Please share your feedback to help us improve this virtual lab simulation.</p>
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 7: Student Feedback Form                               -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-feedback" class="tab-content-panel" data-tab-panel="feedback" hidden>
+            <span class="overview-badge">STUDENT FEEDBACK</span>
+            <h2 class="exp-page-title">Student Feedback Form</h2>
+            <p class="exp-page-lead">
+              Share your feedback to help refine virtual lab simulations.
+            </p>
+            <form onsubmit="event.preventDefault(); window.showToast('Thank you! Feedback recorded.');">
+              <div class="sim-form-group">
+                <label class="sim-label" for="fbName">Full Name / Roll Number:</label>
+                <input type="text" id="fbName" class="sim-input" required>
+              </div>
+              <div class="sim-form-group">
+                <label class="sim-label" for="fbComments">Comments / Observations:</label>
+                <textarea id="fbComments" class="sim-textarea" rows="3"></textarea>
+              </div>
+              <button type="submit" class="sim-btn-primary">Submit Feedback</button>
+            </form>
+          </section>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- RIGHT COLUMN: Sidebar (Explanation Resources)                -->
+        <!-- ============================================================ -->
+        <aside class="exp-sidebar-card" aria-label="Explanation Resources Navigation">
+          <div class="sidebar-header">
+            <h3 class="sidebar-header-title">Explanation Resources</h3>
+            <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse resource menu" title="Toggle resource menu">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
           </div>
-        </section>
-      </main>
+
+          <ul class="sidebar-nav-list" id="sidebarNavList">
+            <li>
+              <button type="button" class="resource-nav-btn active" data-tab="aim" aria-selected="true">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Aim &amp; Objectives</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="theory" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Theory</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="procedure" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                    <line x1="9" y1="16" x2="13" y2="16"></line>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Procedure - Step by Step</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="simulation" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Interactive Simulation</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="quiz" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Assessment - Concept Quiz</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="references" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">References &amp; Literature</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="feedback" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Student Feedback Form</span>
+              </button>
+            </li>
+          </ul>
+        </aside>
+
+      </div>
+    </main>
+
+    <!-- Floating Action Tab -->
+    <div class="floating-sidebar-tab" id="floatingSidebarTab" title="Open Resources" aria-label="Open Resources">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
     </div>
 
+    <!-- Scripts -->
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
   </body>

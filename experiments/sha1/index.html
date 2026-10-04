@@ -3,74 +3,705 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="SHA-1 Hash Algorithm - Computer Science Virtual Laboratory Manual">
+    <title>SHA-1 Hash Algorithm | Virtual Cryptography Laboratory</title>
+    <!-- Centralized Tokens & Experiment Stylesheets -->
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
   </head>
   <body>
-    <!-- Fr. CRCE Official College Header Banner -->
-    <div class="college-banner-strip">
-      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
-        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
-      </a>
+    <!-- 1. Main Header (Warm Earthy Coffee Brown) -->
+    <header class="exp-main-header">
+      <div class="header-inner">
+        <div class="header-left">
+          <a href="../../index.html#experiments" class="header-back-btn" aria-label="Back to experiment browser" title="Back to experiment browser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </a>
+          <div class="header-titles">
+            <h1 class="header-main-title">Computer Science Lab Manual</h1>
+            <div class="header-sub-breadcrumbs">
+              <span class="crumb-dot">&bull;</span>
+              <span>Cryptography &amp; System Security</span>
+              <span class="crumb-dot">&bull;</span>
+              <span>Experiment 09</span>
+              <span class="crumb-dot">&bull;</span>
+              <span>SHA-1 Hash Algorithm</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <button type="button" class="header-share-btn" id="headerShareBtn" aria-label="Share this experiment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. Controls Toolbar (Cream Oatmeal Bar) -->
+    <section class="exp-controls-toolbar" aria-label="Experiment toolbar controls">
+      <div class="toolbar-inner">
+        <!-- Left Controls -->
+        <div class="toolbar-left">
+          <!-- Read Aloud Button -->
+          <button type="button" class="btn-read-aloud" id="readAloudBtn" aria-label="Read active section aloud">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>Read Aloud</span>
+          </button>
+
+          <!-- Speed Selector -->
+          <div class="toolbar-select-wrapper">
+            <select class="toolbar-select" id="readSpeedSelect" aria-label="Speech Speed">
+              <option value="0.75">Speed 0.75x</option>
+              <option value="1.0" selected>Speed 1x</option>
+              <option value="1.25">Speed 1.25x</option>
+              <option value="1.5">Speed 1.5x</option>
+              <option value="2.0">Speed 2x</option>
+            </select>
+            <svg class="toolbar-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- Voice Selector -->
+          <div class="toolbar-select-wrapper">
+            <select class="toolbar-select" id="readVoiceSelect" aria-label="Speech Voice">
+              <option value="auto">Voice: Auto</option>
+            </select>
+            <svg class="toolbar-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- Reset / Refresh Button -->
+          <button type="button" class="toolbar-btn-compact" id="resetExpBtn" title="Reset state / Refresh" aria-label="Reset experiment state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+            </svg>
+          </button>
+
+          <!-- Zoom - Button -->
+          <button type="button" class="toolbar-btn-compact" id="zoomOutBtn" title="Decrease font size" aria-label="Decrease font size">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+
+          <!-- Zoom + Button -->
+          <button type="button" class="toolbar-btn-compact" id="zoomInBtn" title="Increase font size" aria-label="Increase font size">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+
+          <!-- Page Stepper (1 / 7) -->
+          <div class="toolbar-page-stepper">
+            <span class="page-counter-text" id="pageCounterText">1 / 7</span>
+            <button type="button" class="toolbar-btn-compact" id="prevTabBtn" title="Previous page" aria-label="Previous page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="toolbar-btn-compact" id="nextTabBtn" title="Next page" aria-label="Next page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Filter Pills -->
+        <div class="toolbar-right">
+          <button type="button" class="toolbar-filter-btn active" data-filter="all">All</button>
+          <button type="button" class="toolbar-filter-btn" data-filter="theory">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Theory</span>
+          </button>
+          <button type="button" class="toolbar-filter-btn" data-filter="interactive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Interactive</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Main Content Container (2-Column Layout) -->
+    <main class="exp-main-wrapper" id="mainContent">
+      <div class="exp-layout-grid">
+        
+        <!-- ============================================================ -->
+        <!-- LEFT COLUMN: Main Experiment Panel                           -->
+        <!-- ============================================================ -->
+        <div class="exp-main-card">
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 1: Aim & Objectives (Active by Default)                -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-aim" class="tab-content-panel active" data-tab-panel="aim">
+            <span class="overview-badge">EXPERIMENT OVERVIEW</span>
+            <h2 class="exp-page-title">Aim &amp; Objectives</h2>
+            <p class="exp-page-lead">
+              Study the fundamental mechanics of cryptographic hashing through the Secure Hash Algorithm 1 (SHA-1).
+            </p>
+
+            <!-- Blue Highlight Callout Card (Experiment Title) -->
+            <div class="callout-experiment-title">
+              <div class="callout-header">
+                <span class="callout-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </span>
+                <span>Experiment Title</span>
+              </div>
+              <p class="callout-content">
+                <strong>SHA-1:</strong> Generate the SHA-1 hash value for a given input message and study its output characteristics and sensitivity to input changes.
+              </p>
+            </div>
+
+            <!-- Primary Aim -->
+            <h3 class="exp-section-heading">Primary Aim</h3>
+            <p class="exp-paragraph">
+              To implement, analyze, and simulate the 160-bit SHA-1 cryptographic hash algorithm, validating its deterministic properties, fixed output length, message compression pipeline, and the avalanche effect when input data undergoes slight mutations.
+            </p>
+
+            <!-- Educational Objectives -->
+            <h3 class="exp-section-heading">Educational Objectives</h3>
+            <div class="objectives-grid">
+              <div class="objective-card">
+                <h4 class="objective-card-title">1. Mathematical Foundations</h4>
+                <p class="objective-card-body">
+                  Understand the pre-processing padding (512-bit blocks), 80-step expansion array, and modular 32-bit addition arithmetic.
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">2. Iterative Compression</h4>
+                <p class="objective-card-body">
+                  Trace the 80 rounds of logical non-linear functions (f0-f79) using round constants (K0-K3) and state registers (A, B, C, D, E).
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">3. Output Determinism</h4>
+                <p class="objective-card-body">
+                  Generate exact 160-bit (40 hexadecimal characters) message digest and demonstrate avalanche sensitivity to single-bit changes.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 2: Theory - SHA-1 Algorithm                            -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-theory" class="tab-content-panel" data-tab-panel="theory" hidden>
+            <span class="overview-badge">THEORETICAL FOUNDATION</span>
+            <h2 class="exp-page-title">Theory &bull; SHA-1 Architecture</h2>
+            <p class="exp-page-lead">
+              The Secure Hash Algorithm 1 (SHA-1) is a cryptographic hash function specified by NIST in FIPS PUB 180-4. It transforms an arbitrary-length message (&lt; 2<sup>64</sup> bits) into a fixed 160-bit (20-byte) message digest.
+            </p>
+
+            <h3 class="exp-section-heading">1. Merkle-Damg&aring;rd Iterative Construction</h3>
+            <p class="exp-paragraph">
+              SHA-1 follows the Merkle-Damg&aring;rd paradigm. The message is padded into an exact multiple of 512-bit blocks ($M_1, M_2, \dots, M_n$). Each 512-bit block sequentially updates five 32-bit internal working state registers ($A, B, C, D, E$) across 80 transformation rounds.
+            </p>
+
+            <div class="formula-callout">
+              <strong>Initial State Registers (Big-Endian Hex):</strong><br>
+              H0 = 0x67452301 &nbsp;|&nbsp; H1 = 0xEFCDAB89 &nbsp;|&nbsp; H2 = 0x98BADCFE &nbsp;|&nbsp; H3 = 0x10325476 &nbsp;|&nbsp; H4 = 0xC3D2E1F0
+            </div>
+
+            <h3 class="exp-section-heading">2. Four Execution Stages of 80 Rounds</h3>
+            <p class="exp-paragraph">
+              The 80 rounds are divided into 4 stages of 20 rounds each. Each stage applies a specific bitwise non-linear function $f_t(B, C, D)$ and a designated round constant $K_t$:
+            </p>
+
+            <div class="academic-table-wrap">
+              <table class="academic-table">
+                <thead>
+                  <tr>
+                    <th>Stage</th>
+                    <th>Rounds ($t$)</th>
+                    <th>Nonlinear Function $f_t(B, C, D)$</th>
+                    <th>Round Constant $K_t$</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Stage 1 (Ch)</strong></td>
+                    <td>0 to 19</td>
+                    <td><code>(B &and; C) &or; (&not;B &and; D)</code></td>
+                    <td><code>0x5A827999</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Stage 2 (Parity)</strong></td>
+                    <td>20 to 39</td>
+                    <td><code>B &oplus; C &oplus; D</code></td>
+                    <td><code>0x6ED9EBA1</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Stage 3 (Maj)</strong></td>
+                    <td>40 to 59</td>
+                    <td><code>(B &and; C) &or; (B &and; D) &or; (C &and; D)</code></td>
+                    <td><code>0x8F1BBCDC</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Stage 4 (Parity)</strong></td>
+                    <td>60 to 79</td>
+                    <td><code>B &oplus; C &oplus; D</code></td>
+                    <td><code>0xCA62C1D6</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="exp-section-heading">3. Per-Round Transformation Equation</h3>
+            <p class="exp-paragraph">
+              In each round $t$ ($0 \le t \le 79$), the temporary register $T$ is computed and state is shifted:
+            </p>
+            <div class="formula-callout">
+              T = S<sup>5</sup>(A) + f<sub>t</sub>(B, C, D) + E + W<sub>t</sub> + K<sub>t</sub> &nbsp;(mod 2<sup>32</sup>)<br>
+              E = D &nbsp;|&nbsp; D = C &nbsp;|&nbsp; C = S<sup>30</sup>(B) &nbsp;|&nbsp; B = A &nbsp;|&nbsp; A = T
+            </div>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 3: Procedure - Step by Step                            -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-procedure" class="tab-content-panel" data-tab-panel="procedure" hidden>
+            <span class="overview-badge">LABORATORY PROTOCOL</span>
+            <h2 class="exp-page-title">Procedure &bull; Step by Step</h2>
+            <p class="exp-page-lead">
+              Follow this standardized laboratory workflow to simulate SHA-1 message padding, 80-round iterative compression, and avalanche effect evaluation.
+            </p>
+
+            <div class="objectives-grid" style="grid-template-columns: 1fr; gap: 14px;">
+              <div class="objective-card">
+                <h4 class="objective-card-title">Step 1: Input Preparation &amp; Message Padding</h4>
+                <p class="objective-card-body">
+                  Enter an arbitrary ASCII text message. The system appends a single <code>1</code> bit (hex <code>0x80</code>), followed by <code>0</code> bits until the message length is congruent to 448 (mod 512). The original 64-bit big-endian message length is appended to form an exact 512-bit block.
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">Step 2: 80-Word Expansion Array (W<sub>0</sub> to W<sub>79</sub>)</h4>
+                <p class="objective-card-body">
+                  The first 16 words ($W_0 \dots W_{15}$) are extracted directly from the 512-bit block. For $t = 16 \dots 79$, words are generated via: <code>W<sub>t</sub> = S<sup>1</sup>(W<sub>t-3</sub> &oplus; W<sub>t-8</sub> &oplus; W<sub>t-14</sub> &oplus; W<sub>t-16</sub>)</code>.
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">Step 3: Execute 80 Round State Transformation</h4>
+                <p class="objective-card-body">
+                  Iterate through rounds 0 to 79. Observe registers A, B, C, D, and E as they undergo circular shifts, logical boolean functions, and modular additions.
+                </p>
+              </div>
+
+              <div class="objective-card">
+                <h4 class="objective-card-title">Step 4: Avalanche Effect Analysis</h4>
+                <p class="objective-card-body">
+                  Modify a single character or bit in the input message. Compare the resulting 160-bit digest with the original output to calculate the bit-flip diffusion percentage.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 4: Interactive Simulation                              -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-simulation" class="tab-content-panel" data-tab-panel="simulation" hidden>
+            <span class="overview-badge">INTERACTIVE WORKSPACE</span>
+            <h2 class="exp-page-title">SHA-1 Interactive Simulator</h2>
+            <p class="exp-page-lead">
+              Compute real-time SHA-1 hashes, visualize 512-bit padding, trace intermediate working registers, and test the avalanche effect.
+            </p>
+
+            <!-- Simulator Input Area -->
+            <div class="sim-form-group">
+              <label for="sha1InputText" class="sim-label">Input Plaintext Message:</label>
+              <textarea id="sha1InputText" class="sim-textarea sim-textarea-mono" rows="3" placeholder="Enter message text here (e.g. Hello World)...">Hello World</textarea>
+            </div>
+
+            <div class="sim-actions-bar">
+              <button type="button" class="sim-btn-primary" id="computeHashBtn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Generate SHA-1 Digest</span>
+              </button>
+              <button type="button" class="sim-btn-secondary" id="loadPresetBtn">Load Preset Example</button>
+            </div>
+
+            <!-- Hash Output Box -->
+            <div class="sim-result-box">
+              <h4 class="sim-result-title">Computed 160-bit SHA-1 Digest (Hexadecimal):</h4>
+              <div class="sim-digest-display">
+                <span id="sha1HexOutput">2aae6c35c94fcfb415dbe95f408b9ce91ee846ed</span>
+                <button type="button" class="copy-btn-mini" id="copyDigestBtn" title="Copy digest">Copy</button>
+              </div>
+            </div>
+
+            <!-- Padding & State Trace Grid -->
+            <h3 class="exp-section-heading">Initial Working Registers (H0 - H4)</h3>
+            <div class="registers-grid">
+              <div class="register-cell">
+                <div class="register-label">H0 (Register A)</div>
+                <div class="register-value" id="regH0">0x67452301</div>
+              </div>
+              <div class="register-cell">
+                <div class="register-label">H1 (Register B)</div>
+                <div class="register-value" id="regH1">0xEFCDAB89</div>
+              </div>
+              <div class="register-cell">
+                <div class="register-label">H2 (Register C)</div>
+                <div class="register-value" id="regH2">0x98BADCFE</div>
+              </div>
+              <div class="register-cell">
+                <div class="register-label">H3 (Register D)</div>
+                <div class="register-value" id="regH3">0x10325476</div>
+              </div>
+              <div class="register-cell">
+                <div class="register-label">H4 (Register E)</div>
+                <div class="register-value" id="regH4">0xC3D2E1F0</div>
+              </div>
+            </div>
+
+            <!-- Live Avalanche Sensitivity Test -->
+            <h3 class="exp-section-heading">Avalanche Effect Bit Sensitivity Comparator</h3>
+            <p class="exp-paragraph">
+              Modify one single character to observe how the resulting 160-bit digest changes drastically (ideal diffusion target ~50% bit variance):
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div class="sim-form-group">
+                <label for="avalancheMsg1" class="sim-label">Original Message 1:</label>
+                <input type="text" id="avalancheMsg1" class="sim-input sim-input-mono" value="Hello World">
+                <div style="margin-top: 8px; font-family: var(--font-mono); font-size: 11px; word-break: break-all; color: var(--color-code-text);" id="avalancheHash1">
+                  2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
+                </div>
+              </div>
+
+              <div class="sim-form-group">
+                <label for="avalancheMsg2" class="sim-label">Mutated Message 2 (1 char diff):</label>
+                <input type="text" id="avalancheMsg2" class="sim-input sim-input-mono" value="Hello world">
+                <div style="margin-top: 8px; font-family: var(--font-mono); font-size: 11px; word-break: break-all; color: var(--color-code-text);" id="avalancheHash2">
+                  d3486ae9136e7856bc42212385ea797094475802
+                </div>
+              </div>
+            </div>
+
+            <div class="callout-experiment-title" style="margin-top: 8px;">
+              <div class="callout-header">
+                <span class="callout-icon" aria-hidden="true">&Delta;</span>
+                <span>Avalanche Diffusion Analysis</span>
+              </div>
+              <p class="callout-content" id="avalancheStatsText">
+                Comparing 160 bits: <strong>84 / 160 bits flipped (52.5% Diffusion)</strong> &mdash; Satisfies the Strict Avalanche Criterion (SAC).
+              </p>
+            </div>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 5: Assessment - Concept Quiz                           -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-quiz" class="tab-content-panel" data-tab-panel="quiz" hidden>
+            <span class="overview-badge">KNOWLEDGE ASSESSMENT</span>
+            <h2 class="exp-page-title">Assessment &bull; Concept Quiz</h2>
+            <p class="exp-page-lead">
+              Test your understanding of the SHA-1 cryptographic hash algorithm, padding format, and security properties.
+            </p>
+
+            <form class="quiz-container" id="sha1QuizForm">
+              <!-- Question 1 -->
+              <div class="quiz-card" data-correct="B">
+                <div class="quiz-question-num">Question 1</div>
+                <p class="quiz-question-text">What is the exact output digest length produced by the SHA-1 algorithm?</p>
+                <div class="quiz-options-list">
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q1" value="A">
+                    <span>128 bits (16 bytes)</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q1" value="B">
+                    <span>160 bits (20 bytes)</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q1" value="C">
+                    <span>256 bits (32 bytes)</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q1" value="D">
+                    <span>512 bits (64 bytes)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="quiz-card" data-correct="C">
+                <div class="quiz-question-num">Question 2</div>
+                <p class="quiz-question-text">How many total rounds of transformation are executed per 512-bit message block in SHA-1?</p>
+                <div class="quiz-options-list">
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q2" value="A">
+                    <span>16 rounds</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q2" value="B">
+                    <span>64 rounds</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q2" value="C">
+                    <span>80 rounds (4 stages of 20 rounds each)</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q2" value="D">
+                    <span>128 rounds</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Question 3 -->
+              <div class="quiz-card" data-correct="A">
+                <div class="quiz-question-num">Question 3</div>
+                <p class="quiz-question-text">What is appended to the message during the initial padding step of SHA-1?</p>
+                <div class="quiz-options-list">
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q3" value="A">
+                    <span>A single '1' bit, followed by zero bits, and a 64-bit length integer</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q3" value="B">
+                    <span>All zeros followed by a 128-bit timestamp</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q3" value="C">
+                    <span>A random 128-bit initialization vector</span>
+                  </label>
+                  <label class="quiz-option-label">
+                    <input type="radio" name="q3" value="D">
+                    <span>PKCS#7 padding bytes</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="sim-actions-bar">
+                <button type="button" class="sim-btn-primary" id="submitQuizBtn">Submit Quiz Answers</button>
+                <button type="button" class="sim-btn-secondary" id="resetQuizBtn">Reset Quiz</button>
+              </div>
+
+              <div id="quizScoreResult" class="callout-experiment-title" style="display: none; margin-top: 16px;">
+                <div class="callout-header">
+                  <span class="callout-icon">&check;</span>
+                  <span>Quiz Result</span>
+                </div>
+                <p class="callout-content" id="quizScoreSummary"></p>
+              </div>
+            </form>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 6: References & Literature                             -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-references" class="tab-content-panel" data-tab-panel="references" hidden>
+            <span class="overview-badge">ACADEMIC REFERENCES</span>
+            <h2 class="exp-page-title">References &amp; Literature</h2>
+            <p class="exp-page-lead">
+              Standard specifications, authoritative literature, and security advisories for the SHA-1 family.
+            </p>
+
+            <ul style="padding-left: 20px; line-height: 1.8; color: var(--color-text);">
+              <li>
+                <strong>NIST FIPS PUB 180-4:</strong> <em>Secure Hash Standard (SHS)</em>, National Institute of Standards and Technology, U.S. Department of Commerce.
+              </li>
+              <li>
+                <strong>RFC 3174:</strong> <em>US Secure Hash Algorithm 1 (SHA1)</em>, Internet Engineering Task Force (IETF), Network Working Group.
+              </li>
+              <li>
+                <strong>William Stallings:</strong> <em>Cryptography and Network Security: Principles and Practice</em>, 8th Edition, Pearson Education.
+              </li>
+              <li>
+                <strong>Marc Stevens et al. (2017):</strong> <em>The first collision for full SHA-1 (SHAttered attack)</em>, CWI Amsterdam &amp; Google Research.
+              </li>
+            </ul>
+          </section>
+
+          <!-- ---------------------------------------------------------- -->
+          <!-- TAB 7: Student Feedback Form                               -->
+          <!-- ---------------------------------------------------------- -->
+          <section id="panel-feedback" class="tab-content-panel" data-tab-panel="feedback" hidden>
+            <span class="overview-badge">STUDENT FEEDBACK</span>
+            <h2 class="exp-page-title">Student Feedback Form</h2>
+            <p class="exp-page-lead">
+              Please share your experience with this virtual laboratory module to help continuous curriculum refinement.
+            </p>
+
+            <form id="feedbackForm" onsubmit="event.preventDefault(); window.showToast('Thank you! Feedback recorded successfully.');">
+              <div class="sim-form-group">
+                <label class="sim-label" for="feedbackStudentName">Full Name / Roll Number:</label>
+                <input type="text" id="feedbackStudentName" class="sim-input" placeholder="e.g. Swar / Roll 21" required>
+              </div>
+
+              <div class="sim-form-group">
+                <label class="sim-label" for="feedbackRating">Conceptual Clarity Rating:</label>
+                <select id="feedbackRating" class="sim-select">
+                  <option value="5">5 - Excellent (Completely clear)</option>
+                  <option value="4" selected>4 - Very Good (Minor doubts)</option>
+                  <option value="3">3 - Satisfactory</option>
+                  <option value="2">2 - Needs Improvement</option>
+                </select>
+              </div>
+
+              <div class="sim-form-group">
+                <label class="sim-label" for="feedbackComments">Observations / Suggestions:</label>
+                <textarea id="feedbackComments" class="sim-textarea" rows="3" placeholder="Share your insights on simulation usability or algorithm understanding..."></textarea>
+              </div>
+
+              <button type="submit" class="sim-btn-primary">Submit Feedback</button>
+            </form>
+          </section>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- RIGHT COLUMN: Sidebar (Explanation Resources)                -->
+        <!-- ============================================================ -->
+        <aside class="exp-sidebar-card" aria-label="Explanation Resources Navigation">
+          <div class="sidebar-header">
+            <h3 class="sidebar-header-title">Explanation Resources</h3>
+            <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse resource menu" title="Toggle resource menu">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <ul class="sidebar-nav-list" id="sidebarNavList">
+            <!-- 1. Aim & Objectives (Active) -->
+            <li>
+              <button type="button" class="resource-nav-btn active" data-tab="aim" aria-selected="true">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Aim &amp; Objectives</span>
+              </button>
+            </li>
+
+            <!-- 2. Theory - SHA-1 Algorithm -->
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="theory" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Theory - SHA-1 Algorithm</span>
+              </button>
+            </li>
+
+            <!-- 3. Procedure - Step by Step -->
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="procedure" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                    <line x1="9" y1="16" x2="13" y2="16"></line>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Procedure - Step by Step</span>
+              </button>
+            </li>
+
+            <!-- 4. Interactive Simulation -->
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="simulation" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Interactive Simulation</span>
+              </button>
+            </li>
+
+            <!-- 5. Assessment - Concept Quiz -->
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="quiz" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Assessment - Concept Quiz</span>
+              </button>
+            </li>
+
+            <!-- 6. References & Literature -->
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="references" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">References &amp; Literature</span>
+              </button>
+            </li>
+
+            <!-- 7. Student Feedback Form -->
+            <li>
+              <button type="button" class="resource-nav-btn" data-tab="feedback" aria-selected="false">
+                <span class="resource-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </span>
+                <span class="resource-nav-text">Student Feedback Form</span>
+              </button>
+            </li>
+          </ul>
+        </aside>
+
+      </div>
+    </main>
+
+    <!-- Floating Blue Right Edge Action Button (for fast sidebar access) -->
+    <div class="floating-sidebar-tab" id="floatingSidebarTab" title="Open Resources" aria-label="Open Resources">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
     </div>
 
-    <div class="experiment-container">
-      <header class="exp-header">
-        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
-      </header>
-
-      <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
-        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
-        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-      </nav>
-
-      <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
-          </div>
-        </section>
-
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
-          </div>
-        </section>
-
-        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
-          </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
-          </div>
-        </section>
-
-        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
-          <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
-          </div>
-        </section>
-      </main>
-    </div>
-
+    <!-- Core Controller & Experiment Logic Scripts -->
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
   </body>
