@@ -38,9 +38,15 @@
         <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+<<<<<<< HEAD
         <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
         <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
         <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+=======
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+>>>>>>> origin/main
       </nav>
 
       <main class="content-area">
@@ -925,33 +931,36 @@
             <div id="bQuizList"></div>
           </div>
         </section>
-
         <!-- ==========================================
              TAB 6: REFERENCES
              ========================================== -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="content-placeholder">
-            <h2>Academic &amp; Industry References</h2>
-            <ul style="line-height:1.8;">
-              <li>
-                <strong>N. Provos and D. Mazières (1999).</strong> "A Future-Adaptable Password Scheme." <em>Proceedings of the USENIX Annual Technical Conference</em>, FREENIX Track, pp. 81–91. <a href="https://www.usenix.org/legacy/event/usenix99/provos.html" target="_blank" rel="noopener noreferrer" style="color:var(--color-secondary);">USENIX Publication</a>.
-              </li>
-              <li>
-                <strong>B. Schneier (1993).</strong> "Description of a New Variable-Length Key, 64-Bit Block Cipher (Blowfish)." <em>Fast Software Encryption (FSE)</em>, Cambridge Security Workshop Proceedings, pp. 191–204.
-              </li>
-              <li>
-                <strong>OWASP Foundation.</strong> "Password Storage Cheat Sheet." <em>OWASP Cheat Sheet Series</em>. <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" style="color:var(--color-secondary);">OWASP Documentation</a>.
-              </li>
-              <li>
-                <strong>NIST Special Publication 800-63B.</strong> "Digital Identity Guidelines: Authentication and Lifecycle Management." National Institute of Standards and Technology.
-              </li>
-              <li>
-                <strong>OpenBSD Source Code.</strong> "pwd_gensalt.c and bcrypt.c implementation notes." OpenBSD Project.
-              </li>
-              <li>
-                <strong>dcodeIO / bcrypt.js.</strong> Optimized client-side JavaScript implementation of Bcrypt compiled from C sources.
-              </li>
-            </ul>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">N. Provos and D. Mazières (1999) — A Future-Adaptable Password Scheme</div>
+              <div class="reference-meta">Proceedings of the USENIX Annual Technical Conference, FREENIX Track, pp. 81–91. Defines the adaptive Eksblowfish key schedule, work factor formula (2<sup>cost</sup>), and 128-bit CSPRNG salt integration. <a class="reference-link" href="https://www.usenix.org/legacy/event/usenix99/provos.html" target="_blank" rel="noopener noreferrer">USENIX Publication</a>.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">Bruce Schneier (1993) — Description of a New Variable-Length Key, 64-Bit Block Cipher (Blowfish)</div>
+              <div class="reference-meta">Fast Software Encryption (FSE), Cambridge Security Workshop Proceedings, pp. 191–204. Explains the Feistel network architecture, subkey P-arrays, and S-box expansion underpinning Blowfish and Eksblowfish.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">OWASP Foundation — Password Storage Cheat Sheet</div>
+              <div class="reference-meta">OWASP Cheat Sheet Series. Current industry recommendations for password storage, cost factor scaling (&ge; 10), pre-hashing mitigations, and protection against credential stuffing. <a class="reference-link" href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">OWASP Documentation</a>.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800-63B — Digital Identity Guidelines</div>
+              <div class="reference-meta">Authentication and Lifecycle Management. National Institute of Standards and Technology guidelines for salt generation, work factor resistance, and password verification.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
+              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+            </div>
           </div>
         </section>
 
@@ -959,39 +968,7 @@
              TAB 7: FEEDBACK
              ========================================== -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Experiment Feedback</h2>
-            <p>Please share your evaluation to help us continuously refine and improve this virtual laboratory simulation.</p>
-
-            <form id="bFeedbackForm" style="max-width:640px; margin-top:20px;">
-              <div class="b-form-group">
-                <label>Overall Experience &amp; Clarity Rating:</label>
-                <div class="b-stars" id="bStarRating">
-                  <span class="star-item" data-value="1">★</span>
-                  <span class="star-item" data-value="2">★</span>
-                  <span class="star-item" data-value="3">★</span>
-                  <span class="star-item" data-value="4">★</span>
-                  <span class="star-item" data-value="5">★</span>
-                </div>
-              </div>
-
-              <div class="b-form-group">
-                <label for="bFeedUser">Your Name (Optional):</label>
-                <input type="text" id="bFeedUser" class="b-input" placeholder="e.g. Student Name">
-              </div>
-
-              <div class="b-form-group">
-                <label for="bFeedComments">Comments, Observations, or Technical Feedback:</label>
-                <textarea id="bFeedComments" class="b-input" rows="4" placeholder="Share your suggestions, questions, or bugs observed during simulation..."></textarea>
-              </div>
-
-              <button type="submit" class="b-btn b-btn-primary">Submit Feedback</button>
-
-              <div class="b-callout info hidden" id="bFeedbackToast" style="margin-top:16px;">
-                ✓ Thank you! Your feedback has been recorded for the Virtual Cryptography Laboratory.
-              </div>
-            </form>
-          </div>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
         </section>
 
       </main>
@@ -1072,5 +1049,7 @@
 
     <!-- Bcrypt Experiment Implementation Script -->
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>

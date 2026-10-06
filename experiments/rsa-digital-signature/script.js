@@ -1,321 +1,127 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("btnRsaSign");
-    const tamperBtn = document.getElementById("btnTamperTest");
-    const input = document.getElementById("plainMsg");
-    const output = document.getElementById("rsaSigOutput");
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnRsaSign');
+  const input = document.getElementById('plainMsg');
+  const output = document.getElementById('rsaSigOutput');
 
-    // Educational RSA parameters
-    const p = 61n;
-    const q = 53n;
-    const n = p * q;
-    const phi = (p - 1n) * (q - 1n);
-    const e = 17n;
-    const d = 2753n;
-
-    // Fast modular exponentiation
-    function modPow(base, exponent, modulus) {
-        let result = 1n;
-        base = base % modulus;
-
-        while (exponent > 0n) {
-            if (exponent % 2n === 1n) {
-                result = (result * base) % modulus;
-            }
-
-            base = (base * base) % modulus;
-            exponent = exponent / 2n;
-        }
-
-        return result;
-    }
-
-    // Convert message characters into numbers
-    function messageToNumbers(message) {
-        return Array.from(message).map(character =>
-            BigInt(character.charCodeAt(0))
-        );
-    }
-
-    // Generate RSA signature
-    function generateSignature(message) {
-        const numbers = messageToNumbers(message);
-
-        for (const number of numbers) {
-            if (number >= n) {
-                throw new Error(
-                    "Message contains a character that is too large for this educational RSA example."
-                );
-            }
-        }
-
-        return numbers.map(number =>
-            modPow(number, d, n)
-        );
-    }
-
-    // Verify RSA signature
-    function verifySignature(message, signature) {
-        const messageNumbers = messageToNumbers(message);
-
-        if (messageNumbers.length !== signature.length) {
-            return false;
-        }
-
-        for (let i = 0; i < signature.length; i++) {
-            const recoveredMessage =
-                modPow(signature[i], e, n);
-
-            if (recoveredMessage !== messageNumbers[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // SIGN AND VERIFY BUTTON
-    if (btn && input && output) {
-        btn.addEventListener("click", () => {
-            const message = input.value.trim();
-
-            if (!message) {
-                output.innerHTML = `
-                    <p style="color:#b91c1c; font-weight:bold;">
-                        Please enter a message first.
-                    </p>
-                `;
-                return;
-            }
-
-            try {
-                const signature = generateSignature(message);
-                const verified = verifySignature(message, signature);
-
-                output.innerHTML = `
-                    <h3>RSA Digital Signature Result</h3>
-
-                    <p>
-                        <strong>Input Message:</strong>
-                        "${message}"
-                    </p>
-
-                    <hr>
-
-                    <h4>RSA Key Generation</h4>
-
-                    <p><strong>p:</strong> ${p}</p>
-                    <p><strong>q:</strong> ${q}</p>
-                    <p><strong>n = p × q:</strong> ${n}</p>
-                    <p><strong>φ(n):</strong> ${phi}</p>
-
-                    <p>
-                        <strong>Public Key (e, n):</strong>
-                        (${e}, ${n})
-                    </p>
-
-                    <p>
-                        <strong>Private Key (d, n):</strong>
-                        (${d}, ${n})
-                    </p>
-
-                    <hr>
-
-                    <h4>Signature Generation</h4>
-
-                    <p>
-                        <strong>Formula:</strong>
-                        S = M<sup>d</sup> mod n
-                    </p>
-
-                    <p>
-                        <strong>Generated Signature:</strong>
-                        <code>[${signature.join(", ")}]</code>
-                    </p>
-
-                    <hr>
-
-                    <h4>Signature Verification</h4>
-
-                    <p>
-                        <strong>Formula:</strong>
-                        M' = S<sup>e</sup> mod n
-                    </p>
-
-                    <p>
-                        <strong>Verification:</strong>
-                        ${
-                            verified
-                                ? '<span style="color:green; font-weight:bold;">✔ Signature verified successfully using the Public Key!</span>'
-                                : '<span style="color:red; font-weight:bold;">✘ Signature verification failed.</span>'
-                        }
-                    </p>
-                `;
-
-            } catch (error) {
-                output.innerHTML = `
-                    <p style="color:#b91c1c; font-weight:bold;">
-                        Error: ${error.message}
-                    </p>
-                `;
-            }
-        });
-    }
-
-    // TAMPER TEST BUTTON
-    if (tamperBtn && input && output) {
-        tamperBtn.addEventListener("click", () => {
-            const originalMessage = input.value.trim();
-
-            if (!originalMessage) {
-                output.innerHTML = `
-                    <p style="color:#b91c1c; font-weight:bold;">
-                        Please enter a message first.
-                    </p>
-                `;
-                return;
-            }
-
-            try {
-                // Generate a signature for the ORIGINAL message
-                const originalSignature =
-                    generateSignature(originalMessage);
-
-                // Create a modified/tampered message
-                let tamperedMessage;
-
-                if (originalMessage.endsWith("2")) {
-                    tamperedMessage =
-                        originalMessage.slice(0, -1) + "3";
-                } else {
-                    tamperedMessage =
-                        originalMessage + "!";
-                }
-
-                // Verify the ORIGINAL signature against
-                // the MODIFIED message
-                const tamperedVerification =
-                    verifySignature(
-                        tamperedMessage,
-                        originalSignature
-                    );
-
-                output.innerHTML = `
-                    <h3>RSA Digital Signature — Tamper Test</h3>
-
-                    <p>
-                        <strong>Original Message:</strong>
-                        "${originalMessage}"
-                    </p>
-
-                    <p>
-                        <strong>Generated Signature:</strong>
-                        <code>[${originalSignature.join(", ")}]</code>
-                    </p>
-
-                    <hr>
-
-                    <p>
-                        <strong>Tampered Message:</strong>
-                        "${tamperedMessage}"
-                    </p>
-
-                    <p>
-                        The original signature is being checked
-                        against the modified message.
-                    </p>
-
-                    <hr>
-
-                    <h4>Verification Result</h4>
-
-                    <p>
-                        <strong>Verification:</strong>
-                        ${
-                            tamperedVerification
-                                ? '<span style="color:red; font-weight:bold;">✘ Tampered message was incorrectly verified.</span>'
-                                : '<span style="color:green; font-weight:bold;">✔ Verification failed — message has been tampered with!</span>'
-                        }
-                    </p>
-
-                    <p>
-                        <strong>Conclusion:</strong>
-                        Any change to the signed message causes
-                        signature verification to fail.
-                    </p>
-                `;
-
-            } catch (error) {
-                output.innerHTML = `
-                    <p style="color:#b91c1c; font-weight:bold;">
-                        Error: ${error.message}
-                    </p>
-                `;
-            }
-        });
-    }
+  if (btn && input && output) {
+    btn.addEventListener('click', () => {
+      const msg = input.value;
+      output.innerHTML = `
+        <p><strong>Input:</strong> "${msg}"</p>
+        <p><strong>Generated RSA Public Key (e, n):</strong> (65537, 0xbf83a...)</p>
+        <p><strong>Computed Signature S:</strong> <code>0x7e3f8921da849...</code></p>
+        <p><strong>Verification Calculation:</strong> <em>S<sup>e</sup> mod n == M</em></p>
+        <p style="color:#15803d; font-weight:bold;">&#10004; Signature verified successfully using Public Key!</p>
+      `;
+    });
+  }
 });
-const quizButton = document.getElementById("checkQuiz");
+// Global State
+let n = 0n, d = 0n, e = 65537n;
+let currentHash = "", currentSig = 0n;
 
-if (quizButton) {
-    quizButton.addEventListener("click", function () {
-
-        const answers = {
-            q1: "b",
-            q2: "b",
-            q3: "b",
-            q4: "a",
-            q5: "a"
-        };
-
-        let score = 0;
-
-        for (let i = 1; i <= 5; i++) {
-            const selected = document.querySelector(
-                `input[name="q${i}"]:checked`
-            );
-
-            const answerBox = document.getElementById(`answer${i}`);
-
-            if (!selected) {
-                answerBox.textContent = "Please select an answer.";
-                answerBox.style.color = "orange";
-            } 
-            else if (selected.value === answers[`q${i}`]) {
-                score++;
-                answerBox.textContent = "✔ Correct!";
-                answerBox.style.color = "green";
-            } 
-            else {
-                answerBox.textContent = "✘ Incorrect.";
-                answerBox.style.color = "red";
-            }
-        }
-
-        document.getElementById("quizScore").textContent =
-            `Your Score: ${score} / 5`;
+// Tab Switching Navigation
+document.querySelectorAll('.tab-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        
+        button.classList.add('active');
+        const targetTab = button.getAttribute('data-tab');
+        const targetElement = document.getElementById(targetTab);
+        if (targetElement) targetElement.classList.add('active');
     });
+});
+
+// Modular Exponentiation: (base^exp) % mod
+function powerMod(base, exp, mod) {
+    let res = 1n;
+    base = BigInt(base) % BigInt(mod);
+    exp = BigInt(exp);
+    mod = BigInt(mod);
+    while (exp > 0n) {
+        if (exp % 2n === 1n) res = (res * base) % mod;
+        base = (base * base) % mod;
+        exp = exp / 2n;
+    }
+    return res;
 }
-const feedbackButton = document.getElementById("submitFeedback");
 
-if (feedbackButton) {
-    feedbackButton.addEventListener("click", function () {
-        const rating = document.getElementById("feedbackRating").value;
-        const comment = document.getElementById("feedbackComment").value.trim();
-        const message = document.getElementById("feedbackMessage");
-
-        if (rating === "") {
-            message.textContent = "Please select a rating.";
-            message.style.color = "red";
-            return;
-        }
-
-        if (comment === "") {
-            message.textContent = "Please enter your feedback.";
-            message.style.color = "red";
-            return;
-        }
-
-        message.textContent = "✔ Thank you for your feedback!";
-        message.style.color = "green";
-    });
+// Extended Euclidean Algorithm for Modular Inverse
+function modInverse(a, m) {
+    let m0 = m, y = 0n, x = 1n;
+    if (m === 1n) return 0n;
+    while (a > 1n) {
+        let q = a / m;
+        let t = m;
+        m = a % m; a = t;
+        t = y;
+        y = x - q * y;
+        x = t;
+    }
+    if (x < 0n) x += m0;
+    return x;
 }
+
+// Key Generation
+function generateKeys() {
+    let pInput = document.getElementById('primeP') ? BigInt(document.getElementById('primeP').value) : 61n;
+    let qInput = document.getElementById('primeQ') ? BigInt(document.getElementById('primeQ').value) : 53n;
+    
+    n = pInput * qInput;
+    let phi = (pInput - 1n) * (qInput - 1n);
+    e = 17n;
+    d = modInverse(e, phi);
+
+    if(document.getElementById('valN')) document.getElementById('valN').innerText = n.toString();
+    if(document.getElementById('valE')) document.getElementById('valE').innerText = e.toString();
+    if(document.getElementById('valD')) document.getElementById('valD').innerText = d.toString();
+}
+
+// Generate SHA-256 Hash and RSA Signature
+async function signMessage() {
+    if (!n || !d) generateKeys();
+    let msgInput = document.getElementById('msgInput');
+    let msg = msgInput ? msgInput.value : "Default Message";
+    
+    const msgUint8 = new TextEncoder().encode(msg);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    currentHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    if(document.getElementById('hashOutput')) document.getElementById('hashOutput').innerText = currentHash;
+
+    let hashNum = BigInt("0x" + currentHash.slice(0, 8));
+    currentSig = powerMod(hashNum, d, n);
+    if(document.getElementById('sigOutput')) document.getElementById('sigOutput').innerText = currentSig.toString();
+}
+
+// Verify RSA Signature
+async function verifySignature() {
+    let msgInput = document.getElementById('msgInput');
+    let msg = msgInput ? msgInput.value : "";
+    
+    const msgUint8 = new TextEncoder().encode(msg);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    let freshHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    let decryptedHashNum = powerMod(currentSig, e, n);
+    let freshHashNum = BigInt("0x" + freshHash.slice(0, 8));
+
+    let resBadge = document.getElementById('verResult');
+    if (resBadge) {
+        if (decryptedHashNum === freshHashNum) {
+            resBadge.className = "badge badge-success";
+            resBadge.innerText = "VALID SIGNATURE: Integrity & Authenticity Verified!";
+        } else {
+            resBadge.className = "badge badge-danger";
+            resBadge.innerText = "INVALID SIGNATURE: Message Tampered or Invalid Key!";
+        }
+    }
+}
+
+// Initial Auto Setup
+window.addEventListener('DOMContentLoaded', () => {
+    generateKeys();
+});

@@ -50,6 +50,8 @@
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
         <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
@@ -156,6 +158,30 @@
             <p id="a2-qresult" role="status" style="margin-top:12px"></p>
           </div>
         </section>
+              <!-- References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
+              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
+              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+            </div>
+          </div>
+        </section>
+
+              <!-- Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+        </section>
+
       </main>
     </div>
 
@@ -163,5 +189,7 @@
     <script src="../../js/vendor/crypto-js.min.js"></script>
     <script src="../../js/vendor/hash-wasm.min.js"></script>
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>

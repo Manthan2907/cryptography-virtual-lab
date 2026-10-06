@@ -92,27 +92,33 @@
 
         <!-- f. References -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="content-placeholder">
-            <h2>References</h2>
-            <ul>
-              <li>William Stallings, <em>Cryptography and Network Security: Principles and Practice</em>, Pearson.</li>
-              <li>NIST Cryptographic Standards and Guidelines (FIPS PUB).</li>
-              <li>RFC documentation and algorithm specifications.</li>
-            </ul>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Comprehensive reference for mathematical foundations, symmetric/asymmetric ciphers, and protocol verification. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
+              <div class="reference-meta">National Institute of Standards and Technology computer security guidelines, cryptographic standards, and validation recommendations.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">IETF RFC Specifications</div>
+              <div class="reference-meta">Internet Engineering Task Force official RFC algorithm documents and standard protocol profiles.</div>
+            </div>
           </div>
         </section>
 
         <!-- g. Feedback -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Experiment Feedback</h2>
-            <p>Please share your feedback to help us improve this virtual lab simulation.</p>
-          </div>
+          <!-- Auto-populated by feedback.js with RSA-2048 client-side encryption -->
         </section>
       </main>
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

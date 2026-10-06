@@ -30,6 +30,8 @@
         <button class="tab-btn" type="button" role="tab" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" role="tab" data-tab="simulation" aria-selected="false">Simulation</button>
         <button class="tab-btn" type="button" role="tab" data-tab="quiz" aria-selected="false">Quiz</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
@@ -157,7 +159,132 @@
         <!-- ============================================================ -->
         <!-- TAB 2: PROCEDURE                                             -->
         <!-- ============================================================ -->
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+                <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-block">
+            <h3>MAC Process Flow Diagram</h3>
+            <p>The diagram below illustrates the end-to-end flow of Message Authentication Code (MAC) generation at the sender, transmission across an untrusted channel, and verification at the receiver.</p>
+            <div class="mac-diagram-wrapper">
+              <svg viewBox="0 0 920 490" xmlns="http://www.w3.org/2000/svg" class="mac-flow-svg" aria-label="MAC Process Flow Diagram">
+                <defs>
+                  <!-- Arrowhead Markers -->
+                  <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6"/>
+                  </marker>
+                  <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+                  </marker>
+                  <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+                  </marker>
+                  <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444"/>
+                  </marker>
+
+                  <!-- Gradients -->
+                  <linearGradient id="bg-sender" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1e293b"/>
+                    <stop offset="100%" stop-color="#0f172a"/>
+                  </linearGradient>
+                  <linearGradient id="bg-channel" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#2d261e"/>
+                    <stop offset="100%" stop-color="#1e1b18"/>
+                  </linearGradient>
+                  <linearGradient id="bg-receiver" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#162e2d"/>
+                    <stop offset="100%" stop-color="#0f1f1d"/>
+                  </linearGradient>
+                  <linearGradient id="btn-blue" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#2563eb"/>
+                    <stop offset="100%" stop-color="#1d4ed8"/>
+                  </linearGradient>
+                  <linearGradient id="btn-green" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#059669"/>
+                    <stop offset="100%" stop-color="#047857"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- 1. SENDER CONTAINER -->
+                <rect x="20" y="20" width="270" height="450" rx="12" fill="url(#bg-sender)" stroke="#3b82f6" stroke-width="2"/>
+                <text x="155" y="48" fill="#60a5fa" font-size="15" font-weight="700" text-anchor="middle">1. Sender (MAC Generation)</text>
+
+                <!-- Sender Nodes -->
+                <rect x="40" y="70" width="230" height="42" rx="8" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+                <text x="155" y="96" fill="#f8fafc" font-size="13" font-weight="600" text-anchor="middle">Plaintext Message (M)</text>
+
+                <rect x="40" y="130" width="230" height="42" rx="8" fill="#334155" stroke="#fbbf24" stroke-width="1.5"/>
+                <text x="155" y="156" fill="#fef08a" font-size="13" font-weight="600" text-anchor="middle">Shared Secret Key (K)</text>
+
+                <rect x="40" y="200" width="230" height="55" rx="8" fill="url(#btn-blue)" stroke="#60a5fa" stroke-width="1.5"/>
+                <text x="155" y="225" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">MAC Algorithm</text>
+                <text x="155" y="244" fill="#93c5fd" font-size="11" text-anchor="middle">T = HMAC-SHA256(K, M)</text>
+
+                <rect x="40" y="285" width="230" height="42" rx="8" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+                <text x="155" y="311" fill="#93c5fd" font-size="13" font-weight="600" text-anchor="middle">Generated MAC Tag (T)</text>
+
+                <rect x="40" y="380" width="230" height="52" rx="8" fill="#0f172a" stroke="#60a5fa" stroke-width="2" stroke-dasharray="4 4"/>
+                <text x="155" y="402" fill="#38bdf8" font-size="12" font-weight="700" text-anchor="middle">Transmitted Payload</text>
+                <text x="155" y="420" fill="#f8fafc" font-size="13" font-weight="600" text-anchor="middle">M || T (Message + Tag)</text>
+
+                <!-- Sender Connectors -->
+                <path d="M 155 112 L 155 200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                <path d="M 155 172 L 155 200" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-amber)"/>
+                <path d="M 155 255 L 155 285" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                <path d="M 155 327 L 155 380" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+                <!-- 2. TRANSMISSION CHANNEL -->
+                <rect x="325" y="160" width="270" height="170" rx="12" fill="url(#bg-channel)" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="460" y="188" fill="#fbbf24" font-size="15" font-weight="700" text-anchor="middle">2. Transmission Channel</text>
+                <text x="460" y="208" fill="#d97706" font-size="11" font-weight="600" text-anchor="middle">Untrusted Network</text>
+
+                <rect x="345" y="222" width="230" height="42" rx="8" fill="#451a03" stroke="#f59e0b" stroke-width="1.5"/>
+                <text x="460" y="248" fill="#fef3c7" font-size="13" font-weight="600" text-anchor="middle">Payload in Transit (M || T)</text>
+
+                <rect x="345" y="278" width="230" height="34" rx="6" fill="#78350f" stroke="#d97706" stroke-width="1"/>
+                <text x="460" y="300" fill="#fde68a" font-size="11" text-anchor="middle">Attacker Interception Point</text>
+
+                <!-- Channel Connectors -->
+                <path d="M 270 406 L 310 406 L 310 243 L 345 243" fill="none" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                <path d="M 575 243 L 610 243 L 610 91 L 645 91" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-amber)"/>
+
+                <!-- 3. RECEIVER CONTAINER -->
+                <rect x="630" y="20" width="270" height="450" rx="12" fill="url(#bg-receiver)" stroke="#10b981" stroke-width="2"/>
+                <text x="765" y="48" fill="#34d399" font-size="15" font-weight="700" text-anchor="middle">3. Receiver (MAC Verification)</text>
+
+                <!-- Receiver Nodes -->
+                <rect x="650" y="70" width="230" height="42" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5"/>
+                <text x="765" y="96" fill="#a7f3d0" font-size="13" font-weight="600" text-anchor="middle">Received Payload (M' || T')</text>
+
+                <rect x="650" y="130" width="230" height="42" rx="8" fill="#334155" stroke="#fbbf24" stroke-width="1.5"/>
+                <text x="765" y="156" fill="#fef08a" font-size="13" font-weight="600" text-anchor="middle">Shared Secret Key (K)</text>
+
+                <rect x="650" y="200" width="230" height="55" rx="8" fill="url(#btn-green)" stroke="#34d399" stroke-width="1.5"/>
+                <text x="765" y="225" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Recompute MAC Tag</text>
+                <text x="765" y="244" fill="#a7f3d0" font-size="11" text-anchor="middle">T'' = HMAC-SHA256(K, M')</text>
+
+                <rect x="650" y="285" width="230" height="48" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1.5"/>
+                <text x="765" y="306" fill="#f8fafc" font-size="12" font-weight="700" text-anchor="middle">Compare MAC Tags</text>
+                <text x="765" y="323" fill="#38bdf8" font-size="12" font-weight="600" text-anchor="middle">Is T'' equal to T' ?</text>
+
+                <!-- Results -->
+                <rect x="650" y="380" width="110" height="52" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="2"/>
+                <text x="705" y="402" fill="#34d399" font-size="12" font-weight="700" text-anchor="middle">MATCH</text>
+                <text x="705" y="420" fill="#a7f3d0" font-size="10" font-weight="600" text-anchor="middle">Authentic</text>
+
+                <rect x="770" y="380" width="110" height="52" rx="8" fill="#7f1d1d" stroke="#ef4444" stroke-width="2"/>
+                <text x="825" y="402" fill="#fca5a5" font-size="12" font-weight="700" text-anchor="middle">MISMATCH</text>
+                <text x="825" y="420" fill="#fecaca" font-size="10" font-weight="600" text-anchor="middle">Tampered!</text>
+
+                <!-- Receiver Connectors -->
+                <path d="M 765 112 L 765 200" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                <path d="M 765 172 L 765 200" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-amber)"/>
+                <path d="M 765 255 L 765 285" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                
+                <path d="M 710 333 L 710 380" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                <path d="M 825 333 L 825 380" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-red)"/>
+              </svg>
+            </div>
+          </div>
+
           <div class="content-block">
             <div class="procedure-steps">
               <div class="proc-step">
@@ -434,11 +561,37 @@
             </div>
           </div>
         </section>
+              <!-- References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
+              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
+              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+            </div>
+          </div>
+        </section>
+
+              <!-- Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+        </section>
+
       </main>
     </div>
 
     <!-- Official Portal Common Script for standard tab switching -->
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>
