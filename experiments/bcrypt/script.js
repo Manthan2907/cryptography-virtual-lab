@@ -101,7 +101,7 @@ const BcryptLabModule = {
       toggleBtn.addEventListener('click', () => {
         const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
         pwdInput.setAttribute('type', type);
-        toggleBtn.textContent = type === 'password' ? '👁 Show' : '🔒 Hide';
+        toggleBtn.textContent = type === 'password' ? 'Show' : 'Hide';
       });
     }
   },
@@ -201,7 +201,7 @@ const BcryptLabModule = {
       if (!hashText) return;
       navigator.clipboard.writeText(hashText.textContent).then(() => {
         const prev = copyBtn.textContent;
-        copyBtn.textContent = '✓ Copied!';
+        copyBtn.textContent = 'Copied!';
         setTimeout(() => copyBtn.textContent = prev, 1500);
       });
     });
@@ -263,11 +263,11 @@ const BcryptLabModule = {
 
           if (isMatch) {
             banner.className = 'b-status-banner success';
-            titleEl.textContent = '✓ PASSWORD MATCH CONFIRMED';
+            titleEl.textContent = 'PASSWORD MATCH CONFIRMED';
             descEl.textContent = 'The candidate password successfully recreated the identical 192-bit digest using the salt embedded in the target hash string.';
           } else {
             banner.className = 'b-status-banner error';
-            titleEl.textContent = '✗ VERIFICATION FAILED (NO MATCH)';
+            titleEl.textContent = 'VERIFICATION FAILED (NO MATCH)';
             descEl.textContent = 'The candidate password produced a completely different digest. Access denied.';
           }
 
@@ -334,9 +334,9 @@ const BcryptLabModule = {
       const m3 = bcrypt.compareSync(pwd, this.generatedSalts[2]);
 
       if (m1 && m2 && m3) {
-        verifyStatus.innerHTML = '<span style="color:#86efac; font-weight:700;">✓ SUCCESS: All 3 completely distinct hash strings verified TRUE against the exact same password!</span>';
+        verifyStatus.innerHTML = '<span style="color:#86efac; font-weight:700;">SUCCESS: All 3 completely distinct hash strings verified TRUE against the exact same password!</span>';
       } else {
-        verifyStatus.innerHTML = '<span style="color:#fca5a5; font-weight:700;">✗ Verification error</span>';
+        verifyStatus.innerHTML = '<span style="color:#fca5a5; font-weight:700;">Verification error</span>';
       }
     });
   },
@@ -418,7 +418,7 @@ const BcryptLabModule = {
       const modal = document.getElementById('bModalInspectorDetail');
       const titleEl = document.getElementById('mTitleToken');
       const bodyEl = document.getElementById('bModalTokenBody');
-      if (titleEl) titleEl.textContent = `🔎 ${info.title}`;
+      if (titleEl) titleEl.textContent = `${info.title}`;
       if (bodyEl) bodyEl.innerHTML = info.html;
       if (modal) {
         modal.classList.remove('hidden');
@@ -635,7 +635,7 @@ const BcryptLabModule = {
             statusBox.className = 'b-status-banner error';
             statusBox.innerHTML = `
               <div>
-                <strong>🚨 CRITICAL COLLISION OBSERVED!</strong>
+                <strong>CRITICAL COLLISION OBSERVED</strong>
                 <p>Both Password A and Password B produced the <strong>EXACT SAME 60-character Bcrypt hash</strong> because characters beyond byte index 71 were silently dropped by Eksblowfish. An attacker logging in with either password gains access to the same account!</p>
               </div>
             `;
@@ -643,7 +643,7 @@ const BcryptLabModule = {
             statusBox.className = 'b-status-banner success';
             statusBox.innerHTML = `
               <div>
-                <strong>✓ TRUNCATION MITIGATED (SHA-256 PRE-HASHING APPLIED)</strong>
+                <strong>TRUNCATION MITIGATED (SHA-256 PRE-HASHING APPLIED)</strong>
                 <p>Because SHA-256 pre-hashing was applied, Password A (${this.getByteLength(passA)} bytes) and Password B (${this.getByteLength(passB)} bytes) were first mapped to unique 44-character Base64 representations. Both fit safely within 72 bytes and produced <strong>completely distinct, uncollidable Bcrypt hashes</strong>!</p>
               </div>
             `;
@@ -934,7 +934,7 @@ const BcryptLabModule = {
         resultBox.className = 'b-status-banner success';
         resultBox.innerHTML = `
           <div>
-            <strong>✓ RAINBOW TABLE LOOKUP FAILED (ATTACK NEUTRALIZED)</strong>
+            <strong>RAINBOW TABLE LOOKUP FAILED (ATTACK NEUTRALIZED)</strong>
             <p>Bcrypt uses a unique 128-bit CSPRNG salt. Precomputed hash lookup tables cannot find this hash because the salt forces the attacker to compute $2^{128}$ separate tables. The lookup returned 0 matches!</p>
           </div>
         `;
@@ -947,7 +947,7 @@ const BcryptLabModule = {
         resultBox.className = 'b-status-banner error';
         resultBox.innerHTML = `
           <div>
-            <strong>🚨 INSTANT CRACK: Password Found in Rainbow Table!</strong>
+            <strong>INSTANT CRACK: Password Found in Rainbow Table!</strong>
             <p>Plaintext Password: <strong>${match.pass}</strong> (Lookup time: &lt; 0.001 ms). Without salts, fast hashes are cracked instantly via dictionary matching.</p>
           </div>
         `;
