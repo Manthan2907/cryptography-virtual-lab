@@ -126,10 +126,10 @@ const BcryptLabModule = {
     if (!form) return;
 
     const advisorDescriptions = {
-      4: '<strong>Work Factor: $2^4 = 16$ rounds</strong> &bull; Minimal latency (~1 ms). For automated unit test suites only; completely insecure for production.',
-      8: '<strong>Work Factor: $2^8 = 256$ rounds</strong> &bull; Low latency (~15 ms). Suitable only for severely constrained legacy IoT hardware.',
-      10: '<strong>Work Factor: $2^{10} = 1,024$ rounds</strong> &bull; Recommended OWASP baseline (balanced security &amp; ~100 ms login latency).',
-      12: '<strong>Work Factor: $2^{12} = 4,096$ rounds</strong> &bull; High security (~400 ms). Recommended for sensitive admin portals and financial services.'
+      4: '<strong>Work Factor: 2<sup>4</sup> = 16 rounds</strong> &bull; Minimal latency (~1 ms). For automated unit test suites only; completely insecure for production.',
+      8: '<strong>Work Factor: 2<sup>8</sup> = 256 rounds</strong> &bull; Low latency (~15 ms). Suitable only for severely constrained legacy IoT hardware.',
+      10: '<strong>Work Factor: 2<sup>10</sup> = 1,024 rounds</strong> &bull; Recommended OWASP baseline (balanced security &amp; ~100 ms login latency).',
+      12: '<strong>Work Factor: 2<sup>12</sup> = 4,096 rounds</strong> &bull; High security (~400 ms). Recommended for sensitive admin portals and financial services.'
     };
 
     const expTimes = { 4: '~1 ms', 8: '~15 ms', 10: '~100 ms', 12: '~400 ms' };
@@ -373,9 +373,9 @@ const BcryptLabModule = {
           </div>
           <p>The cost factor determines how many rounds of state expansion the Eksblowfish key schedule performs:</p>
           <ul style="line-height:1.6; font-size:0.9rem;">
-            <li><strong>Cost 10:</strong> $2^{10} = 1,024$ rounds (~100 ms). Standard baseline for interactive web logins.</li>
-            <li><strong>Cost 12:</strong> $2^{12} = 4,096$ rounds (~400 ms). High security for administrator credentials and financial apps.</li>
-            <li><strong>Cost 14:</strong> $2^{14} = 16,384$ rounds (~1.6 s). Very slow, used for cold backup protection.</li>
+            <li><strong>Cost 10:</strong> 2<sup>10</sup> = 1,024 rounds (~100 ms). Standard baseline for interactive web logins.</li>
+            <li><strong>Cost 12:</strong> 2<sup>12</sup> = 4,096 rounds (~400 ms). High security for administrator credentials and financial apps.</li>
+            <li><strong>Cost 14:</strong> 2<sup>14</sup> = 16,384 rounds (~1.6 s). Very slow, used for cold backup protection.</li>
           </ul>
           <p style="font-size:0.86rem; color:var(--color-text-muted);">
             Because the cost parameter is stored directly in the hash string, servers can dynamically increase the cost factor for new registrations without breaking existing user accounts.
@@ -406,7 +406,7 @@ const BcryptLabModule = {
           <ul style="line-height:1.6; font-size:0.9rem;">
             <li><strong>Encoded into 31 Radix-64 Characters:</strong> Uses Bcrypt's custom Base64 alphabet: <code>./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789</code>.</li>
             <li><strong>Strictly Irreversible:</strong> Even with the salt and digest, mathematical properties of the Feistel network and non-linear S-boxes prevent reversing the digest back into the plaintext password.</li>
-            <li><strong>Total String Length:</strong> $4 \\text{ (prefix)} + 3 \\text{ (cost)} + 22 \\text{ (salt)} + 31 \\text{ (digest)} = 60$ characters.</li>
+            <li><strong>Total String Length:</strong> 4 (prefix) + 3 (cost) + 22 (salt) + 31 (digest) = 60 characters.</li>
           </ul>
         `
       }
@@ -982,7 +982,7 @@ const BcryptLabModule = {
       if (repTime) repTime.textContent = now.toLocaleString();
       if (repHash) repHash.textContent = this.lastGeneratedHash || '$2b$10$nOUIs22CharsOfSaltHere...31CharsOfHashDigestHere...';
       if (repDuration) repDuration.textContent = this.lastGeneratedTime || '98.40 ms';
-      if (repScore) repScore.textContent = `${Object.values(this.quizAnswers).length ? Object.values(this.quizAnswers).filter(a => a).length : 5} / 5`;
+      if (repScore) repScore.textContent = `${this.quizScore !== undefined ? this.quizScore : 10} / 10`;
     });
 
     btnClose?.addEventListener('click', () => {
@@ -1017,7 +1017,7 @@ const BcryptLabModule = {
           "It expands the salt from 128 bits to 256 bits."
         ],
         ans: 1,
-        exp: "Bcrypt work factor scales exponentially: Iterations = 2^C. Incrementing cost from 10 to 11 doubles the work from 1,024 to 2,048 rounds."
+        exp: "Bcrypt work factor scales exponentially: Iterations = 2^C. Incrementing cost from 10 to 11 exactly doubles the work from 1,024 to 2,048 rounds."
       },
       {
         q: "3. What is the fundamental security role of the 128-bit random salt in Bcrypt?",
@@ -1051,6 +1051,61 @@ const BcryptLabModule = {
         ],
         ans: 1,
         exp: "'$2b$' denotes OpenBSD Revision B (released in 2014), which corrected an unsigned char wraparound bug present in '$2a$'."
+      },
+      {
+        q: "6. Why does Eksblowfish's 4KB S-box state make Bcrypt significantly more resistant to GPU cracking than SHA-256?",
+        opts: [
+          "GPUs can only execute algorithms requiring less than 1KB of memory.",
+          "Each GPU thread needs 4KB in fast L1 cache; thousands of concurrent threads quickly exhaust cache lines, causing severe memory stalls.",
+          "Bcrypt requires an active internet connection to hash passwords.",
+          "GPUs lack the hardware instructions to perform bitwise XOR operations."
+        ],
+        ans: 1,
+        exp: "While SHA-256 requires only 64 bytes of state fitting into registers, Eksblowfish's 4KB S-boxes exhaust the limited L1 cache of streaming multiprocessors, preventing GPUs from running tens of thousands of parallel password cracks simultaneously."
+      },
+      {
+        q: "7. In a defense-in-depth architecture, where should a cryptographic 'Pepper' be stored?",
+        opts: [
+          "Directly in the database alongside the user's password hash and salt.",
+          "Inside the user's browser local storage.",
+          "Outside the database in a secure key management system (e.g., AWS KMS, Azure Key Vault, or an HSM).",
+          "Hardcoded directly into the client-side JavaScript file."
+        ],
+        ans: 2,
+        exp: "Unlike salts (which are public and stored in the database), peppers are secret application-wide keys stored in external KMS or HSM modules. If the database leaks via SQL injection, the attacker cannot crack the hashes without the Pepper."
+      },
+      {
+        q: "8. During password verification, why must candidate and stored hash digests be compared using a constant-time comparison function?",
+        opts: [
+          "To prevent side-channel timing attacks that measure microscopic CPU latency differences to guess bytes sequentially.",
+          "To speed up the verification process by skipping unmatched bytes.",
+          "Because standard string equality operators cannot compare strings longer than 32 characters.",
+          "To automatically repair corrupted database rows."
+        ],
+        ans: 0,
+        exp: "Standard string equality (==) terminates immediately upon the first mismatched byte. An attacker measuring microscopic network/CPU latency can deduce the password byte-by-byte. Constant-time comparison ensures identical latency regardless of match location."
+      },
+      {
+        q: "9. What is the recommended industry-standard pattern to support passwords of unlimited length without triggering Bcrypt's 72-byte truncation flaw?",
+        opts: [
+          "Switch back to unsalted MD5 hashing.",
+          "Pre-hash the plaintext password with SHA-256 and Base64-encode the 32-byte digest before passing it to Bcrypt.",
+          "Split passwords into 72-byte chunks and concatenate the output hashes.",
+          "Reject all user passwords that exceed 16 characters."
+        ],
+        ans: 1,
+        exp: "Pre-hashing with SHA-256 compresses arbitrary-length passwords into a 32-byte binary digest. Encoded as Base64 (44 characters), this safely fits within Bcrypt's 72-byte boundary while preserving full cryptographic entropy."
+      },
+      {
+        q: "10. How does a web application safely upgrade its password hashes from Cost 10 to Cost 12 without forcing all users to reset their passwords?",
+        opts: [
+          "Decrypt stored hashes using a master key and re-encrypt with Cost 12.",
+          "Run an offline batch script to directly rewrite the cost number inside the hash string.",
+          "Transparently verify the user's plaintext password on their next login; if valid, compute a fresh Cost 12 hash and update their database record.",
+          "Bcrypt hashes cannot be upgraded once generated."
+        ],
+        ans: 2,
+        exp: "Because one-way hashes cannot be reversed or decrypted, the server must wait until the user enters their plaintext password during login. Upon successful verification, the server detects the outdated cost factor and seamlessly computes and saves a new hash."
       }
     ];
 
@@ -1105,6 +1160,7 @@ const BcryptLabModule = {
           });
 
           if (selOpt === qObj.ans) score++;
+          this.quizScore = score;
           if (expBox) expBox.classList.remove('hidden');
           if (scoreBadge) scoreBadge.textContent = `Score: ${score} / ${questions.length}`;
         });

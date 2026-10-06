@@ -58,7 +58,7 @@ Open [http://localhost:8000/experiments/bcrypt/index.html](http://localhost:8000
    - **Tool 8: Hardware Sizing Benchmark** simulating authentication latency across microcontrollers, smartphones, and servers.
    - **Tool 9: GPU Cracking Time Estimator** computing cracking durations across work factors $2^4$ to $2^{16}$.
    - **Tool 10: Rainbow Table Attack Simulator** demonstrating precomputed hash lookups and salt immunity.
-5. **Assessment / Quiz:** 5 multiple-choice questions with instant scoring and detailed explanations.
+5. **Assessment / Quiz:** 10 multiple-choice questions with instant scoring and detailed explanations.
 6. **References:** Standardized reference cards (USENIX Provos-Mazières 1999 paper, RFC 7914, OWASP Cheat Sheet, Solar Designer crypt_blowfish advisory).
 7. **Feedback:** Universal RSA-2048 encrypted feedback submission system.
 

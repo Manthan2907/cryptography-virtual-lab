@@ -69,7 +69,7 @@
               <li><strong>Differentiate Hashing from Encryption:</strong> Articulate the theoretical and practical differences between irreversible one-way hash digests and reversible two-way ciphertexts.</li>
               <li><strong>Evaluate Fast vs. Slow Hashing Vulnerabilities:</strong> Explain why high-throughput algorithms (MD5, SHA-1, SHA-256) are dangerous for password storage due to GPU-accelerated brute-force attacks computing billions of hashes per second.</li>
               <li><strong>Analyze Salt Entropy &amp; Non-Determinism:</strong> Demonstrate how unique 128-bit random salts prevent duplicate password correlation in breached databases and neutralize precomputed lookup (rainbow) tables.</li>
-              <li><strong>Formulate the Work Factor Scaling:</strong> Calculate the exponential relationship between the cost factor parameter $C$ and the internal key expansion rounds ($2^C$).</li>
+              <li><strong>Formulate the Work Factor Scaling:</strong> Calculate the exponential relationship between the cost factor parameter <em>C</em> and the internal key expansion rounds (2<sup>C</sup>).</li>
               <li><strong>Dissect Modular Hash Formatting:</strong> Parse and decode standard 60-character Bcrypt output strings into algorithm prefix, cost factor, Radix-64 encoded salt, and ciphertext digest.</li>
               <li><strong>Investigate Eksblowfish Key Limits:</strong> Identify the 72-byte password length boundary and implement the industry-standard SHA-256 pre-hashing mitigation pattern.</li>
             </ul>
@@ -98,7 +98,7 @@
               <button type="button" class="b-subtab-btn" data-subtab="sub-hash-structure">4. Modular Hash Anatomy</button>
               <button type="button" class="b-subtab-btn" data-subtab="sub-72byte">5. The 72-Byte Limit</button>
               <button type="button" class="b-subtab-btn" data-subtab="sub-eksblowfish">6. Eksblowfish Architecture</button>
-              <button type="button" class="b-subtab-btn" data-subtab="sub-revisions">7. Revisions ($2a, $2y, $2b)</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-revisions">7. Revisions (<code>$2a</code>, <code>$2y</code>, <code>$2b</code>)</button>
               <button type="button" class="b-subtab-btn" data-subtab="sub-modern-kdfs">8. Modern KDFs &amp; Pepper</button>
             </div>
 
@@ -114,7 +114,7 @@
                 <div class="b-card">
                   <h4 style="color:var(--color-primary); margin-top:0;">Cryptographic Hashing</h4>
                   <p><strong>Property:</strong> Strictly One-Way (Irreversible)</p>
-                  <p>A cryptographic hash function $H(m) = h$ deterministically transforms an arbitrary-length message $m$ into a fixed-length bit string $h$. There is no secret key that can invert $h$ back to $m$.</p>
+                  <p>A cryptographic hash function <em>H(m) = h</em> deterministically transforms an arbitrary-length message $m$ into a fixed-length bit string $h$. There is no secret key that can invert $h$ back to $m$.</p>
                   <ul>
                     <li><strong>Primary Goal:</strong> Data integrity verification &amp; non-recoverable authentication.</li>
                     <li><strong>Input/Output:</strong> Arbitrary input &rarr; fixed output length (e.g. 60 chars in Bcrypt).</li>
@@ -124,7 +124,7 @@
                 <div class="b-card">
                   <h4 style="color:var(--color-secondary); margin-top:0;">Encryption &amp; Decryption</h4>
                   <p><strong>Property:</strong> Two-Way (Reversible via Key)</p>
-                  <p>An encryption cipher $E_k(m) = c$ scrambles plaintext $m$ into ciphertext $c$. Knowledge of the corresponding decryption key $k$ allows exact mathematical restoration of $m = D_k(c)$.</p>
+                  <p>An encryption cipher <em>E<sub>k</sub>(m) = c</em> scrambles plaintext $m$ into ciphertext $c$. Knowledge of the corresponding decryption key $k$ allows exact mathematical restoration of <em>m = D<sub>k</sub>(c)</em>.</p>
                   <ul>
                     <li><strong>Primary Goal:</strong> Confidentiality during data transmission or at-rest storage.</li>
                     <li><strong>Input/Output:</strong> Ciphertext size is proportional to plaintext length.</li>
@@ -162,7 +162,7 @@
               </div>
 
               <div class="b-callout danger">
-                <strong>The GPU Brute-Force Threat:</strong> At 100 billion SHA-256 hashes per second, an attacker can exhaust all 8-character password combinations (letters, digits, and symbols = $\approx 6.7 \times 10^{12}$ combinations) in <strong>under 70 seconds</strong>. The same attack against Bcrypt at cost 10 requires <strong>over 21 years</strong> of continuous GPU execution.
+                <strong>The GPU Brute-Force Threat:</strong> At 100 billion SHA-256 hashes per second, an attacker can exhaust all 8-character password combinations (letters, digits, and symbols = &approx; 6.7 &times; 10<sup>12</sup> combinations) in <strong>under 70 seconds</strong>. The same attack against Bcrypt at cost 10 requires <strong>over 21 years</strong> of continuous GPU execution.
               </div>
 
               <h3>Provos and Mazières Design (1999)</h3>
@@ -184,7 +184,7 @@
               <div class="b-grid-2">
                 <div class="b-card">
                   <h4>1. Defeats Rainbow Tables</h4>
-                  <p>Precomputed hash lookup tables (rainbow tables) map millions of plaintext passwords to their precalculated hashes. Because each user has a unique 128-bit salt, an attacker must compute a custom rainbow table of $2^{128}$ entries specifically for that single user, rendering precomputation economically impossible.</p>
+                  <p>Precomputed hash lookup tables (rainbow tables) map millions of plaintext passwords to their precalculated hashes. Because each user has a unique 128-bit salt, an attacker must compute a custom rainbow table of 2<sup>128</sup> entries specifically for that single user, rendering precomputation economically impossible.</p>
                 </div>
                 <div class="b-card">
                   <h4>2. Prevents Hash Correlation</h4>
@@ -193,10 +193,10 @@
               </div>
 
               <h3>The Exponential Work Formula</h3>
-              <p>Bcrypt's Blowfish key expansion loop scale exponentially with the cost parameter $C$:</p>
+              <p>Bcrypt's Blowfish key expansion loop scale exponentially with the cost parameter <em>C</em>:</p>
               
               <div class="b-card" style="text-align:center; font-size:1.3rem; font-weight:700; color:var(--color-secondary);">
-                $$\text{Iterations} = 2^{\text{Cost Factor}}$$
+                <div class="b-card" style="text-align:center; font-size:1.15rem; font-weight:700; color:var(--color-secondary);">Iterations = 2<sup>Cost Factor</sup></div>
               </div>
 
               <table class="b-table">
@@ -212,35 +212,35 @@
                 <tbody>
                   <tr>
                     <td><strong>4</strong></td>
-                    <td>$2^4$</td>
+                    <td>2<sup>4</sup></td>
                     <td>16</td>
                     <td>~1 ms</td>
                     <td>Unit testing only</td>
                   </tr>
                   <tr>
                     <td><strong>8</strong></td>
-                    <td>$2^8$</td>
+                    <td>2<sup>8</sup></td>
                     <td>256</td>
                     <td>~15 ms</td>
                     <td>Resource-constrained legacy microcontrollers</td>
                   </tr>
                   <tr>
                     <td><strong>10</strong></td>
-                    <td>$2^{10}$</td>
+                    <td>2<sup>10</sup></td>
                     <td>1,024</td>
                     <td>~100 ms</td>
                     <td><strong style="color:#86efac;">✓ Recommended Production Baseline</strong></td>
                   </tr>
                   <tr>
                     <td><strong>12</strong></td>
-                    <td>$2^{12}$</td>
+                    <td>2<sup>12</sup></td>
                     <td>4,096</td>
                     <td>~400 ms</td>
                     <td>High-security applications &amp; administrative logins</td>
                   </tr>
                   <tr>
                     <td><strong>14</strong></td>
-                    <td>$2^{14}$</td>
+                    <td>2<sup>14</sup></td>
                     <td>16,384</td>
                     <td>~1.6 s</td>
                     <td>Government &amp; financial transaction vaults</td>
@@ -272,7 +272,7 @@
                 <div class="b-card">
                   <span style="color:#f59e0b; font-weight:700;" class="b-mono">10$</span>
                   <h4 style="margin:6px 0;">Cost Factor</h4>
-                  <p style="font-size:0.86rem; color:var(--color-text-muted);">Two decimal digits indicating work factor $C=10$ ($2^{10} = 1,024$ rounds of key schedule loop).</p>
+                  <p style="font-size:0.86rem; color:var(--color-text-muted);">Two decimal digits indicating work factor <em>C</em> = 10 (2<sup>10</sup> = 1,024 rounds of key schedule loop).</p>
                 </div>
                 <div class="b-card">
                   <span style="color:#c084fc; font-weight:700;" class="b-mono">22 Characters</span>
@@ -323,11 +323,11 @@
                 <div class="b-card">
                   <h4>Internal State Components</h4>
                   <ul>
-                    <li><strong>P-Array:</strong> 18 32-bit subkeys ($P_1, P_2, \dots, P_{18}$ = 72 bytes).</li>
-                    <li><strong>Four S-Boxes ($S_1, S_2, S_3, S_4$):</strong> Each S-box holds 256 32-bit words ($4 \times 256 \times 4 \text{ bytes} = 4,096 \text{ bytes} = 4\text{ KB}$).</li>
+                    <li><strong>P-Array:</strong> 18 32-bit subkeys (<em>P</em><sub>1</sub>, <em>P</em><sub>2</sub>, &hellip;, <em>P</em><sub>18</sub> = 72 bytes).</li>
+                    <li><strong>Four S-Boxes (<em>S</em><sub>1</sub>, <em>S</em><sub>2</sub>, <em>S</em><sub>3</sub>, <em>S</em><sub>4</sub>):</strong> Each S-box holds 256 32-bit words (4 &times; 256 &times; 4 bytes = 4,096 bytes = 4 KB).</li>
                     <li><strong>Total Working State:</strong> Exactly <strong>4,168 bytes</strong>.</li>
                   </ul>
-                  <p style="font-size:0.88rem; color:var(--color-text-muted);">This state is initialized with digits from the fractional part of $\pi$, ensuring "nothing-up-my-sleeve" cryptographic constants.</p>
+                  <p style="font-size:0.88rem; color:var(--color-text-muted);">This state is initialized with digits from the fractional part of &pi;, ensuring "nothing-up-my-sleeve" cryptographic constants.</p>
                 </div>
 
                 <div class="b-card">
@@ -348,14 +348,14 @@
                 return state
               </div>
               <div class="b-callout tip">
-                <strong>Pro Tip:</strong> Notice that both the password AND the salt are fed into the state repeatedly in every one of the $2^C$ iterations. An attacker cannot precompute any intermediate state without knowing both!
+                <strong>Pro Tip:</strong> Notice that both the password AND the salt are fed into the state repeatedly in every one of the 2<sup>C</sup> iterations. An attacker cannot precompute any intermediate state without knowing both!
               </div>
             </div>
 
             <!-- Subpane 7: Revisions History (NEW) -->
             <div class="b-subpane" id="sub-revisions">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <h3 style="margin:0;">7. Evolution of Bcrypt Revisions: $2, $2a, $2x, $2y, and $2b</h3>
+                <h3 style="margin:0;">7. Evolution of Bcrypt Revisions: <code>$2</code>, <code>$2a</code>, <code>$2x</code>, <code>$2y</code>, and <code>$2b</code></h3>
                 <button type="button" class="b-concept-badge" data-modal="bModalRevisions">📜 Compare All 5 Prefix Revisions</button>
               </div>
               <p>Over the past 25 years, subtle implementation discrepancies and software bugs led to multiple revision prefixes in the modular format:</p>
@@ -422,7 +422,7 @@
                 </div>
                 <div class="b-card">
                   <h4>Dynamic Re-Hashing on Login</h4>
-                  <p>How do websites upgrade security when changing cost factor from $10$ to $12$, or migrating from MD5 to Bcrypt?</p>
+                  <p>How do websites upgrade security when changing cost factor from 10 to 12, or migrating from MD5 to Bcrypt?</p>
                   <p style="font-size:0.88rem; color:var(--color-text-muted);">
                     Whenever a user logs in, the server verifies the plaintext password against the old hash. If verification succeeds and the server detects the hash uses an outdated cost factor, it transparently computes a fresh hash with the new cost factor and updates the database row.
                   </p>
@@ -527,7 +527,7 @@
                         <span>✅</span>
                       </div>
                       <div style="font-size:0.88rem; line-height:1.5;">
-                        A rainbow table precomputes hashes for a specific salt. With 128 random bits, there are $2^{128}$ possible salts ($3.4 \times 10^{38}$), forcing an attacker to generate a separate multi-terabyte table for each individual user.
+                        A rainbow table precomputes hashes for a specific salt. With 128 random bits, there are 2<sup>128</sup> possible salts (3.4 &times; 10<sup>38</sup>), forcing an attacker to generate a separate multi-terabyte table for each individual user.
                       </div>
                       <div class="b-flashcard-hint">Click to flip back</div>
                     </div>
@@ -543,7 +543,7 @@
                         <span>🔄 Click to Flip</span>
                       </div>
                       <div class="b-flashcard-title">What mathematically happens when an administrator increases the Cost Factor from 10 to 11?</div>
-                      <div class="b-flashcard-hint">Hint: Exponential formula $2^C$</div>
+                      <div class="b-flashcard-hint">Hint: Exponential formula 2<sup>C</sup></div>
                     </div>
                     <div class="b-flashcard-back">
                       <div class="b-flashcard-prompt">
@@ -551,7 +551,7 @@
                         <span>✅</span>
                       </div>
                       <div style="font-size:0.88rem; line-height:1.5;">
-                        The work rounds EXACTLY DOUBLE from $2^{10} = 1,024$ to $2^{11} = 2,048$ rounds. Computation latency doubles (e.g. ~100ms becomes ~200ms), cutting attacker cracking throughput in half.
+                        The work rounds EXACTLY DOUBLE from 2<sup>10</sup> = 1,024 to 2<sup>11</sup> = 2,048 rounds. Computation latency doubles (e.g. ~100ms becomes ~200ms), cutting attacker cracking throughput in half.
                       </div>
                       <div class="b-flashcard-hint">Click to flip back</div>
                     </div>
@@ -647,7 +647,7 @@
             <ol>
               <li>
                 <strong>Experiment 1: Compute a Bcrypt Hash &amp; Measure Computation Latency</strong>
-                <p>Navigate to the <strong>Simulation</strong> tab. In the <em>Bcrypt Hash Generator</em> card, enter a test password (e.g., <code>Crypt@2026Lab</code>). Select Cost Factor 10 (1,024 rounds). Click <strong>Generate Bcrypt Hash</strong>. Observe the 60-character output, the measured execution time in milliseconds, and the calculated work rounds ($2^{10}$).</p>
+                <p>Navigate to the <strong>Simulation</strong> tab. In the <em>Bcrypt Hash Generator</em> card, enter a test password (e.g., <code>Crypt@2026Lab</code>). Select Cost Factor 10 (1,024 rounds). Click <strong>Generate Bcrypt Hash</strong>. Observe the 60-character output, the measured execution time in milliseconds, and the calculated work rounds (2<sup>10</sup>).</p>
               </li>
               <li>
                 <strong>Experiment 2: Test Exponential Work Factor Scaling</strong>
@@ -675,7 +675,7 @@
               </li>
               <li>
                 <strong>Experiment 8: Complete Knowledge Assessment</strong>
-                <p>Switch to the <strong>Assessment / Quiz</strong> tab, answer all 5 multiple choice questions, and review the detailed rationales.</p>
+                <p>Switch to the <strong>Assessment / Quiz</strong> tab, answer all 10 multiple choice questions, and review the detailed rationales.</p>
               </li>
             </ol>
           </div>
@@ -761,7 +761,7 @@
                   </div>
 
                   <div class="b-form-group">
-                    <label for="bCostSelect">Cost Factor (Work Parameter $C$):</label>
+                    <label for="bCostSelect">Cost Factor (Work Parameter <em>C</em>):</label>
                     <select id="bCostSelect" class="b-input">
                       <option value="4">Cost 4 (16 rounds - Instant Test)</option>
                       <option value="8">Cost 8 (256 rounds - Fast)</option>
@@ -770,7 +770,7 @@
                     </select>
 
                     <div id="bCostAdvisor" class="b-callout tip" style="margin:8px 0 0; padding:8px 12px; font-size:0.83rem;">
-                      <strong>Work Factor: $2^{10} = 1,024$ rounds</strong> &bull; Recommended OWASP baseline (balanced security &amp; login speed).
+                      <strong>Work Factor: 2<sup>10</sup> = 1,024 rounds</strong> &bull; Recommended OWASP baseline (balanced security &amp; login speed).
                     </div>
                   </div>
 
@@ -800,7 +800,7 @@
                       </div>
                       <div class="b-metric-chip">
                         <span class="b-metric-val" id="bMetricRounds">1,024</span>
-                        <span class="b-metric-label">Iterations ($2^C$)</span>
+                        <span class="b-metric-label">Iterations (2<sup>C</sup>)</span>
                       </div>
                       <div class="b-metric-chip">
                         <span class="b-metric-val" id="bMetricLen">60 chars</span>
@@ -895,7 +895,7 @@
             <div class="b-card" id="tool-inspect">
               <div class="b-card-header">
                 <h3>4. Modular Hash String Inspector &amp; Breakdown</h3>
-                <button type="button" class="b-concept-badge warning" data-modal="bModalRevisions">🏷️ Compare $2a$, $2y$, $2b$</button>
+                <button type="button" class="b-concept-badge warning" data-modal="bModalRevisions">🏷️ Compare $2a, $2y, $2b</button>
               </div>
               <p>Paste any 60-character Bcrypt hash to disassemble it into its cryptographic subcomponents.</p>
 
@@ -921,7 +921,7 @@
                 <div class="b-seg-card" style="cursor:pointer;" data-token="cost">
                   <span class="b-seg-tag b-seg-cost">Cost (C)</span>
                   <div class="b-bold b-mono" id="bDCost" style="color:#f59e0b;">10</div>
-                  <div style="font-size:0.8rem; color:var(--color-text-muted);" id="bDRounds">$2^{10} = 1,024$ rounds</div>
+                  <div style="font-size:0.8rem; color:var(--color-text-muted);" id="bDRounds">2<sup>10</sup> = 1,024 rounds</div>
                 </div>
                 <div class="b-seg-card" style="cursor:pointer;" data-token="salt">
                   <span class="b-seg-tag b-seg-salt">Salt</span>
@@ -957,7 +957,7 @@
                 <div class="b-p-line"></div>
                 <div class="b-p-step" data-step="3">
                   <div class="b-p-num">3</div>
-                  <span class="b-p-lbl">3. Eksblowfish ($2^C$)</span>
+                  <span class="b-p-lbl">3. Eksblowfish (2<sup>C</sup>)</span>
                 </div>
                 <div class="b-p-line"></div>
                 <div class="b-p-step" data-step="4">
@@ -989,8 +989,8 @@
                 </div>
 
                 <div class="b-p-stage" id="bStage3">
-                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 3: Eksblowfish Key Expansion ($2^{\text{Cost}}$ Loops)</h4>
-                  <p>Password and salt are iteratively fed into the Expensive Key Schedule (Eksblowfish). The loop runs $2^C$ times (e.g. 1,024 rounds at Cost 10), repeatedly interweaving salt and password bytes into the P-array and S-boxes.</p>
+                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 3: Eksblowfish Key Expansion (2<sup>Cost</sup> Loops)</h4>
+                  <p>Password and salt are iteratively fed into the Expensive Key Schedule (Eksblowfish). The loop runs 2<sup>C</sup> times (e.g. 1,024 rounds at Cost 10), repeatedly interweaving salt and password bytes into the P-array and S-boxes.</p>
                   <p class="b-mono" style="font-size:0.88rem; color:#60a5fa; background:var(--color-surface); padding:10px; border-radius:4px; border:1px solid var(--color-border);">
                     Iterating 1,024 rounds of state perturbation... [CPU &amp; Memory Hard]
                   </p>
@@ -1190,7 +1190,7 @@
                 </div>
 
                 <div class="b-form-group">
-                  <label for="bCalcCost">Work Factor Cost ($C$): <span id="bCalcCostVal" class="b-bold" style="color:var(--color-secondary);">10</span> ($2^C$ Iterations)</label>
+                  <label for="bCalcCost">Work Factor Cost (<em>C</em>): <span id="bCalcCostVal" class="b-bold" style="color:var(--color-secondary);">10</span> (2<sup>C</sup> Iterations)</label>
                   <input type="range" id="bCalcCost" min="4" max="16" value="10" step="1" style="width:100%; cursor:pointer;">
                 </div>
               </div>
@@ -1202,7 +1202,7 @@
                 </div>
                 <div class="b-metric-chip">
                   <span class="b-metric-val" id="bCalcCombos">1.15e+18</span>
-                  <span class="b-metric-label">Keyspace Combinations ($P^L$)</span>
+                  <span class="b-metric-label">Keyspace Combinations (<em>P<sup>L</sup></em>)</span>
                 </div>
                 <div class="b-metric-chip">
                   <span class="b-metric-val" id="bCalcPowerCost">~$14,200 USD</span>
@@ -1304,7 +1304,7 @@
                 <p>Test your comprehension of adaptive key stretching, salt security, and password vulnerabilities.</p>
               </div>
               <div style="display:flex; gap:12px; align-items:center;">
-                <span class="b-bold" id="bQuizScoreBadge" style="padding:6px 14px; background:var(--color-primary-dark); color:#fff; border-radius:999px; font-size:0.9rem;">Score: 0 / 5</span>
+                <span class="b-bold" id="bQuizScoreBadge" style="padding:6px 14px; background:var(--color-primary-dark); color:#fff; border-radius:999px; font-size:0.9rem;">Score: 0 / 10</span>
                 <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnResetQuiz">Reset Quiz</button>
               </div>
             </div>
@@ -1409,11 +1409,11 @@
             </tr>
             <tr>
               <td><strong>Precomputed Attack Resistance</strong></td>
-              <td>Rainbow tables defeated via 128-bit salt ($2^{128}$ table combinations)</td>
+              <td>Rainbow tables defeated via 128-bit salt (2<sup>128</sup> table combinations)</td>
             </tr>
             <tr>
               <td><strong>Assessment Score</strong></td>
-              <td><span id="bRepScore" style="font-weight:700; color:#16a34a;">5 / 5 (100%)</span></td>
+              <td><span id="bRepScore" style="font-weight:700; color:#16a34a;">10 / 10 (100%)</span></td>
             </tr>
           </tbody>
         </table>
@@ -1463,7 +1463,7 @@
               </div>
               <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
                 <strong style="color:var(--color-secondary);">Step 6: Test Your Knowledge (Quiz Tab)</strong>
-                <p style="margin:4px 0 0; font-size:0.88rem;">Answer the 5 multiple choice questions, flip through the Theory Flashcards, and generate your finalized Lab Journal Report!</p>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Answer the 10 multiple choice questions, flip through the Theory Flashcards, and generate your finalized Lab Journal Report!</p>
               </div>
             </div>
           </div>
@@ -1492,7 +1492,7 @@
               </div>
               <div>
                 <strong style="color:#c084fc;">Cost Factor ($C$) &amp; Key Stretching</strong>
-                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">An exponential parameter where internal loop rounds equal $2^C$. Key stretching deliberately consumes CPU clock cycles to make brute force computationally unfeasible.</p>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">An exponential parameter where internal loop rounds equal 2<sup>C</sup>. Key stretching deliberately consumes CPU clock cycles to make brute force computationally unfeasible.</p>
               </div>
               <div>
                 <strong style="color:#4ade80;">CSPRNG</strong>
@@ -1523,7 +1523,7 @@
           </div>
           <div class="b-modal-body">
             <h4>16-Round Feistel Cipher Architecture</h4>
-            <p>Eksblowfish is derived from Bruce Schneier's Blowfish cipher, which operates on 64-bit plaintext blocks split into two 32-bit halves ($L, R$):</p>
+            <p>Eksblowfish is derived from Bruce Schneier's Blowfish cipher, which operates on 64-bit plaintext blocks split into two 32-bit halves (<em>L, R</em>):</p>
             
             <div class="b-card" style="background:var(--color-background); font-family:var(--font-mono, monospace); font-size:0.84rem; line-height:1.6;">
               For i = 1 to 16 rounds:<br>
@@ -1536,14 +1536,14 @@
               Output: (L, R) 64-bit ciphertext
             </div>
 
-            <h4>The Feistel Function $F(x)$</h4>
-            <p>Splits a 32-bit word into 4 8-bit bytes ($a, b, c, d$) and accesses four substitution boxes:</p>
+            <h4>The Feistel Function <em>F(x)</em></h4>
+            <p>Splits a 32-bit word into 4 8-bit bytes (<em>a, b, c, d</em>) and accesses four substitution boxes:</p>
             <div class="b-card" style="background:var(--color-background); font-family:var(--font-mono, monospace); font-size:0.88rem; color:#86efac; text-align:center;">
               F(a, b, c, d) = ((S<sub>1</sub>[a] + S<sub>2</sub>[b]) &oplus; S<sub>3</sub>[c]) + S<sub>4</sub>[d] &nbsp; (mod 2<sup>32</sup>)
             </div>
 
             <h4>Why the 4,096-Byte Working State Deters GPU Cracking</h4>
-            <p>Each of the four S-boxes has 256 entries of 4 bytes ($4 \times 256 \times 4 = 4,096\text{ bytes} = 4\text{ KB}$). Modern GPUs contain thousands of lightweight compute cores designed to run threads sharing small register files.</p>
+            <p>Each of the four S-boxes has 256 entries of 4 bytes (4 &times; 256 &times; 4 bytes = 4,096 bytes = 4 KB). Modern GPUs contain thousands of lightweight compute cores designed to run threads sharing small register files.</p>
             <div class="b-callout danger">
               <strong>GPU Bottleneck:</strong> Because every Bcrypt thread needs 4KB of state in low-latency L1 cache, GPU Streaming Multiprocessors (SMs) rapidly exhaust high-speed cache lines. Threads stall waiting on high-latency GDDR memory, slashing GPU cracking efficiency from billions of hashes/second (like SHA-256) down to thousands per second.
             </div>
@@ -1693,7 +1693,7 @@
                 <div>
                   <strong style="color:#60a5fa;">Extract Parameters from Stored Hash</strong>
                   <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">
-                    The verifier parses the 60-character target hash: it extracts the cost factor ($C$) and the 22-character (16-byte) CSPRNG salt.
+                    The verifier parses the 60-character target hash: it extracts the cost factor (<em>C</em>) and the 22-character (16-byte) CSPRNG salt.
                   </p>
                 </div>
               </div>
@@ -1703,7 +1703,7 @@
                 <div>
                   <strong style="color:#f59e0b;">Re-Compute Eksblowfish Hash</strong>
                   <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">
-                    The verifier feeds the candidate password submitted by the user together with the extracted salt into the Eksblowfish key schedule for $2^C$ rounds, encrypting the constant text.
+                    The verifier feeds the candidate password submitted by the user together with the extracted salt into the Eksblowfish key schedule for 2<sup>C</sup> rounds, encrypting the constant text.
                   </p>
                 </div>
               </div>
@@ -1775,14 +1775,14 @@
             
             <p>Each increment in Cost Factor $C$ exactly doubles the computational rounds:</p>
             <ul>
-              <li><strong>Cost 4:</strong> $2^4 = 16$ rounds (&approx; 1 ms)</li>
-              <li><strong>Cost 8:</strong> $2^8 = 256$ rounds (&approx; 15-25 ms)</li>
-              <li><strong>Cost 10:</strong> $2^{10} = 1,024$ rounds (&approx; 100-150 ms)</li>
-              <li><strong>Cost 12:</strong> $2^{12} = 4,096$ rounds (&approx; 400-600 ms)</li>
+              <li><strong>Cost 4:</strong> 2<sup>4</sup> = 16 rounds (&approx; 1 ms)</li>
+              <li><strong>Cost 8:</strong> 2<sup>8</sup> = 256 rounds (&approx; 15-25 ms)</li>
+              <li><strong>Cost 10:</strong> 2<sup>10</sup> = 1,024 rounds (&approx; 100-150 ms)</li>
+              <li><strong>Cost 12:</strong> 2<sup>12</sup> = 4,096 rounds (&approx; 400-600 ms)</li>
             </ul>
 
             <div class="b-callout tip">
-              <strong>OWASP Recommendation:</strong> OWASP recommends calibrating $C$ so that a single login check takes between <strong>250 ms and 500 ms</strong> on the target server. This is unnoticeable to a human user logging in once, but devastating to an automated bot guessing passwords!
+              <strong>OWASP Recommendation:</strong> OWASP recommends calibrating <em>C</em> so that a single login check takes between <strong>250 ms and 500 ms</strong> on the target server. This is unnoticeable to a human user logging in once, but devastating to an automated bot guessing passwords!
             </div>
           </div>
           <div class="b-modal-footer">
