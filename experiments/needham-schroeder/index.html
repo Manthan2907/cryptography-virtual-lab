@@ -3,848 +3,469 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
-    <link rel="stylesheet" href="../../css/variables.css">
-    <link rel="stylesheet" href="../../css/experiment.css">
-    <link rel="stylesheet" href="style.css?v=2" />
+    <meta name="description" content="Message Authentication Code (MAC) virtual lab - generate and verify CBC-MAC, CMAC, and Keyed-MAC tags using a shared secret key.">
+    <title>Message Authentication Code (MAC)</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <!-- Fr. CRCE Official College Header Banner -->
-    <div class="college-banner-strip">
-      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
-        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
-      </a>
-    </div>
-
     <div class="experiment-container">
       <header class="exp-header">
-        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Needham-Schroeder Symmetric Key Protocol</h1>
-        <p id="exp-description">Virtual Labs - Cryptography</p>
+        <h1 id="exp-title">Message Authentication Code (MAC)</h1>
+        <p id="exp-description">Generation &amp; verification of MAC tags using shared secret keys &mdash; CBC-MAC, CMAC (NIST SP 800-38B), and Keyed-MAC.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
-        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
-        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
-        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
       </nav>
 
       <main class="content-area">
-        <!-- a. Aim and objectives -->
-        <section id="aim" class="tab-content active" data-tab-panel="aim">
-          <h2 class="vlab-section-heading">Estimated Time</h2>
-            <p class="vlab-paragraph">1 hour</p>
 
-            <h2 class="vlab-section-heading">
-              Learning Objective of the Experiment
-            </h2>
-            <p class="vlab-paragraph">
-              To identify, trace, and analyze the steps of the
-              <strong>Needham-Schroeder Symmetric Key Protocol (1978)</strong>
-              for establishing a temporary shared secret key and achieving
-              mutual authentication between two untrusted network nodes via a
-              trusted Server (Key Distribution Center / KDC).
+        <!-- ============================================================ -->
+        <!-- TAB 1: THEORY                                                -->
+        <!-- ============================================================ -->
+        <section id="theory" class="tab-content active" data-tab-panel="theory">
+          <div class="content-block">
+            <h3>Aim &amp; Objectives</h3>
+            <p>
+              The primary objective of this experiment is to implement, analyze, and verify a <strong>Message Authentication Code (MAC)</strong> for arbitrary messages using a shared secret key <code>K</code>. Students will explore block-cipher based MAC constructions (<strong>CBC-MAC</strong> and <strong>CMAC &mdash; NIST SP 800-38B</strong>) alongside a general keyed MAC function <code>C(K, M) &rarr; T</code> to evaluate data integrity and data origin authentication.
             </p>
-            <ul
-              style="
-                margin-left: 1.5rem;
-                margin-bottom: 1rem;
-                font-size: 0.95rem;
-                color: #333;
-                line-height: 1.7;
-              "
-            >
-              <li>
-                Understand the architectural role of a centralized Server (KDC)
-                in symmetric key management.
-              </li>
-              <li>
-                Analyze how Alice's Random Challenge Number (N_A) and Bob's
-                Random Challenge Number (N_B) prevent replay attacks.
-              </li>
-              <li>
-                Observe ticket generation and ticket forwarding mechanics.
-              </li>
-              <li>
-                Evaluate challenge-response nonce verification (N_B - 1) for
-                mutual authentication.
-              </li>
-            </ul>
-        </section>
-
-        <!-- b. Relevant theoretical concepts -->
-        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <h2 class="vlab-section-heading">
-              Real-World Story Analogy: The Secure Bank Manager &amp; Sealed
-              Envelopes
-            </h2>
-            <div
-              class="inspector-explanation"
-              style="
-                margin-bottom: 1.5rem;
-                background-color: #ffffff;
-                border-left: 4px solid var(--vlab-primary-brown);
-              "
-            >
-              <p class="vlab-paragraph">
-                Imagine Alice and Bob both have safe deposit boxes inside a
-                high-security Bank Branch, managed by a trusted Bank Manager
-                (Server / KDC). Alice shares a secret passcode combination with
-                the Bank Manager (<strong>Alice's Secret Master Password</strong
-                >), and Bob shares a different combination with the Manager
-                (<strong>Bob's Secret Master Password</strong>). Neither Alice
-                nor Bob knows each other's passcode.
-              </p>
-              <p class="vlab-paragraph">
-                When Alice wants to open a private line of communication with
-                Bob, she asks the Bank Manager for a temporary one-time passcode
-                (<strong>Temporary Shared Secret Key / Session Key</strong>).
-                The Manager locks this temporary key inside a sealed box
-                encrypted with Alice's passcode. Inside that same box, the
-                Manager places a second sealed envelope (<strong
-                  >The Ticket</strong
-                >) locked with Bob's passcode.
-              </p>
-              <p class="vlab-paragraph" style="margin-bottom: 0">
-                Alice unlocks her box, retrieves the temporary key, and hands
-                the sealed envelope to Bob. Bob uses his secret combination to
-                open his envelope, proving to both parties that the Bank Manager
-                issued the temporary key!
-              </p>
+            <div class="aim-cards-grid">
+              <div class="aim-card aim-card-blue">
+                <div class="aim-card-icon">&#128737;</div>
+                <h4>Data Origin Authentication</h4>
+                <p>Proving that the transmitted payload <code>M</code> was generated by a legitimate sender who holds the shared secret key <code>K</code>.</p>
+              </div>
+              <div class="aim-card aim-card-green">
+                <div class="aim-card-icon">&#10003;</div>
+                <h4>Data Integrity Verification</h4>
+                <p>Detecting any unauthorized bit modifications, insertions, or payload alterations introduced by an eavesdropper in transit.</p>
+              </div>
+              <div class="aim-card aim-card-orange">
+                <div class="aim-card-icon">&#128187;</div>
+                <h4>Symmetric Cipher MAC Suite</h4>
+                <p>Utilizing AES-128 block cipher chaining (CBC-MAC) and CMAC subkey derivation (K<sub>1</sub>, K<sub>2</sub>) for fixed-length tag generation.</p>
+              </div>
             </div>
+          </div>
 
-            <h2 class="vlab-section-heading">
-              Full Plain-English Variable Mapping
-            </h2>
-            <div class="vlab-card">
-              <table class="inspector-table">
+          <div class="content-block">
+            <h3>What is a Message Authentication Code (MAC)?</h3>
+            <p>
+              A <strong>Message Authentication Code (MAC)</strong>, also known as a cryptographic tag or checksum, is a symmetric key cryptographic algorithm that takes an arbitrary-length message payload <code>M</code> and a shared secret key <code>K</code>, and produces a fixed-size authentication tag <code>T</code>:
+            </p>
+            <div class="formula-box">Tag T = MAC(K, M) &equiv; C(K, M)</div>
+            <p>
+              Only parties who possess the secret key <code>K</code> can compute or verify the tag <code>T</code>. If an adversary modifies even 1 bit of <code>M</code> or <code>T</code>, the receiver&rsquo;s verification algorithm returns <code>INVALID</code>.
+            </p>
+          </div>
+
+          <div class="content-block">
+            <h3>Block-Cipher Based MAC Constructions</h3>
+            <div class="theory-algo-grid">
+              <div class="algo-card algo-card-blue">
+                <h4>1. CBC-MAC (Cipher Block Chaining MAC)</h4>
+                <p>
+                  CBC-MAC uses a block cipher (AES-128) in Cipher Block Chaining mode. The message <code>M</code> is divided into 128-bit blocks P<sub>1</sub>, P<sub>2</sub>, &hellip;, P<sub>n</sub>. Each block is XORed with the previous cipher block before encryption:
+                </p>
+                <div class="code-block">T&#8320; = 0&#x00B9;&#xB2;&#x2078; (Initialization Vector)
+T&#8321; = E_K( P&#8321; &oplus; T&#8320; )
+T&#8322; = E_K( P&#8322; &oplus; T&#8321; )
+&vellip;
+Final Tag T = T_n</div>
+              </div>
+              <div class="algo-card algo-card-green">
+                <h4>2. CMAC (NIST SP 800-38B Standard)</h4>
+                <p>
+                  CMAC fixes the security limitations of raw CBC-MAC for variable-length messages by generating two 128-bit subkeys (K<sub>1</sub> and K<sub>2</sub>) from the primary key <code>K</code> using Galois field finite-field multiplication:
+                </p>
+                <div class="code-block">L = E_K(0&#x00B9;&#xB2;&#x2078;)
+K&#8321; = L &lt;&lt; 1 (XOR 0x87 if MSB=1)
+K&#8322; = K&#8321; &lt;&lt; 1 (XOR 0x87 if MSB=1)
+Last Block = P_n &oplus; K&#8321; (or K&#8322; if padded)</div>
+              </div>
+              <div class="algo-card algo-card-orange">
+                <h4>3. General Keyed-MAC</h4>
+                <p>
+                  A general keyed MAC uses a cryptographic hash function parameterized by a secret key. Unlike a plain hash, the key is required to reproduce the tag, providing authenticity. In this simulation, we use the secret-prefix construction:
+                </p>
+                <div class="code-block">MAC(K, M) = SHA-256(K &parallel; M)
+(Key prepended to message before hashing)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-block">
+            <h3>Security Properties: MAC vs. Hash vs. Digital Signature</h3>
+            <div class="comparison-table-wrapper">
+              <table class="exp-table">
                 <thead>
                   <tr>
-                    <th>Formal Notation</th>
-                    <th>Plain-English Descriptive Name</th>
-                    <th>Role &amp; Real-World Explanation</th>
+                    <th>Security Mechanism</th>
+                    <th>Key Used</th>
+                    <th>Data Integrity</th>
+                    <th>Authentication</th>
+                    <th>Non-Repudiation</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>A, B</strong></td>
-                    <td>Alice (Initiator) &amp; Bob (Responder)</td>
-                    <td>
-                      The two network users attempting to communicate securely.
-                    </td>
+                    <td>Cryptographic Hash (SHA-256)</td>
+                    <td><span class="badge-no">None</span></td>
+                    <td><span class="badge-yes">Yes (accidental noise)</span></td>
+                    <td><span class="badge-no">No</span></td>
+                    <td><span class="badge-no">No</span></td>
+                  </tr>
+                  <tr class="row-highlight">
+                    <td><strong>MAC (CBC-MAC / CMAC / Keyed-MAC)</strong></td>
+                    <td><span class="badge-yes">Shared Secret K</span></td>
+                    <td><span class="badge-yes">Yes (active tampering)</span></td>
+                    <td><span class="badge-yes">Yes (key holder)</span></td>
+                    <td><span class="badge-no">No (both hold K)</span></td>
                   </tr>
                   <tr>
-                    <td><strong>S</strong></td>
-                    <td>Server S (Key Distribution Center)</td>
-                    <td>
-                      The trusted central server holding master passwords for
-                      all registered users.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>K<sub>A</sub></strong></td>
-                    <td>Alice's Secret Master Password</td>
-                    <td>
-                      Secret password shared exclusively between Alice and the
-                      Server.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>K<sub>B</sub></strong></td>
-                    <td>Bob's Secret Master Password</td>
-                    <td>
-                      Secret password shared exclusively between Bob and the
-                      Server.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>K<sub>AB</sub></strong></td>
-                    <td>Temporary Shared Secret Key (Session Key)</td>
-                    <td>
-                      A temporary password generated by the Server just for
-                      Alice and Bob's chat.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>N<sub>A</sub></strong></td>
-                    <td>Alice's Random Challenge Number</td>
-                    <td>
-                      A unique, single-use ticket number sent by Alice to ensure
-                      Server responses are fresh.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>N<sub>B</sub></strong></td>
-                    <td>Bob's Random Challenge Number</td>
-                    <td>
-                      A unique, single-use test number sent by Bob to verify
-                      Alice's identity.
-                    </td>
+                    <td>Digital Signature (RSA / ECDSA)</td>
+                    <td>Asymmetric (Private/Public)</td>
+                    <td><span class="badge-yes">Yes</span></td>
+                    <td><span class="badge-yes">Yes</span></td>
+                    <td><span class="badge-yes">Yes (only sender holds Private Key)</span></td>
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
 
-            <h2 class="vlab-section-heading">
-              5-Step Protocol Message Breakdown
-            </h2>
-            <div class="inspector-code-block">
-              <div>
-                <strong>Step 1 (A -&gt; S):</strong> A, B, Alice Challenge
-                Number
+          <div class="content-block">
+            <h3>Length-Extension Vulnerability &amp; Real-World Use</h3>
+            <p>
+              The simple secret-prefix Keyed-MAC is vulnerable to <strong>length-extension attacks</strong> on Merkle-Damg&aring;rd hash functions: an attacker who knows <code>MAC(K, M)</code> and the length of <code>K &parallel; M</code> can forge a MAC for <code>M &parallel; padding &parallel; M'</code> without knowing <code>K</code>. CMAC was specifically designed to be immune to this class of attacks.
+            </p>
+            <ul class="exp-list">
+              <li>Verifying API payloads (e.g., Stripe webhooks, AWS Signature V4).</li>
+              <li>Message authentication in network protocols (SSL/TLS record layer).</li>
+              <li>Verifying software update packages and firmware images.</li>
+              <li>Authentication in banking and financial messaging (SWIFT, ISO 8583).</li>
+            </ul>
+          </div>
+
+          <div class="content-block">
+            <h3>Standards &amp; References</h3>
+            <div class="ref-list">
+              <div class="ref-item">
+                <div>
+                  <h4>[1] RFC 2104: HMAC &mdash; Keyed-Hashing for Message Authentication</h4>
+                  <p>H. Krawczyk, M. Bellare, R. Canetti (1997)</p>
+                </div>
+                <a href="https://datatracker.ietf.org/doc/html/rfc2104" target="_blank" rel="noopener noreferrer" class="sim-btn sim-btn-secondary btn-sm">View Spec &#10132;</a>
               </div>
-              <div style="margin-top: 0.35rem">
-                <strong>Step 2 (S -&gt; A):</strong> { Alice Challenge Number,
-                B, Temporary Session Key, { Temporary Session Key, A
-                }<sub>BobPassword</sub> }<sub>AlicePassword</sub>
+              <div class="ref-item">
+                <div>
+                  <h4>[2] NIST SP 800-38B: Recommendation for Block Cipher Modes &mdash; CMAC Mode</h4>
+                  <p>National Institute of Standards and Technology (NIST) (2005)</p>
+                </div>
+                <a href="https://csrc.nist.gov/publications/detail/sp/800-38b/final" target="_blank" rel="noopener noreferrer" class="sim-btn sim-btn-secondary btn-sm">View Spec &#10132;</a>
               </div>
-              <div style="margin-top: 0.35rem">
-                <strong>Step 3 (A -&gt; B):</strong> { Temporary Session Key, A
-                }<sub>BobPassword</sub>
-              </div>
-              <div style="margin-top: 0.35rem">
-                <strong>Step 4 (B -&gt; A):</strong> { Bob Challenge Number
-                }<sub>SessionKey</sub>
-              </div>
-              <div style="margin-top: 0.35rem">
-                <strong>Step 5 (A -&gt; B):</strong> { f(Bob Challenge Number)
-                }<sub>SessionKey</sub> where f(N<sub>B</sub>) = N<sub>B</sub> - 1
+              <div class="ref-item">
+                <div>
+                  <h4>[3] Cryptography and Network Security: Principles and Practice, 7th ed.</h4>
+                  <p>William Stallings &mdash; Pearson (2017) &mdash; Chapter 12: Message Authentication</p>
+                </div>
               </div>
             </div>
-
-            <h2 class="vlab-section-heading">
-              Security Analysis &amp; The Denning-Sacco Vulnerability
-            </h2>
-            <p class="vlab-paragraph">
-              In 1981, Dorothy Denning and Giovanni Sacco identified a major
-              flaw in the original 1978 protocol: Step 3's ticket contains no
-              timestamp or Bob-generated challenge. If a hacker steals an old
-              temporary session key, they can replay the old ticket to Bob. Bob
-              will unlock it with his password and accept the compromised key!
-              Modern systems (like <strong>Kerberos</strong>) fix this by
-              embedding encrypted timestamps inside tickets.
-            </p>
-        </section>
-
-        <!-- c. Step-by-step procedure -->
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <h2 class="vlab-section-heading">Simulation Instructions</h2>
-            <p class="vlab-paragraph">
-              Follow these instructions to configure, run, and inspect the
-              Needham-Schroeder protocol in the interactive simulation:
-            </p>
-
-            <div
-              style="
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-                margin-top: 1rem;
-              "
-            >
-              <div class="vlab-card">
-                <h4
-                  style="
-                    color: var(--vlab-primary-brown);
-                    margin-bottom: 0.35rem;
-                    font-size: 0.95rem;
-                  "
-                >
-                  Step 1: Configure Identities &amp; Challenge Mode
-                </h4>
-                <p class="vlab-paragraph" style="margin-bottom: 0">
-                  On the <strong>Interactive Simulation</strong> tab, select
-                  Client A Identity (Alice), Client B Identity (Bob), and choose
-                  the Challenge Number Mode (Auto 16-bit Hex Nonces or Fixed
-                  Demo Values).
-                </p>
-              </div>
-
-              <div class="vlab-card">
-                <h4
-                  style="
-                    color: var(--vlab-primary-brown);
-                    margin-bottom: 0.35rem;
-                    font-size: 0.95rem;
-                  "
-                >
-                  Step 2: Initialize Protocol Handshake
-                </h4>
-                <p class="vlab-paragraph" style="margin-bottom: 0">
-                  Click <strong>"Initialize Handshake"</strong>. This generates
-                  16-bit challenge numbers and transmits Step 1 (A -&gt; S)
-                  requesting a temporary session key from the Server.
-                </p>
-              </div>
-
-              <div class="vlab-card">
-                <h4
-                  style="
-                    color: var(--vlab-primary-brown);
-                    margin-bottom: 0.35rem;
-                    font-size: 0.95rem;
-                  "
-                >
-                  Step 3: Step-by-Step Execution
-                </h4>
-                <p class="vlab-paragraph" style="margin-bottom: 0">
-                  Click <strong>"Next Step"</strong> to step through
-                  transmissions 2 to 5. Watch the data packet traverse the
-                  topology map and monitor node status badges.
-                </p>
-              </div>
-
-              <div class="vlab-card">
-                <h4
-                  style="
-                    color: var(--vlab-primary-brown);
-                    margin-bottom: 0.35rem;
-                    font-size: 0.95rem;
-                  "
-                >
-                  Step 4: Payload &amp; Plain English Story Inspection
-                </h4>
-                <p class="vlab-paragraph" style="margin-bottom: 0">
-                  Review the <strong>Message Inspection Panel</strong> for raw
-                  wire format ciphertext, decrypted field tables, and the
-                  <strong>Plain English Story</strong> column for layman
-                  explanations.
-                </p>
-              </div>
-            </div>
-        </section>
-
-        <!-- d. Interactive simulation / implementation -->
-        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="sim-dashboard-container">
-              <!-- Top Dashboard Card: Controls & Stepper Row -->
-              <div class="sim-top-card">
-                <div class="sim-controls-row">
-                  <div class="sim-field-group-inline">
-                    <label for="selectAlice">Client A Identity (Alice):</label>
-                    <select id="selectAlice" class="sim-select-sm">
-                      <option value="Alice" selected>Alice (User_101)</option>
-                      <option value="Client_A">Client_A (Node_A)</option>
-                      <option value="Department_HR">Department_HR</option>
-                    </select>
-                  </div>
-
-                  <div class="sim-field-group-inline">
-                    <label for="selectBob">Client B Identity (Bob):</label>
-                    <select id="selectBob" class="sim-select-sm">
-                      <option value="Bob" selected>Bob (User_202)</option>
-                      <option value="Client_B">Client_B (Node_B)</option>
-                      <option value="Finance_Server">Finance_Server</option>
-                    </select>
-                  </div>
-
-                  <div class="sim-field-group-inline">
-                    <label for="selectNonceMode">Challenge Number Mode:</label>
-                    <select id="selectNonceMode" class="sim-select-sm">
-                      <option value="auto" selected>
-                        Auto 16-bit Hex Nonces (Random)
-                      </option>
-                      <option value="fixed">
-                        Fixed Demo Values (NA=0x4F92, NB=0x8A1C)
-                      </option>
-                    </select>
-                  </div>
-
-                  <div class="vlab-btn-group-inline">
-                    <button
-                      id="btnInitHandshake"
-                      class="btn-vlab-primary btn-vlab-sm"
-                    >
-                      Initialize Handshake
-                    </button>
-                    <button
-                      id="btnNextStep"
-                      class="btn-vlab-primary btn-vlab-sm"
-                    >
-                      Next Step
-                    </button>
-                    <button id="btnResetSim" class="btn-vlab-reset btn-vlab-sm">
-                      Reset Protocol
-                    </button>
-                    <button
-                      id="btnToggleConcepts"
-                      class="btn-vlab-reset btn-vlab-sm"
-                      style="
-                        background: #eef6f9;
-                        color: var(--vlab-btn-blue);
-                        border-color: #b3e5fc;
-                      "
-                    >
-                      Beginner Concepts
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Compact Stepper Pills Row -->
-                <div class="stepper-pills-row">
-                  <div class="step-pill-item active" data-step="0">
-                    <span class="step-pill-num">1</span> <span>Setup</span>
-                  </div>
-                  <span class="step-pill-arrow">&rarr;</span>
-
-                  <div class="step-pill-item" data-step="1">
-                    <span class="step-pill-num">2</span> <span>NS-REQ</span>
-                  </div>
-                  <span class="step-pill-arrow">&rarr;</span>
-
-                  <div class="step-pill-item" data-step="2">
-                    <span class="step-pill-num">3</span> <span>NS-REP</span>
-                  </div>
-                  <span class="step-pill-arrow">&rarr;</span>
-
-                  <div class="step-pill-item" data-step="3">
-                    <span class="step-pill-num">4</span> <span>TICKET</span>
-                  </div>
-                  <span class="step-pill-arrow">&rarr;</span>
-
-                  <div class="step-pill-item" data-step="4">
-                    <span class="step-pill-num">5</span> <span>CHALLENGE</span>
-                  </div>
-                  <span class="step-pill-arrow">&rarr;</span>
-
-                  <div class="step-pill-item" data-step="5">
-                    <span class="step-pill-num">6</span> <span>VERIFIED</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Collapsible Beginner Concepts Box -->
-              <div class="fresher-collapsible-box" id="fresherCollapsibleBox">
-                <div class="fresher-concept-grid">
-                  <div class="fresher-concept-card">
-                    <div class="fresher-concept-title">
-                      Secret Master Password
-                    </div>
-                    <div class="fresher-concept-body">
-                      A private combination passcode known only to you and the
-                      central Server. Used to lock and unlock private messages.
-                    </div>
-                  </div>
-
-                  <div class="fresher-concept-card">
-                    <div class="fresher-concept-title">Encryption</div>
-                    <div class="fresher-concept-body">
-                      Putting a message inside a locked digital box. Only
-                      someone with the exact matching password can unlock and
-                      read it.
-                    </div>
-                  </div>
-
-                  <div class="fresher-concept-card">
-                    <div class="fresher-concept-title">
-                      Session Key &amp; Ticket
-                    </div>
-                    <div class="fresher-concept-body">
-                      A temporary visitor badge created just for this chat.
-                      Allows Alice and Bob to talk without giving away permanent
-                      master passwords.
-                    </div>
-                  </div>
-
-                  <div class="fresher-concept-card">
-                    <div class="fresher-concept-title">
-                      Random Challenge Number
-                    </div>
-                    <div class="fresher-concept-body">
-                      A unique single-use ticket number (Nonce). Guarantees that
-                      a message is brand new and not an old recording replayed
-                      by a hacker.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Single-Viewport 2-Column Dashboard Grid -->
-              <div class="sim-dashboard-grid">
-                <!-- Left Column: Visual Node Topology Canvas -->
-                <div class="sim-canvas-column">
-                  <div class="topology-container-compact">
-                    <svg class="topology-svg-canvas" id="topologySvg">
-                      <defs>
-                        <!-- Arrowhead marker for active transmissions -->
-                        <marker
-                          id="markerArrow"
-                          viewBox="0 0 10 10"
-                          refX="8"
-                          refY="5"
-                          markerWidth="6"
-                          markerHeight="6"
-                          orient="auto-start-reverse"
-                        >
-                          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#764b38" />
-                        </marker>
-                        <!-- Terminal dots for base interconnection links -->
-                        <marker
-                          id="markerDot"
-                          viewBox="0 0 10 10"
-                          refX="5"
-                          refY="5"
-                          markerWidth="6"
-                          markerHeight="6"
-                        >
-                          <circle
-                            cx="5"
-                            cy="5"
-                            r="3.5"
-                            fill="#764b38"
-                            opacity="0.6"
-                          />
-                        </marker>
-                      </defs>
-
-                      <!-- Base Permanent Interconnection Links (Connecting All 3 Entities) -->
-                      <g class="topology-base-lines">
-                        <path
-                          id="lineBaseAliceKdc"
-                          class="topology-svg-path base-link"
-                          marker-start="url(#markerDot)"
-                          marker-end="url(#markerDot)"
-                        />
-                        <path
-                          id="lineBaseKdcBob"
-                          class="topology-svg-path base-link"
-                          marker-start="url(#markerDot)"
-                          marker-end="url(#markerDot)"
-                        />
-                        <path
-                          id="lineBaseAliceBob"
-                          class="topology-svg-path base-link"
-                          marker-start="url(#markerDot)"
-                          marker-end="url(#markerDot)"
-                        />
-                      </g>
-
-                      <!-- Active Step Directional Transmission Line -->
-                      <g class="topology-active-lines">
-                        <path
-                          id="lineActiveTransmission"
-                          class="topology-svg-path active-transmission"
-                          marker-end="url(#markerArrow)"
-                        />
-                      </g>
-
-                      <!-- Interconnection Channel Text Badges -->
-                      <g class="topology-labels">
-                        <text id="labelAliceKdc" class="topology-channel-text">
-                          K<sub>A</sub> Channel
-                        </text>
-                        <text id="labelKdcBob" class="topology-channel-text">
-                          K<sub>B</sub> Channel
-                        </text>
-                        <text id="labelAliceBob" class="topology-channel-text">
-                          K<sub>AB</sub> Channel
-                        </text>
-                      </g>
-                    </svg>
-
-                    <!-- Node 1: Alice -->
-                    <div class="entity-card-compact alice" id="cardAlice">
-                      <div class="entity-header-compact">
-                        <div class="entity-icon-circle-sm">A</div>
-                        <div>
-                          <div class="entity-name-sm" id="nameAlice">Alice</div>
-                          <div class="entity-role-sm">Initiator (Client A)</div>
-                        </div>
-                      </div>
-                      <span class="entity-badge-sm status-idle" id="badgeAlice"
-                        >IDLE</span
-                      >
-                      <table class="entity-key-table-sm">
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Alice's Secret Master Password:
-                          </td>
-                          <td class="entity-key-val-sm" id="valAliceKA">
-                            0x9A4F8B2C
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Temporary Session Key:
-                          </td>
-                          <td class="entity-key-val-sm" id="valAliceKAB">
-                            None
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-
-                    <!-- Node 2: Server (KDC) -->
-                    <div class="entity-card-compact kdc" id="cardKdc">
-                      <div class="entity-header-compact">
-                        <div
-                          class="entity-icon-circle-sm"
-                          style="background: #5e3b2b"
-                        >
-                          S
-                        </div>
-                        <div>
-                          <div class="entity-name-sm">Server (KDC)</div>
-                          <div class="entity-role-sm">
-                            Key Distribution Center
-                          </div>
-                        </div>
-                      </div>
-                      <span class="entity-badge-sm status-idle" id="badgeKdc"
-                        >LISTENING</span
-                      >
-                      <table class="entity-key-table-sm">
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Alice's Secret Master Password:
-                          </td>
-                          <td class="entity-key-val-sm" id="valKdcKA">
-                            0x9A4F8B2C
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Bob's Secret Master Password:
-                          </td>
-                          <td class="entity-key-val-sm" id="valKdcKB">
-                            0x3C81D5E9
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Temporary Session Key:
-                          </td>
-                          <td class="entity-key-val-sm" id="valKdcKAB">None</td>
-                        </tr>
-                      </table>
-                    </div>
-
-                    <!-- Node 3: Bob -->
-                    <div class="entity-card-compact bob" id="cardBob">
-                      <div class="entity-header-compact">
-                        <div class="entity-icon-circle-sm">B</div>
-                        <div>
-                          <div class="entity-name-sm" id="nameBob">Bob</div>
-                          <div class="entity-role-sm">Responder (Client B)</div>
-                        </div>
-                      </div>
-                      <span class="entity-badge-sm status-idle" id="badgeBob"
-                        >IDLE</span
-                      >
-                      <table class="entity-key-table-sm">
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Bob's Secret Master Password:
-                          </td>
-                          <td class="entity-key-val-sm" id="valBobKB">
-                            0x3C81D5E9
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="entity-key-name-sm">
-                            Temporary Session Key:
-                          </td>
-                          <td class="entity-key-val-sm" id="valBobKAB">None</td>
-                        </tr>
-                      </table>
-                    </div>
-
-                    <!-- Animated Packet -->
-                    <div class="visual-packet-sm" id="visualPacket">Step 1</div>
-                  </div>
-                </div>
-
-                <!-- Right Column: Inspector & Plain English Breakdown -->
-                <div class="sim-inspector-column">
-                  <div
-                    class="inspector-card-compact"
-                    style="max-height: 380px; overflow-y: auto"
-                  >
-                    <div
-                      class="vlab-card-title"
-                      id="inspectorTitle"
-                      style="font-size: 0.95rem; margin-bottom: 0.5rem"
-                    >
-                      Step 1: System Setup (Idle)
-                    </div>
-
-                    <!-- Pinned Plain English Story Box at the top -->
-                    <div
-                      class="story-callout-box"
-                      id="inspectorStoryCallout"
-                      style="margin-bottom: 0.6rem"
-                    >
-                      <strong>Plain English Story:</strong> The system is ready.
-                      Click "Initialize Handshake" to see how Alice and Bob
-                      establish a temporary session pass using Server S.
-                    </div>
-
-                    <div
-                      style="
-                        font-size: 0.75rem;
-                        font-weight: 600;
-                        color: var(--vlab-text-muted);
-                        margin-bottom: 0.2rem;
-                      "
-                    >
-                      Mathematical Structure:
-                    </div>
-                    <div
-                      class="inspector-code-block-sm"
-                      id="inspectorMath"
-                      style="color: #f59e0b"
-                    >
-                      Alice -&gt; Server : Alice, Bob, Alice Challenge Number
-                    </div>
-
-                    <div
-                      style="
-                        font-size: 0.75rem;
-                        font-weight: 600;
-                        color: var(--vlab-text-muted);
-                        margin-bottom: 0.2rem;
-                      "
-                    >
-                      Raw Wire Format Ciphertext:
-                    </div>
-                    <div
-                      class="inspector-code-block-sm"
-                      id="inspectorCiphertext"
-                    >
-                      No active payload transmitted yet. Click "Initialize
-                      Handshake" to begin.
-                    </div>
-
-                    <div
-                      style="
-                        font-size: 0.75rem;
-                        font-weight: 600;
-                        color: var(--vlab-text-muted);
-                        margin-bottom: 0.25rem;
-                      "
-                    >
-                      Decrypted Field Breakdown:
-                    </div>
-                    <table class="inspector-table-compact">
-                      <thead>
-                        <tr>
-                          <th>Field</th>
-                          <th>Value</th>
-                          <th>Key Used</th>
-                          <th>Security Purpose</th>
-                          <th>Plain English Story</th>
-                        </tr>
-                      </thead>
-                      <tbody id="inspectorTableBody">
-                        <tr>
-                          <td
-                            colspan="5"
-                            style="text-align: center; color: #777"
-                          >
-                            Click "Initialize Handshake" to inspect step
-                            details.
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Integrated Audit Log Console -->
-                  <div class="inspector-card-compact">
-                    <div
-                      style="
-                        font-size: 0.85rem;
-                        font-weight: 700;
-                        color: var(--vlab-primary-brown);
-                        margin-bottom: 0.35rem;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                      "
-                    >
-                      <span>Real-Time Audit Log</span>
-                      <button
-                        class="btn-vlab-reset"
-                        style="padding: 0.15rem 0.45rem; font-size: 0.72rem"
-                        onclick="
-                          document.getElementById('auditConsole').innerHTML = ''
-                        "
-                      >
-                        Clear
-                      </button>
-                    </div>
-                    <div class="audit-console-compact" id="auditConsole"></div>
-                  </div>
-                </div>
-              </div>
-            </div></section>
-
-        <!-- e. Assessment / Quiz -->
-        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <div class="quiz-panel">
-            <h2>Self Assessment &amp; Quiz</h2>
-            <p>Add multiple choice or short-answer questions to assess student understanding.</p>
           </div>
         </section>
 
-        <!-- f. References -->
-        <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <h2 class="vlab-section-heading">
-              References &amp; Further Reading
-            </h2>
-            <ul
-              style="
-                margin-left: 1.5rem;
-                line-height: 1.8;
-                color: #333;
-                font-size: 0.95rem;
-              "
-            >
-              <li>
-                Needham, R. M., &amp; Schroeder, M. D. (1978).
-                <em
-                  >Using encryption for authentication in large networks of
-                  computers.</em
-                >
-                Communications of the ACM, 21(12), 993-999.
-              </li>
-              <li>
-                Denning, D. E., &amp; Sacco, G. M. (1981).
-                <em>Timestamps in key distribution protocols.</em>
-                Communications of the ACM, 24(8), 533-536.
-              </li>
-              <li>
-                Stallings, W. (2017).
-                <em
-                  >Cryptography and Network Security: Principles and
-                  Practice.</em
-                >
-                Pearson Education (7th Edition).
-              </li>
-              <li>
-                Menezes, A. J., van Oorschot, P. C., &amp; Vanstone, S. A.
-                (1996). <em>Handbook of Applied Cryptography.</em> CRC Press.
-              </li>
+        <!-- ============================================================ -->
+        <!-- TAB 2: PROCEDURE                                             -->
+        <!-- ============================================================ -->
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div class="content-block">
+            <div class="procedure-steps">
+              <div class="proc-step">
+                <div class="proc-step-num">Step 1</div>
+                <div class="proc-step-body">
+                  <h3>Configure Secret Key &amp; Select MAC Algorithm</h3>
+                  <p>Enter a secret key <code>K</code> (or click <strong>Auto-Generate 128-bit Key</strong>) and choose your algorithm: <strong>CBC-MAC</strong> (AES-128), <strong>CMAC</strong> (NIST SP 800-38B), or <strong>Keyed-MAC</strong> (SHA-256 secret-prefix).</p>
+                </div>
+              </div>
+
+              <div class="proc-step">
+                <div class="proc-step-num">Step 2</div>
+                <div class="proc-step-body">
+                  <h3>Inspect Message Block Partitioning &amp; Padding</h3>
+                  <p>Observe how the payload is split into 128-bit blocks (P<sub>1</sub>, P<sub>2</sub>, &hellip;, P<sub>n</sub>) and padded using PKCS7 (CBC-MAC) or 100&hellip; bit padding (CMAC).</p>
+                </div>
+              </div>
+
+              <div class="proc-step">
+                <div class="proc-step-num">Step 3</div>
+                <div class="proc-step-body">
+                  <h3>Execute MAC Tag Generation C(K, M)</h3>
+                  <p>Click <strong>&ldquo;Generate MAC Tag&rdquo;</strong>. The simulation computes the block-by-block XOR encryption chain and produces the hexadecimal authentication tag <code>T</code>, along with a full block chaining breakdown.</p>
+                </div>
+              </div>
+
+              <div class="proc-step">
+                <div class="proc-step-num">Step 4</div>
+                <div class="proc-step-body">
+                  <h3>Constant-Time Verification &amp; MITM Attack Simulation</h3>
+                  <p>Verify payload authenticity using constant-time comparison, or use the <strong>Active Tamper Simulator</strong> to modify message bits or corrupt the MAC tag and test tamper detection.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-block">
+            <h3>Expected Observations</h3>
+            <ul class="exp-list">
+              <li>The same key + message always produces the same MAC tag (deterministic).</li>
+              <li>Even a single character change in the message produces a completely different tag (avalanche effect).</li>
+              <li>An incorrect key produces a different tag &mdash; MAC verification fails.</li>
+              <li>CBC-MAC and CMAC tags are always 32 hex characters (128 bits); Keyed-MAC tags are 64 hex characters (256 bits).</li>
+              <li>The block chaining diagram shows how each block's cipher output feeds into the next block's XOR input.</li>
             </ul>
+          </div>
         </section>
 
-        <!-- g. Feedback -->
-        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Experiment Feedback</h2>
-            <p>Please share your feedback to help us improve this virtual lab simulation.</p>
+        <!-- ============================================================ -->
+        <!-- TAB 3: SIMULATION                                            -->
+        <!-- ============================================================ -->
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <!-- STEP 1: CONFIGURE KEY & ALGORITHM -->
+          <div class="content-block sim-panel sim-panel-yellow" id="sim-step1">
+            <div class="sim-step-badge">&#127912; Step 1 &mdash; Configure Key (K) &amp; Algorithm</div>
+            <div class="sim-info-box">
+              A Message Authentication Code (MAC) uses a shared symmetric secret key <code>K</code> to generate a fixed-size tag <code>T = C(K, M)</code>. Select your MAC construction below:
+            </div>
+
+            <div class="sim-form sim-form-two-col">
+              <div class="form-group">
+                <label for="algo-select" class="form-label">Select MAC Construction</label>
+                <select id="algo-select" class="form-select">
+                  <option value="CBC-MAC">CBC-MAC (AES-128 Block Cipher Chaining)</option>
+                  <option value="CMAC">CMAC (NIST SP 800-38B Subkey K1/K2 Standard)</option>
+                  <option value="Keyed-MAC">Keyed-MAC (SHA-256 Secret-Prefix General MAC)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label for="secret-key" class="form-label">Shared Secret Key (K)</label>
+                  <button type="button" id="btnAutoKey" class="btn-link">&#8635; Auto-Generate 128-bit Key</button>
+                </div>
+                <input type="text" id="secret-key" class="form-input monospace" value="2b7e151628aed2a6abf7158809cf4f3c" placeholder="Enter key (hex or text)..." spellcheck="false" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="message-input" class="form-label">Message Payload (M)</label>
+              <textarea id="message-input" class="form-textarea monospace" rows="3" placeholder="Enter plaintext message payload...">Transfer $5,000 to Account #98412</textarea>
+            </div>
+          </div>
+
+          <!-- STEP 2: BLOCK PARTITIONING PREVIEW -->
+          <div class="content-block sim-panel sim-panel-green" id="sim-step2">
+            <div class="sim-step-badge">&#129518; Step 2 &mdash; Message Block Partitioning &amp; Padding</div>
+            <div class="sim-info-box sim-info-box-green">
+              The input payload is split into 128-bit (16-byte) blocks (P<sub>1</sub>, P<sub>2</sub>, &hellip;, P<sub>n</sub>). If the last block is under 16 bytes, PKCS7 or 100&hellip; bit padding is automatically applied.
+            </div>
+            <div class="block-preview-grid" id="blockPreviewGrid"></div>
+          </div>
+
+          <!-- STEP 3: GENERATE MAC TAG -->
+          <div class="content-block sim-panel sim-panel-gray" id="sim-step3">
+            <div class="sim-step-badge">&#127247; Step 3 &mdash; MAC Tag Generation C(K, M) &amp; Block Chaining</div>
+
+            <div style="margin-bottom:20px">
+              <button type="button" id="btnGenerateMac" class="sim-btn sim-btn-primary sim-btn-full">
+                &#9889; Generate MAC Tag C(K, M)
+              </button>
+            </div>
+
+            <div id="gen-error" class="sim-toast sim-toast-error" hidden></div>
+
+            <div id="gen-result" hidden>
+              <div class="mac-result-box" id="gen-tag-box">
+                <div class="mac-result-header">
+                  <h4>Generated Authentication Tag (T)</h4>
+                  <span class="tag-badge" id="gen-algo-badge">CBC-MAC</span>
+                </div>
+                <div class="mac-tag-display" id="gen-tag-display"></div>
+                <div class="mac-result-meta" id="gen-meta"></div>
+                <div class="sim-actions" style="margin-top:12px">
+                  <button type="button" id="btnCopyTag" class="sim-btn sim-btn-secondary">&#128203; Copy Tag</button>
+                  <button type="button" id="btnTransferVerify" class="sim-btn sim-btn-secondary">Use in Verify &darr;</button>
+                </div>
+              </div>
+
+              <div id="block-chain-section">
+                <h4 class="chain-title">Block Chaining Execution Steps &mdash; T<sub>i</sub> = E<sub>K</sub>(P<sub>i</sub> &oplus; T<sub>i&minus;1</sub>)</h4>
+                <div class="chain-steps" id="chain-steps-container"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: VERIFY + TAMPER -->
+          <div class="content-block sim-panel sim-panel-pink" id="sim-step4">
+            <div class="sim-step-badge">&#127919; Step 4 &mdash; Constant-Time Verification &amp; MITM Attack Simulator</div>
+
+            <div class="verify-grid">
+              <!-- Verify Left -->
+              <div>
+                <h4 class="verify-col-title">1. Receiver Payload &amp; Tag Input</h4>
+                <div class="form-group">
+                  <label for="ver-message" class="form-label">Received Payload (M)</label>
+                  <input type="text" id="ver-message" class="form-input monospace" value="Transfer $5,000 to Account #98412" spellcheck="false" autocomplete="off">
+                </div>
+                <div class="form-group">
+                  <label for="ver-tag" class="form-label">Received MAC Tag (T)</label>
+                  <input type="text" id="ver-tag" class="form-input monospace" placeholder="Paste MAC tag to verify..." spellcheck="false" autocomplete="off">
+                </div>
+                <button type="button" id="btnVerifyMac" class="sim-btn sim-btn-pink">&#128737; Verify MAC Tag</button>
+              </div>
+
+              <!-- Tamper Right -->
+              <div>
+                <h4 class="verify-col-title tamper-col-title">2. Active MITM Bit-Flip Simulator</h4>
+                <div class="tamper-info">
+                  Simulate Eve modifying message bits or MAC tag bits on the wire:
+                </div>
+                <div class="tamper-buttons">
+                  <button type="button" id="btnTamperMsg" class="sim-btn sim-btn-secondary">Tamper Message Payload (Modify Bits)</button>
+                  <button type="button" id="btnCorruptTag" class="sim-btn sim-btn-secondary">Corrupt 1 Byte in MAC Tag</button>
+                  <button type="button" id="btnResetVerify" class="sim-btn sim-btn-secondary">Reset Original Valid Payload &amp; Tag</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="ver-result" hidden style="margin-top: 18px;"></div>
+          </div>
+
+          <!-- STEP 5: EXPERIMENT SUMMARY TABLE -->
+          <div class="content-block sim-panel sim-panel-cyan" id="sim-step5">
+            <div class="sim-step-badge">&#128202; Experiment Observation Summary</div>
+            <table class="exp-table summary-table">
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Message Payload</strong></td>
+                  <td><code id="sum-message">-</code></td>
+                </tr>
+                <tr>
+                  <td><strong>MAC Algorithm</strong></td>
+                  <td><code id="sum-algorithm">-</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Secret Key (K)</strong></td>
+                  <td><code id="sum-key">-</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Generated MAC Tag (T)</strong></td>
+                  <td><code id="sum-tag">-</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:16px;text-align:center">
+              <button type="button" id="btnUpdateSummary" class="sim-btn sim-btn-cyan">Update Summary Table</button>
+            </div>
+            <div id="sum-updated-toast" class="sim-toast sim-toast-success" hidden>
+              &#10003; Summary Table Updated with Current Experiment Parameters!
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- TAB 4: QUIZ                                                  -->
+        <!-- ============================================================ -->
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="content-block">
+            <h2 id="quiz-heading">Self-Assessment Quiz</h2>
+            <p>Test your understanding of Message Authentication Codes (MAC). Select an answer for each question and click Submit for instant explanations.</p>
+
+            <div class="quiz-container" id="quizContainer">
+
+              <div class="quiz-question" id="quiz-q1" data-correct="1">
+                <p class="question-text"><strong>Q1.</strong> What is the main purpose of a Message Authentication Code (MAC)?</p>
+                <div class="quiz-options">
+                  <button type="button" class="quiz-option-btn" data-index="0">A. To encrypt a message so nobody can read it</button>
+                  <button type="button" class="quiz-option-btn" data-index="1">B. To verify that a message is authentic and has not been changed (Integrity &amp; Origin)</button>
+                  <button type="button" class="quiz-option-btn" data-index="2">C. To compress a large file into a smaller size</button>
+                  <button type="button" class="quiz-option-btn" data-index="3">D. To generate a random password</button>
+                </div>
+                <div class="quiz-reason" hidden>
+                  <strong>&#128161; Reason:</strong> A MAC uses a secret key to generate a unique tag. This tag proves two things: 1) The message came from a trusted sender who holds the secret key (Data Origin Authentication), and 2) The message content was not tampered with during transmission (Data Integrity).
+                </div>
+              </div>
+
+              <div class="quiz-question" id="quiz-q2" data-correct="0">
+                <p class="question-text"><strong>Q2.</strong> What kind of cryptographic key is used in a MAC?</p>
+                <div class="quiz-options">
+                  <button type="button" class="quiz-option-btn" data-index="0">A. A shared secret key known by both sender and receiver (Symmetric Key)</button>
+                  <button type="button" class="quiz-option-btn" data-index="1">B. A public key available to everyone on the internet</button>
+                  <button type="button" class="quiz-option-btn" data-index="2">C. No key at all</button>
+                  <button type="button" class="quiz-option-btn" data-index="3">D. A new random key generated for every single word</button>
+                </div>
+                <div class="quiz-reason" hidden>
+                  <strong>&#128161; Reason:</strong> MAC is a symmetric key system. Both the sender (Alice) and receiver (Bob) share the exact same secret key K. Alice uses K to generate the MAC tag, and Bob uses the same K to verify it.
+                </div>
+              </div>
+
+              <div class="quiz-question" id="quiz-q3" data-correct="1">
+                <p class="question-text"><strong>Q3.</strong> What happens if an attacker alters even 1 letter in a message protected by a MAC?</p>
+                <div class="quiz-options">
+                  <button type="button" class="quiz-option-btn" data-index="0">A. Nothing &mdash; the MAC tag stays valid</button>
+                  <button type="button" class="quiz-option-btn" data-index="1">B. The receiver&rsquo;s MAC verification will FAIL and detect the tampering</button>
+                  <button type="button" class="quiz-option-btn" data-index="2">C. The secret key is automatically deleted</button>
+                  <button type="button" class="quiz-option-btn" data-index="3">D. The message automatically fixes itself</button>
+                </div>
+                <div class="quiz-reason" hidden>
+                  <strong>&#128161; Reason:</strong> Cryptographic MAC functions have an avalanche effect: changing even a single bit in the message payload produces a completely different MAC tag. When the receiver calculates the MAC, the mismatch immediately alerts them to the attack.
+                </div>
+              </div>
+
+              <div class="quiz-question" id="quiz-q4" data-correct="1">
+                <p class="question-text"><strong>Q4.</strong> Why is a secret key needed for a MAC, instead of just using a plain hash function (like SHA-256)?</p>
+                <div class="quiz-options">
+                  <button type="button" class="quiz-option-btn" data-index="0">A. Plain hash functions are too slow</button>
+                  <button type="button" class="quiz-option-btn" data-index="1">B. Without a secret key, an attacker could modify the message and calculate a new valid hash themselves</button>
+                  <button type="button" class="quiz-option-btn" data-index="2">C. Plain hash functions cannot process text messages</button>
+                  <button type="button" class="quiz-option-btn" data-index="3">D. Plain hashes only work on numbers</button>
+                </div>
+                <div class="quiz-reason" hidden>
+                  <strong>&#128161; Reason:</strong> Anyone can compute a plain hash H(M) because no key is required. If an attacker changes message M to M&rsquo;, they could simply compute H(M&rsquo;) to fool the receiver. A MAC requires the secret key K, which the attacker does not possess!
+                </div>
+              </div>
+
+              <div class="quiz-question" id="quiz-q5" data-correct="0">
+                <p class="question-text"><strong>Q5.</strong> In CBC-MAC (Cipher Block Chaining MAC), how are long messages processed?</p>
+                <div class="quiz-options">
+                  <button type="button" class="quiz-option-btn" data-index="0">A. The message is split into blocks, and each block is chained with the previous block&rsquo;s cipher output</button>
+                  <button type="button" class="quiz-option-btn" data-index="1">B. The whole message is deleted</button>
+                  <button type="button" class="quiz-option-btn" data-index="2">C. Each block is encrypted with a completely different secret key</button>
+                  <button type="button" class="quiz-option-btn" data-index="3">D. Only the first block of the message is checked</button>
+                </div>
+                <div class="quiz-reason" hidden>
+                  <strong>&#128161; Reason:</strong> CBC-MAC divides a long message into fixed 128-bit blocks. Each block is XORed with the encrypted output of the previous block before AES encryption. The final block output becomes the authentication tag, protecting all blocks together.
+                </div>
+              </div>
+
+              <div class="quiz-actions" style="margin-top:20px;">
+                <button type="button" id="btnSubmitQuiz" class="sim-btn sim-btn-primary">&#128196; Submit Quiz &amp; View Reasons</button>
+                <button type="button" id="btnResetQuiz" class="sim-btn sim-btn-secondary">Retake Quiz</button>
+              </div>
+              <div class="quiz-score" id="quizScore" hidden style="margin-top:16px;"></div>
+            </div>
           </div>
         </section>
       </main>
     </div>
 
-    <script src="../../js/common.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
