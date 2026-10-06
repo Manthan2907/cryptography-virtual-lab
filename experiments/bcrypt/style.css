@@ -3,6 +3,14 @@
    Scoped Experiment Stylesheet - Dark Coffee & Mocha Theme Harmonized
    ========================================================================== */
 
+/* Critical Display Utilities */
+.hidden,
+[hidden],
+.b-modal-overlay.hidden,
+.b-report-overlay.hidden {
+  display: none !important;
+}
+
 /* Typography & Reset Utilities */
 .b-lead {
   font-size: 1.08rem;
@@ -884,6 +892,11 @@
   justify-content: center;
   padding: 16px;
   animation: bFadeIn 0.2s ease-out;
+}
+
+.b-modal-overlay.hidden,
+.b-modal-overlay[hidden] {
+  display: none !important;
 }
 
 .b-modal-dialog {
