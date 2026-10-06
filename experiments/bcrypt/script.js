@@ -32,6 +32,8 @@ const BcryptLabModule = {
     this.initReportGenerator();
     this.initQuiz();
     this.initFeedback();
+    this.initModals();
+    this.initFlashcards();
   },
 
   getBcrypt() {
@@ -118,8 +120,29 @@ const BcryptLabModule = {
     const lenEl = document.getElementById('bMetricLen');
     const copyBtn = document.getElementById('bBtnCopy');
     const sendVerifyBtn = document.getElementById('bBtnSendVerify');
+    const costAdvisor = document.getElementById('bCostAdvisor');
+    const expTimeVal = document.getElementById('bExpTimeVal');
 
     if (!form) return;
+
+    const advisorDescriptions = {
+      4: '<strong>Work Factor: $2^4 = 16$ rounds</strong> &bull; Minimal latency (~1 ms). For automated unit test suites only; completely insecure for production.',
+      8: '<strong>Work Factor: $2^8 = 256$ rounds</strong> &bull; Low latency (~15 ms). Suitable only for severely constrained legacy IoT hardware.',
+      10: '<strong>Work Factor: $2^{10} = 1,024$ rounds</strong> &bull; Recommended OWASP baseline (balanced security &amp; ~100 ms login latency).',
+      12: '<strong>Work Factor: $2^{12} = 4,096$ rounds</strong> &bull; High security (~400 ms). Recommended for sensitive admin portals and financial services.'
+    };
+
+    const expTimes = { 4: '~1 ms', 8: '~15 ms', 10: '~100 ms', 12: '~400 ms' };
+
+    costSelect?.addEventListener('change', () => {
+      const val = parseInt(costSelect.value, 10);
+      if (costAdvisor && advisorDescriptions[val]) {
+        costAdvisor.innerHTML = advisorDescriptions[val];
+      }
+      if (expTimeVal && expTimes[val]) {
+        expTimeVal.textContent = expTimes[val];
+      }
+    });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -156,6 +179,7 @@ const BcryptLabModule = {
           if (timeEl) timeEl.textContent = `${duration} ms`;
           if (roundsEl) roundsEl.textContent = Math.pow(2, cost).toLocaleString();
           if (lenEl) lenEl.textContent = `${hash.length} chars`;
+          if (expTimeVal) expTimeVal.textContent = `${duration} ms`;
 
           // Auto-populate inspector
           const inspectorInput = document.getElementById('bInspectInput');
@@ -324,6 +348,90 @@ const BcryptLabModule = {
       input.addEventListener('input', (e) => this.inspectHash(e.target.value.trim()));
       this.inspectHash(input.value.trim());
     }
+
+    const tokenDetails = {
+      ver: {
+        title: 'Version Prefix ($2, $2a, $2x, $2y, $2b)',
+        html: `
+          <div class="b-callout tip" style="margin-bottom:12px;">
+            <strong>Standard Identifier:</strong> Identifies which historical revision of the Bcrypt algorithm generated this hash.
+          </div>
+          <p><strong>Common Revisions:</strong></p>
+          <ul style="line-height:1.6; font-size:0.9rem;">
+            <li><code>$2$</code> (1999): Original specification by Niels Provos & David Mazières for OpenBSD.</li>
+            <li><code>$2a$</code> (2000): Added explicit NUL-terminator specification to handle non-null-terminated strings.</li>
+            <li><code>$2x$</code> / <code>$2y$</code> (2011): Fixes for crypt_blowfish signed-character 8-bit sign-extension bug on Linux/PHP.</li>
+            <li><code>$2b$</code> (2014): <strong>Current Gold Standard.</strong> Fixes password length wraparound bug (OpenBSD 5.5). Supported across all modern web frameworks.</li>
+          </ul>
+        `
+      },
+      cost: {
+        title: 'Cost Factor Parameter (C)',
+        html: `
+          <div class="b-callout tip" style="margin-bottom:12px;">
+            <strong>Exponential Work Factor Formula:</strong> Iterations = <code>2<sup>Cost</sup></code>
+          </div>
+          <p>The cost factor determines how many rounds of state expansion the Eksblowfish key schedule performs:</p>
+          <ul style="line-height:1.6; font-size:0.9rem;">
+            <li><strong>Cost 10:</strong> $2^{10} = 1,024$ rounds (~100 ms). Standard baseline for interactive web logins.</li>
+            <li><strong>Cost 12:</strong> $2^{12} = 4,096$ rounds (~400 ms). High security for administrator credentials and financial apps.</li>
+            <li><strong>Cost 14:</strong> $2^{14} = 16,384$ rounds (~1.6 s). Very slow, used for cold backup protection.</li>
+          </ul>
+          <p style="font-size:0.86rem; color:var(--color-text-muted);">
+            Because the cost parameter is stored directly in the hash string, servers can dynamically increase the cost factor for new registrations without breaking existing user accounts.
+          </p>
+        `
+      },
+      salt: {
+        title: 'Radix-64 Encoded Salt (22 Characters)',
+        html: `
+          <div class="b-callout tip" style="margin-bottom:12px;">
+            <strong>128-bit Cryptographic Salt:</strong> 16 raw bytes generated via CSPRNG, encoded using Bcrypt's custom Radix-64 alphabet into 22 printable ASCII characters.
+          </div>
+          <p><strong>Why Salt is Essential:</strong></p>
+          <ul style="line-height:1.6; font-size:0.9rem;">
+            <li><strong>Defeats Rainbow Tables:</strong> An attacker must generate an entirely separate multi-gigabyte table for every unique salt.</li>
+            <li><strong>Eliminates Password Correlation:</strong> If 1,000 users have the password <code>password123</code>, all 1,000 hashes are completely distinct strings.</li>
+            <li><strong>Public Storage:</strong> The salt does NOT need to be kept secret—it is intentionally stored in plaintext inside the hash so the verifier can reproduce the computation.</li>
+          </ul>
+        `
+      },
+      digest: {
+        title: 'Ciphertext Digest (31 Characters)',
+        html: `
+          <div class="b-callout tip" style="margin-bottom:12px;">
+            <strong>192-bit Output:</strong> 24 raw bytes resulting from encrypting the constant string <code>"OrpheanBeholderScryDoubt"</code> 64 times via Blowfish ECB mode.
+          </div>
+          <p><strong>Key Properties:</strong></p>
+          <ul style="line-height:1.6; font-size:0.9rem;">
+            <li><strong>Encoded into 31 Radix-64 Characters:</strong> Uses Bcrypt's custom Base64 alphabet: <code>./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789</code>.</li>
+            <li><strong>Strictly Irreversible:</strong> Even with the salt and digest, mathematical properties of the Feistel network and non-linear S-boxes prevent reversing the digest back into the plaintext password.</li>
+            <li><strong>Total String Length:</strong> $4 \\text{ (prefix)} + 3 \\text{ (cost)} + 22 \\text{ (salt)} + 31 \\text{ (digest)} = 60$ characters.</li>
+          </ul>
+        `
+      }
+    };
+
+    const handleTokenClick = (type) => {
+      const info = tokenDetails[type];
+      if (!info) return;
+      const modal = document.getElementById('bModalInspectorDetail');
+      const titleEl = document.getElementById('mTitleToken');
+      const bodyEl = document.getElementById('bModalTokenBody');
+      if (titleEl) titleEl.textContent = `🔎 ${info.title}`;
+      if (bodyEl) bodyEl.innerHTML = info.html;
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    document.querySelectorAll('[data-token]').forEach(el => {
+      el.addEventListener('click', () => {
+        const token = el.getAttribute('data-token');
+        handleTokenClick(token);
+      });
+    });
   },
 
   inspectHash(hashStr) {
@@ -380,6 +488,8 @@ const BcryptLabModule = {
     const prevBtn = document.getElementById('bBtnPrevStage');
     const nextBtn = document.getElementById('bBtnNextStage');
     const counter = document.getElementById('bStageCounter');
+    const autoBtn = document.getElementById('bBtnAutoPipeline');
+    let autoInterval = null;
 
     if (!steps.length) return;
 
@@ -415,18 +525,52 @@ const BcryptLabModule = {
       if (nextBtn) nextBtn.disabled = n === 5;
     };
 
+    const stopAuto = () => {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+        if (autoBtn) {
+          autoBtn.textContent = '▶ Auto-Play Pipeline';
+          autoBtn.classList.remove('b-btn-primary');
+          autoBtn.classList.add('b-btn-outline');
+        }
+      }
+    };
+
+    const startAuto = () => {
+      if (autoInterval) return;
+      if (autoBtn) {
+        autoBtn.textContent = '⏸ Pause Auto-Play';
+        autoBtn.classList.remove('b-btn-outline');
+        autoBtn.classList.add('b-btn-primary');
+      }
+      autoInterval = setInterval(() => {
+        let next = this.currentPipelineStage + 1;
+        if (next > 5) next = 1;
+        setStage(next);
+      }, 1800);
+    };
+
+    autoBtn?.addEventListener('click', () => {
+      if (autoInterval) stopAuto();
+      else startAuto();
+    });
+
     steps.forEach(s => {
       s.addEventListener('click', () => {
+        stopAuto();
         const n = parseInt(s.getAttribute('data-step'), 10);
         setStage(n);
       });
     });
 
     prevBtn?.addEventListener('click', () => {
+      stopAuto();
       if (this.currentPipelineStage > 1) setStage(this.currentPipelineStage - 1);
     });
 
     nextBtn?.addEventListener('click', () => {
+      stopAuto();
       if (this.currentPipelineStage < 5) setStage(this.currentPipelineStage + 1);
     });
   },
@@ -1002,6 +1146,87 @@ const BcryptLabModule = {
       if (starContainer) {
         starContainer.querySelectorAll('.star-item').forEach(s => s.classList.remove('active'));
       }
+    });
+  },
+
+  // 16. Learner Popup Modals System
+  initModals() {
+    const modalTriggers = document.querySelectorAll('[data-modal]');
+    const closeBtns = document.querySelectorAll('[data-close-modal]');
+    const modals = document.querySelectorAll('.b-modal-overlay');
+
+    const openModal = (id) => {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    const closeModal = (modal) => {
+      if (modal) {
+        modal.classList.add('hidden');
+        const anyOpen = Array.from(modals).some(m => !m.classList.contains('hidden'));
+        if (!anyOpen) {
+          document.body.style.overflow = '';
+        }
+      }
+    };
+
+    modalTriggers.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.getAttribute('data-modal');
+        if (targetId) openModal(targetId);
+      });
+    });
+
+    document.getElementById('bBtnOpenGuide')?.addEventListener('click', () => openModal('bModalGuide'));
+    document.getElementById('bBtnOpenGlossary')?.addEventListener('click', () => openModal('bModalGlossary'));
+    document.getElementById('bBtnOpenFeistel')?.addEventListener('click', () => openModal('bModalFeistel'));
+
+    closeBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const parentModal = btn.closest('.b-modal-overlay');
+        closeModal(parentModal);
+      });
+    });
+
+    modals.forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal(modal);
+        }
+      });
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        modals.forEach(m => closeModal(m));
+      }
+    });
+  },
+
+  // 17. Interactive Active-Recall Flashcards
+  initFlashcards() {
+    const cards = document.querySelectorAll('.b-flashcard');
+    const resetBtn = document.getElementById('bBtnResetCards');
+
+    cards.forEach(card => {
+      const toggleFlip = () => card.classList.toggle('flipped');
+
+      card.addEventListener('click', toggleFlip);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleFlip();
+        }
+      });
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('flipped'));
     });
   }
 };
