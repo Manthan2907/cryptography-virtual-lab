@@ -7,6 +7,31 @@
     <title>Cryptographic Hash Functions | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="simulator.css?v=20261006_5">
+    <style>
+      body,
+      button,
+      input,
+      textarea,
+      select,
+      h1, h2, h3, h4, h5, h6,
+      p, span, a, li, label,
+      .tab-btn,
+      .back-link,
+      .exp-kicker,
+      .exp-header,
+      .content-area,
+      .content-placeholder,
+      .simulation-controls,
+      .simulation-output,
+      .quiz-panel,
+      .feedback-card,
+      .feedback-field label,
+      .feedback-header h2,
+      .feedback-subtext {
+        font-family: "Times New Roman", Times, serif !important;
+      }
+    </style>
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -38,62 +63,920 @@
         <section id="aim" class="tab-content active" data-tab-panel="aim">
           <div class="content-placeholder">
             <h2>Aim &amp; Objectives</h2>
-            <p><strong>Aim:</strong> Study and implement a cryptographic hash function to generate a fixed-length hash value for a given input message.</p>
-            <p><strong>Objectives:</strong></p>
-            <ul>
-              <li>Understand the concept of one-way compression and fixed-length digest generation.</li>
-              <li>Observe deterministic mapping from variable-length inputs to constant-size digests.</li>
-              <li>Analyze digest representations across binary, decimal, and hexadecimal formats.</li>
+            <p style="margin-bottom: var(--space-2);">
+              <strong>Aim:</strong> To study, implement, and analyze the fundamental principles of Cryptographic Hash Functions, focusing on the legacy standards <strong>MD5 (128-bit)</strong> and <strong>SHA-1 (160-bit)</strong>, to understand message padding, deterministic digest generation, and the avalanche effect.
+            </p>
+            <p style="margin-bottom: var(--space-1);"><strong>Objectives:</strong></p>
+            <ul style="margin: 0; padding-left: 20px; color: var(--color-text-muted); line-height: 1.7;">
+              <li style="margin-bottom: 8px;">
+                <strong>Understand the One-Way Primitive:</strong> Grasp the mathematical concept of fixed-length digest generation and the three security pillars: Pre-image resistance, Second pre-image resistance, and Collision resistance.
+              </li>
+              <li style="margin-bottom: 8px;">
+                <strong>Analyze Digest Mechanics (MD5 vs SHA-1):</strong> Observe how variable-length input strings are processed into uniform 512-bit message blocks to yield 128-bit (MD5) and 160-bit (SHA-1) hexadecimal outputs.
+              </li>
+              <li style="margin-bottom: 8px;">
+                <strong>Observe Deterministic Behavior:</strong> Confirm that identical inputs consistently produce identical digests across runs, regardless of string length.
+              </li>
+              <li style="margin-bottom: 8px;">
+                <strong>Demonstrate the Avalanche Effect:</strong> Examine how flipping a single character or bit in the plaintext cascades into a complete, unpredictable transformation of the output digest.
+              </li>
+              <li>
+                <strong>Examine Cryptanalytic Security:</strong> Understand why collision vulnerabilities led to the deprecation of MD5 and SHA-1 in modern security standards.
+              </li>
             </ul>
           </div>
         </section>
 
         <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>A cryptographic hash function <em>H</em> is a mathematical algorithm that maps data of arbitrary size to a bit array of a fixed size (the "hash value", "hash", or "message digest"). It is a one-way function, that is, a function which is practically infeasible to invert.</p>
+          <div class="content-placeholder" style="line-height: 1.65;">
+            <h2 style="margin-bottom: var(--space-3);">Theory</h2>
+
+            <!-- Part 1: Prologue -->
+            <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border);">
+              <h3 style="color: var(--color-primary); margin-top: 0; margin-bottom: var(--space-2);">Part 1: The Prologue: The Digital DNA and The One-Way Black Hole</h3>
+              <p style="margin-bottom: var(--space-2);">
+                Imagine taking the entire text of the <em>Encyclopaedia Britannica</em> (millions of words, historical accounts, and images) and feeding it into a mathematical algorithm. In less than a millisecond, it outputs a tiny, fixed string of 32 characters:
+              </p>
+              <pre style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 10px 14px; border-radius: var(--radius-sm); font-family: 'Courier New', Courier, monospace; color: var(--color-text); margin: 0 0 var(--space-2) 0;"><code>7d793037a0760186574b0282f2f435e7</code></pre>
+              <p style="margin-bottom: var(--space-2);">
+                Now imagine you open that massive encyclopedia, change just <strong>one single comma into a period</strong>, and run it again. The new output does not change by 1%. It completely scrambles into something unrecognizable:
+              </p>
+              <pre style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 10px 14px; border-radius: var(--radius-sm); font-family: 'Courier New', Courier, monospace; color: var(--color-text); margin: 0 0 var(--space-2) 0;"><code>4a9f3b1e88c023d517e411b98a12dc08</code></pre>
+              <p style="margin-bottom: var(--space-2);">
+                Even more baffling: you can never turn that 32-character string back into the original book. It is a mathematical black hole. Information can fall in, but it cannot crawl back out.
+              </p>
+              <p style="margin-bottom: var(--space-1);"><strong>Why Cryptographic Hash Functions are the Backbone of the Digital World:</strong></p>
+              <ul style="margin: 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 6px;"><strong>Git Version Control:</strong> Detects if even one byte of source code has changed across commits.</li>
+                <li style="margin-bottom: 6px;"><strong>Authentication and Passwords:</strong> Allows servers to verify passwords without ever storing plaintext passwords in a database.</li>
+                <li style="margin-bottom: 6px;"><strong>Blockchain Networks:</strong> Links immutable blocks and protects decentralized consensus mechanisms.</li>
+                <li style="margin-bottom: 6px;"><strong>Software Integrity:</strong> Confirms that downloaded operating system updates have not been intercepted or altered by an attacker.</li>
+              </ul>
+            </div>
+
+            <!-- Part 2: Cryptographic Riddles -->
+            <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border);">
+              <h3 style="color: var(--color-primary); margin-top: 0; margin-bottom: var(--space-2);">Part 2: Cryptographic Riddles: Everyday Intuition</h3>
+              
+              <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: var(--space-2);">
+                <h4 style="margin: 0 0 8px 0; color: var(--color-text);">Riddle 1: The Blender Analogy (Can You Un-blend a Smoothie?)</h4>
+                <p style="margin-bottom: 8px;">
+                  If you put an apple, a banana, and strawberries into a blender, you get a fruit smoothie in seconds. But if someone hands you a glass of that smoothie, can you turn it back into the original whole apple?
+                </p>
+                <p style="margin: 0; font-size: 0.95em; color: var(--color-text-muted);">
+                  <strong>The Takeaway:</strong> That is the one-way property. Creating a hash from your text takes less than a millisecond, but turning that hash back into your original text is mathematically impossible.
+                </p>
+              </div>
+
+              <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: var(--space-2);">
+                <h4 style="margin: 0 0 8px 0; color: var(--color-text);">Riddle 2: The Domino Flip (The One-Letter Mystery)</h4>
+                <p style="margin-bottom: 8px;">
+                  Suppose you generate an MD5 hash of the word <code>"password"</code>. Now you change just the first letter to capital <code>"Password"</code>. Does only the first character of the hash change?
+                </p>
+                <p style="margin: 0; font-size: 0.95em; color: var(--color-text-muted);">
+                  <strong>The Takeaway:</strong> No! The entire 32-character string completely scrambles into something unrecognizable. Like knocking down a single domino that flips every switch in a building, changing even one tiny letter changes the entire output. This is called the Avalanche Effect.
+                </p>
+              </div>
+
+              <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px;">
+                <h4 style="margin: 0 0 8px 0; color: var(--color-text);">Riddle 3: The Universal Suitcase (One Size Fits All)</h4>
+                <p style="margin-bottom: 8px;">
+                  If you hash a tiny message with just one letter <code>"A"</code>, and then hash a gigantic file like a 2-hour movie, which one produces a longer hash?
+                </p>
+                <p style="margin: 0; font-size: 0.95em; color: var(--color-text-muted);">
+                  <strong>The Takeaway:</strong> Neither! Both outputs have the exact same length (32 characters for MD5, 40 characters for SHA-1). No matter how small or large the input is, a cryptographic hash always packs it into a strictly fixed-size digital fingerprint.
+                </p>
+              </div>
+            </div>
+
+            <!-- Part 3: Fundamentals of Cryptographic Hash Functions -->
+            <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border);">
+              <h3 style="color: var(--color-primary); margin-top: 0; margin-bottom: var(--space-2);">Part 3: Fundamentals of Cryptographic Hash Functions</h3>
+              
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Definition:</strong> A cryptographic hash function is a deterministic mathematical algorithm that compresses an arbitrary, variable-length block of binary data into a strictly fixed-size bit string (termed the message digest or hash value). It operates strictly as a one-way function, meaning that while computing the digest from any message is computationally instantaneous, computing the original message from the digest is computationally infeasible.
+              </p>
+
+              <p style="margin-bottom: var(--space-1);"><strong>Why Necessary and Crucial in Modern Security:</strong></p>
+              <ul style="margin: 0 0 var(--space-2) 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 8px;">
+                  <strong>The Digital Signature Bottleneck:</strong> Asymmetric cryptography algorithms like RSA or ECC are mathematically heavy and computationally slow. Signing a 500 MB file directly with an RSA private key would require unacceptable processing time. Instead, the sender hashes the 500 MB file into a tiny 128-bit or 160-bit digest and signs only that fixed digest, achieving instant signature generation with zero loss of cryptographic proof.
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Integrity Protection Against Active Adversaries:</strong> Simple checksums like CRC-32 only guard against random hardware noise (such as an electrical spike flipping a bit on an Ethernet cable). A malicious hacker can easily manipulate bits in a file so that the resulting CRC-32 checksum remains unchanged. Cryptographic hash functions provide tamper-evident security that prevents active attackers from modifying data undetected.
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Secure Credential Authentication:</strong> When a user registers a password, a secure server does not store the plaintext password. Instead, it salts and hashes the password and stores only the digest. When the user logs in, the server re-hashes the input password and checks for a match, protecting user credentials even if the backend database is leaked.
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Message Authentication Codes (HMAC):</strong> Combining cryptographic hash functions with secret keys allows systems to verify both data integrity and message authenticity simultaneously.
+                </li>
+              </ul>
+
+              <p style="margin-bottom: var(--space-1);"><strong>Where Used Across Digital Systems:</strong></p>
+              <ul style="margin: 0 0 var(--space-2) 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 6px;"><strong>TLS and SSL Certificate Chains:</strong> Validates web server identity and ensures certificate authenticity.</li>
+                <li style="margin-bottom: 6px;"><strong>Operating System Package Repositories:</strong> Package managers (like Debian APT, Red Hat RPM, and Homebrew) verify cryptographic hashes before installing software packages to prevent malicious mirror tampering.</li>
+                <li style="margin-bottom: 6px;"><strong>Version Control Infrastructure:</strong> Systems like Git track directory snapshots, commits, trees, and file blobs using their cryptographic hash identifiers.</li>
+                <li style="margin-bottom: 6px;"><strong>Cloud Storage Deduplication:</strong> Cloud providers (like Dropbox or Google Drive) compute file hashes to identify duplicate uploads across millions of users, saving petabytes of storage.</li>
+              </ul>
+
+              <p style="margin-bottom: var(--space-1);"><strong>The Three Security Pillars (Mathematical Criteria):</strong></p>
+              <ul style="margin: 0 0 var(--space-2) 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 8px;">
+                  <strong>Pre-image Resistance (One-Way Property):</strong> Given an output digest <em>y = H(x)</em>, it must be computationally infeasible to discover any valid input message <em>x</em>. For an <em>n</em>-bit hash function, finding a pre-image requires brute-force search with an average work factor of 2<sup>n</sup> evaluations.
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Second Pre-image Resistance (Weak Collision Resistance):</strong> Given a specific input message <em>x<sub>1</sub></em>, it must be computationally infeasible to find a distinct message <em>x<sub>2</sub> &ne; x<sub>1</sub></em> such that <em>H(x<sub>1</sub>) = H(x<sub>2</sub>)</em>. This property guarantees that an attacker cannot replace a signed legal contract with a fraudulent contract that produces the same hash. The work factor required is 2<sup>n</sup> evaluations.
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Collision Resistance (Strong Collision Resistance):</strong> It must be computationally infeasible to find <em>any</em> pair of distinct inputs <em>x<sub>1</sub> &ne; x<sub>2</sub></em> such that <em>H(x<sub>1</sub>) = H(x<sub>2</sub>)</em>. Because of the mathematical Birthday Paradox (the probability of any two items matching in a shared pool), finding an arbitrary collision requires only 2<sup>n/2</sup> evaluations. For a 128-bit hash like MD5, collision resistance drops to 2<sup>64</sup> operations, not 2<sup>128</sup>.
+                </li>
+              </ul>
+
+              <p style="margin-bottom: var(--space-1);"><strong>The Merkle-Damgard Construction Paradigm:</strong></p>
+              <p style="margin-bottom: var(--space-2); color: var(--color-text-muted);">
+                Because mathematical compression functions can only process fixed-size input chunks, both MD5 and SHA-1 use the Merkle-Damgard iterative framework. An arbitrary-length message is first padded and sliced into uniform blocks of 512 bits each (<em>M<sub>1</sub>, M<sub>2</sub>, ... M<sub>k</sub></em>). An Initial Vector (<em>IV</em>) represents the starting state. Each 512-bit message block is sequentially fed into a compression function <em>f</em> along with the chaining state from the previous block:
+              </p>
+              <pre style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 10px 14px; border-radius: var(--radius-sm); font-family: 'Courier New', Courier, monospace; color: var(--color-text); margin: 0 0 var(--space-2) 0;"><code>State_0 = IV
+State_1 = f(State_0, M_1)
+State_2 = f(State_1, M_2)
+...
+Final_Digest = f(State_{k-1}, M_k)</code></pre>
+              <p style="margin: 0; color: var(--color-text-muted);">
+                Merkle-Damgard Strengthening: Appending the exact 64-bit length of the original message to the final block mathematically proves that if the underlying compression function <em>f</em> is collision resistant, the entire iterated hash function is also collision resistant.
+              </p>
+            </div>
+
+            <!-- Part 4: Deep Dive into MD5 -->
+            <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border);">
+              <h3 style="color: var(--color-primary); margin-top: 0; margin-bottom: var(--space-2);">Part 4: Deep Dive into MD5 (Message Digest 5)</h3>
+              
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Definition:</strong> Designed in 1991 by Ronald Rivest (MIT) to replace MD4 (RFC 1321), MD5 processes message streams in uniform 512-bit blocks to produce a 128-bit digest (formatted as 32 hexadecimal characters). It is built specifically for high-speed software execution on 32-bit CPU architectures using little-endian byte ordering.
+              </p>
+
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Why Important in Computing History:</strong> MD5 was the dominant global cryptographic hashing standard for nearly two decades. It underpinned early internet security, BSD and Linux password authentication, and software distribution validation (the ubiquitous <code>md5sum</code> utility).
+              </p>
+
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Where Used Today:</strong> MD5 is strictly limited to non-cryptographic checksum verification (such as detecting accidental file corruption on local disk drives) and hash table partitioning. It is explicitly prohibited for digital signatures, certificates, and authentication.
+              </p>
+
+              <p style="margin-bottom: var(--space-1);"><strong>Comprehensive 5-Step Internal Working:</strong></p>
+              <ol style="margin: 0 0 var(--space-2) 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 1: Bit Padding:</strong> The input message is padded so its total length in bits is congruent to 448 modulo 512. Padding always takes place, even if the message already has the desired length. Padding consists of appending a single bit '1' followed by as many '0' bits as required (between 1 and 512 padding bits).
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 2: Append 64-Bit Length:</strong> A 64-bit representation of the original message length (in bits, taken modulo 2<sup>64</sup>) is appended to the message. The length is appended as two 32-bit words in little-endian order (least significant byte first). The message is now an exact multiple of 512 bits (64 bytes).
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 3: Initialize Four 32-Bit Chaining Registers:</strong> A four-word state buffer (A, B, C, D) is initialized using predefined hexadecimal constants in little-endian byte order:
+                  <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                    <li>Register A: <code>0x67452301</code></li>
+                    <li>Register B: <code>0xEFCDAB89</code></li>
+                    <li>Register C: <code>0x98BADCFE</code></li>
+                    <li>Register D: <code>0x10325476</code></li>
+                  </ul>
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 4: Execute 4 Processing Rounds (64 Step Operations):</strong> Each 512-bit block is parsed into sixteen 32-bit words: <em>M[0]</em> to <em>M[15]</em>. The block is processed through 4 distinct rounds with 16 steps each (64 total steps). Each round employs a unique non-linear logic function:
+                  <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                    <li>Round 1 (Steps 0 to 15): <code>F(X, Y, Z) = (X &and; Y) &or; (&not;X &and; Z)</code> (Conditional: if X then Y else Z)</li>
+                    <li>Round 2 (Steps 16 to 31): <code>G(X, Y, Z) = (X &and; Z) &or; (Y &and; &not;Z)</code> (Conditional: if Z then X else Y)</li>
+                    <li>Round 3 (Steps 32 to 47): <code>H(X, Y, Z) = X &oplus; Y &oplus; Z</code> (Bitwise XOR parity)</li>
+                    <li>Round 4 (Steps 48 to 63): <code>I(X, Y, Z) = Y &oplus; (X &or; &not;Z)</code> (Inverted non-linear mixing)</li>
+                  </ul>
+                  <p style="margin: 6px 0 0 0;">The step transformation formula is:</p>
+                  <code style="display: block; padding: 6px 10px; margin: 4px 0; background: var(--color-surface); font-family: 'Courier New', Courier, monospace;">A = B + ((A + f(B, C, D) + M[k] + T[i]) &lll; s)</code>
+                  <p style="margin: 4px 0 0 0;">Where <em>T[i]</em> are 64 constant table words derived from the integer part of 2<sup>32</sup> &times; |sin(i+1)|, <em>&lll; s</em> represents circular left bit rotation by <em>s</em> positions, and the registers rotate cyclically: D becomes A, C becomes D, B becomes C, and the computed result becomes B.</p>
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 5: State Accumulation and Final Digest:</strong> After processing all 64 steps, the resulting registers are added modulo 2<sup>32</sup> to their initial values: <em>A = A + A_init</em>, <em>B = B + B_init</em>, <em>C = C + C_init</em>, <em>D = D + D_init</em>. When all 512-bit blocks are exhausted, the four registers are serialized in low-order byte first order to yield the final 128-bit digest.
+                </li>
+              </ol>
+
+              <p style="margin-bottom: var(--space-1);"><strong>Vulnerabilities, Cryptanalysis, and Historical Demise:</strong></p>
+              <ul style="margin: 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 6px;">
+                  <strong>Xiaoyun Wang Collision Discovery (2004):</strong> Chinese cryptanalyst Professor Xiaoyun Wang and her research team announced practical collision attacks against MD5, finding collisions in just a few hours on an IBM computer.
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong>Rogue Certificate Authority Forgery (2008):</strong> Security researchers generated a valid, rogue SSL Certificate Authority certificate using chosen-prefix MD5 collisions, proving that attackers could intercept HTTPS encrypted traffic.
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong>The Flame Cyberweapon (2012):</strong> The sophisticated Flame malware exploited MD5 collisions to forge code-signing certificates from Microsoft Terminal Server licensing, enabling it to masquerade as an official Windows Update.
+                </li>
+              </ul>
+            </div>
+
+            <!-- Part 5: Deep Dive into SHA-1 -->
+            <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border);">
+              <h3 style="color: var(--color-primary); margin-top: 0; margin-bottom: var(--space-2);">Part 5: Deep Dive into SHA-1 (Secure Hash Algorithm 1)</h3>
+              
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Definition:</strong> Published by NIST and the NSA in 1995 (FIPS PUB 180-1), SHA-1 produces a 160-bit digest (40 hexadecimal characters) from 512-bit message blocks using five 32-bit registers. It was developed to fix an undisclosed mathematical vulnerability in the original 1993 SHA-0 standard by introducing a single circular shift in its message expansion schedule.
+              </p>
+
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Why Important in Computing History:</strong> SHA-1 was the mandatory federal standard designed to replace MD5. It served as the security backbone of TLS 1.0, SSH, IPSec, PGP, and S/MIME. It was also chosen by Linus Torvalds as the content-addressable identifier for all Git commits and file trees.
+              </p>
+
+              <p style="margin-bottom: var(--space-2);">
+                <strong>Where Used Today:</strong> SHA-1 is now deprecated across all major security protocols. It remains in legacy Git installations (with modern Git transitioning to SHA-256) and historical audit databases. Major web browsers have completely rejected SHA-1 SSL certificates since 2017.
+              </p>
+
+              <p style="margin-bottom: var(--space-1);"><strong>Comprehensive 5-Step Internal Working:</strong></p>
+              <ol style="margin: 0 0 var(--space-2) 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 1: Big-Endian Padding and Length Appending:</strong> The padding rules match MD5 (append '1', pad zeros to 448 bits modulo 512, append 64-bit length), but all 32-bit words and the 64-bit message length are interpreted and stored in big-endian byte order (most significant byte first).
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 2: Initialize Five 32-Bit Chaining Registers:</strong> A five-word state buffer (A, B, C, D, E) is initialized with the standard Secure Hash initial constants:
+                  <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                    <li>Register A: <code>0x67452301</code></li>
+                    <li>Register B: <code>0xEFCDAB89</code></li>
+                    <li>Register C: <code>0x98BADCFE</code></li>
+                    <li>Register D: <code>0x10325476</code></li>
+                    <li>Register E: <code>0xC3D2E1F0</code></li>
+                  </ul>
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 3: Message Schedule Expansion (W<sub>t</sub>):</strong> The critical innovation in SHA-1. Each 512-bit block provides sixteen 32-bit words (<em>M<sub>0</sub></em> to <em>M<sub>15</sub></em>). SHA-1 expands these 16 words into 80 distinct 32-bit words (<em>W<sub>0</sub></em> to <em>W<sub>79</sub></em>):
+                  <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                    <li>For <em>t</em> = 0 to 15: <code>W<sub>t</sub> = M<sub>t</sub></code></li>
+                    <li>For <em>t</em> = 16 to 79: <code>W<sub>t</sub> = (W<sub>t-3</sub> &oplus; W<sub>t-8</sub> &oplus; W<sub>t-14</sub> &oplus; W<sub>t-16</sub>) &lll; 1</code></li>
+                  </ul>
+                  <p style="margin: 6px 0 0 0;">The circular 1-bit rotation in the expansion formula ensures that any single-bit input difference rapidly disperses across all 80 computation steps.</p>
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 4: Execute 4 Processing Rounds (80 Step Operations):</strong> SHA-1 executes 4 rounds with 20 steps each (80 total steps). Each round utilizes a non-linear logic function <em>f<sub>t</sub></em> and a fixed hexadecimal additive constant <em>K<sub>t</sub></em>:
+                  <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                    <li>Round 1 (Steps 0 to 19): <code>f<sub>t</sub> = (B &and; C) &or; (&not;B &and; D)</code>, Constant <code>K<sub>1</sub> = 0x5A827999</code></li>
+                    <li>Round 2 (Steps 20 to 39): <code>f<sub>t</sub> = B &oplus; C &oplus; D</code> (Parity), Constant <code>K<sub>2</sub> = 0x6ED9EBA1</code></li>
+                    <li>Round 3 (Steps 40 to 59): <code>f<sub>t</sub> = (B &and; C) &or; (B &and; D) &or; (C &and; D)</code> (Majority), Constant <code>K<sub>3</sub> = 0x8F1BBCDC</code></li>
+                    <li>Round 4 (Steps 60 to 79): <code>f<sub>t</sub> = B &oplus; C &oplus; D</code> (Parity), Constant <code>K<sub>4</sub> = 0xCA62C1D6</code></li>
+                  </ul>
+                  <p style="margin: 6px 0 0 0;">The step transformation formula is:</p>
+                  <code style="display: block; padding: 6px 10px; margin: 4px 0; background: var(--color-surface); font-family: 'Courier New', Courier, monospace;">TEMP = (A &lll; 5) + f_t(B, C, D) + E + W_t + K_t
+E = D
+D = C
+C = (B &lll; 30)
+B = A
+A = TEMP</code>
+                </li>
+                <li style="margin-bottom: 8px;">
+                  <strong>Step 5: Final Output Assembly:</strong> After completing step 79, each register is added modulo 2<sup>32</sup> to its pre-block value: <em>A = A + A_init</em>, <em>B = B + B_init</em>, <em>C = C + C_init</em>, <em>D = D + D_init</em>, <em>E = E + E_init</em>. The five registers are concatenated in big-endian order to yield the final 160-bit digest (40 hexadecimal characters).
+                </li>
+              </ol>
+
+              <p style="margin-bottom: var(--space-1);"><strong>Cryptanalysis and The SHAttered Attack:</strong></p>
+              <ul style="margin: 0; padding-left: 20px; color: var(--color-text-muted);">
+                <li style="margin-bottom: 6px;">
+                  <strong>Theoretical Weakness (2005):</strong> Xiaoyun Wang, Yiqun Lisa Yin, and Hongbo Yu proved that SHA-1 collisions could be found in 2<sup>69</sup> operations, breaking the theoretical 2<sup>80</sup> security bound.
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong>The Google / CWI SHAttered Milestone (2017):</strong> Researchers at CWI Amsterdam and Google produced the world's first practical SHA-1 collision. They created two distinct PDF documents with different visual content (one with blue background, one with red) that generated the identical SHA-1 hash. The attack required 9 quintillion SHA-1 calculations (equivalent to 6,500 CPU years).
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong>Final NIST Deprecation (2022 to 2030):</strong> NIST officially transitioned away from SHA-1 for digital signatures in 2011, and in December 2022 issued a formal directive to retire SHA-1 in all federal applications by December 31, 2030 in favor of SHA-2 and SHA-3.
+                </li>
+              </ul>
+            </div>
+
+            <!-- Part 6: Comparison Summary -->
+            <div>
+              <h3 style="color: var(--color-primary); margin-top: 0; margin-bottom: var(--space-2);">Part 6: Comparison Summary (MD5 vs SHA-1)</h3>
+              
+              <table style="width: 100%; border-collapse: collapse; margin-top: var(--space-2); border: 1px solid var(--color-border); font-size: 0.95em;">
+                <thead>
+                  <tr style="background: var(--color-surface);">
+                    <th style="border: 1px solid var(--color-border); padding: 8px 12px; text-align: left; color: var(--color-text);">Parameter</th>
+                    <th style="border: 1px solid var(--color-border); padding: 8px 12px; text-align: left; color: var(--color-text);">MD5</th>
+                    <th style="border: 1px solid var(--color-border); padding: 8px 12px; text-align: left; color: var(--color-text);">SHA-1</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Output Digest Length</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">128 bits (32 hex characters)</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">160 bits (40 hex characters)</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Input Block Size</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">512 bits (64 bytes)</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">512 bits (64 bytes)</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Working Registers</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">4 registers (A, B, C, D)</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">5 registers (A, B, C, D, E)</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Total Step Operations</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">64 steps (4 rounds &times; 16)</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">80 steps (4 rounds &times; 20)</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Byte Ordering</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">Little-endian</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">Big-endian</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Message Expansion</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">No expansion (direct indexing)</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">Expands 16 words to 80 words</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Collision Security</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; color: #ff8b8b;">Broken (Wang et al., 2004)</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; color: #ff8b8b;">Broken (Google SHAttered, 2017)</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px; font-weight: bold;">Approved Modern Use</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">Non-cryptographic checksums only</td>
+                    <td style="border: 1px solid var(--color-border); padding: 8px 12px;">Legacy validation only</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
           </div>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <ol>
-              <li>Enter arbitrary text in the input message box.</li>
-              <li>Select the target hash function (e.g., MD5, SHA-1, SHA-256).</li>
-              <li>Click "Generate Hash" to execute the algorithm.</li>
-              <li>Inspect the resulting hexadecimal digest and bit length.</li>
+          <div style="max-width: 850px; margin: 0 auto; background: var(--color-surface); padding: 30px; border-radius: 12px; border: 1px solid var(--color-border);">
+            <h2 style="margin-top: 0; color: var(--color-text);">Procedure</h2>
+
+            <!-- Video Guide Section -->
+            <div style="margin-bottom: 28px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--color-border); border-radius: 12px; padding: 20px;">
+              <h3 style="margin-top: 0; margin-bottom: 12px; color: var(--color-text); font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                Simulation Video Guide
+              </h3>
+              <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000; border: 1px solid var(--color-border);">
+                <video controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px;" poster="../../assets/logos/crce-header-banner.png">
+                  <source src="video/guide video.mp4" type="video/mp4">
+                  Your browser does not support HTML5 video.
+                </video>
+              </div>
+              <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 10px; margin-bottom: 0; line-height: 1.5;">
+                <strong>Video Walkthrough:</strong> Watch this guide to learn how to use the fast hash generator and interactively step through Stage 1 (Binary Conversion), Stage 2 (Padding & Rounds), and Stage 3 (Final Hash Digest).
+              </p>
+            </div>
+
+            <!-- Step-by-Step Instructions -->
+            <h3 style="color: var(--color-text); font-size: 18px; margin-top: 0; margin-bottom: 14px;">Step-by-Step Instructions</h3>
+            <ol style="color: var(--color-text-muted); line-height: 1.85; margin-bottom: 0;">
+              <li>Navigate to the <strong>Simulation</strong> tab.</li>
+              <li>Type your text into the <strong>Input Message</strong> field. Observe that character and UTF-8 byte counts update in real-time.</li>
+              <li><strong>For Direct Output (Fast Mode):</strong> Click the <strong>Instant Fast Output</strong> button to immediately view and copy the final 128-bit MD5 and 160-bit SHA-1 hashes without running step-by-step process calculations.</li>
+              <li><strong>For Interactive Process Mode:</strong>
+                <ul style="margin-top: 6px; margin-bottom: 6px; line-height: 1.7;">
+                  <li><strong>Stage 1 (Convert to Binary):</strong> Click <em>▶ Execute Stage 1</em> (or <em>Step 1: Convert to Binary</em>) to reveal the character-by-character conversion into UTF-8 decimal and 8-bit binary tables.</li>
+                  <li><strong>Stage 2 (Process the Data):</strong> Click <em>▶ Execute Stage 2</em> (or <em>Step 2: Process Data</em>) to calculate message padding to 512 bits, 32-bit block words, and 4-round intermediate state variables.</li>
+                  <li><strong>Stage 3 (Calculate Final Hash):</strong> Click <em>▶ Execute Stage 3</em> (or <em>Step 3: Calculate Hash</em>) to concatenate state registers and calculate the final hexadecimal hash digest.</li>
+                </ul>
+              </li>
+              <li><strong>Automated Execution:</strong> Click <strong>▶ Execute All Steps</strong> to run through all three stages automatically with smooth visual step animations.</li>
+              <li><strong>Observe Avalanche Effect:</strong> Modify even a single letter, space, or symbol in your input and re-run the steps to observe how the resulting hash changes completely.</li>
+              <li><strong>Copy & Reset:</strong> Click the <strong>Copy</strong> icon next to any hash to save it to your clipboard, or click <strong>↺ Reset Process</strong> / <strong>Reset</strong> to restore default inputs.</li>
             </ol>
           </div>
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <h2>Simulation Controls</h2>
-            <label for="hashInput">Input Message:</label>
-            <textarea id="hashInput" rows="3" placeholder="Enter message to hash...">Hello, Cryptography!</textarea>
-            <button type="button" id="btnHash">Generate Hash</button>
-          </div>
-          <div class="simulation-output" aria-live="polite">
-            <h2>Simulation Output</h2>
-            <div id="hashOutput">Output will appear here...</div>
+          <div class="sim-wrapper">
+            <!-- Top Bar -->
+            <div class="sim-top-bar">
+              <div class="sim-title-group">
+                <div class="sim-lock-circle">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <div>
+                  <h2 class="sim-main-title">Hashing Functions Simulator</h2>
+                  <p class="sim-main-subtitle">See how MD5 and SHA-1 convert the same input into fixed-length hashes.</p>
+                </div>
+              </div>
+              <div class="sim-tip-box">
+                <span class="sim-tip-icon">
+                  <svg viewBox="0 0 24 24"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                </span>
+                <p class="sim-tip-text">A hash function takes an input of any length and produces a fixed-length string (hash) that uniquely represents the input. Even a small change in the input gives a completely different hash.</p>
+              </div>
+            </div>
+
+            <!-- Input Message Card -->
+            <div class="sim-input-card" id="simInputCard">
+              <div class="sim-input-row">
+                <div class="sim-doc-icon">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="sim-input-body">
+                  <label for="simInputMessage" class="sim-input-label">Input Message</label>
+                  <input type="text" id="simInputMessage" class="sim-input-field" value="Hello World" placeholder="Enter text to hash...">
+                </div>
+                <div class="sim-input-actions">
+                  <button type="button" id="simBtnReset" class="sim-btn-reset">&#8635; Reset</button>
+                </div>
+              </div>
+              <div class="sim-meta-row">
+                <span>Characters: <strong id="simMetaChars">11</strong> &nbsp;|&nbsp; Bytes (UTF-8): <strong id="simMetaBytes">11</strong></span>
+              </div>
+            </div>
+
+            <!-- Interactive Controls & Output Mode Toolbar -->
+            <div class="sim-toolbar-card">
+              <div class="sim-toolbar-left">
+                <span class="sim-toolbar-label">Simulation Controls:</span>
+                <button type="button" id="simBtnQuickHashToggle" class="sim-action-btn sim-btn-fast">Instant Fast Output</button>
+                <button type="button" id="simBtnRunStage1" class="sim-action-btn sim-btn-step">Step 1: Convert to Binary</button>
+                <button type="button" id="simBtnRunStage2" class="sim-action-btn sim-btn-step" disabled>Step 2: Process Data</button>
+                <button type="button" id="simBtnRunStage3" class="sim-action-btn sim-btn-step" disabled>Step 3: Calculate Hash</button>
+              </div>
+              <div class="sim-toolbar-right">
+                <button type="button" id="simBtnRunAll" class="sim-action-btn sim-btn-run-all">▶ Execute All Steps</button>
+                <button type="button" id="simBtnResetSteps" class="sim-action-btn sim-btn-reset-steps">↺ Reset Process</button>
+              </div>
+            </div>
+
+            <!-- Fast Direct Output Panel (Separate from Step-by-Step Process) -->
+            <div class="sim-quick-output-panel" id="simQuickOutputPanel">
+              <div class="sim-quick-header">
+                <div class="sim-quick-title">Instant Direct Hash Result (Fast Output)</div>
+                <div class="sim-quick-desc">Direct output view for fast hash generation without running step-by-step process calculations.</div>
+              </div>
+              <div class="sim-quick-grid">
+                <div class="sim-quick-box sim-quick-md5">
+                  <span class="sim-quick-alg-tag">MD5 Hash (128-bit)</span>
+                  <div class="sim-quick-hash-val" id="simQuickMd5Hash">b10a8db164e0754105b7a99be72e3fe5</div>
+                  <button type="button" class="sim-copy-btn" data-target="simQuickMd5Hash" title="Copy MD5 hash">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy MD5
+                  </button>
+                </div>
+                <div class="sim-quick-box sim-quick-sha1">
+                  <span class="sim-quick-alg-tag">SHA-1 Hash (160-bit)</span>
+                  <div class="sim-quick-hash-val" id="simQuickSha1Hash">0a4d55a8d778e5022fab701977c5d840bbc486d0</div>
+                  <button type="button" class="sim-copy-btn" data-target="simQuickSha1Hash" title="Copy SHA-1 hash">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy SHA-1
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Branching Connector SVG -->
+            <div class="sim-connector-wrap">
+              <svg viewBox="0 0 1000 38" preserveAspectRatio="none">
+                <defs>
+                  <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+                  </marker>
+                  <marker id="arrow-orange" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#ea580c" />
+                  </marker>
+                </defs>
+                <path d="M 500 0 C 500 18, 250 8, 250 32" stroke="#3b82f6" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+                <path d="M 500 0 C 500 18, 750 8, 750 32" stroke="#ea580c" stroke-width="2.5" fill="none" marker-end="url(#arrow-orange)" />
+              </svg>
+            </div>
+
+            <!-- Parallel Panels -->
+            <div class="sim-grid">
+              <!-- MD5 Left Panel -->
+              <div class="sim-panel sim-panel-md5">
+                <div class="sim-panel-header">
+                  <div class="sim-panel-title-area">
+                    <h3 class="sim-panel-name">MD5</h3>
+                    <span class="sim-panel-fullname">Message-Digest Algorithm 5</span>
+                  </div>
+                  <span class="sim-panel-badge">128-bit hash (32 hex characters)</span>
+                </div>
+
+                <!-- Stage 1: Convert to Binary -->
+                <div class="sim-stage-card" id="simMd5Stage1Card">
+                  <div class="sim-stage-header">
+                    <span class="sim-stage-num sim-num-blue">1</span>
+                    <div class="sim-stage-titles">
+                      <h4 class="sim-stage-title">Convert to Binary (UTF-8)</h4>
+                      <p class="sim-stage-desc">Each character is converted to its 8-bit binary (UTF-8) representation.</p>
+                    </div>
+                  </div>
+                  <div class="sim-stage-action-bar">
+                    <button type="button" class="sim-step-trigger-btn" id="simMd5BtnStage1">▶ Execute Stage 1: Convert to Binary</button>
+                  </div>
+                  <div id="simMd5Stage1Placeholder" class="sim-placeholder-msg">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Click "Execute Stage 1" button to reveal character-to-binary conversion.</span>
+                  </div>
+                  <div class="sim-binary-table-wrap sim-stage-content hidden-step" id="simMd5BinaryTable">
+                    <table class="sim-binary-table">
+                      <tbody>
+                        <tr class="sim-row-char"><th>Character</th><td>H</td><td>e</td><td>l</td><td>l</td><td>o</td><td>(space)</td><td>W</td><td>o</td><td>r</td><td>l</td><td>d</td></tr>
+                        <tr class="sim-row-dec"><th>Decimal</th><td>72</td><td>101</td><td>108</td><td>108</td><td>111</td><td>32</td><td>87</td><td>111</td><td>114</td><td>108</td><td>100</td></tr>
+                        <tr class="sim-row-bin"><th>Binary</th><td>01001000</td><td>01100101</td><td>01101100</td><td>01101100</td><td>01101111</td><td>00100000</td><td>01010111</td><td>01101111</td><td>01110010</td><td>01101100</td><td>01100100</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Down Arrow -->
+                <div class="sim-down-arrow sim-arrow-blue">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                </div>
+
+                <!-- Stage 2: Process the Data -->
+                <div class="sim-stage-card" id="simMd5Stage2Card">
+                  <div class="sim-stage-header">
+                    <span class="sim-stage-num sim-num-green">2</span>
+                    <div class="sim-stage-titles">
+                      <h4 class="sim-stage-title">Process the Data (MD5)</h4>
+                      <p class="sim-stage-desc">The binary data is padded, divided into 512-bit blocks and processed using MD5's internal operations (64 operations / 4 rounds).</p>
+                    </div>
+                  </div>
+                  <div class="sim-stage-action-bar">
+                    <button type="button" class="sim-step-trigger-btn" id="simMd5BtnStage2" disabled>▶ Execute Stage 2: Process Message & Rounds</button>
+                  </div>
+                  <div id="simMd5Stage2Placeholder" class="sim-placeholder-msg">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Execute Stage 1 first, then click "Execute Stage 2" to compute padding & rounds.</span>
+                  </div>
+                  <div class="sim-process-flow sim-stage-content hidden-step" id="simMd5Stage2Content">
+                    <div class="sim-flow-box">
+                      <div class="sim-flow-title">Padded Message (512 bits)</div>
+                      <div class="sim-flow-content" id="simMd5PaddedHex">48 65 6C 6C 6F 20 57 6F 72 6C 64 80 00 00 00 ...</div>
+                    </div>
+                    <span class="sim-flow-arrow">&darr;</span>
+                    <div class="sim-flow-box">
+                      <div class="sim-flow-title">512-bit Block 1 (16 &times; 32-bit words)</div>
+                      <div class="sim-flow-content" id="simMd5BlockWords">M[0] = 0x6C6C6548<br>M[1] = 0x6F57206F<br>M[2] = 0x80646C72<br>...</div>
+                    </div>
+                    <span class="sim-flow-arrow">&darr;</span>
+                    <div class="sim-flow-box">
+                      <div class="sim-flow-title">After 4 Rounds (Intermediate Hash State)</div>
+                      <div class="sim-flow-content" id="simMd5StateVars">A = 0xB18D0AB1<br>B = 0x4175E064<br>C = 0x98BADCFE<br>D = 0x10325476</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Down Arrow -->
+                <div class="sim-down-arrow sim-arrow-blue">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                </div>
+
+                <!-- Stage 3: Final MD5 Hash -->
+                <div class="sim-stage-card" id="simMd5Stage3Card">
+                  <div class="sim-stage-header">
+                    <span class="sim-stage-num sim-num-pink">3</span>
+                    <div class="sim-stage-titles">
+                      <h4 class="sim-stage-title">Final MD5 Hash</h4>
+                      <p class="sim-stage-desc">Concatenate the final state variables (A, B, C, D) to get the 128-bit hash value.</p>
+                    </div>
+                  </div>
+                  <div class="sim-stage-action-bar">
+                    <button type="button" class="sim-step-trigger-btn" id="simMd5BtnStage3" disabled>▶ Execute Stage 3: Calculate Final MD5 Hash</button>
+                  </div>
+                  <div id="simMd5Stage3Placeholder" class="sim-placeholder-msg">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Execute Stage 2 first, then click "Execute Stage 3" to calculate final MD5 hash.</span>
+                  </div>
+                  <div class="sim-stage-content hidden-step" id="simMd5Stage3Content">
+                    <div class="sim-final-hash-box">
+                      <span class="sim-hash-text" id="simMd5FinalHash">b10a8db164e0754105b7a99be72e3fe5</span>
+                      <button type="button" class="sim-copy-btn" data-target="simMd5FinalHash" title="Copy hash to clipboard">
+                        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copy
+                      </button>
+                    </div>
+                    <p class="sim-stage-footer">128-bit hash (32 hexadecimal characters)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SHA-1 Right Panel -->
+              <div class="sim-panel sim-panel-sha1">
+                <div class="sim-panel-header">
+                  <div class="sim-panel-title-area">
+                    <h3 class="sim-panel-name">SHA-1</h3>
+                    <span class="sim-panel-fullname">Secure Hash Algorithm 1</span>
+                  </div>
+                  <span class="sim-panel-badge">160-bit hash (40 hex characters)</span>
+                </div>
+
+                <!-- Stage 1: Convert to Binary -->
+                <div class="sim-stage-card" id="simSha1Stage1Card">
+                  <div class="sim-stage-header">
+                    <span class="sim-stage-num sim-num-orange">1</span>
+                    <div class="sim-stage-titles">
+                      <h4 class="sim-stage-title">Convert to Binary (UTF-8)</h4>
+                      <p class="sim-stage-desc">Each character is converted to its 8-bit binary (UTF-8) representation.</p>
+                    </div>
+                  </div>
+                  <div class="sim-stage-action-bar">
+                    <button type="button" class="sim-step-trigger-btn" id="simSha1BtnStage1">▶ Execute Stage 1: Convert to Binary</button>
+                  </div>
+                  <div id="simSha1Stage1Placeholder" class="sim-placeholder-msg">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Click "Execute Stage 1" button to reveal character-to-binary conversion.</span>
+                  </div>
+                  <div class="sim-binary-table-wrap sim-stage-content hidden-step" id="simSha1BinaryTable">
+                    <table class="sim-binary-table">
+                      <tbody>
+                        <tr class="sim-row-char"><th>Character</th><td>H</td><td>e</td><td>l</td><td>l</td><td>o</td><td>(space)</td><td>W</td><td>o</td><td>r</td><td>l</td><td>d</td></tr>
+                        <tr class="sim-row-dec"><th>Decimal</th><td>72</td><td>101</td><td>108</td><td>108</td><td>111</td><td>32</td><td>87</td><td>111</td><td>114</td><td>108</td><td>100</td></tr>
+                        <tr class="sim-row-bin"><th>Binary</th><td>01001000</td><td>01100101</td><td>01101100</td><td>01101100</td><td>01101111</td><td>00100000</td><td>01010111</td><td>01101111</td><td>01110010</td><td>01101100</td><td>01100100</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Down Arrow -->
+                <div class="sim-down-arrow sim-arrow-orange">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                </div>
+
+                <!-- Stage 2: Process the Data -->
+                <div class="sim-stage-card" id="simSha1Stage2Card">
+                  <div class="sim-stage-header">
+                    <span class="sim-stage-num sim-num-green">2</span>
+                    <div class="sim-stage-titles">
+                      <h4 class="sim-stage-title">Process the Data (SHA-1)</h4>
+                      <p class="sim-stage-desc">The binary data is padded, divided into 512-bit blocks and processed using SHA-1's internal operations (80 operations / 4 logical rounds).</p>
+                    </div>
+                  </div>
+                  <div class="sim-stage-action-bar">
+                    <button type="button" class="sim-step-trigger-btn" id="simSha1BtnStage2" disabled>▶ Execute Stage 2: Process Message & Rounds</button>
+                  </div>
+                  <div id="simSha1Stage2Placeholder" class="sim-placeholder-msg">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Execute Stage 1 first, then click "Execute Stage 2" to compute padding & rounds.</span>
+                  </div>
+                  <div class="sim-process-flow sim-stage-content hidden-step" id="simSha1Stage2Content">
+                    <div class="sim-flow-box">
+                      <div class="sim-flow-title">Padded Message (512 bits)</div>
+                      <div class="sim-flow-content" id="simSha1PaddedHex">48 65 6C 6C 6F 20 57 6F 72 6C 64 80 00 00 00 ...</div>
+                    </div>
+                    <span class="sim-flow-arrow">&darr;</span>
+                    <div class="sim-flow-box">
+                      <div class="sim-flow-title">512-bit Block 1 (16 &times; 32-bit words)</div>
+                      <div class="sim-flow-content" id="simSha1BlockWords">W[0] = 0x48656C6C<br>W[1] = 0x6F20576F<br>W[2] = 0x726C6480<br>...</div>
+                    </div>
+                    <span class="sim-flow-arrow">&darr;</span>
+                    <div class="sim-flow-box">
+                      <div class="sim-flow-title">After 4 Rounds (Intermediate Hash State)</div>
+                      <div class="sim-flow-content" id="simSha1StateVars">H0 = 0x0A4D55A8<br>H1 = 0xD778E502<br>H2 = 0x2FAB7019<br>H3 = 0x77C5D840<br>H4 = 0xBBC486D0</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Down Arrow -->
+                <div class="sim-down-arrow sim-arrow-orange">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                </div>
+
+                <!-- Stage 3: Final SHA-1 Hash -->
+                <div class="sim-stage-card" id="simSha1Stage3Card">
+                  <div class="sim-stage-header">
+                    <span class="sim-stage-num sim-num-pink">3</span>
+                    <div class="sim-stage-titles">
+                      <h4 class="sim-stage-title">Final SHA-1 Hash</h4>
+                      <p class="sim-stage-desc">Concatenate the final state variables (H0, H1, H2, H3, H4) to get the 160-bit hash value.</p>
+                    </div>
+                  </div>
+                  <div class="sim-stage-action-bar">
+                    <button type="button" class="sim-step-trigger-btn" id="simSha1BtnStage3" disabled>▶ Execute Stage 3: Calculate Final SHA-1 Hash</button>
+                  </div>
+                  <div id="simSha1Stage3Placeholder" class="sim-placeholder-msg">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Execute Stage 2 first, then click "Execute Stage 3" to calculate final SHA-1 hash.</span>
+                  </div>
+                  <div class="sim-stage-content hidden-step" id="simSha1Stage3Content">
+                    <div class="sim-final-hash-box">
+                      <span class="sim-hash-text" id="simSha1FinalHash">0a4d55a8d778e5022fab701977c5d840bbc486d0</span>
+                      <button type="button" class="sim-copy-btn" data-target="simSha1FinalHash" title="Copy hash to clipboard">
+                        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copy
+                      </button>
+                    </div>
+                    <p class="sim-stage-footer">160-bit hash (40 hexadecimal characters)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Comparison & Educational Notes Row -->
+            <div class="sim-bottom-row">
+              <!-- Comparison Bullets Card -->
+              <div class="sim-comp-card">
+                <div class="sim-card-heading">
+                  <svg viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
+                  Comparison
+                </div>
+                <ul class="sim-comp-list">
+                  <li>Same input message</li>
+                  <li>Different algorithms</li>
+                  <li>Different hash lengths</li>
+                  <li>Completely different outputs</li>
+                </ul>
+              </div>
+
+              <!-- VS Middle Card -->
+              <div class="sim-vs-container">
+                <div class="sim-vs-item sim-vs-md5">
+                  <h5 class="sim-vs-title">MD5 Hash (128-bit)</h5>
+                  <div class="sim-vs-val-row">
+                    <span class="sim-vs-hash" id="simCompMd5Hash">b10a8db164e0754105b7a99be72e3fe5</span>
+                    <button type="button" class="sim-copy-btn" data-target="simCompMd5Hash" title="Copy MD5 hash">
+                      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                  </div>
+                  <p class="sim-vs-footer">Length: 128 bits (32 hex characters)</p>
+                </div>
+
+                <div class="sim-vs-sign">&ne;</div>
+
+                <div class="sim-vs-item sim-vs-sha1">
+                  <h5 class="sim-vs-title">SHA-1 Hash (160-bit)</h5>
+                  <div class="sim-vs-val-row">
+                    <span class="sim-vs-hash" id="simCompSha1Hash">0a4d55a8d778e5022fab701977c5d840bbc486d0</span>
+                    <button type="button" class="sim-copy-btn" data-target="simCompSha1Hash" title="Copy SHA-1 hash">
+                      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                  </div>
+                  <p class="sim-vs-footer">Length: 160 bits (40 hex characters)</p>
+                </div>
+              </div>
+
+              <!-- Note Card -->
+              <div class="sim-note-card">
+                <div class="sim-note-heading">
+                  <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                  Note
+                </div>
+                <p class="sim-note-text">
+                  Both MD5 and SHA-1 can hash any data represented as bytes (text, files, images, etc.). This simulator uses text input to demonstrate the basic concept.
+                </p>
+                <p class="sim-note-warn">
+                  Security note: MD5 and SHA-1 are included for educational purposes. They are not recommended for modern security-sensitive applications.
+                </p>
+              </div>
+            </div>
+
           </div>
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <div class="quiz-panel">
-            <h2>Assessment / Quiz</h2>
-            <p>1. What is the output size of a standard SHA-256 hash function?</p>
-            <p>2. True or False: Changing a single character in the input message should drastically change the resulting hash.</p>
+          <div class="quiz-panel" style="max-width: 800px; margin: 0 auto; background: var(--color-surface); padding: 30px; border-radius: 12px; border: 1px solid var(--color-border);">
+            <h2 style="margin-top: 0; color: var(--color-text);">Assessment / Quiz</h2>
+            <p style="color: var(--color-text-muted); margin-bottom: 24px;">Test your knowledge on Cryptographic Hash Functions based on the theory discussed.</p>
+            
+            <style>
+              .quiz-question { margin-bottom: 24px; }
+              .quiz-question p { font-weight: bold; margin-bottom: 12px; color: var(--color-text); line-height: 1.4; }
+              .quiz-option { 
+                display: block; 
+                margin-bottom: 10px; 
+                cursor: pointer; 
+                color: var(--color-text-muted); 
+                padding-left: 25px;
+                text-indent: -25px;
+              }
+              .quiz-option input[type="radio"] { 
+                width: 15px;
+                height: 15px;
+                margin: 0;
+                margin-right: 10px;
+                cursor: pointer; 
+                vertical-align: middle;
+                position: relative;
+                top: -1px;
+              }
+              .quiz-submit-btn {
+                background: var(--color-primary); 
+                color: var(--color-on-primary); 
+                border: none; 
+                padding: 12px 24px; 
+                font-size: 16px; 
+                font-weight: bold; 
+                border-radius: 8px; 
+                cursor: pointer; 
+                transition: opacity 0.2s;
+              }
+              .quiz-submit-btn:hover {
+                opacity: 0.9;
+              }
+            </style>
+            <form id="hashQuizForm">
+              <!-- Q1 -->
+              <div class="quiz-question">
+                <p>1. What is the primary characteristic of a Cryptographic Hash Function?</p>
+                <label class="quiz-option"><input type="radio" name="q1" value="a"> a) It is easily reversible.</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="b"> b) It is a one-way mathematical function.</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="c"> c) It is used to encrypt data symmetrically.</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="d"> d) It compresses data without loss.</label>
+              </div>
+
+              <!-- Q2 -->
+              <div class="quiz-question">
+                <p>2. What is the length of an MD5 hash digest?</p>
+                <label class="quiz-option"><input type="radio" name="q2" value="a"> a) 128 bits</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="b"> b) 160 bits</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="c"> c) 256 bits</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="d"> d) 512 bits</label>
+              </div>
+
+              <!-- Q3 -->
+              <div class="quiz-question">
+                <p>3. What is the length of a SHA-1 hash digest?</p>
+                <label class="quiz-option"><input type="radio" name="q3" value="a"> a) 128 bits</label>
+                <label class="quiz-option"><input type="radio" name="q3" value="b"> b) 160 bits</label>
+                <label class="quiz-option"><input type="radio" name="q3" value="c"> c) 256 bits</label>
+                <label class="quiz-option"><input type="radio" name="q3" value="d"> d) 512 bits</label>
+              </div>
+
+              <!-- Q4 -->
+              <div class="quiz-question">
+                <p>4. Which mathematical principle explains why hash collisions are inevitable?</p>
+                <label class="quiz-option"><input type="radio" name="q4" value="a"> a) Kerckhoffs's Principle</label>
+                <label class="quiz-option"><input type="radio" name="q4" value="b"> b) The Pigeonhole Principle</label>
+                <label class="quiz-option"><input type="radio" name="q4" value="c"> c) The Avalanche Effect</label>
+                <label class="quiz-option"><input type="radio" name="q4" value="d"> d) Moore's Law</label>
+              </div>
+
+              <!-- Q5 -->
+              <div class="quiz-question">
+                <p>5. What term describes the property where a tiny change in the input completely scrambles the output hash?</p>
+                <label class="quiz-option"><input type="radio" name="q5" value="a"> a) One-way Resistance</label>
+                <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Birthday Paradox</label>
+                <label class="quiz-option"><input type="radio" name="q5" value="c"> c) The Avalanche Effect</label>
+                <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Collision Resistance</label>
+              </div>
+
+              <!-- Q6 -->
+              <div class="quiz-question">
+                <p>6. Why is MD5 considered insecure for modern applications?</p>
+                <label class="quiz-option"><input type="radio" name="q6" value="a"> a) It is too slow for modern computers.</label>
+                <label class="quiz-option"><input type="radio" name="q6" value="b"> b) It requires a secret key to compute.</label>
+                <label class="quiz-option"><input type="radio" name="q6" value="c"> c) Collision attacks can be performed in seconds on standard hardware.</label>
+                <label class="quiz-option"><input type="radio" name="q6" value="d"> d) The hash size is too large to store efficiently.</label>
+              </div>
+
+              <!-- Q7 -->
+              <div class="quiz-question">
+                <p>7. In the context of hash functions, what is Pre-image Resistance?</p>
+                <label class="quiz-option"><input type="radio" name="q7" value="a"> a) The inability to find two different inputs that produce the same hash.</label>
+                <label class="quiz-option"><input type="radio" name="q7" value="b"> b) The inability to find the original input given only the hash output.</label>
+                <label class="quiz-option"><input type="radio" name="q7" value="c"> c) The ability to encrypt the hash value with a public key.</label>
+                <label class="quiz-option"><input type="radio" name="q7" value="d"> d) The speed at which a hash can be calculated.</label>
+              </div>
+
+              <!-- Q8 -->
+              <div class="quiz-question">
+                <p>8. What technique do attackers use to quickly reverse hashes using precomputed dictionaries?</p>
+                <label class="quiz-option"><input type="radio" name="q8" value="a"> a) Rainbow tables</label>
+                <label class="quiz-option"><input type="radio" name="q8" value="b"> b) Man-in-the-middle attacks</label>
+                <label class="quiz-option"><input type="radio" name="q8" value="c"> c) Padding oracle attacks</label>
+                <label class="quiz-option"><input type="radio" name="q8" value="d"> d) Hash extension attacks</label>
+              </div>
+
+              <!-- Q9 -->
+              <div class="quiz-question">
+                <p>9. How does SHA-1 process data internally?</p>
+                <label class="quiz-option"><input type="radio" name="q9" value="a"> a) In 128-bit blocks with 64 operations</label>
+                <label class="quiz-option"><input type="radio" name="q9" value="b"> b) In 256-bit blocks with 80 operations</label>
+                <label class="quiz-option"><input type="radio" name="q9" value="c"> c) In 512-bit blocks with 80 operations</label>
+                <label class="quiz-option"><input type="radio" name="q9" value="d"> d) In 512-bit blocks with 64 operations</label>
+              </div>
+
+              <!-- Q10 -->
+              <div class="quiz-question">
+                <p>10. Which of the following is a legitimate use case for a cryptographic hash function?</p>
+                <label class="quiz-option"><input type="radio" name="q10" value="a"> a) Reversible encryption of passwords</label>
+                <label class="quiz-option"><input type="radio" name="q10" value="b"> b) Verifying file integrity and commit signing in Git</label>
+                <label class="quiz-option"><input type="radio" name="q10" value="c"> c) Compressing large video files for streaming</label>
+                <label class="quiz-option"><input type="radio" name="q10" value="d"> d) Exchanging symmetric encryption keys</label>
+              </div>
+
+              <div style="text-align: center; margin-top: 30px;">
+                <button type="submit" id="quizSubmitBtn" class="quiz-submit-btn">Submit Quiz</button>
+              </div>
+              
+              <div id="quizResult" style="margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; display: none;"></div>
+            </form>
           </div>
         </section>
 
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="content-placeholder">
             <h2>References</h2>
-            <ul>
-              <li>FIPS PUB 180-4: Secure Hash Standard (SHS).</li>
-              <li>William Stallings, <em>Cryptography and Network Security</em>.</li>
+            <ul style="line-height: 1.8;">
+              <li><strong>FIPS PUB 180-4:</strong> <em>Secure Hash Standard (SHS)</em>, National Institute of Standards and Technology (NIST), 2015.</li>
+              <li><strong>William Stallings:</strong> <em>Cryptography and Network Security: Principles and Practice</em> (8th Edition), Pearson, 2020.</li>
+              <li><strong>Bruce Schneier:</strong> <em>Applied Cryptography: Protocols, Algorithms, and Source Code in C</em> (20th Anniversary Edition), John Wiley & Sons, 2015.</li>
+              <li><strong>Alfred J. Menezes, Paul C. van Oorschot, and Scott A. Vanstone:</strong> <em>Handbook of Applied Cryptography</em>, CRC Press, 1996.</li>
+              <li><strong>Rogaway, P., & Shrimpton, T.:</strong> "Cryptographic Hash-Function Basics: Definitions, Implications, and Separations for Preimage Resistance, Second-Preimage Resistance, and Collision Resistance", <em>Fast Software Encryption (FSE)</em>, 2004.</li>
+              <li><strong>Wang, X., Yin, Y. L., & Yu, H.:</strong> "Finding Collisions in the Full SHA-1", <em>Advances in Cryptology – CRYPTO</em>, 2005.</li>
             </ul>
           </div>
         </section>
@@ -109,8 +992,13 @@
 
     <script src="../../js/common.js"></script>
     <script src="../../js/vendor/crypto-js.min.js"></script>
-    <script src="script.js"></script>
-      <script src="../../js/crypto-feedback.js"></script>
+    <script src="script.js?v=20261006_10"></script>
+    <script>
+      if (typeof window.initHashSimulator === 'function') {
+        window.initHashSimulator();
+      }
+    </script>
+    <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
   </body>
 </html>
