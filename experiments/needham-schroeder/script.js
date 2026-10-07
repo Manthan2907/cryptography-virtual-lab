@@ -1,743 +1,535 @@
 /**
- * MAC Experiment — script.js
- * Virtual Cryptography Laboratory | Fr. CRCE
- *
- * Implements CBC-MAC (AES-128 block chaining simulation),
- * CMAC (NIST SP 800-38B subkeys K1, K2), and Keyed-MAC (SHA-256 secret prefix).
- *
- * Pure client-side cryptography using Web Crypto API.
+ * Needham-Schroeder Symmetric Key Protocol Simulation
+ * Uses Web Crypto API for AES-GCM simulation.
  */
 
-'use strict';
-
-/* ============================================================
-   CRYPTOGRAPHY & UTILITY HELPERS
-   ============================================================ */
-
-function strToBytes(str) {
-  return new TextEncoder().encode(str);
-}
-
-function bytesToHex(bytes) {
-  return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-function hexToBytes(hex) {
-  const clean = hex.replace(/[^0-9a-fA-F]/g, '');
-  const bytes = new Uint8Array(Math.floor(clean.length / 2));
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(clean.substr(i * 2, 2), 16);
-  }
-  return bytes;
-}
-
-function concatBytes(a, b) {
-  const result = new Uint8Array(a.length + b.length);
-  result.set(a, 0);
-  result.set(b, a.length);
-  return result;
-}
-
-function xorBlocks(a, b) {
-  const len = Math.min(a.length, b.length);
-  const out = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    out[i] = a[i] ^ b[i];
-  }
-  return out;
-}
-
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/* ============================================================
-   ALGORITHM IMPLEMENTATIONS
-   ============================================================ */
-
-/**
- * Keyed-MAC: SHA-256(Key || Message)
- */
-async function computeKeyedMAC(keyStr, messageStr) {
-  const keyBytes = strToBytes(keyStr);
-  const msgBytes = strToBytes(messageStr);
-  const input = concatBytes(keyBytes, msgBytes);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', input);
-  return bytesToHex(new Uint8Array(hashBuffer));
-}
-
-/**
- * Standard AES-128 Raw Block Encrypt using Web Crypto AES-CBC with IV=0
- */
-async function aesEncryptBlock(key16Bytes, block16Bytes) {
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    key16Bytes,
-    { name: 'AES-CBC' },
-    false,
-    ['encrypt']
-  );
-  // Zero IV
-  const iv = new Uint8Array(16);
-  // Web Crypto AES-CBC applies PKCS7 padding by default, so 16 bytes becomes 32 bytes.
-  // The first 16 bytes of ciphertext corresponds to raw AES_K(block ^ IV).
-  const ciphertextBuffer = await crypto.subtle.encrypt(
-    { name: 'AES-CBC', iv },
-    cryptoKey,
-    block16Bytes
-  );
-  return new Uint8Array(ciphertextBuffer).slice(0, 16);
-}
-
-/**
- * Derive 16-byte key from user input
- */
-async function derive16ByteKey(keyInput) {
-  const cleanHex = keyInput.trim().replace(/[^0-9a-fA-F]/g, '');
-  if (cleanHex.length === 32) {
-    return hexToBytes(cleanHex);
-  }
-  const hash = await crypto.subtle.digest('SHA-256', strToBytes(keyInput));
-  return new Uint8Array(hash).slice(0, 16);
-}
-
-/**
- * Split message into 16-byte blocks
- */
-function partitionBlocks(msgBytes, paddingType = 'PKCS7') {
-  const blockSize = 16;
-  const blocks = [];
-  const total = msgBytes.length;
-  
-  if (total === 0) {
-    if (paddingType === 'PKCS7') {
-      const pad = new Uint8Array(16).fill(16);
-      blocks.push(pad);
-    } else {
-      const pad = new Uint8Array(16);
-      pad[0] = 0x80;
-      blocks.push(pad);
-    }
-    return blocks;
-  }
-
-  for (let i = 0; i < total; i += blockSize) {
-    const chunk = msgBytes.slice(i, i + blockSize);
-    if (chunk.length === blockSize) {
-      blocks.push(chunk);
-    } else {
-      // Need padding
-      const padLen = blockSize - chunk.length;
-      const padded = new Uint8Array(blockSize);
-      padded.set(chunk, 0);
-      if (paddingType === 'PKCS7') {
-        for (let p = chunk.length; p < blockSize; p++) padded[p] = padLen;
-      } else {
-        // Bit padding (1000...): 0x80 then 0x00
-        padded[chunk.length] = 0x80;
-        for (let p = chunk.length + 1; p < blockSize; p++) padded[p] = 0x00;
-      }
-      blocks.push(padded);
-    }
-  }
-
-  // If PKCS7 and length was exact multiple, append full padding block
-  if (paddingType === 'PKCS7' && total % blockSize === 0) {
-    const pad = new Uint8Array(16).fill(16);
-    blocks.push(pad);
-  }
-
-  return blocks;
-}
-
-/**
- * CBC-MAC computation with step execution tracking
- */
-async function computeCBCMAC(key16, msgBytes) {
-  const blocks = partitionBlocks(msgBytes, 'PKCS7');
-  let state = new Uint8Array(16); // IV = 0
-  const steps = [];
-
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
-    const xored = xorBlocks(block, state);
-    const encrypted = await aesEncryptBlock(key16, xored);
-    steps.push({
-      blockIndex: i + 1,
-      inputBlock: bytesToHex(block),
-      previousState: bytesToHex(state),
-      xorResult: bytesToHex(xored),
-      outputState: bytesToHex(encrypted)
-    });
-    state = encrypted;
-  }
-
-  return {
-    tag: bytesToHex(state),
-    blocks,
-    steps
-  };
-}
-
-/**
- * CMAC (NIST SP 800-38B) Subkey Derivation and MAC
- */
-async function computeCMAC(key16, msgBytes) {
-  // 1. L = AES_K(0^128)
-  const zeroBlock = new Uint8Array(16);
-  const L = await aesEncryptBlock(key16, zeroBlock);
-
-  // Helper: left shift 1 bit in GF(2^128)
-  function shiftLeft(b) {
-    const out = new Uint8Array(16);
-    let overflow = 0;
-    for (let i = 15; i >= 0; i--) {
-      out[i] = ((b[i] << 1) | overflow) & 0xff;
-      overflow = (b[i] & 0x80) ? 1 : 0;
-    }
-    if (b[0] & 0x80) {
-      out[15] ^= 0x87; // Rb for 128-bit block
-    }
-    return out;
-  }
-
-  const K1 = shiftLeft(L);
-  const K2 = shiftLeft(K1);
-
-  // 2. Partition message without premature padding
-  const blockSize = 16;
-  const blocks = [];
-  const total = msgBytes.length;
-  let isCompleteLastBlock = true;
-
-  if (total === 0) {
-    const padded = new Uint8Array(16);
-    padded[0] = 0x80;
-    blocks.push(padded);
-    isCompleteLastBlock = false;
-  } else {
-    for (let i = 0; i < total; i += blockSize) {
-      const chunk = msgBytes.slice(i, i + blockSize);
-      if (chunk.length === blockSize) {
-        blocks.push(chunk);
-      } else {
-        isCompleteLastBlock = false;
-        const padded = new Uint8Array(blockSize);
-        padded.set(chunk, 0);
-        padded[chunk.length] = 0x80;
-        blocks.push(padded);
-      }
-    }
-  }
-
-  // 3. XOR last block with K1 (if complete) or K2 (if padded)
-  const lastIdx = blocks.length - 1;
-  const subkeyUsed = isCompleteLastBlock ? K1 : K2;
-  blocks[lastIdx] = xorBlocks(blocks[lastIdx], subkeyUsed);
-
-  // 4. CBC chaining
-  let state = new Uint8Array(16);
-  const steps = [];
-
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
-    const xored = xorBlocks(block, state);
-    const encrypted = await aesEncryptBlock(key16, xored);
-    steps.push({
-      blockIndex: i + 1,
-      inputBlock: bytesToHex(block),
-      previousState: bytesToHex(state),
-      xorResult: bytesToHex(xored),
-      outputState: bytesToHex(encrypted)
-    });
-    state = encrypted;
-  }
-
-  return {
-    tag: bytesToHex(state),
-    blocks,
-    steps,
-    subkeys: {
-      L: bytesToHex(L),
-      K1: bytesToHex(K1),
-      K2: bytesToHex(K2)
-    }
-  };
-}
-
-/* ============================================================
-   UI CONTROLLER & SIMULATION
-   ============================================================ */
-
-let stateLastGenerated = {
-  tag: '',
-  key: '',
-  message: '',
-  algo: ''
+const AppState = {
+  kas: null, kbs: null, kab: null,
+  aliceNa: null, bobNb: null,
+  ticket: null,
+  currentStep: 0,
+  scenario: 'normal',
+  autoPlayTimer: null
 };
 
-function renderBlockPreview() {
-  const msg = document.getElementById('message-input').value;
-  const algo = document.getElementById('algo-select').value;
-  const grid = document.getElementById('blockPreviewGrid');
-  if (!grid) return;
+// --- Crypto Helpers ---
 
-  const msgBytes = strToBytes(msg);
-  const blocks = partitionBlocks(msgBytes, algo === 'CMAC' ? 'BIT' : 'PKCS7');
-
-  grid.innerHTML = blocks.map((b, i) => {
-    const hex = bytesToHex(b);
-    return `
-      <div class="block-preview-card">
-        <div class="block-card-title">Block P<sub>${i + 1}</sub> (128-bit)</div>
-        <div class="block-card-hex">${hex}</div>
-        <div class="block-card-meta">${b.length} bytes &middot; ${b.length * 8} bits</div>
-      </div>
-    `;
-  }).join('');
+// Derives a 256-bit AES-GCM key from a short string (for simulation purposes)
+async function deriveKey(passphrase) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw", enc.encode(passphrase), "PBKDF2", false, ["deriveBits", "deriveKey"]
+  );
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: enc.encode("fixed-salt-for-sim"), iterations: 1000, hash: "SHA-256" },
+    keyMaterial, { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]
+  );
 }
 
-function initAutoKey() {
-  const btnAutoKey = document.getElementById('btnAutoKey');
-  const secretKeyInput = document.getElementById('secret-key');
-
-  if (btnAutoKey && secretKeyInput) {
-    btnAutoKey.addEventListener('click', () => {
-      const randBytes = new Uint8Array(16);
-      crypto.getRandomValues(randBytes);
-      secretKeyInput.value = bytesToHex(randBytes);
-      renderBlockPreview();
-    });
-  }
+// Generate a random AES-GCM key (for Kab)
+async function generateSessionKey() {
+  return crypto.subtle.generateKey(
+    { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]
+  );
 }
 
-function initSimulationHandlers() {
-  const algoSelect = document.getElementById('algo-select');
-  const secretKeyInput = document.getElementById('secret-key');
-  const messageInput = document.getElementById('message-input');
-  const btnGenerateMac = document.getElementById('btnGenerateMac');
-  const genError = document.getElementById('gen-error');
-  const genResult = document.getElementById('gen-result');
-  const genTagDisplay = document.getElementById('gen-tag-display');
-  const genAlgoBadge = document.getElementById('gen-algo-badge');
-  const genMeta = document.getElementById('gen-meta');
-  const chainStepsContainer = document.getElementById('chain-steps-container');
-  const btnCopyTag = document.getElementById('btnCopyTag');
-  const btnTransferVerify = document.getElementById('btnTransferVerify');
+// Export key to hex for display
+async function exportKeyHex(key) {
+  const raw = await crypto.subtle.exportKey("raw", key);
+  return buf2hex(raw).substring(0, 16) + "...";
+}
 
-  if (messageInput) {
-    messageInput.addEventListener('input', renderBlockPreview);
-  }
-  if (algoSelect) {
-    algoSelect.addEventListener('change', renderBlockPreview);
-  }
+// AES-GCM Encrypt
+async function encrypt(key, plaintext) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv: iv }, key, enc.encode(plaintext)
+  );
+  // Return concat of iv and ciphertext in hex
+  return buf2hex(iv.buffer) + buf2hex(ciphertext);
+}
 
-  // Initial preview render
-  renderBlockPreview();
-
-  if (btnGenerateMac) {
-    btnGenerateMac.addEventListener('click', async () => {
-      const keyVal = secretKeyInput.value.trim();
-      const msgVal = messageInput.value;
-      const algoVal = algoSelect.value;
-
-      genError.setAttribute('hidden', '');
-      genResult.setAttribute('hidden', '');
-
-      if (!keyVal) {
-        genError.textContent = 'Please enter or auto-generate a secret key (K).';
-        genError.removeAttribute('hidden');
-        return;
-      }
-
-      btnGenerateMac.disabled = true;
-      btnGenerateMac.textContent = 'Computing MAC Tag…';
-
-      try {
-        let tag = '';
-        let stepsHtml = '';
-        const key16 = await derive16ByteKey(keyVal);
-        const msgBytes = strToBytes(msgVal);
-
-        if (algoVal === 'CBC-MAC') {
-          const res = await computeCBCMAC(key16, msgBytes);
-          tag = res.tag;
-          stepsHtml = res.steps.map(s => `
-            <div class="chain-step-card">
-              <div class="chain-step-header">Block P<sub>${s.blockIndex}</sub> Processing</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">Input Block (P<sub>${s.blockIndex}</sub>):</span> <code class="monospace">${s.inputBlock}</code></div>
-                <div><span class="chain-label">XOR Chaining (T<sub>${s.blockIndex - 1}</sub> &oplus; P<sub>${s.blockIndex}</sub>):</span> <code class="monospace">${s.xorResult}</code></div>
-                <div><span class="chain-label">AES-128 Cipher Output (T<sub>${s.blockIndex}</sub>):</span> <code class="monospace highlight-tag">${s.outputState}</code></div>
-              </div>
-            </div>
-          `).join('');
-        } else if (algoVal === 'CMAC') {
-          const res = await computeCMAC(key16, msgBytes);
-          tag = res.tag;
-          stepsHtml = `
-            <div class="chain-step-card" style="border-left-color: var(--color-secondary);">
-              <div class="chain-step-header">NIST SP 800-38B Subkey Derivation</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">L = AES<sub>K</sub>(0<sup>128</sup>):</span> <code class="monospace">${res.subkeys.L}</code></div>
-                <div><span class="chain-label">Subkey K<sub>1</sub> (L &lt;&lt; 1 &oplus; R<sub>b</sub>):</span> <code class="monospace">${res.subkeys.K1}</code></div>
-                <div><span class="chain-label">Subkey K<sub>2</sub> (K<sub>1</sub> &lt;&lt; 1 &oplus; R<sub>b</sub>):</span> <code class="monospace">${res.subkeys.K2}</code></div>
-              </div>
-            </div>
-          ` + res.steps.map(s => `
-            <div class="chain-step-card">
-              <div class="chain-step-header">Block P<sub>${s.blockIndex}</sub> Processing</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">Input Block:</span> <code class="monospace">${s.inputBlock}</code></div>
-                <div><span class="chain-label">XOR Chained:</span> <code class="monospace">${s.xorResult}</code></div>
-                <div><span class="chain-label">Cipher Output (T<sub>${s.blockIndex}</sub>):</span> <code class="monospace highlight-tag">${s.outputState}</code></div>
-              </div>
-            </div>
-          `).join('');
-        } else {
-          // Keyed-MAC
-          tag = await computeKeyedMAC(keyVal, msgVal);
-          stepsHtml = `
-            <div class="chain-step-card">
-              <div class="chain-step-header">Keyed-MAC Secret Prefix Chaining</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">Key Payload:</span> <code class="monospace">${bytesToHex(strToBytes(keyVal))}</code></div>
-                <div><span class="chain-label">Message Payload:</span> <code class="monospace">${bytesToHex(strToBytes(msgVal))}</code></div>
-                <div><span class="chain-label">Concatenated Hash SHA-256(K || M):</span> <code class="monospace highlight-tag">${tag}</code></div>
-              </div>
-            </div>
-          `;
-        }
-
-        stateLastGenerated = {
-          tag,
-          key: keyVal,
-          message: msgVal,
-          algo: algoVal
-        };
-
-        genTagDisplay.textContent = tag;
-        genAlgoBadge.textContent = algoVal;
-        genMeta.innerHTML = `Tag Length: <strong>${tag.length * 4} bits</strong> (${tag.length / 2} bytes) &middot; Status: <strong style="color:var(--color-success,#4ec9b0);">Generated Successfully</strong>`;
-        chainStepsContainer.innerHTML = stepsHtml;
-        genResult.removeAttribute('hidden');
-        genResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        // Prepopulate verifier fields
-        const verTag = document.getElementById('ver-tag');
-        if (verTag) verTag.value = tag;
-        const verMessage = document.getElementById('ver-message');
-        if (verMessage) verMessage.value = msgVal;
-
-      } catch (err) {
-        genError.textContent = 'Error computing MAC tag: ' + err.message;
-        genError.removeAttribute('hidden');
-      } finally {
-        btnGenerateMac.disabled = false;
-        btnGenerateMac.innerHTML = '&#9889; Generate MAC Tag C(K, M)';
-      }
-    });
-  }
-
-  if (btnCopyTag) {
-    btnCopyTag.addEventListener('click', () => {
-      if (!stateLastGenerated.tag) return;
-      navigator.clipboard.writeText(stateLastGenerated.tag);
-      const originalText = btnCopyTag.innerHTML;
-      btnCopyTag.innerHTML = '&#10003; Copied!';
-      setTimeout(() => { btnCopyTag.innerHTML = originalText; }, 1800);
-    });
-  }
-
-  if (btnTransferVerify) {
-    btnTransferVerify.addEventListener('click', () => {
-      const verSection = document.getElementById('sim-step4');
-      if (verSection) {
-        verSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
+// AES-GCM Decrypt
+async function decrypt(key, hexStr) {
+  try {
+    const iv = hex2buf(hexStr.substring(0, 24));
+    const ciphertext = hex2buf(hexStr.substring(24));
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: iv }, key, ciphertext
+    );
+    return new TextDecoder().decode(decrypted);
+  } catch (e) {
+    return null; // Decryption failed
   }
 }
 
-/* ============================================================
-   VERIFICATION & MITM TAMPER SIMULATOR
-   ============================================================ */
+// Utilities
+function buf2hex(buffer) {
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
+function hex2buf(hexString) {
+  const bytes = new Uint8Array(Math.ceil(hexString.length / 2));
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hexString.substr(i * 2, 2), 16);
+  return bytes;
+}
+function generateNonce() {
+  return Math.floor(Math.random() * 1000000).toString();
+}
 
-function initVerifyAndTamper() {
-  const btnVerifyMac = document.getElementById('btnVerifyMac');
-  const verMessageInput = document.getElementById('ver-message');
-  const verTagInput = document.getElementById('ver-tag');
-  const verResult = document.getElementById('ver-result');
-  const algoSelect = document.getElementById('algo-select');
-  const secretKeyInput = document.getElementById('secret-key');
+// --- UI & Simulation Engine ---
 
-  const btnTamperMsg = document.getElementById('btnTamperMsg');
-  const btnCorruptTag = document.getElementById('btnCorruptTag');
-  const btnResetVerify = document.getElementById('btnResetVerify');
+async function initSimulation() {
+  AppState.kas = await deriveKey("AliceSecretKey123");
+  AppState.kbs = await deriveKey("BobSecretKey456");
+  
+  document.getElementById('alice-kas').innerText = await exportKeyHex(AppState.kas);
+  document.getElementById('kdc-kas').innerText = await exportKeyHex(AppState.kas);
+  document.getElementById('bob-kbs').innerText = await exportKeyHex(AppState.kbs);
+  document.getElementById('kdc-kbs').innerText = await exportKeyHex(AppState.kbs);
+  
+  resetSimulation();
+}
 
-  if (btnVerifyMac) {
-    btnVerifyMac.addEventListener('click', async () => {
-      const keyVal = secretKeyInput.value.trim();
-      const msgVal = verMessageInput.value;
-      const tagVal = verTagInput.value.trim().toLowerCase();
-      const algoVal = algoSelect.value;
+function resetSimulation() {
+  AppState.currentStep = 0;
+  AppState.aliceNa = null;
+  AppState.bobNb = null;
+  AppState.kab = null;
+  AppState.ticket = null;
+  AppState.scenario = document.getElementById('scenario-select').value;
+  
+  clearTimeout(AppState.autoPlayTimer);
+  
+  document.getElementById('alice-na').innerHTML = '<span class="text-muted">Waiting...</span>';
+  document.getElementById('alice-kab').innerHTML = '<span class="text-muted">Unknown</span>';
+  document.getElementById('alice-ticket').innerHTML = '<span class="text-muted">None</span>';
+  document.getElementById('kdc-kab').innerHTML = '<span class="text-muted">Waiting...</span>';
+  document.getElementById('bob-nb').innerHTML = '<span class="text-muted">Waiting...</span>';
+  document.getElementById('bob-kab').innerHTML = '<span class="text-muted">Unknown</span>';
+  
+  document.getElementById('log-tbody').innerHTML = '';
+  document.getElementById('res-scenario').innerText = AppState.scenario;
+  document.getElementById('res-expected').innerText = getExpectedResult(AppState.scenario);
+  document.getElementById('res-actual').innerText = '-';
+  document.getElementById('res-key').innerText = '-';
+  document.getElementById('res-auth').innerText = '-';
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-auto').disabled = false;
+}
 
-      verResult.setAttribute('hidden', '');
-
-      if (!keyVal || !tagVal) {
-        verResult.className = 'ver-result-box result-failure';
-        verResult.innerHTML = '<span class="result-icon">&#9888;</span> <strong>Missing Input:</strong> Secret key (K) and received MAC tag (T) are required for verification.';
-        verResult.removeAttribute('hidden');
-        return;
-      }
-
-      try {
-        let expectedTag = '';
-        const key16 = await derive16ByteKey(keyVal);
-        const msgBytes = strToBytes(msgVal);
-
-        if (algoVal === 'CBC-MAC') {
-          const res = await computeCBCMAC(key16, msgBytes);
-          expectedTag = res.tag;
-        } else if (algoVal === 'CMAC') {
-          const res = await computeCMAC(key16, msgBytes);
-          expectedTag = res.tag;
-        } else {
-          expectedTag = await computeKeyedMAC(keyVal, msgVal);
-        }
-
-        const isValid = expectedTag.toLowerCase() === tagVal;
-
-        if (isValid) {
-          verResult.className = 'ver-result-box result-success';
-          verResult.innerHTML = `
-            <span class="result-icon">&#10004;</span>
-            <div>
-              <strong>Verification Successful &mdash; Tag Matches!</strong>
-              <div style="margin-top:6px;font-size:0.9rem;">
-                Computed Tag: <code class="monospace">${expectedTag}</code><br>
-                Received Tag: <code class="monospace">${tagVal}</code>
-              </div>
-              <div style="margin-top:6px;color:#7ee787;">
-                &#10003; Data Integrity: Verified (Payload has not been tampered with).<br>
-                &#10003; Origin Authenticity: Verified (Sender possesses shared secret key K).
-              </div>
-            </div>
-          `;
-        } else {
-          verResult.className = 'ver-result-box result-failure';
-          verResult.innerHTML = `
-            <span class="result-icon">&#10008;</span>
-            <div>
-              <strong>Verification FAILED &mdash; Tag Mismatch Detected!</strong>
-              <div style="margin-top:6px;font-size:0.9rem;">
-                Recomputed Tag: <code class="monospace">${expectedTag}</code><br>
-                Received Tag: &nbsp;&nbsp;<code class="monospace" style="color:#ff7b72;">${tagVal}</code>
-              </div>
-              <div style="margin-top:6px;color:#ff7b72;">
-                &#9888; Warning: The message has been modified in transit OR generated with an incorrect key!
-              </div>
-            </div>
-          `;
-        }
-        verResult.removeAttribute('hidden');
-      } catch (err) {
-        verResult.className = 'ver-result-box result-failure';
-        verResult.innerHTML = `<span class="result-icon">&#9888;</span> <strong>Verification Error:</strong> ${escapeHTML(err.message)}`;
-        verResult.removeAttribute('hidden');
-      }
-    });
-  }
-
-  // Active Tamper: Modify Message Payload
-  if (btnTamperMsg) {
-    btnTamperMsg.addEventListener('click', () => {
-      let current = verMessageInput.value;
-      if (current.includes('$5,000')) {
-        verMessageInput.value = current.replace('$5,000', '$95,000');
-      } else if (current.endsWith('.')) {
-        verMessageInput.value = current.slice(0, -1);
-      } else {
-        verMessageInput.value = current + ' [TAMPERED]';
-      }
-      if (btnVerifyMac) btnVerifyMac.click();
-    });
-  }
-
-  // Active Tamper: Corrupt Tag
-  if (btnCorruptTag) {
-    btnCorruptTag.addEventListener('click', () => {
-      let currentTag = verTagInput.value.trim();
-      if (!currentTag) return;
-      const chars = currentTag.split('');
-      // Flip first hex char
-      const first = chars[0];
-      chars[0] = (first === '0' || first === 'a') ? 'f' : '0';
-      verTagInput.value = chars.join('');
-      if (btnVerifyMac) btnVerifyMac.click();
-    });
-  }
-
-  // Reset to original
-  if (btnResetVerify) {
-    btnResetVerify.addEventListener('click', () => {
-      verMessageInput.value = stateLastGenerated.message || document.getElementById('message-input').value;
-      verTagInput.value = stateLastGenerated.tag || '';
-      verResult.setAttribute('hidden', '');
-    });
+function getExpectedResult(scenario) {
+  switch(scenario) {
+    case 'normal': return "Mutual auth, key established.";
+    case 'wrong_kas': return "Alice fails to decrypt msg 2.";
+    case 'tampered_ticket': return "Bob fails to decrypt ticket.";
+    case 'nonce_mismatch': return "Alice rejects msg 2 (Na mismatch).";
+    case 'wrong_nb1': return "Bob rejects msg 5 (Nb-1 wrong).";
+    case 'replay_attack': return "Bob accepts old ticket (auth bypassed).";
+    case 'replay_timestamp': return "Bob rejects stale ticket.";
+    default: return "-";
   }
 }
 
-/* ============================================================
-   SUMMARY TABLE
-   ============================================================ */
-
-function initSummaryTable() {
-  const btnUpdate = document.getElementById('btnUpdateSummary');
-  const toast = document.getElementById('sum-updated-toast');
-  const sumMsg = document.getElementById('sum-message');
-  const sumAlgo = document.getElementById('sum-algorithm');
-  const sumKey = document.getElementById('sum-key');
-  const sumTag = document.getElementById('sum-tag');
-
-  if (btnUpdate) {
-    btnUpdate.addEventListener('click', () => {
-      const msg = document.getElementById('message-input').value;
-      const algo = document.getElementById('algo-select').value;
-      const key = document.getElementById('secret-key').value;
-      const tag = stateLastGenerated.tag || '(Click Generate MAC first)';
-
-      sumMsg.textContent = msg || '-';
-      sumAlgo.textContent = algo || '-';
-      sumKey.textContent = key || '-';
-      sumTag.textContent = tag;
-
-      if (toast) {
-        toast.removeAttribute('hidden');
-        setTimeout(() => toast.setAttribute('hidden', ''), 2500);
-      }
-    });
+async function runNextStep() {
+  AppState.currentStep++;
+  const s = AppState.currentStep;
+  
+  try {
+    if (s === 1) await step1();
+    else if (s === 2) await step2();
+    else if (s === 3) await step3();
+    else if (s === 4) await step4();
+    else if (s === 5) await step5();
+    else {
+      AppState.currentStep = 5;
+      return;
+    }
+  } catch (err) {
+    console.error("Step error", err);
+    logMessage(s, "Error", "Error", "Error", "Execution halted", false);
+    document.getElementById('btn-next').disabled = true;
+  }
+  
+  if (AppState.currentStep >= 5 || document.getElementById('btn-next').disabled) {
+    document.getElementById('btn-next').disabled = true;
+    document.getElementById('btn-auto').disabled = true;
+    updateResults();
   }
 }
 
-/* ============================================================
-   QUIZ CONTROLLER
-   ============================================================ */
+async function step1() {
+  AppState.aliceNa = generateNonce();
+  document.getElementById('alice-na').innerText = AppState.aliceNa;
+  animateArrow('panel-alice', 'panel-kdc', 'A, B, Na');
+  logMessage(1, "A &rarr; S", `A, B, ${AppState.aliceNa}`, "(Plaintext)", "OK");
+}
 
-function initQuiz() {
-  const questions = document.querySelectorAll('.quiz-question');
-  const btnSubmit = document.getElementById('btnSubmitQuiz');
-  const btnReset = document.getElementById('btnResetQuiz');
-  const quizScore = document.getElementById('quizScore');
-
-  // Handle option selection
-  questions.forEach(q => {
-    const btns = q.querySelectorAll('.quiz-option-btn');
-    btns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        btns.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
-    });
-  });
-
-  if (btnSubmit) {
-    btnSubmit.addEventListener('click', () => {
-      let answeredCount = 0;
-      let score = 0;
-
-      questions.forEach(q => {
-        const correctIdx = parseInt(q.dataset.correct, 10);
-        const btns = q.querySelectorAll('.quiz-option-btn');
-        const reason = q.querySelector('.quiz-reason');
-        let selectedIdx = -1;
-
-        btns.forEach((btn, idx) => {
-          if (btn.classList.contains('selected')) {
-            selectedIdx = idx;
-          }
-        });
-
-        if (selectedIdx !== -1) {
-          answeredCount++;
-          if (selectedIdx === correctIdx) {
-            score++;
-            btns[selectedIdx].classList.add('correct');
-          } else {
-            btns[selectedIdx].classList.add('incorrect');
-            btns[correctIdx].classList.add('correct');
-          }
-        } else {
-          btns[correctIdx].classList.add('correct');
-        }
-
-        if (reason) reason.removeAttribute('hidden');
-      });
-
-      if (quizScore) {
-        const pct = Math.round((score / questions.length) * 100);
-        quizScore.className = 'quiz-score ' + (pct >= 60 ? 'score-pass' : 'score-fail');
-        quizScore.innerHTML = `Your Score: <strong>${score} / ${questions.length}</strong> (${pct}%) &mdash; ` +
-          (pct >= 60 ? '&#127881; Great job!' : '&#128161; Review the theory and try again.');
-        quizScore.removeAttribute('hidden');
-      }
-    });
+async function step2() {
+  // KDC generates Kab
+  AppState.kab = await generateSessionKey();
+  const kabHex = await exportKeyHex(AppState.kab);
+  document.getElementById('kdc-kab').innerText = kabHex;
+  
+  let ticketPlain = JSON.stringify({ key: kabHex, id: "A", timestamp: Date.now() });
+  
+  if (AppState.scenario === 'replay_attack' || AppState.scenario === 'replay_timestamp') {
+    // Simulate an old ticket
+    ticketPlain = JSON.stringify({ key: "OLD_COMPROMISED_KEY", id: "A", timestamp: Date.now() - 10000000 });
   }
+  
+  let ticket = await encrypt(AppState.kbs, ticketPlain);
+  if (AppState.scenario === 'tampered_ticket') {
+    ticket = ticket.substring(0, ticket.length - 4) + "0000"; // Corrupt the tag
+  }
+  
+  let naToUse = AppState.aliceNa;
+  if (AppState.scenario === 'nonce_mismatch') naToUse = "999999";
+  
+  let msg2Plain = JSON.stringify({ Na: naToUse, id: "B", key: kabHex, ticket: ticket });
+  let kToUse = AppState.kas;
+  
+  if (AppState.scenario === 'wrong_kas') {
+    kToUse = await deriveKey("WrongKey");
+  }
+  
+  const msg2Cipher = await encrypt(kToUse, msg2Plain);
+  
+  animateArrow('panel-kdc', 'panel-alice', 'Msg 2');
+  
+  // Alice processes
+  const decrypted = await decrypt(AppState.kas, msg2Cipher);
+  if (!decrypted) {
+    logMessage(2, "S &rarr; A", "(Unknown)", msg2Cipher, "FAIL: Decryption failed", false);
+    document.getElementById('btn-next').disabled = true;
+    return;
+  }
+  
+  const parsed = JSON.parse(decrypted);
+  if (parsed.Na !== AppState.aliceNa) {
+    logMessage(2, "S &rarr; A", decrypted, msg2Cipher, "FAIL: Na mismatch", false);
+    document.getElementById('btn-next').disabled = true;
+    return;
+  }
+  
+  AppState.ticket = parsed.ticket;
+  
+  if (AppState.scenario === 'replay_attack' || AppState.scenario === 'replay_timestamp') {
+     // Attacker sets up old Kab
+     document.getElementById('alice-kab').innerHTML = "OLD_COMPROMISED_KEY (Attacker)";
+  } else {
+     document.getElementById('alice-kab').innerText = parsed.key;
+  }
+  
+  document.getElementById('alice-ticket').innerText = AppState.ticket.substring(0,16)+"...";
+  logMessage(2, "S &rarr; A", decrypted, msg2Cipher, "OK: Na matched");
+}
 
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
-      questions.forEach(q => {
-        const btns = q.querySelectorAll('.quiz-option-btn');
-        btns.forEach(b => b.classList.remove('selected', 'correct', 'incorrect'));
-        const reason = q.querySelector('.quiz-reason');
-        if (reason) reason.setAttribute('hidden', '');
-      });
-      if (quizScore) {
-        quizScore.setAttribute('hidden', '');
-        quizScore.innerHTML = '';
-      }
+async function step3() {
+  animateArrow('panel-alice', 'panel-bob', 'Ticket');
+  
+  // Bob processes
+  const decrypted = await decrypt(AppState.kbs, AppState.ticket);
+  if (!decrypted) {
+    logMessage(3, "A &rarr; B", "(Unknown)", AppState.ticket, "FAIL: Ticket decryption failed", false);
+    document.getElementById('btn-next').disabled = true;
+    return;
+  }
+  
+  const parsed = JSON.parse(decrypted);
+  
+  if (AppState.scenario === 'replay_timestamp') {
+    const age = Date.now() - parsed.timestamp;
+    if (age > 50000) { // Reject if too old
+      logMessage(3, "A &rarr; B", decrypted, AppState.ticket, "FAIL: Ticket stale (Timestamp rejected)", false);
+      document.getElementById('btn-next').disabled = true;
+      return;
+    }
+  }
+  
+  document.getElementById('bob-kab').innerText = parsed.key;
+  logMessage(3, "A &rarr; B", decrypted, AppState.ticket, "OK: Ticket decrypted");
+}
+
+async function step4() {
+  AppState.bobNb = generateNonce();
+  document.getElementById('bob-nb').innerText = AppState.bobNb;
+  
+  // Need the actual crypto key obj for Kab for Bob
+  // Since Kab is passed as hex in sim, we just derive a sim key from it to make Web Crypto work
+  const kabHex = document.getElementById('bob-kab').innerText;
+  const simKab = await deriveKey(kabHex);
+  
+  const msg4Plain = JSON.stringify({ Nb: AppState.bobNb });
+  const msg4Cipher = await encrypt(simKab, msg4Plain);
+  
+  animateArrow('panel-bob', 'panel-alice', '{Nb}Kab');
+  
+  // Alice processes
+  const aliceKabHex = document.getElementById('alice-kab').innerText;
+  const aliceSimKab = await deriveKey(aliceKabHex);
+  const decrypted = await decrypt(aliceSimKab, msg4Cipher);
+  
+  if (!decrypted) {
+    logMessage(4, "B &rarr; A", "(Unknown)", msg4Cipher, "FAIL: Decryption failed", false);
+    document.getElementById('btn-next').disabled = true;
+    return;
+  }
+  
+  logMessage(4, "B &rarr; A", decrypted, msg4Cipher, "OK: Decrypted");
+}
+
+async function step5() {
+  const aliceKabHex = document.getElementById('alice-kab').innerText;
+  const aliceSimKab = await deriveKey(aliceKabHex);
+  
+  // Normally Alice reads Nb from msg 4. We simplify by reading state.
+  let replyNb = parseInt(AppState.bobNb) - 1;
+  if (AppState.scenario === 'wrong_nb1') replyNb = parseInt(AppState.bobNb) + 99;
+  
+  const msg5Plain = JSON.stringify({ Nb_minus_1: replyNb });
+  const msg5Cipher = await encrypt(aliceSimKab, msg5Plain);
+  
+  animateArrow('panel-alice', 'panel-bob', '{Nb-1}Kab');
+  
+  // Bob processes
+  const bobKabHex = document.getElementById('bob-kab').innerText;
+  const bobSimKab = await deriveKey(bobKabHex);
+  const decrypted = await decrypt(bobSimKab, msg5Cipher);
+  
+  if (!decrypted) {
+    logMessage(5, "A &rarr; B", "(Unknown)", msg5Cipher, "FAIL: Decryption failed", false);
+    return;
+  }
+  
+  const parsed = JSON.parse(decrypted);
+  if (parsed.Nb_minus_1 !== parseInt(AppState.bobNb) - 1) {
+    logMessage(5, "A &rarr; B", decrypted, msg5Cipher, "FAIL: Nb-1 incorrect", false);
+    return;
+  }
+  
+  logMessage(5, "A &rarr; B", decrypted, msg5Cipher, "OK: Authenticated");
+}
+
+function updateResults() {
+  const trs = document.querySelectorAll('#log-tbody tr');
+  let auth = 'No';
+  let kEst = 'No';
+  let actual = 'Failed early';
+  
+  if (trs.length === 5) {
+    const lastMsg = trs[trs.length - 1];
+    if (lastMsg.innerText.includes('OK')) {
+      auth = 'Yes'; kEst = 'Yes'; actual = 'Protocol completed successfully';
+    } else {
+      actual = 'Failed at step 5';
+    }
+  } else {
+    actual = `Failed at step ${trs.length}`;
+  }
+  
+  if (AppState.scenario === 'replay_attack' && auth === 'Yes') {
+    actual = 'Attacker successfully impersonated Alice (Replay successful)';
+  }
+  
+  document.getElementById('res-actual').innerText = actual;
+  document.getElementById('res-key').innerText = kEst;
+  document.getElementById('res-auth').innerText = auth;
+}
+
+function logMessage(step, senderReceiver, plain, cipher, verif, isOk = true) {
+  const tbody = document.getElementById('log-tbody');
+  const tr = document.createElement('tr');
+  if (!isOk) tr.style.backgroundColor = '#ffebee';
+  
+  let cipherHtml = cipher;
+  if (cipher !== "(Plaintext)") {
+    cipherHtml = `<span class="clickable-cipher" data-plain='${plain}' data-cipher='${cipher}' title="Click to view details">${cipher.substring(0,16)}...</span>`;
+  }
+  
+  tr.innerHTML = `
+    <td>${step}</td>
+    <td>${senderReceiver}</td>
+    <td class="mono">${plain}</td>
+    <td class="mono">${cipherHtml}</td>
+    <td class="${isOk ? 'text-success' : 'text-error'}"><strong>${verif}</strong></td>
+  `;
+  tbody.appendChild(tr);
+  
+  const clickable = tr.querySelector('.clickable-cipher');
+  if (clickable) {
+    clickable.addEventListener('click', (e) => {
+      document.getElementById('modal-ciphertext').innerText = e.target.getAttribute('data-cipher');
+      document.getElementById('modal-plaintext').innerText = e.target.getAttribute('data-plain');
+      document.getElementById('crypto-modal').classList.remove('hidden');
     });
   }
 }
 
-function initTabs() {
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabPanels = document.querySelectorAll('.tab-content');
+function animateArrow(fromId, toId, text) {
+  const arrow = document.getElementById('message-arrow');
+  const fromEl = document.getElementById(fromId);
+  const toEl = document.getElementById(toId);
+  const area = document.getElementById('anim-area-kdc'); // reference container
+  
+  if (!fromEl || !toEl || !area) return;
+  
+  const fromRect = fromEl.getBoundingClientRect();
+  const toRect = toEl.getBoundingClientRect();
+  const areaRect = area.getBoundingClientRect();
+  
+  const startX = fromRect.left + (fromRect.width/2) - areaRect.left;
+  const endX = toRect.left + (toRect.width/2) - areaRect.left;
+  
+  arrow.innerText = text;
+  arrow.classList.remove('hidden');
+  arrow.classList.remove('left', 'right');
+  arrow.style.transition = 'none';
+  arrow.style.left = startX + 'px';
+  
+  if (startX < endX) arrow.classList.add('right');
+  else arrow.classList.add('left');
+  
+  // Force reflow
+  void arrow.offsetWidth;
+  
+  arrow.style.transition = 'left 0.8s ease-in-out';
+  arrow.style.left = endX + 'px';
+  
+  setTimeout(() => { arrow.classList.add('hidden'); }, 1000);
+}
 
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const selectedTab = button.dataset.tab;
+function autoPlay() {
+  const speed = 6 - document.getElementById('speed-slider').value; // 1 to 5 mapping to 5s to 1s
+  if (document.getElementById('btn-next').disabled) return;
+  runNextStep();
+  AppState.autoPlayTimer = setTimeout(autoPlay, speed * 1000);
+}
 
-      tabButtons.forEach(tabButton => {
-        const isSelected = tabButton === button;
-        tabButton.classList.toggle('active', isSelected);
-        tabButton.setAttribute('aria-selected', String(isSelected));
-      });
+// --- Quiz Logic ---
+const quizData = [
+  { q: "What is the primary purpose of a nonce in cryptographic protocols?", opts: ["To establish a session key", "To prevent replay attacks by ensuring freshness", "To encrypt the payload", "To compress the message"], ans: 1, diff: "easy" },
+  { q: "In the Needham-Schroeder protocol, who generates the session key (Kab)?", opts: ["Alice", "Bob", "The KDC (Key Distribution Center)", "It is derived from Kas and Kbs"], ans: 2, diff: "easy" },
+  { q: "Which key is used to encrypt the 'Ticket' sent to Bob?", opts: ["Kas", "Kbs", "Kab", "Alice's public key"], ans: 1, diff: "easy" },
+  { q: "Why does Alice send {Nb - 1} encrypted with Kab in the final step?", opts: ["To prove she has the session key Kab and can decrypt Nb", "To establish a new nonce", "To notify the KDC that the session started", "To close the connection"], ans: 0, diff: "easy" },
+  { q: "What is the Denning-Sacco vulnerability in the original protocol?", opts: ["Kas can be brute-forced", "Bob cannot verify the freshness of the ticket (Message 3)", "Alice does not authenticate the KDC", "Nonces are predictable"], ans: 1, diff: "medium" },
+  { q: "How can the Denning-Sacco vulnerability be fixed?", opts: ["By using RSA instead of AES", "By adding timestamps or lifetimes to the ticket", "By making the nonce longer", "By removing the KDC"], ans: 1, diff: "medium" },
+  { q: "In Message 2, why is Alice's nonce (Na) included inside the ciphertext encrypted with Kas?", opts: ["So Bob can read it later", "To ensure the KDC didn't replay an old session key message to Alice", "Because AES requires a nonce", "To pad the block size"], ans: 1, diff: "medium" },
+  { q: "Who can read the contents of the ticket during transmission?", opts: ["Only Alice", "Only Bob and the KDC", "Alice and Bob", "Anyone listening"], ans: 1, diff: "medium" },
+  { q: "Unlike Needham-Schroeder, Kerberos mitigates replay attacks inherently by:", opts: ["Not using a KDC", "Relying strictly on synchronized clocks and timestamps", "Using asymmetric encryption", "Using biometric authentication"], ans: 1, diff: "hard" },
+  { q: "If an attacker intercepts Message 3 and replays it to Bob while the timestamp fix is active, what happens?", opts: ["Bob accepts it and establishes the session", "Bob rejects it because the ticket has expired", "Alice detects the replay and aborts", "The KDC revokes the key"], ans: 1, diff: "hard" }
+];
 
-      tabPanels.forEach(panel => {
-        const isSelected = panel.dataset.tabPanel === selectedTab;
-        panel.classList.toggle('active', isSelected);
-        panel.toggleAttribute('hidden', !isSelected);
-      });
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  quizData.forEach((item, index) => {
+    const qDiv = document.createElement('div');
+    qDiv.className = 'quiz-question mb-4';
+    let optionsHtml = '';
+    item.opts.forEach((opt, oIdx) => {
+      optionsHtml += `
+        <label style="display:block; margin:5px 0;">
+          <input type="radio" name="q${index}" value="${oIdx}"> ${opt}
+        </label>
+      `;
     });
+    qDiv.innerHTML = `<p><strong>Q${index + 1}. (${item.diff}) ${item.q}</strong></p>${optionsHtml}`;
+    container.appendChild(qDiv);
   });
 }
 
-/* ============================================================
-   INIT ON DOM READY
-   ============================================================ */
+function submitQuiz() {
+  let score = 0;
+  quizData.forEach((item, index) => {
+    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+    const qDiv = document.querySelectorAll('.quiz-question')[index];
+    if (selected && parseInt(selected.value) === item.ans) {
+      score++;
+      qDiv.style.color = 'green';
+    } else {
+      qDiv.style.color = 'red';
+    }
+  });
+  const scoreDiv = document.getElementById('quiz-score');
+  scoreDiv.innerHTML = `<h3>Your Score: ${score} / 10</h3>`;
+  scoreDiv.classList.remove('hidden');
+  document.getElementById('btn-submit-quiz').classList.add('hidden');
+  document.getElementById('btn-retry-quiz').classList.remove('hidden');
+}
 
+function retryQuiz() {
+  document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+  document.querySelectorAll('.quiz-question').forEach(el => el.style.color = '');
+  document.getElementById('quiz-score').classList.add('hidden');
+  document.getElementById('btn-submit-quiz').classList.remove('hidden');
+  document.getElementById('btn-retry-quiz').classList.add('hidden');
+}
+
+// --- Init & Events ---
 document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initAutoKey();
-  initSimulationHandlers();
-  initVerifyAndTamper();
-  initSummaryTable();
-  initQuiz();
+  // Tabs logic
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active'); b.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      
+      const target = e.target;
+      target.classList.add('active'); target.setAttribute('aria-selected', 'true');
+      document.getElementById(target.getAttribute('data-tab')).classList.add('active');
+    });
+  });
+  
+  // Sim controls
+  document.getElementById('btn-next').addEventListener('click', runNextStep);
+  document.getElementById('btn-reset').addEventListener('click', resetSimulation);
+  document.getElementById('scenario-select').addEventListener('change', resetSimulation);
+  document.getElementById('btn-auto').addEventListener('click', autoPlay);
+  
+  document.getElementById('btn-demo').addEventListener('click', () => {
+     document.getElementById('scenario-select').value = 'normal';
+     resetSimulation();
+     setTimeout(() => runNextStep(), 500);
+     setTimeout(() => runNextStep(), 2000);
+     setTimeout(() => runNextStep(), 3500);
+     setTimeout(() => runNextStep(), 5000);
+     setTimeout(() => runNextStep(), 6500);
+  });
+  
+  document.getElementById('btn-print').addEventListener('click', () => {
+     window.print();
+  });
+  
+  // Modal close
+  document.querySelector('.close-modal').addEventListener('click', () => {
+    document.getElementById('crypto-modal').classList.add('hidden');
+  });
+  
+  // Quiz
+  renderQuiz();
+  document.getElementById('btn-submit-quiz').addEventListener('click', submitQuiz);
+  document.getElementById('btn-retry-quiz').addEventListener('click', retryQuiz);
+  
+  // Feedback
+  document.getElementById('feedback-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('fb-message').innerText = 'Thank you for your feedback!';
+    const data = {
+      name: document.getElementById('fb-name').value,
+      rating: document.querySelector('input[name="rating"]:checked')?.value || 'Not rated',
+      clarity: document.getElementById('fb-clarity').value,
+      difficulty: document.getElementById('fb-difficulty').value,
+      comments: document.getElementById('fb-comments').value
+    };
+    localStorage.setItem('ns_feedback', JSON.stringify(data));
+    document.getElementById('btn-copy-feedback').classList.remove('hidden');
+  });
+  
+  document.getElementById('btn-copy-feedback').addEventListener('click', () => {
+    const data = localStorage.getItem('ns_feedback');
+    navigator.clipboard.writeText(data).then(() => alert('Copied to clipboard!'));
+  });
+  
+  initSimulation();
 });
