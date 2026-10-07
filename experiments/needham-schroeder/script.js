@@ -79,6 +79,18 @@ const NSLab = (function() {
       ],
       correct: 1,
       explanation: 'Correct! The ticket allows Alice to pass Bob\'s portion of the session credentials without Alice being able to read or tamper with Bob\'s Secret Master Password.'
+    },
+    {
+      id: 'pre_5',
+      question: '5. Which of the following is NOT typically assumed in the threat model of a symmetric key exchange protocol?',
+      options: [
+        'a: An attacker can intercept and read messages on the network',
+        'b: An attacker can inject or alter messages in transit',
+        'c: An attacker has compromised the Key Distribution Center (KDC)',
+        'd: An attacker can record past messages and attempt to replay them'
+      ],
+      correct: 2,
+      explanation: 'Correct! The KDC is a Trusted Third Party. If the KDC is compromised, the entire security of the system is broken. We assume the KDC remains secure.'
     }
   ];
 
@@ -131,6 +143,18 @@ const NSLab = (function() {
       ],
       correct: 1,
       explanation: 'Correct! The Denning-Sacco vulnerability showed that if an old session key is compromised, an attacker can replay an old ticket to Bob, who cannot verify ticket freshness without a timestamp.'
+    },
+    {
+      id: 'post_5',
+      question: '5. What modification did Denning and Sacco propose to fix the replay vulnerability in the original Needham-Schroeder protocol?',
+      options: [
+        'a: Removing the Key Distribution Center and using peer-to-peer key exchange',
+        'b: Adding timestamps to the tickets to enforce a strict validity window',
+        'c: Switching from symmetric encryption to public key cryptography',
+        'd: Encrypting the plaintext identities in Step 1'
+      ],
+      correct: 1,
+      explanation: 'Correct! Denning and Sacco proposed using timestamps in the tickets so Bob can verify that a ticket is recent, preventing the replay of old, compromised session keys.'
     }
   ];
 
@@ -757,22 +781,22 @@ const NSLab = (function() {
     container.innerHTML = '';
     questions.forEach((q) => {
       const card = document.createElement('div');
-      card.className = 'quiz-question-card';
+      card.className = 'quiz-card question-item';
 
       let optsHtml = '';
       q.options.forEach((opt, optIndex) => {
         optsHtml += `
-          <label class="quiz-option-item" id="lbl-${q.id}-${optIndex}">
-            <input type="radio" name="${q.id}" value="${optIndex}">
+          <label class="option-label" id="lbl-${q.id}-${optIndex}">
+            <input type="radio" name="${q.id}" value="${optIndex}" style="width:auto; margin-right: 0.5rem;">
             <span>${opt}</span>
           </label>
         `;
       });
 
       card.innerHTML = `
-        <div class="quiz-question-text">${q.question}</div>
-        <div class="quiz-option-list">${optsHtml}</div>
-        <div class="quiz-explanation" id="explain-${q.id}"></div>
+        <div class="question-title">${q.question}</div>
+        <div class="options-list">${optsHtml}</div>
+        <div class="explanation-box" id="explain-${q.id}"></div>
       `;
       container.appendChild(card);
     });
@@ -795,25 +819,23 @@ const NSLab = (function() {
           if (val === q.correct) {
             score++;
             selLbl.classList.add('correct');
-            explainBox.className = 'quiz-explanation visible correct';
+            explainBox.className = 'explanation-box visible correct';
             explainBox.innerHTML = `<strong>Correct.</strong> ${q.explanation}`;
           } else {
             selLbl.classList.add('incorrect');
             const correctLbl = document.getElementById(`lbl-${q.id}-${q.correct}`);
             correctLbl.classList.add('correct');
-            explainBox.className = 'quiz-explanation visible incorrect';
+            explainBox.className = 'explanation-box visible incorrect';
             explainBox.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
           }
         } else {
-          explainBox.className = 'quiz-explanation visible incorrect';
+          explainBox.className = 'explanation-box visible incorrect';
           explainBox.innerHTML = `<strong>Not answered.</strong> ${q.explanation}`;
         }
       });
 
-      scoreBanner.style.display = 'block';
-      scoreBanner.className = 'inspector-explanation';
-      scoreBanner.style.backgroundColor = 'var(--vlab-info-bg)';
-      scoreBanner.style.borderColor = 'var(--vlab-primary-brown)';
+      scoreBanner.style.display = 'flex';
+      scoreBanner.className = 'quiz-score-banner';
       scoreBanner.innerHTML = `<strong>Assessment Result: ${score} / ${questions.length} (${(score/questions.length * 100).toFixed(0)}%)</strong>`;
     });
 
@@ -826,7 +848,7 @@ const NSLab = (function() {
           lbl.classList.remove('correct', 'incorrect');
         });
         const explainBox = document.getElementById(`explain-${q.id}`);
-        explainBox.className = 'quiz-explanation';
+        explainBox.className = 'explanation-box';
         explainBox.innerHTML = '';
       });
       scoreBanner.style.display = 'none';
