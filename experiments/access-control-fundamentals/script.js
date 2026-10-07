@@ -185,37 +185,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Quiz Handling
-  const btnSubmitQuiz = document.getElementById('btnSubmitQuiz');
-  const quizOutput = document.getElementById('quizOutput');
-  const quizForm = document.getElementById('quizForm');
-
-  if (btnSubmitQuiz && quizOutput && quizForm) {
-    btnSubmitQuiz.addEventListener('click', () => {
-      let score = 0;
-      let feedback = [];
-
-      const getVal = (name) => {
-        const el = quizForm.querySelector(`input[name="${name}"]:checked`);
-        return el ? el.value : '';
-      };
-      const q1 = getVal('q1'), q2 = getVal('q2'), q3 = getVal('q3');
-
-      if (q1 === 'dac') score++; else if (q1) feedback.push("Q1: DAC allows the owner to decide access.");
-      if (q2 === 'readup') score++; else if (q2) feedback.push("Q2: 'No Read Up' prevents viewing higher clearance data.");
-      if (q3 === 'role') score++; else if (q3) feedback.push("Q3: RBAC assigns permissions to roles, then roles to users.");
-
-      if (q1 && q2 && q3) {
-        let html = `You scored ${score} out of 3. ${score === 3 ? 'Excellent!' : 'Review the theory section.'}`;
-        if (feedback.length > 0) {
-          html += `<ul style="color:#f44336; font-weight:normal; margin-top:10px; font-size:0.9rem;"><li>${feedback.join('</li><li>')}</li></ul>`;
-        }
-        quizOutput.innerHTML = html;
-        quizOutput.style.color = score === 3 ? '#4caf50' : '#f44336';
-      } else {
-        quizOutput.innerHTML = 'Please answer all questions before submitting.';
-        quizOutput.style.color = '#f44336';
-      }
+  // Interactive Quiz Handling
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    const questions = quizContainer.querySelectorAll('.quiz-question');
+    questions.forEach(q => {
+      const options = q.querySelectorAll('.quiz-option-btn');
+      const reason = q.querySelector('.quiz-reason');
+      const correctIdx = parseInt(q.dataset.correct, 10);
+      
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          // disable all options for this question after an answer is selected
+          options.forEach(btn => {
+            btn.disabled = true;
+          });
+          
+          const chosenIdx = parseInt(opt.dataset.index, 10);
+          if (chosenIdx === correctIdx) {
+            opt.classList.add('correct');
+          } else {
+            opt.classList.add('wrong');
+            options[correctIdx].classList.add('correct');
+          }
+          if (reason) reason.hidden = false;
+        });
+      });
     });
   }
 });
