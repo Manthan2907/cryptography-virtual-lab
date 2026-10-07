@@ -7,6 +7,638 @@
     <title>Experiment | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <style>
+
+      /* Kerberos Experiment Specific Enhancements - Designed for Portal Palette */
+    .exp-title-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-sm);
+      font-family: Arial, sans-serif;
+      font-size: var(--font-size-sm);
+      font-weight: bold;
+      margin-bottom: var(--space-1);
+      color: #fff;
+    }
+
+    /* Step Indicator / Stepper */
+    .stepper-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-2);
+      margin-bottom: var(--space-4);
+      overflow-x: auto;
+      gap: 6px;
+    }
+
+    .stepper-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .stepper-item .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--color-surface-muted);
+      color: var(--color-text);
+      font-size: 11px;
+    }
+
+    .stepper-item.active {
+      background: var(--color-secondary);
+      color: #ffffff;
+      border-color: var(--color-secondary-dark);
+    }
+
+    .stepper-item.active .step-num {
+      background: #ffffff;
+      color: var(--color-secondary-dark);
+      font-weight: bold;
+    }
+
+    .stepper-item.completed {
+      background: rgba(76, 140, 232, 0.15);
+      border-color: var(--color-secondary);
+      color: var(--color-text);
+    }
+
+    .stepper-item.completed .step-num {
+      background: var(--color-secondary);
+      color: #ffffff;
+    }
+
+    /* Actors Grid - Emojis removed per request */
+    .actors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .actor-card {
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      text-align: center;
+      position: relative;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .actor-card.active-sender {
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 12px rgba(76, 140, 232, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .actor-card.active-receiver {
+      border-color: #4caf50;
+      box-shadow: 0 0 12px rgba(76, 175, 80, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .actor-name {
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      font-size: var(--font-size-md);
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+
+    .actor-role {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: var(--color-primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Message Flow Visualizer Canvas */
+    .flow-stage {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      position: relative;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .flow-diagram {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      padding: 0 20px;
+    }
+
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      background: var(--color-surface);
+      padding: 6px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      min-width: 90px;
+    }
+
+    .flow-node-title {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .flow-node-role {
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .flow-path-line {
+      position: absolute;
+      top: 50%;
+      left: 60px;
+      right: 60px;
+      height: 3px;
+      background: var(--color-border);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .packet-badge {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--color-secondary);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 3;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      display: none;
+      white-space: nowrap;
+    }
+
+    .flow-status-text {
+      margin-top: var(--space-2);
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-align: center;
+    }
+
+    /* Protocol Step Cards */
+    .step-card {
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+      display: none;
+    }
+
+    .step-card.active {
+      display: block;
+      animation: content-reveal 250ms ease both;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .step-title {
+      font-size: var(--font-size-xl);
+      color: var(--color-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-badge {
+      background: var(--color-primary-dark);
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .step-explanation {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--color-text);
+      background: var(--color-surface);
+      border-left: 4px solid var(--color-secondary);
+      padding: 10px 14px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: var(--space-3);
+    }
+
+    /* Input Grid inside Simulation */
+    .sim-input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+    }
+
+    .form-group input {
+      padding: 8px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    /* Ticket Visualization Box */
+    .ticket-box {
+      background: var(--color-background);
+      border: 1px dashed var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-family: monospace;
+    }
+
+    .ticket-title {
+      color: var(--color-secondary);
+      font-weight: bold;
+      font-size: 13px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--color-text-muted);
+    }
+
+    .ticket-val {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    /* Log and Feedback Alerts */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      background: rgba(76, 175, 80, 0.15);
+      color: #4caf50;
+      border: 1px solid rgba(76, 175, 80, 0.4);
+      margin-top: 10px;
+    }
+
+    .error-pill {
+      background: rgba(244, 67, 54, 0.15);
+      color: #f44336;
+      border: 1px solid rgba(244, 67, 54, 0.4);
+    }
+
+    .warning-pill {
+      background: rgba(255, 152, 0, 0.15);
+      color: #ff9800;
+      border: 1px solid rgba(255, 152, 0, 0.4);
+    }
+
+    /* Controls Action Area */
+    .card-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: var(--space-3);
+    }
+
+    .btn-primary {
+      background: var(--color-secondary);
+      color: var(--color-on-secondary);
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--color-secondary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    /* Final Success Summary Banner */
+    .success-card {
+      background: rgba(76, 175, 80, 0.08);
+      border: 2px solid #4caf50;
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      text-align: center;
+    }
+
+    .success-title {
+      color: #4caf50;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .summary-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin: var(--space-3) 0;
+      text-align: left;
+    }
+
+    .checklist-item {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      color: #4caf50;
+    }
+
+    /* Theory Styling */
+    .theory-section {
+      margin-bottom: var(--space-4);
+    }
+
+    .theory-section h3 {
+      color: var(--color-primary);
+      font-size: var(--font-size-xl);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-2);
+      margin: 14px 0;
+    }
+
+    .theory-card {
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .theory-card h4 {
+      color: var(--color-secondary);
+      margin: 0 0 6px 0;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    .theory-card p {
+      font-size: 14px;
+      margin: 0;
+      color: var(--color-text-muted);
+    }
+
+    /* Quiz Styling - Updated for Deferred Scoring & Unattempted Handling */
+    .quiz-score-banner {
+      background: var(--color-surface);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+      text-align: center;
+      display: none;
+    }
+
+    .quiz-score-title {
+      font-size: 22px;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      color: var(--color-text);
+      margin-bottom: 6px;
+    }
+
+    .quiz-score-subtitle {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-bottom: 12px;
+    }
+
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .quiz-card {
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      transition: border-color 0.2s ease;
+    }
+
+    .quiz-card.unattempted-card {
+      border: 2px solid #ff9800;
+      background: rgba(255, 152, 0, 0.04);
+    }
+
+    .quiz-question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .quiz-question {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    .unattempted-badge {
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      color: #ff9800;
+      background: rgba(255, 152, 0, 0.15);
+      border: 1px solid rgba(255, 152, 0, 0.4);
+      padding: 2px 8px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--color-secondary);
+    }
+
+    .quiz-option.selected-option {
+      border-color: var(--color-secondary);
+      background: rgba(76, 140, 232, 0.08);
+    }
+
+    .quiz-option input[type="radio"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .quiz-option.correct {
+      background: rgba(76, 175, 80, 0.15) !important;
+      border-color: #4caf50 !important;
+      color: #ffffff !important;
+      font-weight: bold;
+    }
+
+    .quiz-option.incorrect {
+      background: rgba(244, 67, 54, 0.15) !important;
+      border-color: #f44336 !important;
+      color: #ffffff !important;
+    }
+
+    .quiz-feedback {
+      margin-top: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 13.5px;
+      font-weight: bold;
+      display: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: var(--space-4);
+      justify-content: center;
+    }
+
+    .procedure-list {
+      padding-left: 20px;
+    }
+
+    .procedure-list li {
+      margin-bottom: 12px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .procedure-list strong {
+      color: var(--color-primary);
+    }
+    </style>
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -20,56 +652,736 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
-      </header>
+        <h1 id="exp-title">Kerberos Authentication Protocol</h1>
+      <p id="exp-description">Interactive step-by-step visualization of ticket-based authentication across Client Alice,
+        Authentication Server (AS), Ticket Granting Server (TGS), and Server Identity Bob.</p>
+    </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
         <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
         <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
-          </div>
-        </section>
 
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+        <!-- theory part -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+        <div class="content-placeholder">
+          <div class="theory-section">
+            <h3>What is Kerberos?</h3>
+            <p>
+              <strong>Kerberos</strong> is a computer-network authentication protocol designed to allow individuals
+              communicating over a non-secure network to prove their identity to one another in a secure manner. Named
+              after Cerberus, the mythical three-headed watchdog of Hades, Kerberos relies on a trusted third party
+              known as the <strong>Key Distribution Center (KDC)</strong> to facilitate mutual authentication between
+              clients and network servers.
+            </p>
           </div>
-        </section>
 
-        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+          <div class="theory-section">
+            <h3>Why is Kerberos Used?</h3>
+            <p>
+              In traditional network systems, passing user passwords repeatedly across unencrypted connections exposes
+              credentials to eavesdropping and replay attacks. Kerberos solves this through a <strong>ticket-based
+                architecture</strong>:
+            </p>
+            <ul>
+              <li><strong>Single Sign-On (SSO):</strong> Users authenticate only once with their password to get an
+                initial ticket, after which they can access multiple network services without re-entering credentials.
+              </li>
+              <li><strong>No Password Transmission:</strong> Passwords are never sent over the network in plain text or
+                hash form during routine service requests.</li>
+              <li><strong>Mutual Authentication:</strong> Both the client and the Server Identity verify each other's
+                identity before exchanging sensitive data.</li>
+              <li><strong>Replay Protection:</strong> Timestamps and single-use authenticators ensure that captured
+                tickets cannot be replayed by eavesdroppers at a later time.</li>
+            </ul>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
-          </div>
-        </section>
 
-        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
-          <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+          <div class="theory-section">
+            <h3>Core Protocol Actors</h3>
+            <div class="theory-grid">
+              <div class="theory-card">
+                <h4>1. Client (Alice)</h4>
+                <p>The user or application requesting access to a network resource hosted on a remote server.</p>
+              </div>
+              <div class="theory-card">
+                <h4>2. Authentication Server (AS)</h4>
+                <p>Verifies the client's initial identity request and issues a Ticket Granting Ticket (TGT) encrypted
+                  with the client's secret key.</p>
+              </div>
+              <div class="theory-card">
+                <h4>3. Ticket Granting Server (TGS)</h4>
+                <p>Validates the client's TGT and issues a Service Ticket specific to the requested target server.</p>
+              </div>
+              <div class="theory-card">
+                <h4>4. Server Identity (Bob)</h4>
+                <p>The application or resource server (e.g. File Server) that validates the client's Service Ticket and
+                  grants access.</p>
+              </div>
+            </div>
           </div>
-        </section>
+
+          <div class="theory-section">
+            <h3>Key Cryptographic Tokens</h3>
+            <ul>
+              <li><strong>TGT (Ticket Granting Ticket):</strong> A reusable token issued by the AS that proves the
+                client has authenticated with the KDC. Encrypted with the TGS secret key so only TGS can read it.</li>
+              <li><strong>Service Ticket (ST):</strong> A single-service token issued by the TGS that grants access to a
+                specific Server Identity (Bob). Encrypted with the Server Identity's key.</li>
+              <li><strong>Authenticator:</strong> A short-lived data structure containing the client's identity and
+                current timestamp, encrypted with the session key shared between the client and server. Proves that the
+                request is fresh and originates from the legitimate ticket owner.</li>
+              <li><strong>Session Keys:</strong> Temporary symmetric keys generated by the KDC ($K_{c,tgs}$ for TGS
+                communication, $K_{c,v}$ for Server Identity communication) to encrypt subsequent interactions.</li>
+            </ul>
+          </div>
+
+          <div class="theory-section">
+            <h3>The 6-Step Authentication Flow</h3>
+            <p>
+              The complete Kerberos protocol operates across three distinct request-response exchanges:
+            </p>
+            <ol>
+              <li><strong>AS-REQ:</strong> Alice sends her identity and a nonce to the Authentication Server (AS).</li>
+              <li><strong>AS-REP:</strong> The AS returns a TGT and session key $K_{c,tgs}$.</li>
+              <li><strong>TGS-REQ:</strong> Alice presents the TGT and an Authenticator to the Ticket Granting Server
+                (TGS), asking to access Bob.</li>
+              <li><strong>TGS-REP:</strong> The TGS returns a Service Ticket and session key $K_{c,v}$.</li>
+              <li><strong>AP-REQ:</strong> Alice presents the Service Ticket and a fresh Authenticator to Bob.</li>
+              <li><strong>Verification:</strong> Bob validates the ticket, authenticator, and freshness
+                (nonce/timestamp), completing mutual authentication.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== PROCEDURE TAB ==================== -->
+      <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+        <div class="content-placeholder">
+          <h2>Experiment Procedure</h2>
+          <p style="margin-bottom: 16px;">Follow these steps in the <strong>Simulation</strong> tab to observe and
+            interact with the Kerberos authentication exchange:</p>
+
+          <ol class="procedure-list">
+            <li>
+              <strong>Step 1 — Initialize Kerberos:</strong> Review the default client identity (<code>Alice</code>),
+              target server (<code>Bob</code>), nonce (<code>N12345</code>), and session key placeholder
+              (<code>KEY-12345</code>). Click <strong>Initialize Simulation</strong> to generate fresh session
+              parameters.
+            </li>
+            <li>
+              <strong>Step 2 — Send AS-REQ:</strong> Click <strong>Send AS-REQ</strong> to initiate the request from
+              Alice to the Authentication Server (AS). Observe the packet movement and generated timestamp.
+            </li>
+            <li>
+              <strong>Step 3 — Receive TGT (AS-REP):</strong> Click <strong>Generate TGT</strong> to receive the Ticket
+              Granting Ticket (TGT) and session key ($K_{c,tgs}$) from the AS. Notice the dynamic values generated.
+            </li>
+            <li>
+              <strong>Step 4 — Send TGS-REQ:</strong> Click <strong>Send TGS-REQ</strong> to present the TGT and an
+              automatically generated Authenticator to the Ticket Granting Server (TGS).
+            </li>
+            <li>
+              <strong>Step 5 — Receive Service Ticket (TGS-REP):</strong> Click <strong>Generate Service Ticket</strong>
+              to obtain the Service Ticket ($ST$) and client-server session key ($K_{c,v}$) from the TGS.
+            </li>
+            <li>
+              <strong>Step 6 — Service Authentication (AP-REQ):</strong> Click <strong>Send Service Request</strong> to
+              present the Service Ticket to Bob. Watch Bob verify ticket validity, authenticator match, and request
+              freshness (nonce verification).
+            </li>
+            <li>
+              <strong>Step 7 — Review Authentication Success & Reset:</strong> View the final authentication success
+              state and summary checklist. Click <strong>Reset Simulation</strong> to start a new run with newly
+              randomized tickets and session keys.
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ==================== SIMULATION TAB ==================== -->
+      <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+        <!-- Stepper Navigation -->
+        <div class="stepper-nav" id="stepper-nav">
+          <div class="stepper-item active" data-step-nav="1">
+            <span class="step-num">1</span> Setup
+          </div>
+          <div class="stepper-item" data-step-nav="2">
+            <span class="step-num">2</span> AS-REQ
+          </div>
+          <div class="stepper-item" data-step-nav="3">
+            <span class="step-num">3</span> AS-REP
+          </div>
+          <div class="stepper-item" data-step-nav="4">
+            <span class="step-num">4</span> TGS-REQ
+          </div>
+          <div class="stepper-item" data-step-nav="5">
+            <span class="step-num">5</span> TGS-REP
+          </div>
+          <div class="stepper-item" data-step-nav="6">
+            <span class="step-num">6</span> AP-REQ
+          </div>
+          <div class="stepper-item" data-step-nav="7">
+            <span class="step-num">7</span> Verified
+          </div>
+        </div>
+
+        <!-- Actors Grid (Emojis removed as requested) -->
+        <div class="actors-grid">
+          <div class="actor-card" id="actor-client">
+            <div class="actor-name" id="actor-client-name">Alice</div>
+            <div class="actor-role">Client</div>
+          </div>
+          <div class="actor-card" id="actor-as">
+            <div class="actor-name">AS</div>
+            <div class="actor-role">Authentication Server</div>
+          </div>
+          <div class="actor-card" id="actor-tgs">
+            <div class="actor-name">TGS</div>
+            <div class="actor-role">Ticket Granting Server</div>
+          </div>
+          <div class="actor-card" id="actor-service">
+            <div class="actor-name" id="actor-service-name">Bob</div>
+            <div class="actor-role">Server Identity</div>
+          </div>
+        </div>
+
+        <!-- Animation Stage Canvas -->
+        <div class="flow-stage">
+          <div class="flow-diagram">
+            <div class="flow-node">
+              <span class="flow-node-title" id="stage-client-label">Alice</span>
+              <span class="flow-node-role">Client</span>
+            </div>
+            <div class="flow-node">
+              <span class="flow-node-title">AS</span>
+              <span class="flow-node-role">Auth Server</span>
+            </div>
+            <div class="flow-node">
+              <span class="flow-node-title">TGS</span>
+              <span class="flow-node-role">Ticket Server</span>
+            </div>
+            <div class="flow-node">
+              <span class="flow-node-title" id="stage-service-label">Bob</span>
+              <span class="flow-node-role">Server Identity</span>
+            </div>
+            <div class="flow-path-line"></div>
+            <div class="packet-badge" id="packet-badge">AS-REQ</div>
+          </div>
+          <div class="flow-status-text" id="flow-status-text">Ready to start Kerberos protocol simulation.</div>
+        </div>
+
+        <!-- STEP 1 CARD -->
+        <div class="step-card active" id="step-card-1">
+          <div class="step-header">
+            <h3 class="step-title">
+              <span class="step-badge">Step 1</span> Step 1: Initialize Kerberos
+            </h3>
+          </div>
+          <div class="step-explanation">
+            Alice begins the authentication process and requests access to Bob's server. Set or inspect the initial
+            protocol parameters below.
+          </div>
+
+          <div class="sim-input-grid">
+            <div class="form-group">
+              <label for="input-client">Client Identity</label>
+              <input type="text" id="input-client" value="Alice">
+            </div>
+            <div class="form-group">
+              <label for="input-service">Server Identity</label>
+              <input type="text" id="input-service" value="Bob">
+            </div>
+            <div class="form-group">
+              <label for="input-nonce">Nonce</label>
+              <input type="text" id="input-nonce" value="N12345">
+            </div>
+            <div class="form-group">
+              <label for="input-session">Session Key Placeholder</label>
+              <input type="text" id="input-session" value="KEY-12345">
+            </div>
+          </div>
+
+          <div id="step1-error" style="display: none;" class="status-pill error-pill"></div>
+
+          <div class="card-actions">
+            <button class="btn-primary" id="btn-step1">Initialize Simulation</button>
+          </div>
+          <div id="step1-status" style="display:none;" class="status-pill">✓ Simulation initialized</div>
+        </div>
+
+        <!-- STEP 2 CARD -->
+        <div class="step-card" id="step-card-2">
+          <div class="step-header">
+            <h3 class="step-title">
+              <span class="step-badge">Step 2</span> Step 2: Authentication Request (AS-REQ)
+            </h3>
+          </div>
+          <div class="step-explanation">
+            Alice asks the Authentication Server (AS) to begin authentication by sending her identity and a fresh nonce.
+          </div>
+
+          <div class="ticket-box">
+            <div class="ticket-title">
+              <span>AS-REQ Payload</span>
+              <span>Alice → AS</span>
+            </div>
+            <div class="ticket-row"><span>Client:</span><span class="ticket-val" id="asreq-client">Alice</span></div>
+            <div class="ticket-row"><span>Requested Realm/TGS:</span><span class="ticket-val">krbtgt/DOMAIN</span></div>
+            <div class="ticket-row"><span>Nonce:</span><span class="ticket-val" id="asreq-nonce">N12345</span></div>
+            <div class="ticket-row"><span>Timestamp:</span><span class="ticket-val" id="asreq-time">Pending
+                send...</span></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-primary" id="btn-step2" disabled>Send AS-REQ</button>
+          </div>
+          <div id="step2-status" style="display:none;" class="status-pill">✓ AS-REQ received by Authentication Server
+          </div>
+        </div>
+
+        <!-- STEP 3 CARD -->
+        <div class="step-card" id="step-card-3">
+          <div class="step-header">
+            <h3 class="step-title">
+              <span class="step-badge">Step 3</span> Step 3: Authentication Server Response (AS-REP)
+            </h3>
+          </div>
+          <div class="step-explanation">
+            The Authentication Server responds with a Ticket Granting Ticket (TGT) that Alice can later use to request
+            server access without re-entering her password.
+          </div>
+
+          <div class="ticket-box" id="tgt-display-box" style="display:none;">
+            <div class="ticket-title">
+              <span>Ticket Granting Ticket (TGT)</span>
+              <span>Issued by AS</span>
+            </div>
+            <div class="ticket-row"><span>TGT ID:</span><span class="ticket-val" id="val-tgt-id">TGT-ALICE-A81F</span>
+            </div>
+            <div class="ticket-row"><span>Client:</span><span class="ticket-val" id="val-tgt-client">Alice</span></div>
+            <div class="ticket-row"><span>Client-TGS Session Key (Kc,tgs):</span><span class="ticket-val"
+                id="val-tgt-key">Kc,tgs-52D3</span></div>
+            <div class="ticket-row"><span>Encryption:</span><span class="ticket-val">Encrypted with AS-TGS Secret
+                Key</span></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-primary" id="btn-step3" disabled>Generate TGT</button>
+          </div>
+          <div id="step3-status" style="display:none;" class="status-pill">✓ TGT issued</div>
+        </div>
+
+        <!-- STEP 4 CARD -->
+        <div class="step-card" id="step-card-4">
+          <div class="step-header">
+            <h3 class="step-title">
+              <span class="step-badge">Step 4</span> Step 4: Ticket Granting Request (TGS-REQ)
+            </h3>
+          </div>
+          <div class="step-explanation">
+            Alice presents the TGT to the Ticket Granting Server (TGS) and asks for permission to access Bob's server.
+          </div>
+
+          <div class="ticket-box">
+            <div class="ticket-title">
+              <span>TGS-REQ Payload</span>
+              <span>Alice → TGS</span>
+            </div>
+            <div class="ticket-row"><span>Client:</span><span class="ticket-val" id="tgsreq-client">Alice</span></div>
+            <div class="ticket-row"><span>Target Server Identity:</span><span class="ticket-val"
+                id="tgsreq-service">Bob</span></div>
+            <div class="ticket-row"><span>Presented TGT:</span><span class="ticket-val"
+                id="tgsreq-tgt">TGT-ALICE-A81F</span></div>
+            <div class="ticket-row"><span>Authenticator:</span><span class="ticket-val"
+                id="tgsreq-auth">AUTH-ALICE-91BC</span></div>
+            <div class="ticket-row"><span>Nonce:</span><span class="ticket-val" id="tgsreq-nonce">N12345</span></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-primary" id="btn-step4" disabled>Send TGS-REQ</button>
+          </div>
+          <div id="step4-status" style="display:none;" class="status-pill">✓ TGT accepted & Request validated</div>
+        </div>
+
+        <!-- STEP 5 CARD -->
+        <div class="step-card" id="step-card-5">
+          <div class="step-header">
+            <h3 class="step-title">
+              <span class="step-badge">Step 5</span> Step 5: Ticket Granting Server Response (TGS-REP)
+            </h3>
+          </div>
+          <div class="step-explanation">
+            The TGS returns a Service Ticket that Alice can present directly to Bob's server.
+          </div>
+
+          <div class="ticket-box" id="st-display-box" style="display:none;">
+            <div class="ticket-title">
+              <span>Service Ticket (ST)</span>
+              <span>Issued by TGS for Bob</span>
+            </div>
+            <div class="ticket-row"><span>Service Ticket ID:</span><span class="ticket-val"
+                id="val-st-id">ST-ALICE-BOB-72E1</span></div>
+            <div class="ticket-row"><span>Target Server Identity:</span><span class="ticket-val"
+                id="val-st-service">Bob</span></div>
+            <div class="ticket-row"><span>Client-Server Session Key (Kc,v):</span><span class="ticket-val"
+                id="val-st-key">Kc,v-44FA</span></div>
+            <div class="ticket-row"><span>Encryption:</span><span class="ticket-val">Encrypted with Bob's Secret
+                Key</span></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-primary" id="btn-step5" disabled>Generate Service Ticket</button>
+          </div>
+          <div id="step5-status" style="display:none;" class="status-pill">✓ Service Ticket issued</div>
+        </div>
+
+        <!-- STEP 6 CARD -->
+        <div class="step-card" id="step-card-6">
+          <div class="step-header">
+            <h3 class="step-title">
+              <span class="step-badge">Step 6</span> Step 6: Server Authentication (AP-REQ)
+            </h3>
+          </div>
+          <div class="step-explanation">
+            Alice presents the Service Ticket and an Authenticator to Bob to gain authorized access.
+          </div>
+
+          <div class="ticket-box">
+            <div class="ticket-title">
+              <span>AP-REQ Payload</span>
+              <span>Alice → Bob</span>
+            </div>
+            <div class="ticket-row"><span>Target Server Identity:</span><span class="ticket-val"
+                id="apreq-service">Bob</span></div>
+            <div class="ticket-row"><span>Service Ticket:</span><span class="ticket-val"
+                id="apreq-st">ST-ALICE-BOB-72E1</span></div>
+            <div class="ticket-row"><span>Authenticator:</span><span class="ticket-val"
+                id="apreq-auth">AUTH-ALICE-91BC</span></div>
+          </div>
+
+          <div id="bob-check-sequence" style="display:none; margin: 12px 0;">
+            <div class="ticket-row"><span>1. Request Received by Bob:</span><span class="ticket-val"
+                style="color:#4caf50;">✓ Checked</span></div>
+            <div class="ticket-row"><span>2. Checking Service Ticket:</span><span class="ticket-val"
+                style="color:#4caf50;">✓ Decrypted & Valid</span></div>
+            <div class="ticket-row"><span>3. Checking Authenticator:</span><span class="ticket-val"
+                style="color:#4caf50;">✓ Match</span></div>
+            <div class="ticket-row"><span>4. Checking Freshness (Nonce):</span><span class="ticket-val"
+                style="color:#4caf50;">✓ Fresh (<span id="verify-nonce">N12345</span>)</span></div>
+          </div>
+
+          <div class="step-explanation" style="margin-top: 12px; font-size: 13.5px; border-left-color: #4caf50;">
+            <strong>Freshness Verification:</strong> The nonce helps associate this exchange with the original request
+            and demonstrates freshness. A different or stale request should not be accepted as the current
+            authentication exchange.
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-primary" id="btn-step6" disabled>Send Service Request</button>
+          </div>
+          <div id="step6-status" style="display:none;" class="status-pill">✓ Server authentication verified</div>
+        </div>
+
+        <!-- STEP 7 CARD (SUCCESS) -->
+        <div class="step-card" id="step-card-7">
+          <div class="success-card">
+            <div class="success-title">✓ Authentication Successful</div>
+            <p style="color: var(--color-text); font-size: 16px; margin: 0 0 16px;">
+              <strong id="final-client-name">Alice</strong> has been successfully authenticated to <strong
+                id="final-service-name">Bob</strong>'s server!
+            </p>
+
+            <div class="summary-checklist">
+              <div class="checklist-item">AS-REQ ✓</div>
+              <div class="checklist-item">AS-REP ✓</div>
+              <div class="checklist-item">TGS-REQ ✓</div>
+              <div class="checklist-item">TGS-REP ✓</div>
+              <div class="checklist-item">AP-REQ ✓</div>
+              <div class="checklist-item">Freshness ✓</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <button class="btn-primary" id="btn-reset">Reset Simulation</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== QUIZ TAB (10 Questions & Score Display) ==================== -->
+      <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+        <div class="quiz-panel">
+          <h2>Knowledge Check (10 Questions)</h2>
+          <p style="margin-bottom: 20px;">Test your understanding of Kerberos authentication principles. Answers and
+            detailed scores will be revealed after clicking <strong>Submit Quiz</strong>.</p>
+
+          <!-- Quiz Score Banner (Hidden until submitted) -->
+          <div class="quiz-score-banner" id="quiz-score-banner">
+            <div class="quiz-score-title" id="quiz-score-title">Your Score: 0 / 10</div>
+            <div class="quiz-score-subtitle" id="quiz-score-subtitle">Attempted: 0 | Correct: 0 | Incorrect: 0 |
+              Unattempted: 10</div>
+            <div id="quiz-score-status" class="status-pill"></div>
+          </div>
+
+          <div class="quiz-container">
+            <!-- Q1 -->
+            <div class="quiz-card" data-quiz="1" id="quiz-card-1">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q1. What is the primary role of the Authentication Server (AS) in
+                  Kerberos?</span>
+                <span class="unattempted-badge" id="unattempted-badge-1">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q1" value="A"> A) To directly host files and database services for clients.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q1" value="B"> B) To verify user identity and issue a Ticket Granting Ticket
+                  (TGT).
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q1" value="C"> C) To encrypt all user network traffic.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q1" value="D"> D) To dynamically assign IP addresses to client machines.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q1-feedback"></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card" data-quiz="2" id="quiz-card-2">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q2. What is the main benefit of using a Ticket Granting Ticket (TGT)?</span>
+                <span class="unattempted-badge" id="unattempted-badge-2">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q2" value="A"> A) It increases maximum network bandwidth.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q2" value="B"> B) It prevents the client from having to repeatedly type and
+                  send passwords over the network for each server.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q2" value="C"> C) It permanently stores passwords on remote servers.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q2" value="D"> D) It bypasses firewall security restrictions.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q2-feedback"></div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-card" data-quiz="3" id="quiz-card-3">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q3. Which component issues the specific Service Ticket presented to the
+                  Server Identity?</span>
+                <span class="unattempted-badge" id="unattempted-badge-3">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q3" value="A"> A) Authentication Server (AS)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q3" value="B"> B) Client Application
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q3" value="C"> C) Ticket Granting Server (TGS)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q3" value="D"> D) Target Server Identity
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q3-feedback"></div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-card" data-quiz="4" id="quiz-card-4">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q4. What purpose does the Authenticator serve alongside a ticket?</span>
+                <span class="unattempted-badge" id="unattempted-badge-4">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q4" value="A"> A) It sends the user password in plain text.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q4" value="B"> B) It proves that the request is fresh and sent by the
+                  legitimate ticket owner at the current time.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q4" value="C"> C) It compresses ticket data.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q4" value="D"> D) It formats tickets into JSON objects.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q4-feedback"></div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-card" data-quiz="5" id="quiz-card-5">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q5. How does the nonce help protect the authentication exchange?</span>
+                <span class="unattempted-badge" id="unattempted-badge-5">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q5" value="A"> A) It changes the user's password automatically.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q5" value="B"> B) It associates the exchange with the original request to
+                  demonstrate freshness and prevent replay attacks.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q5" value="C"> C) It locks out invalid accounts after 3 attempts.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q5" value="D"> D) It encrypts hard drives on the client machine.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q5-feedback"></div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="quiz-card" data-quiz="6" id="quiz-card-6">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q6. In Kerberos, who performs the final verification of the Service Ticket
+                  and Authenticator?</span>
+                <span class="unattempted-badge" id="unattempted-badge-6">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q6" value="A"> A) Authentication Server (AS)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q6" value="B"> B) Target Server Identity (Bob)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q6" value="C"> C) Ticket Granting Server (TGS)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q6" value="D"> D) Client Browser
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q6-feedback"></div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="quiz-card" data-quiz="7" id="quiz-card-7">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q7. What two server components together form the Key Distribution Center
+                  (KDC)?</span>
+                <span class="unattempted-badge" id="unattempted-badge-7">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q7" value="A"> A) Client + Authentication Server (AS)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q7" value="B"> B) Authentication Server (AS) + Ticket Granting Server (TGS)
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q7" value="C"> C) TGS + Target Server Identity
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q7" value="D"> D) Client + Target Server Identity
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q7-feedback"></div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="quiz-card" data-quiz="8" id="quiz-card-8">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q8. Why are secret keys shared between entities used in Kerberos?</span>
+                <span class="unattempted-badge" id="unattempted-badge-8">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q8" value="A"> A) To compress network traffic.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q8" value="B"> B) To encrypt tickets and tokens so only authorized
+                  components can decrypt them.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q8" value="C"> C) To speed up DNS domain lookups.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q8" value="D"> D) To assign MAC addresses to network interfaces.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q8-feedback"></div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="quiz-card" data-quiz="9" id="quiz-card-9">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q9. What happens if an attacker intercepts and tries to replay an AP-REQ
+                  message after a long time delay?</span>
+                <span class="unattempted-badge" id="unattempted-badge-9">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q9" value="A"> A) The attack succeeds because tickets never expire.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q9" value="B"> B) The server rejects it because the timestamp/nonce in the
+                  Authenticator will be stale.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q9" value="C"> C) The server automatically changes the client's password.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q9" value="D"> D) The TGS re-issues a new TGT to the attacker.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q9-feedback"></div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="quiz-card" data-quiz="10" id="quiz-card-10">
+              <div class="quiz-question-header">
+                <span class="quiz-question">Q10. What is required for mutual authentication between the Client and the
+                  Server Identity?</span>
+                <span class="unattempted-badge" id="unattempted-badge-10">Unattempted</span>
+              </div>
+              <div class="quiz-options">
+                <label class="quiz-option">
+                  <input type="radio" name="q10" value="A"> A) Both parties verify each other's identity using shared
+                  session keys and timestamped tokens.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q10" value="B"> B) Only the server verifies the client; the client never
+                  verifies the server.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q10" value="C"> C) A third-party Certificate Authority must issue live SSL
+                  certificates over HTTPS.
+                </label>
+                <label class="quiz-option">
+                  <input type="radio" name="q10" value="D"> D) The user must re-type their password on every message.
+                </label>
+              </div>
+              <div class="quiz-feedback" id="q10-feedback"></div>
+            </div>
+          </div>
+
+          <!-- Quiz Action Controls -->
+          <div class="quiz-actions">
+            <button class="btn-primary" id="btn-submit-quiz">Submit Quiz</button>
+            <button class="btn-secondary" id="btn-reset-quiz">Retake Quiz</button>
+          </div>
+        </div>
+      </section>
               <!-- References -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="references-container">
