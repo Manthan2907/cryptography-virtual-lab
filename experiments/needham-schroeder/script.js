@@ -1,743 +1,847 @@
 /**
- * MAC Experiment — script.js
- * Virtual Cryptography Laboratory | Fr. CRCE
- *
- * Implements CBC-MAC (AES-128 block chaining simulation),
- * CMAC (NIST SP 800-38B subkeys K1, K2), and Keyed-MAC (SHA-256 secret prefix).
- *
- * Pure client-side cryptography using Web Crypto API.
+ * Needham-Schroeder Symmetric Key Protocol Virtual Lab Engine
+ * IIT Kharagpur Virtual Labs Specification
+ * Fully Scoped Namespace: NSLab
+ * Palette: Warm Brown (#764b38) & Soft Cream (#fdf8f5)
+ * Features: Hamburger Sidebar Toggle, Single-Viewport Dashboard, Zero-Jargon Plain English Explanations
  */
 
-'use strict';
+const NSLab = (function() {
+  'use strict';
 
-/* ============================================================
-   CRYPTOGRAPHY & UTILITY HELPERS
-   ============================================================ */
-
-function strToBytes(str) {
-  return new TextEncoder().encode(str);
-}
-
-function bytesToHex(bytes) {
-  return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-function hexToBytes(hex) {
-  const clean = hex.replace(/[^0-9a-fA-F]/g, '');
-  const bytes = new Uint8Array(Math.floor(clean.length / 2));
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(clean.substr(i * 2, 2), 16);
-  }
-  return bytes;
-}
-
-function concatBytes(a, b) {
-  const result = new Uint8Array(a.length + b.length);
-  result.set(a, 0);
-  result.set(b, a.length);
-  return result;
-}
-
-function xorBlocks(a, b) {
-  const len = Math.min(a.length, b.length);
-  const out = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    out[i] = a[i] ^ b[i];
-  }
-  return out;
-}
-
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/* ============================================================
-   ALGORITHM IMPLEMENTATIONS
-   ============================================================ */
-
-/**
- * Keyed-MAC: SHA-256(Key || Message)
- */
-async function computeKeyedMAC(keyStr, messageStr) {
-  const keyBytes = strToBytes(keyStr);
-  const msgBytes = strToBytes(messageStr);
-  const input = concatBytes(keyBytes, msgBytes);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', input);
-  return bytesToHex(new Uint8Array(hashBuffer));
-}
-
-/**
- * Standard AES-128 Raw Block Encrypt using Web Crypto AES-CBC with IV=0
- */
-async function aesEncryptBlock(key16Bytes, block16Bytes) {
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    key16Bytes,
-    { name: 'AES-CBC' },
-    false,
-    ['encrypt']
-  );
-  // Zero IV
-  const iv = new Uint8Array(16);
-  // Web Crypto AES-CBC applies PKCS7 padding by default, so 16 bytes becomes 32 bytes.
-  // The first 16 bytes of ciphertext corresponds to raw AES_K(block ^ IV).
-  const ciphertextBuffer = await crypto.subtle.encrypt(
-    { name: 'AES-CBC', iv },
-    cryptoKey,
-    block16Bytes
-  );
-  return new Uint8Array(ciphertextBuffer).slice(0, 16);
-}
-
-/**
- * Derive 16-byte key from user input
- */
-async function derive16ByteKey(keyInput) {
-  const cleanHex = keyInput.trim().replace(/[^0-9a-fA-F]/g, '');
-  if (cleanHex.length === 32) {
-    return hexToBytes(cleanHex);
-  }
-  const hash = await crypto.subtle.digest('SHA-256', strToBytes(keyInput));
-  return new Uint8Array(hash).slice(0, 16);
-}
-
-/**
- * Split message into 16-byte blocks
- */
-function partitionBlocks(msgBytes, paddingType = 'PKCS7') {
-  const blockSize = 16;
-  const blocks = [];
-  const total = msgBytes.length;
-  
-  if (total === 0) {
-    if (paddingType === 'PKCS7') {
-      const pad = new Uint8Array(16).fill(16);
-      blocks.push(pad);
-    } else {
-      const pad = new Uint8Array(16);
-      pad[0] = 0x80;
-      blocks.push(pad);
-    }
-    return blocks;
-  }
-
-  for (let i = 0; i < total; i += blockSize) {
-    const chunk = msgBytes.slice(i, i + blockSize);
-    if (chunk.length === blockSize) {
-      blocks.push(chunk);
-    } else {
-      // Need padding
-      const padLen = blockSize - chunk.length;
-      const padded = new Uint8Array(blockSize);
-      padded.set(chunk, 0);
-      if (paddingType === 'PKCS7') {
-        for (let p = chunk.length; p < blockSize; p++) padded[p] = padLen;
-      } else {
-        // Bit padding (1000...): 0x80 then 0x00
-        padded[chunk.length] = 0x80;
-        for (let p = chunk.length + 1; p < blockSize; p++) padded[p] = 0x00;
-      }
-      blocks.push(padded);
-    }
-  }
-
-  // If PKCS7 and length was exact multiple, append full padding block
-  if (paddingType === 'PKCS7' && total % blockSize === 0) {
-    const pad = new Uint8Array(16).fill(16);
-    blocks.push(pad);
-  }
-
-  return blocks;
-}
-
-/**
- * CBC-MAC computation with step execution tracking
- */
-async function computeCBCMAC(key16, msgBytes) {
-  const blocks = partitionBlocks(msgBytes, 'PKCS7');
-  let state = new Uint8Array(16); // IV = 0
-  const steps = [];
-
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
-    const xored = xorBlocks(block, state);
-    const encrypted = await aesEncryptBlock(key16, xored);
-    steps.push({
-      blockIndex: i + 1,
-      inputBlock: bytesToHex(block),
-      previousState: bytesToHex(state),
-      xorResult: bytesToHex(xored),
-      outputState: bytesToHex(encrypted)
-    });
-    state = encrypted;
-  }
-
-  return {
-    tag: bytesToHex(state),
-    blocks,
-    steps
+  // Protocol State Machine Storage
+  const state = {
+    aliceId: 'Alice',
+    bobId: 'Bob',
+    nonceMode: 'auto',
+    nonceA: '0x4F92',
+    nonceB: '0x8A1C',
+    keyA: '0x9A4F8B2C',
+    keyB: '0x3C81D5E9',
+    sessionKey: '0x7E2A91D4',
+    step: 0,
+    isInitialized: false
   };
-}
 
-/**
- * CMAC (NIST SP 800-38B) Subkey Derivation and MAC
- */
-async function computeCMAC(key16, msgBytes) {
-  // 1. L = AES_K(0^128)
-  const zeroBlock = new Uint8Array(16);
-  const L = await aesEncryptBlock(key16, zeroBlock);
-
-  // Helper: left shift 1 bit in GF(2^128)
-  function shiftLeft(b) {
-    const out = new Uint8Array(16);
-    let overflow = 0;
-    for (let i = 15; i >= 0; i--) {
-      out[i] = ((b[i] << 1) | overflow) & 0xff;
-      overflow = (b[i] & 0x80) ? 1 : 0;
-    }
-    if (b[0] & 0x80) {
-      out[15] ^= 0x87; // Rb for 128-bit block
-    }
-    return out;
-  }
-
-  const K1 = shiftLeft(L);
-  const K2 = shiftLeft(K1);
-
-  // 2. Partition message without premature padding
-  const blockSize = 16;
-  const blocks = [];
-  const total = msgBytes.length;
-  let isCompleteLastBlock = true;
-
-  if (total === 0) {
-    const padded = new Uint8Array(16);
-    padded[0] = 0x80;
-    blocks.push(padded);
-    isCompleteLastBlock = false;
-  } else {
-    for (let i = 0; i < total; i += blockSize) {
-      const chunk = msgBytes.slice(i, i + blockSize);
-      if (chunk.length === blockSize) {
-        blocks.push(chunk);
-      } else {
-        isCompleteLastBlock = false;
-        const padded = new Uint8Array(blockSize);
-        padded.set(chunk, 0);
-        padded[chunk.length] = 0x80;
-        blocks.push(padded);
-      }
-    }
-  }
-
-  // 3. XOR last block with K1 (if complete) or K2 (if padded)
-  const lastIdx = blocks.length - 1;
-  const subkeyUsed = isCompleteLastBlock ? K1 : K2;
-  blocks[lastIdx] = xorBlocks(blocks[lastIdx], subkeyUsed);
-
-  // 4. CBC chaining
-  let state = new Uint8Array(16);
-  const steps = [];
-
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
-    const xored = xorBlocks(block, state);
-    const encrypted = await aesEncryptBlock(key16, xored);
-    steps.push({
-      blockIndex: i + 1,
-      inputBlock: bytesToHex(block),
-      previousState: bytesToHex(state),
-      xorResult: bytesToHex(xored),
-      outputState: bytesToHex(encrypted)
-    });
-    state = encrypted;
-  }
-
-  return {
-    tag: bytesToHex(state),
-    blocks,
-    steps,
-    subkeys: {
-      L: bytesToHex(L),
-      K1: bytesToHex(K1),
-      K2: bytesToHex(K2)
-    }
+  // Node Positions for Animated Packet (percentages)
+  const nodePositions = {
+    alice: { x: 16, y: 72 },
+    kdc: { x: 50, y: 20 },
+    bob: { x: 84, y: 72 }
   };
-}
 
-/* ============================================================
-   UI CONTROLLER & SIMULATION
-   ============================================================ */
+  // Pretest Questions Data
+  const pretestQuestions = [
+    {
+      id: 'pre_1',
+      question: '1. What is the fundamental role of a Key Distribution Center (KDC) in symmetric key cryptography?',
+      options: [
+        'a: To store public keys of all users in a PKI directory',
+        'b: To generate and distribute temporary symmetric session keys between users who share master keys with it',
+        'c: To decrypt all end-to-end network communications in real time',
+        'd: To convert symmetric keys into asymmetric key pairs'
+      ],
+      correct: 1,
+      explanation: 'Correct! A Key Distribution Center (KDC) acts as a trusted central authority holding master secret passwords shared individually with each client. It generates short-lived session keys on demand.'
+    },
+    {
+      id: 'pre_2',
+      question: '2. In network security, what is a Nonce (Random Challenge Number)?',
+      options: [
+        'a: A permanent master secret key shared between Alice and Bob',
+        'b: A random or non-repeating value generated once to guarantee freshness and prevent replay attacks',
+        'c: A hash digest of the user password',
+        'd: An unencrypted public key certificate'
+      ],
+      correct: 1,
+      explanation: 'Correct! A Nonce ("number used once") ensures that a message or challenge is fresh and has not been replayed by a hacker from a past recorded session.'
+    },
+    {
+      id: 'pre_3',
+      question: '3. Why is plaintext identity transmission required in Step 1 (A -> S: A, B, N_A)?',
+      options: [
+        'a: To allow KDC to look up Alice\'s Secret Master Password and Bob\'s Secret Master Password in its database',
+        'b: To encrypt Alice\'s master key using Bob\'s ID',
+        'c: To bypass KDC authentication rules',
+        'd: To generate a public key certificate for Bob'
+      ],
+      correct: 0,
+      explanation: 'Correct! The Server must know who is making the request (Alice) and who she wants to talk to (Bob) so it can select Alice\'s Secret Master Password and Bob\'s Secret Master Password to build the response and ticket.'
+    },
+    {
+      id: 'pre_4',
+      question: '4. In symmetric key establishment, what is a Ticket?',
+      options: [
+        'a: An unencrypted text file containing user login details',
+        'b: An encrypted digital pass intended for Bob containing the Temporary Session Key and Alice\'s ID, encrypted with Bob\'s Secret Master Password',
+        'c: A digital signature created with Alice\'s private key',
+        'd: A token sent to KDC to invalidate old keys'
+      ],
+      correct: 1,
+      explanation: 'Correct! The ticket allows Alice to pass Bob\'s portion of the session credentials without Alice being able to read or tamper with Bob\'s Secret Master Password.'
+    }
+  ];
 
-let stateLastGenerated = {
-  tag: '',
-  key: '',
-  message: '',
-  algo: ''
-};
+  // Posttest Questions Data
+  const posttestQuestions = [
+    {
+      id: 'post_1',
+      question: '1. What security property does Alice verify when she decrypts {N_A, Bob, K_AB, Ticket} in Step 2?',
+      options: [
+        'a: That Bob has already received the session key',
+        'b: That the response is fresh and directly answers her Step 1 request because it contains Alice\'s Random Challenge Number (N_A)',
+        'c: That KDC has deleted its copy of Alice\'s Secret Master Password',
+        'd: That K_AB is an asymmetric key pair'
+      ],
+      correct: 1,
+      explanation: 'Correct! Including N_A inside the ciphertext encrypted under Alice\'s master password proves to Alice that the Server received her recent request and generated a fresh response.'
+    },
+    {
+      id: 'post_2',
+      question: '2. Why does Bob send challenge {N_B} encrypted with the Temporary Session Key in Step 4?',
+      options: [
+        'a: To prove that the sender of the ticket actually possesses the Temporary Shared Secret Key (Session Key)',
+        'b: To request KDC to issue a new ticket',
+        'c: To decrypt Alice\'s Secret Master Password',
+        'd: To calculate a hash digest of N_A'
+      ],
+      correct: 0,
+      explanation: 'Correct! Anyone could eavesdrop and forward an encrypted ticket. Step 4 challenges the sender to prove active knowledge of the session key.'
+    },
+    {
+      id: 'post_3',
+      question: '3. In Step 5, Alice responds with {N_B - 1} encrypted under the session key. Why is the function (N_B - 1) performed?',
+      options: [
+        'a: To prevent reflection attacks where an adversary echoes back the exact same challenge ciphertext without knowing the session key',
+        'b: To compress the session key for faster network transit',
+        'c: To notify KDC that the handshake finished',
+        'd: To reset Bob\'s Secret Master Password'
+      ],
+      correct: 0,
+      explanation: 'Correct! Performing a known mathematical operation (such as subtracting 1) proves that Alice decrypted N_B, modified it, and re-encrypted it, proving active key possession.'
+    },
+    {
+      id: 'post_4',
+      question: '4. What is the major vulnerability of the original 1978 Needham-Schroeder symmetric protocol identified by Denning and Sacco (1981)?',
+      options: [
+        'a: Master keys are sent in plaintext',
+        'b: Step 3\'s ticket lacks a timestamp or Bob-nonce, enabling replay of an old compromised ticket to Bob',
+        'c: Nonces are restricted to 8 bits',
+        'd: KDC cannot support more than two clients'
+      ],
+      correct: 1,
+      explanation: 'Correct! The Denning-Sacco vulnerability showed that if an old session key is compromised, an attacker can replay an old ticket to Bob, who cannot verify ticket freshness without a timestamp.'
+    }
+  ];
 
-function renderBlockPreview() {
-  const msg = document.getElementById('message-input').value;
-  const algo = document.getElementById('algo-select').value;
-  const grid = document.getElementById('blockPreviewGrid');
-  if (!grid) return;
+  // DOM Caching
+  let els = {};
 
-  const msgBytes = strToBytes(msg);
-  const blocks = partitionBlocks(msgBytes, algo === 'CMAC' ? 'BIT' : 'PKCS7');
-
-  grid.innerHTML = blocks.map((b, i) => {
-    const hex = bytesToHex(b);
-    return `
-      <div class="block-preview-card">
-        <div class="block-card-title">Block P<sub>${i + 1}</sub> (128-bit)</div>
-        <div class="block-card-hex">${hex}</div>
-        <div class="block-card-meta">${b.length} bytes &middot; ${b.length * 8} bits</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function initAutoKey() {
-  const btnAutoKey = document.getElementById('btnAutoKey');
-  const secretKeyInput = document.getElementById('secret-key');
-
-  if (btnAutoKey && secretKeyInput) {
-    btnAutoKey.addEventListener('click', () => {
-      const randBytes = new Uint8Array(16);
-      crypto.getRandomValues(randBytes);
-      secretKeyInput.value = bytesToHex(randBytes);
-      renderBlockPreview();
-    });
+  // Utility: Generate 16-bit Random Hex Nonce (e.g. 0x4F92)
+  function generateHexNonce() {
+    const val = Math.floor(Math.random() * 65536);
+    return '0x' + val.toString(16).toUpperCase().padStart(4, '0');
   }
-}
 
-function initSimulationHandlers() {
-  const algoSelect = document.getElementById('algo-select');
-  const secretKeyInput = document.getElementById('secret-key');
-  const messageInput = document.getElementById('message-input');
-  const btnGenerateMac = document.getElementById('btnGenerateMac');
-  const genError = document.getElementById('gen-error');
-  const genResult = document.getElementById('gen-result');
-  const genTagDisplay = document.getElementById('gen-tag-display');
-  const genAlgoBadge = document.getElementById('gen-algo-badge');
-  const genMeta = document.getElementById('gen-meta');
-  const chainStepsContainer = document.getElementById('chain-steps-container');
-  const btnCopyTag = document.getElementById('btnCopyTag');
-  const btnTransferVerify = document.getElementById('btnTransferVerify');
-
-  if (messageInput) {
-    messageInput.addEventListener('input', renderBlockPreview);
-  }
-  if (algoSelect) {
-    algoSelect.addEventListener('change', renderBlockPreview);
+  // Utility: Generate 32-bit Hex Session Key (e.g. 0x7E2A91D4)
+  function generateHexKey() {
+    const val = Math.floor(Math.random() * 4294967295);
+    return '0x' + val.toString(16).toUpperCase().padStart(8, '0');
   }
 
-  // Initial preview render
-  renderBlockPreview();
+  // Initialize Laboratory Module
+  function init() {
+    cacheDOM();
+    bindEvents();
+    renderQuiz('pretestQuestionsContainer', pretestQuestions, 'btnPretestSubmit', 'btnPretestReset', 'pretestScore');
+    renderQuiz('posttestQuestionsContainer', posttestQuestions, 'btnPosttestSubmit', 'btnPosttestReset', 'posttestScore');
+    updateUI();
 
-  if (btnGenerateMac) {
-    btnGenerateMac.addEventListener('click', async () => {
-      const keyVal = secretKeyInput.value.trim();
-      const msgVal = messageInput.value;
-      const algoVal = algoSelect.value;
+    // Auto-compute and draw topology interconnection lines
+    window.addEventListener('resize', updateTopologyLines);
+    if (window.ResizeObserver && els.container) {
+      const ro = new ResizeObserver(() => updateTopologyLines());
+      ro.observe(els.container);
+    }
+    setTimeout(updateTopologyLines, 50);
+    setTimeout(updateTopologyLines, 200);
+  }
 
-      genError.setAttribute('hidden', '');
-      genResult.setAttribute('hidden', '');
+  function cacheDOM() {
+    els = {
+      // Hamburger Menu & Content Grid
+      btnToggleSidebar: document.getElementById('btnToggleSidebar'),
+      contentGrid: document.querySelector('.vlab-content-grid'),
 
-      if (!keyVal) {
-        genError.textContent = 'Please enter or auto-generate a secret key (K).';
-        genError.removeAttribute('hidden');
-        return;
-      }
+      // Sidebar Navigation Links & Panels
+      navLinks: document.querySelectorAll('.vlab-nav-link'),
+      tabPanels: document.querySelectorAll('.vlab-tab-panel'),
 
-      btnGenerateMac.disabled = true;
-      btnGenerateMac.textContent = 'Computing MAC Tag…';
+      // Simulation Controls
+      selectAlice: document.getElementById('selectAlice'),
+      selectBob: document.getElementById('selectBob'),
+      selectNonceMode: document.getElementById('selectNonceMode'),
+      btnInitHandshake: document.getElementById('btnInitHandshake'),
+      btnNextStep: document.getElementById('btnNextStep'),
+      btnResetSim: document.getElementById('btnResetSim'),
+      btnToggleConcepts: document.getElementById('btnToggleConcepts'),
+      fresherCollapsibleBox: document.getElementById('fresherCollapsibleBox'),
 
-      try {
-        let tag = '';
-        let stepsHtml = '';
-        const key16 = await derive16ByteKey(keyVal);
-        const msgBytes = strToBytes(msgVal);
+      // Stepper Pills
+      stepPillItems: document.querySelectorAll('.step-pill-item'),
 
-        if (algoVal === 'CBC-MAC') {
-          const res = await computeCBCMAC(key16, msgBytes);
-          tag = res.tag;
-          stepsHtml = res.steps.map(s => `
-            <div class="chain-step-card">
-              <div class="chain-step-header">Block P<sub>${s.blockIndex}</sub> Processing</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">Input Block (P<sub>${s.blockIndex}</sub>):</span> <code class="monospace">${s.inputBlock}</code></div>
-                <div><span class="chain-label">XOR Chaining (T<sub>${s.blockIndex - 1}</sub> &oplus; P<sub>${s.blockIndex}</sub>):</span> <code class="monospace">${s.xorResult}</code></div>
-                <div><span class="chain-label">AES-128 Cipher Output (T<sub>${s.blockIndex}</sub>):</span> <code class="monospace highlight-tag">${s.outputState}</code></div>
-              </div>
-            </div>
-          `).join('');
-        } else if (algoVal === 'CMAC') {
-          const res = await computeCMAC(key16, msgBytes);
-          tag = res.tag;
-          stepsHtml = `
-            <div class="chain-step-card" style="border-left-color: var(--color-secondary);">
-              <div class="chain-step-header">NIST SP 800-38B Subkey Derivation</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">L = AES<sub>K</sub>(0<sup>128</sup>):</span> <code class="monospace">${res.subkeys.L}</code></div>
-                <div><span class="chain-label">Subkey K<sub>1</sub> (L &lt;&lt; 1 &oplus; R<sub>b</sub>):</span> <code class="monospace">${res.subkeys.K1}</code></div>
-                <div><span class="chain-label">Subkey K<sub>2</sub> (K<sub>1</sub> &lt;&lt; 1 &oplus; R<sub>b</sub>):</span> <code class="monospace">${res.subkeys.K2}</code></div>
-              </div>
-            </div>
-          ` + res.steps.map(s => `
-            <div class="chain-step-card">
-              <div class="chain-step-header">Block P<sub>${s.blockIndex}</sub> Processing</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">Input Block:</span> <code class="monospace">${s.inputBlock}</code></div>
-                <div><span class="chain-label">XOR Chained:</span> <code class="monospace">${s.xorResult}</code></div>
-                <div><span class="chain-label">Cipher Output (T<sub>${s.blockIndex}</sub>):</span> <code class="monospace highlight-tag">${s.outputState}</code></div>
-              </div>
-            </div>
-          `).join('');
-        } else {
-          // Keyed-MAC
-          tag = await computeKeyedMAC(keyVal, msgVal);
-          stepsHtml = `
-            <div class="chain-step-card">
-              <div class="chain-step-header">Keyed-MAC Secret Prefix Chaining</div>
-              <div class="chain-step-grid">
-                <div><span class="chain-label">Key Payload:</span> <code class="monospace">${bytesToHex(strToBytes(keyVal))}</code></div>
-                <div><span class="chain-label">Message Payload:</span> <code class="monospace">${bytesToHex(strToBytes(msgVal))}</code></div>
-                <div><span class="chain-label">Concatenated Hash SHA-256(K || M):</span> <code class="monospace highlight-tag">${tag}</code></div>
-              </div>
-            </div>
-          `;
+      // Entity Cards & Key Displays
+      cardAlice: document.getElementById('cardAlice'),
+      cardKdc: document.getElementById('cardKdc'),
+      cardBob: document.getElementById('cardBob'),
+      nameAlice: document.getElementById('nameAlice'),
+      nameBob: document.getElementById('nameBob'),
+
+      badgeAlice: document.getElementById('badgeAlice'),
+      badgeKdc: document.getElementById('badgeKdc'),
+      badgeBob: document.getElementById('badgeBob'),
+
+      valAliceKA: document.getElementById('valAliceKA'),
+      valAliceKAB: document.getElementById('valAliceKAB'),
+      valKdcKA: document.getElementById('valKdcKA'),
+      valKdcKB: document.getElementById('valKdcKB'),
+      valKdcKAB: document.getElementById('valKdcKAB'),
+      valBobKB: document.getElementById('valBobKB'),
+      valBobKAB: document.getElementById('valBobKAB'),
+
+      // Animated Packet & Topology Canvas Elements
+      packet: document.getElementById('visualPacket'),
+      container: document.querySelector('.topology-container-compact'),
+      topologySvg: document.getElementById('topologySvg'),
+      lineBaseAliceKdc: document.getElementById('lineBaseAliceKdc'),
+      lineBaseKdcBob: document.getElementById('lineBaseKdcBob'),
+      lineBaseAliceBob: document.getElementById('lineBaseAliceBob'),
+      lineActiveTransmission: document.getElementById('lineActiveTransmission'),
+      labelAliceKdc: document.getElementById('labelAliceKdc'),
+      labelKdcBob: document.getElementById('labelKdcBob'),
+      labelAliceBob: document.getElementById('labelAliceBob'),
+
+      // Inspector Panel & Audit
+      inspectorTitle: document.getElementById('inspectorTitle'),
+      inspectorMath: document.getElementById('inspectorMath'),
+      inspectorCiphertext: document.getElementById('inspectorCiphertext'),
+      inspectorTableBody: document.getElementById('inspectorTableBody'),
+      inspectorStoryCallout: document.getElementById('inspectorStoryCallout'),
+      auditConsole: document.getElementById('auditConsole')
+    };
+  }
+
+  function bindEvents() {
+    // Hamburger Sidebar Toggle
+    if (els.btnToggleSidebar && els.contentGrid) {
+      els.btnToggleSidebar.addEventListener('click', () => {
+        els.contentGrid.classList.toggle('sidebar-collapsed');
+        setTimeout(updateTopologyLines, 310);
+      });
+    }
+
+    // Toggle Beginner Concepts Guide Box
+    if (els.btnToggleConcepts && els.fresherCollapsibleBox) {
+      els.btnToggleConcepts.addEventListener('click', () => {
+        els.fresherCollapsibleBox.classList.toggle('visible');
+        setTimeout(updateTopologyLines, 300);
+      });
+    }
+
+    // Sidebar Tabs switching
+    els.navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetTab = link.getAttribute('data-tab');
+
+        els.navLinks.forEach(l => l.classList.remove('active'));
+        els.tabPanels.forEach(p => p.classList.remove('active'));
+
+        link.classList.add('active');
+        const targetPanel = document.getElementById(`tab-${targetTab}`);
+        if (targetPanel) {
+          targetPanel.classList.add('active');
         }
 
-        stateLastGenerated = {
-          tag,
-          key: keyVal,
-          message: msgVal,
-          algo: algoVal
-        };
-
-        genTagDisplay.textContent = tag;
-        genAlgoBadge.textContent = algoVal;
-        genMeta.innerHTML = `Tag Length: <strong>${tag.length * 4} bits</strong> (${tag.length / 2} bytes) &middot; Status: <strong style="color:var(--color-success,#4ec9b0);">Generated Successfully</strong>`;
-        chainStepsContainer.innerHTML = stepsHtml;
-        genResult.removeAttribute('hidden');
-        genResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        // Prepopulate verifier fields
-        const verTag = document.getElementById('ver-tag');
-        if (verTag) verTag.value = tag;
-        const verMessage = document.getElementById('ver-message');
-        if (verMessage) verMessage.value = msgVal;
-
-      } catch (err) {
-        genError.textContent = 'Error computing MAC tag: ' + err.message;
-        genError.removeAttribute('hidden');
-      } finally {
-        btnGenerateMac.disabled = false;
-        btnGenerateMac.innerHTML = '&#9889; Generate MAC Tag C(K, M)';
-      }
-    });
-  }
-
-  if (btnCopyTag) {
-    btnCopyTag.addEventListener('click', () => {
-      if (!stateLastGenerated.tag) return;
-      navigator.clipboard.writeText(stateLastGenerated.tag);
-      const originalText = btnCopyTag.innerHTML;
-      btnCopyTag.innerHTML = '&#10003; Copied!';
-      setTimeout(() => { btnCopyTag.innerHTML = originalText; }, 1800);
-    });
-  }
-
-  if (btnTransferVerify) {
-    btnTransferVerify.addEventListener('click', () => {
-      const verSection = document.getElementById('sim-step4');
-      if (verSection) {
-        verSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  }
-}
-
-/* ============================================================
-   VERIFICATION & MITM TAMPER SIMULATOR
-   ============================================================ */
-
-function initVerifyAndTamper() {
-  const btnVerifyMac = document.getElementById('btnVerifyMac');
-  const verMessageInput = document.getElementById('ver-message');
-  const verTagInput = document.getElementById('ver-tag');
-  const verResult = document.getElementById('ver-result');
-  const algoSelect = document.getElementById('algo-select');
-  const secretKeyInput = document.getElementById('secret-key');
-
-  const btnTamperMsg = document.getElementById('btnTamperMsg');
-  const btnCorruptTag = document.getElementById('btnCorruptTag');
-  const btnResetVerify = document.getElementById('btnResetVerify');
-
-  if (btnVerifyMac) {
-    btnVerifyMac.addEventListener('click', async () => {
-      const keyVal = secretKeyInput.value.trim();
-      const msgVal = verMessageInput.value;
-      const tagVal = verTagInput.value.trim().toLowerCase();
-      const algoVal = algoSelect.value;
-
-      verResult.setAttribute('hidden', '');
-
-      if (!keyVal || !tagVal) {
-        verResult.className = 'ver-result-box result-failure';
-        verResult.innerHTML = '<span class="result-icon">&#9888;</span> <strong>Missing Input:</strong> Secret key (K) and received MAC tag (T) are required for verification.';
-        verResult.removeAttribute('hidden');
-        return;
-      }
-
-      try {
-        let expectedTag = '';
-        const key16 = await derive16ByteKey(keyVal);
-        const msgBytes = strToBytes(msgVal);
-
-        if (algoVal === 'CBC-MAC') {
-          const res = await computeCBCMAC(key16, msgBytes);
-          expectedTag = res.tag;
-        } else if (algoVal === 'CMAC') {
-          const res = await computeCMAC(key16, msgBytes);
-          expectedTag = res.tag;
-        } else {
-          expectedTag = await computeKeyedMAC(keyVal, msgVal);
+        if (targetTab === 'simulation') {
+          setTimeout(updateTopologyLines, 40);
+          setTimeout(updateTopologyLines, 180);
         }
-
-        const isValid = expectedTag.toLowerCase() === tagVal;
-
-        if (isValid) {
-          verResult.className = 'ver-result-box result-success';
-          verResult.innerHTML = `
-            <span class="result-icon">&#10004;</span>
-            <div>
-              <strong>Verification Successful &mdash; Tag Matches!</strong>
-              <div style="margin-top:6px;font-size:0.9rem;">
-                Computed Tag: <code class="monospace">${expectedTag}</code><br>
-                Received Tag: <code class="monospace">${tagVal}</code>
-              </div>
-              <div style="margin-top:6px;color:#7ee787;">
-                &#10003; Data Integrity: Verified (Payload has not been tampered with).<br>
-                &#10003; Origin Authenticity: Verified (Sender possesses shared secret key K).
-              </div>
-            </div>
-          `;
-        } else {
-          verResult.className = 'ver-result-box result-failure';
-          verResult.innerHTML = `
-            <span class="result-icon">&#10008;</span>
-            <div>
-              <strong>Verification FAILED &mdash; Tag Mismatch Detected!</strong>
-              <div style="margin-top:6px;font-size:0.9rem;">
-                Recomputed Tag: <code class="monospace">${expectedTag}</code><br>
-                Received Tag: &nbsp;&nbsp;<code class="monospace" style="color:#ff7b72;">${tagVal}</code>
-              </div>
-              <div style="margin-top:6px;color:#ff7b72;">
-                &#9888; Warning: The message has been modified in transit OR generated with an incorrect key!
-              </div>
-            </div>
-          `;
-        }
-        verResult.removeAttribute('hidden');
-      } catch (err) {
-        verResult.className = 'ver-result-box result-failure';
-        verResult.innerHTML = `<span class="result-icon">&#9888;</span> <strong>Verification Error:</strong> ${escapeHTML(err.message)}`;
-        verResult.removeAttribute('hidden');
-      }
-    });
-  }
-
-  // Active Tamper: Modify Message Payload
-  if (btnTamperMsg) {
-    btnTamperMsg.addEventListener('click', () => {
-      let current = verMessageInput.value;
-      if (current.includes('$5,000')) {
-        verMessageInput.value = current.replace('$5,000', '$95,000');
-      } else if (current.endsWith('.')) {
-        verMessageInput.value = current.slice(0, -1);
-      } else {
-        verMessageInput.value = current + ' [TAMPERED]';
-      }
-      if (btnVerifyMac) btnVerifyMac.click();
-    });
-  }
-
-  // Active Tamper: Corrupt Tag
-  if (btnCorruptTag) {
-    btnCorruptTag.addEventListener('click', () => {
-      let currentTag = verTagInput.value.trim();
-      if (!currentTag) return;
-      const chars = currentTag.split('');
-      // Flip first hex char
-      const first = chars[0];
-      chars[0] = (first === '0' || first === 'a') ? 'f' : '0';
-      verTagInput.value = chars.join('');
-      if (btnVerifyMac) btnVerifyMac.click();
-    });
-  }
-
-  // Reset to original
-  if (btnResetVerify) {
-    btnResetVerify.addEventListener('click', () => {
-      verMessageInput.value = stateLastGenerated.message || document.getElementById('message-input').value;
-      verTagInput.value = stateLastGenerated.tag || '';
-      verResult.setAttribute('hidden', '');
-    });
-  }
-}
-
-/* ============================================================
-   SUMMARY TABLE
-   ============================================================ */
-
-function initSummaryTable() {
-  const btnUpdate = document.getElementById('btnUpdateSummary');
-  const toast = document.getElementById('sum-updated-toast');
-  const sumMsg = document.getElementById('sum-message');
-  const sumAlgo = document.getElementById('sum-algorithm');
-  const sumKey = document.getElementById('sum-key');
-  const sumTag = document.getElementById('sum-tag');
-
-  if (btnUpdate) {
-    btnUpdate.addEventListener('click', () => {
-      const msg = document.getElementById('message-input').value;
-      const algo = document.getElementById('algo-select').value;
-      const key = document.getElementById('secret-key').value;
-      const tag = stateLastGenerated.tag || '(Click Generate MAC first)';
-
-      sumMsg.textContent = msg || '-';
-      sumAlgo.textContent = algo || '-';
-      sumKey.textContent = key || '-';
-      sumTag.textContent = tag;
-
-      if (toast) {
-        toast.removeAttribute('hidden');
-        setTimeout(() => toast.setAttribute('hidden', ''), 2500);
-      }
-    });
-  }
-}
-
-/* ============================================================
-   QUIZ CONTROLLER
-   ============================================================ */
-
-function initQuiz() {
-  const questions = document.querySelectorAll('.quiz-question');
-  const btnSubmit = document.getElementById('btnSubmitQuiz');
-  const btnReset = document.getElementById('btnResetQuiz');
-  const quizScore = document.getElementById('quizScore');
-
-  // Handle option selection
-  questions.forEach(q => {
-    const btns = q.querySelectorAll('.quiz-option-btn');
-    btns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        btns.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
       });
     });
-  });
 
-  if (btnSubmit) {
-    btnSubmit.addEventListener('click', () => {
-      let answeredCount = 0;
+    // Controls
+    els.btnInitHandshake.addEventListener('click', initHandshake);
+    els.btnNextStep.addEventListener('click', advanceStep);
+    els.btnResetSim.addEventListener('click', resetSim);
+  }
+
+  // Calculate live geometric anchor points for all entity cards
+  function getTopologyAnchors() {
+    if (!els.container || !els.cardAlice || !els.cardKdc || !els.cardBob) return null;
+
+    const cRect = els.container.getBoundingClientRect();
+    if (cRect.width === 0 || cRect.height === 0) return null;
+
+    const aRect = els.cardAlice.getBoundingClientRect();
+    const kRect = els.cardKdc.getBoundingClientRect();
+    const bRect = els.cardBob.getBoundingClientRect();
+
+    // Alice anchors (relative to container)
+    const aLeft = aRect.left - cRect.left;
+    const aTop = aRect.top - cRect.top;
+    const aWidth = aRect.width;
+    const aHeight = aRect.height;
+    const aTopAnchor = { x: aLeft + aWidth * 0.65, y: aTop };
+    const aRightAnchor = { x: aLeft + aWidth, y: aTop + aHeight * 0.5 };
+
+    // KDC anchors
+    const kLeft = kRect.left - cRect.left;
+    const kTop = kRect.top - cRect.top;
+    const kWidth = kRect.width;
+    const kHeight = kRect.height;
+    const kBottomLeftAnchor = { x: kLeft + kWidth * 0.25, y: kTop + kHeight };
+    const kBottomRightAnchor = { x: kLeft + kWidth * 0.75, y: kTop + kHeight };
+
+    // Bob anchors
+    const bLeft = bRect.left - cRect.left;
+    const bTop = bRect.top - cRect.top;
+    const bWidth = bRect.width;
+    const bHeight = bRect.height;
+    const bTopAnchor = { x: bLeft + bWidth * 0.35, y: bTop };
+    const bLeftAnchor = { x: bLeft, y: bTop + bHeight * 0.5 };
+
+    return {
+      cRect,
+      aTopAnchor,
+      aRightAnchor,
+      kBottomLeftAnchor,
+      kBottomRightAnchor,
+      bTopAnchor,
+      bLeftAnchor
+    };
+  }
+
+  // Dynamically position interconnection lines and active directional flows
+  function updateTopologyLines() {
+    const anchors = getTopologyAnchors();
+    if (!anchors || !els.topologySvg) return;
+
+    // Synchronize SVG viewBox with current container dimensions
+    els.topologySvg.setAttribute('viewBox', `0 0 ${anchors.cRect.width} ${anchors.cRect.height}`);
+
+    // 1. Base Line Alice <-> Server (KDC)
+    if (els.lineBaseAliceKdc) {
+      els.lineBaseAliceKdc.setAttribute('d', `M ${anchors.aTopAnchor.x.toFixed(1)} ${anchors.aTopAnchor.y.toFixed(1)} L ${anchors.kBottomLeftAnchor.x.toFixed(1)} ${anchors.kBottomLeftAnchor.y.toFixed(1)}`);
+    }
+
+    // 2. Base Line Server (KDC) <-> Bob
+    if (els.lineBaseKdcBob) {
+      els.lineBaseKdcBob.setAttribute('d', `M ${anchors.kBottomRightAnchor.x.toFixed(1)} ${anchors.kBottomRightAnchor.y.toFixed(1)} L ${anchors.bTopAnchor.x.toFixed(1)} ${anchors.bTopAnchor.y.toFixed(1)}`);
+    }
+
+    // 3. Base Line Alice <-> Bob
+    if (els.lineBaseAliceBob) {
+      els.lineBaseAliceBob.setAttribute('d', `M ${anchors.aRightAnchor.x.toFixed(1)} ${anchors.aRightAnchor.y.toFixed(1)} L ${anchors.bLeftAnchor.x.toFixed(1)} ${anchors.bLeftAnchor.y.toFixed(1)}`);
+    }
+
+    // Channel labels positioned at midpoints
+    if (els.labelAliceKdc) {
+      const midX = (anchors.aTopAnchor.x + anchors.kBottomLeftAnchor.x) / 2 - 20;
+      const midY = (anchors.aTopAnchor.y + anchors.kBottomLeftAnchor.y) / 2;
+      els.labelAliceKdc.setAttribute('x', midX.toFixed(1));
+      els.labelAliceKdc.setAttribute('y', midY.toFixed(1));
+    }
+
+    if (els.labelKdcBob) {
+      const midX = (anchors.kBottomRightAnchor.x + anchors.bTopAnchor.x) / 2 + 20;
+      const midY = (anchors.kBottomRightAnchor.y + anchors.bTopAnchor.y) / 2;
+      els.labelKdcBob.setAttribute('x', midX.toFixed(1));
+      els.labelKdcBob.setAttribute('y', midY.toFixed(1));
+    }
+
+    if (els.labelAliceBob) {
+      const midX = (anchors.aRightAnchor.x + anchors.bLeftAnchor.x) / 2;
+      const midY = anchors.aRightAnchor.y - 12;
+      els.labelAliceBob.setAttribute('x', midX.toFixed(1));
+      els.labelAliceBob.setAttribute('y', midY.toFixed(1));
+    }
+
+    // Active Transmission Line
+    if (els.lineActiveTransmission) {
+      if (!state.isInitialized || state.step === 0) {
+        els.lineActiveTransmission.classList.remove('visible', 'animating');
+      } else {
+        els.lineActiveTransmission.classList.add('visible', 'animating');
+        let d = '';
+        switch (state.step) {
+          case 1:
+            // Step 1: Alice -> KDC
+            d = `M ${anchors.aTopAnchor.x.toFixed(1)} ${anchors.aTopAnchor.y.toFixed(1)} L ${anchors.kBottomLeftAnchor.x.toFixed(1)} ${anchors.kBottomLeftAnchor.y.toFixed(1)}`;
+            break;
+          case 2:
+            // Step 2: KDC -> Alice
+            d = `M ${anchors.kBottomLeftAnchor.x.toFixed(1)} ${anchors.kBottomLeftAnchor.y.toFixed(1)} L ${anchors.aTopAnchor.x.toFixed(1)} ${anchors.aTopAnchor.y.toFixed(1)}`;
+            break;
+          case 3:
+            // Step 3: Alice -> Bob
+            d = `M ${anchors.aRightAnchor.x.toFixed(1)} ${anchors.aRightAnchor.y.toFixed(1)} L ${anchors.bLeftAnchor.x.toFixed(1)} ${anchors.bLeftAnchor.y.toFixed(1)}`;
+            break;
+          case 4:
+            // Step 4: Bob -> Alice
+            d = `M ${anchors.bLeftAnchor.x.toFixed(1)} ${anchors.bLeftAnchor.y.toFixed(1)} L ${anchors.aRightAnchor.x.toFixed(1)} ${anchors.aRightAnchor.y.toFixed(1)}`;
+            break;
+          case 5:
+            // Step 5: Alice -> Bob
+            d = `M ${anchors.aRightAnchor.x.toFixed(1)} ${anchors.aRightAnchor.y.toFixed(1)} L ${anchors.bLeftAnchor.x.toFixed(1)} ${anchors.bLeftAnchor.y.toFixed(1)}`;
+            break;
+        }
+        els.lineActiveTransmission.setAttribute('d', d);
+      }
+    }
+  }
+
+  function initHandshake() {
+    state.aliceId = els.selectAlice.value;
+    state.bobId = els.selectBob.value;
+    state.nonceMode = els.selectNonceMode.value;
+
+    if (state.nonceMode === 'auto') {
+      state.nonceA = generateHexNonce();
+      state.nonceB = generateHexNonce();
+      state.sessionKey = generateHexKey();
+    } else {
+      state.nonceA = '0x4F92';
+      state.nonceB = '0x8A1C';
+      state.sessionKey = '0x7E2A91D4';
+    }
+
+    state.step = 1;
+    state.isInitialized = true;
+    logAudit('INFO', `Handshake Initialized. Initiator: ${state.aliceId}, Target: ${state.bobId}, Master Password A: ${state.keyA}, Master Password B: ${state.keyB}`);
+    updateUI();
+    executeStep(1);
+  }
+
+  function advanceStep() {
+    if (!state.isInitialized || state.step >= 5) return;
+    state.step++;
+    updateUI();
+    executeStep(state.step);
+  }
+
+  function resetSim() {
+    state.step = 0;
+    state.isInitialized = false;
+    if (els.packet) {
+      els.packet.classList.remove('active');
+      els.packet.style.transition = 'none';
+    }
+    logAudit('INFO', 'Simulation reset to idle configuration.');
+    updateUI();
+    updateTopologyLines();
+  }
+
+  function executeStep(stepNum) {
+    updateTopologyLines();
+    const anchors = getTopologyAnchors();
+    if (!anchors) return;
+
+    switch (stepNum) {
+      case 1:
+        logAudit('INFO', `Step 1: ${state.aliceId} requests Server for a session key to talk to ${state.bobId}. Payload: (${state.aliceId}, ${state.bobId}, Alice Nonce=${state.nonceA})`);
+        animatePacket(anchors.aTopAnchor, anchors.kBottomLeftAnchor, 'Step 1: Request');
+        break;
+      case 2:
+        logAudit('INFO', `Step 2: Server generates Temporary Session Key (${state.sessionKey}) and encrypted response for ${state.aliceId}.`);
+        animatePacket(anchors.kBottomLeftAnchor, anchors.aTopAnchor, 'Step 2: Response');
+        break;
+      case 3:
+        logAudit('INFO', `Step 3: ${state.aliceId} forwards opaque Ticket encrypted under Bob's Password to ${state.bobId}.`);
+        animatePacket(anchors.aRightAnchor, anchors.bLeftAnchor, 'Step 3: Ticket');
+        break;
+      case 4:
+        logAudit('INFO', `Step 4: ${state.bobId} unlocks ticket, extracts Session Key, and challenges ${state.aliceId} with encrypted Nonce=${state.nonceB}.`);
+        animatePacket(anchors.bLeftAnchor, anchors.aRightAnchor, 'Step 4: Challenge');
+        break;
+      case 5:
+        logAudit('SUCCESS', `Step 5: ${state.aliceId} responds with encrypted f(N_B) = N_B - 1. Mutual authentication complete!`);
+        animatePacket(anchors.aRightAnchor, anchors.bLeftAnchor, 'Step 5: Authenticated');
+        break;
+    }
+  }
+
+  function animatePacket(from, to, text) {
+    if (!els.packet) return;
+    els.packet.textContent = text;
+    els.packet.style.transition = 'none';
+    els.packet.style.left = `${from.x}px`;
+    els.packet.style.top = `${from.y}px`;
+    els.packet.classList.add('active');
+
+    // Force layout reflow
+    void els.packet.offsetWidth;
+
+    setTimeout(() => {
+      els.packet.style.transition = 'left 0.85s cubic-bezier(0.4, 0, 0.2, 1), top 0.85s cubic-bezier(0.4, 0, 0.2, 1)';
+      els.packet.style.left = `${to.x}px`;
+      els.packet.style.top = `${to.y}px`;
+    }, 30);
+
+    setTimeout(() => {
+      els.packet.style.transition = 'none';
+    }, 900);
+  }
+
+  function logAudit(type, message) {
+    if (!els.auditConsole) return;
+    const time = new Date().toLocaleTimeString();
+    const line = document.createElement('div');
+    line.className = 'audit-log-line';
+    line.innerHTML = `<span style="color:#888;">[${time}]</span> <span class="audit-tag ${type}">${type}</span> ${message}`;
+    els.auditConsole.prepend(line);
+  }
+
+  function updateUI() {
+    // 1. Update Compact Stepper Pills Row
+    els.stepPillItems.forEach((pill, idx) => {
+      pill.classList.remove('active', 'completed');
+      if (idx === state.step) {
+        pill.classList.add('active');
+      } else if (idx < state.step) {
+        pill.classList.add('completed');
+      }
+    });
+
+    // 2. Update Node Names
+    els.nameAlice.textContent = state.aliceId;
+    els.nameBob.textContent = state.bobId;
+
+    // 3. Update Stored Keys & Badges
+    els.valAliceKA.textContent = state.keyA;
+    els.valKdcKA.textContent = state.keyA;
+    els.valKdcKB.textContent = state.keyB;
+    els.valBobKB.textContent = state.keyB;
+
+    if (state.step >= 2) {
+      els.valKdcKAB.textContent = state.sessionKey;
+      els.valAliceKAB.textContent = state.sessionKey;
+      setBadge(els.badgeAlice, 'WAITING TICKET FORWARD', 'status-waiting');
+      setBadge(els.badgeKdc, 'ISSUED SESSION KEY AND TICKET', 'status-authenticated');
+    } else if (state.step === 1) {
+      els.valKdcKAB.textContent = 'Generating...';
+      els.valAliceKAB.textContent = 'None';
+      setBadge(els.badgeAlice, 'REQUESTING SERVER', 'status-requesting');
+      setBadge(els.badgeKdc, 'PROCESSING REQUEST', 'status-encrypting');
+    } else {
+      els.valKdcKAB.textContent = 'None';
+      els.valAliceKAB.textContent = 'None';
+      setBadge(els.badgeAlice, 'IDLE', 'status-idle');
+      setBadge(els.badgeKdc, 'LISTENING', 'status-idle');
+    }
+
+    if (state.step >= 3) {
+      els.valBobKAB.textContent = state.sessionKey;
+      if (state.step === 3) {
+        setBadge(els.badgeBob, 'TICKET UNLOCKED (SESSION KEY EXTRACTED)', 'status-decrypting');
+      } else if (state.step === 4) {
+        setBadge(els.badgeBob, 'WAITING CHALLENGE RESPONSE', 'status-waiting');
+        setBadge(els.badgeAlice, 'DECRYPTING CHALLENGE NUMBER', 'status-decrypting');
+      } else if (state.step === 5) {
+        setBadge(els.badgeBob, 'MUTUAL AUTHENTICATION COMPLETE', 'status-authenticated');
+        setBadge(els.badgeAlice, 'AUTHENTICATED', 'status-authenticated');
+      }
+    } else {
+      els.valBobKAB.textContent = 'None';
+      setBadge(els.badgeBob, 'IDLE', 'status-idle');
+    }
+
+    // Highlight active cards
+    [els.cardAlice, els.cardKdc, els.cardBob].forEach(c => c.classList.remove('highlight'));
+    if (state.step === 1 || state.step === 2) {
+      els.cardAlice.classList.add('highlight');
+      els.cardKdc.classList.add('highlight');
+    } else if (state.step >= 3) {
+      els.cardAlice.classList.add('highlight');
+      els.cardBob.classList.add('highlight');
+    }
+
+    // Buttons
+    els.btnInitHandshake.disabled = state.step > 0 && state.step < 5;
+    els.btnNextStep.disabled = state.step === 0 || state.step === 5;
+
+    // Render Inspector Data
+    renderInspector(state.step);
+
+    // Refresh topology lines and active flow
+    updateTopologyLines();
+  }
+
+  function setBadge(element, text, statusClass) {
+    element.textContent = text;
+    element.className = `entity-badge-sm ${statusClass}`;
+  }
+
+  function renderInspector(step) {
+    let title = '';
+    let mathStr = '';
+    let ciphertext = '';
+    let tableRows = '';
+    let storyText = '';
+
+    const ticketStr = `{ Temporary Session Key: "${state.sessionKey}", Alice: "${state.aliceId}" }_BobPassword`;
+
+    switch (step) {
+      case 0:
+        title = 'Step 1: System Setup (Idle)';
+        mathStr = 'Alice -> Server (KDC) : Alice, Bob, Alice Challenge Number';
+        ciphertext = 'No active message payload transmitted yet.';
+        tableRows = `<tr><td colspan="5" style="text-align:center; color:#777;">Click "Initialize Handshake" to start the simulation.</td></tr>`;
+        storyText = 'The system is ready. Click "Initialize Handshake" to see how Alice and Bob establish a temporary session pass using Server S.';
+        break;
+
+      case 1:
+        title = `Step 1: Session Key Request (${state.aliceId} -> Server)`;
+        mathStr = `${state.aliceId} -> Server : ${state.aliceId}, ${state.bobId}, ${state.nonceA}`;
+        ciphertext = `Unencrypted Request Payload: [ Client_ID: "${state.aliceId}", Target_ID: "${state.bobId}", Alice_Challenge_Number: "${state.nonceA}" ]`;
+        tableRows = `
+          <tr>
+            <td>Client ID</td>
+            <td>${state.aliceId}</td>
+            <td>Unencrypted (Plaintext)</td>
+            <td>Identifies Alice to the Server</td>
+            <td>Alice tells the Server who she is so the Server can fetch her secret password.</td>
+          </tr>
+          <tr>
+            <td>Target ID</td>
+            <td>${state.bobId}</td>
+            <td>Unencrypted (Plaintext)</td>
+            <td>Identifies intended target recipient</td>
+            <td>Alice tells the Server she wants to open a private line with Bob.</td>
+          </tr>
+          <tr>
+            <td>Alice Challenge Number</td>
+            <td>${state.nonceA}</td>
+            <td>Unencrypted (Plaintext)</td>
+            <td>Alice's Random Challenge Number (N_A)</td>
+            <td>Alice attaches a unique random number (${state.nonceA}) to ensure the Server's reply is brand new and not a hacker replaying an old answer.</td>
+          </tr>
+        `;
+        storyText = `Alice asks the Server for a temporary key to talk to Bob and sends a single-use ticket number (${state.nonceA}). Because the message is unencrypted at this stage, any eavesdropper can see who is calling whom, but they cannot steal any passwords.`;
+        break;
+
+      case 2:
+        title = `Step 2: Key & Ticket Response (Server -> ${state.aliceId})`;
+        mathStr = `Server -> ${state.aliceId} : { ${state.nonceA}, ${state.bobId}, SessionKey, { SessionKey, ${state.aliceId} }_BobPassword }_AlicePassword`;
+        ciphertext = `Encrypted with Alice Password (${state.keyA}) [ Challenge_Number: "${state.nonceA}", Target: "${state.bobId}", Session_Key: "${state.sessionKey}", Ticket: "${ticketStr}" ]`;
+        tableRows = `
+          <tr>
+            <td>Challenge Number</td>
+            <td>${state.nonceA}</td>
+            <td>Alice's Secret Master Password (${state.keyA})</td>
+            <td>Matches Alice's random challenge number</td>
+            <td>Alice unlocks the box and sees her ticket number (${state.nonceA}). This proves 100% that the Server answered right now!</td>
+          </tr>
+          <tr>
+            <td>Target ID</td>
+            <td>${state.bobId}</td>
+            <td>Alice's Secret Master Password (${state.keyA})</td>
+            <td>Confirms target identity</td>
+            <td>Confirms this temporary key is meant for talking to Bob.</td>
+          </tr>
+          <tr>
+            <td>Session Key</td>
+            <td>${state.sessionKey}</td>
+            <td>Alice's Secret Master Password (${state.keyA})</td>
+            <td>Temporary Shared Secret Key (Session Key)</td>
+            <td>Alice extracts the new temporary pass (${state.sessionKey}) created for her chat with Bob.</td>
+          </tr>
+          <tr>
+            <td>Ticket</td>
+            <td><code>${ticketStr}</code></td>
+            <td>Bob's Secret Master Password (${state.keyB})</td>
+            <td>Encrypted digital envelope for Bob</td>
+            <td>The Server includes a digital pass locked with Bob's Password. Alice cannot open it, but she will forward it to Bob.</td>
+          </tr>
+        `;
+        storyText = `The Server creates a temporary visitor pass (${state.sessionKey}) and puts it inside a digital box locked with Alice's Secret Password. It also puts a locked envelope (the Ticket) inside that box for Bob. Alice unlocks her box, verifies her challenge number, and gets her pass code!`;
+        break;
+
+      case 3:
+        title = `Step 3: Forward Ticket (${state.aliceId} -> ${state.bobId})`;
+        mathStr = `${state.aliceId} -> ${state.bobId} : { SessionKey, ${state.aliceId} }_BobPassword`;
+        ciphertext = `FORWARDED TICKET PAYLOAD: Encrypted with Bob Password (${state.keyB}) [ Session_Key: "${state.sessionKey}", Client_ID: "${state.aliceId}" ]`;
+        tableRows = `
+          <tr>
+            <td>Ticket Payload</td>
+            <td><code>${ticketStr}</code></td>
+            <td>Bob's Secret Master Password (${state.keyB})</td>
+            <td>Encrypted digital pass from Server</td>
+            <td>Alice passes the locked digital envelope to Bob.</td>
+          </tr>
+          <tr>
+            <td>Session Key (Extracted)</td>
+            <td>${state.sessionKey}</td>
+            <td>Bob's Secret Master Password (${state.keyB})</td>
+            <td>Bob extracts Temporary Session Key</td>
+            <td>Bob uses his Secret Master Password to unlock the envelope, retrieving the temporary pass (${state.sessionKey}).</td>
+          </tr>
+          <tr>
+            <td>Client ID</td>
+            <td>${state.aliceId}</td>
+            <td>Bob's Secret Master Password (${state.keyB})</td>
+            <td>Identifies authorized caller</td>
+            <td>Bob verifies that the Server authorized Alice to speak with him.</td>
+          </tr>
+        `;
+        storyText = `Alice forwards the locked envelope to Bob. Bob uses his secret password to open it, extracts the temporary pass code (${state.sessionKey}), and knows that Alice was authenticated by the Server!`;
+        break;
+
+      case 4:
+        title = `Step 4: Nonce Challenge (${state.bobId} -> ${state.aliceId})`;
+        mathStr = `${state.bobId} -> ${state.aliceId} : { ${state.nonceB} }_SessionKey`;
+        ciphertext = `Encrypted with Session Key (${state.sessionKey}) [ Bob_Challenge_Number: "${state.nonceB}" ]`;
+        tableRows = `
+          <tr>
+            <td>Bob Challenge Number</td>
+            <td>${state.nonceB}</td>
+            <td>Temporary Shared Secret Key (${state.sessionKey})</td>
+            <td>Bob's Random Challenge Number (N_B)</td>
+            <td>Bob locks a brand new random challenge number (${state.nonceB}) with the temporary pass and sends it to Alice.</td>
+          </tr>
+        `;
+        storyText = `Bob wants to make sure that the person holding the ticket actually knows the temporary pass code! He locks a secret test number (${state.nonceB}) with the session key and challenges Alice to unlock it.`;
+        break;
+
+      case 5:
+        const nonceBVal = parseInt(state.nonceB, 16);
+        const respNonceHex = '0x' + (isNaN(nonceBVal) ? '8A1B' : (nonceBVal - 1).toString(16).toUpperCase().padStart(4, '0'));
+        title = `Step 5: Challenge Response (${state.aliceId} -> ${state.bobId})`;
+        mathStr = `${state.aliceId} -> ${state.bobId} : { f(${state.nonceB}) }_SessionKey where f(N_B) = N_B - 1 (${respNonceHex})`;
+        ciphertext = `Encrypted with Session Key (${state.sessionKey}) [ Transformed_Number: "${respNonceHex}" ]`;
+        tableRows = `
+          <tr>
+            <td>f(Bob Challenge Number)</td>
+            <td>${respNonceHex}</td>
+            <td>Temporary Shared Secret Key (${state.sessionKey})</td>
+            <td>Transformed challenge number (N_B - 1)</td>
+            <td>Alice unlocks Bob's test number, subtracts 1 to get ${respNonceHex}, locks it back with the temporary pass, and returns it.</td>
+          </tr>
+          <tr>
+            <td>Mutual Authentication</td>
+            <td><span style="color:var(--vlab-success-green); font-weight:bold;">SUCCESS</span></td>
+            <td>-</td><td>Both parties authenticated</td>
+            <td>Bob sees that the number was modified correctly. This proves Alice possesses the session key! Mutual authentication is complete.</td>
+          </tr>
+        `;
+        storyText = `Alice unlocks Bob's test number, subtracts 1 to prove she didn't just echo back the same locked box, and sends it back encrypted. Bob checks the answer and confirms: Alice is genuine! Both parties now communicate safely.`;
+        break;
+    }
+
+    els.inspectorTitle.textContent = title;
+    els.inspectorMath.textContent = mathStr;
+    els.inspectorCiphertext.textContent = ciphertext;
+    els.inspectorTableBody.innerHTML = tableRows;
+    els.inspectorStoryCallout.innerHTML = `<strong>Plain English Story:</strong> ${storyText}`;
+  }
+
+  // Quiz Engine for Pretest & Posttest
+  function renderQuiz(containerId, questions, submitBtnId, resetBtnId, scoreBannerId) {
+    const container = document.getElementById(containerId);
+    const submitBtn = document.getElementById(submitBtnId);
+    const resetBtn = document.getElementById(resetBtnId);
+    const scoreBanner = document.getElementById(scoreBannerId);
+
+    if (!container || !submitBtn) return;
+
+    container.innerHTML = '';
+    questions.forEach((q) => {
+      const card = document.createElement('div');
+      card.className = 'quiz-question-card';
+
+      let optsHtml = '';
+      q.options.forEach((opt, optIndex) => {
+        optsHtml += `
+          <label class="quiz-option-item" id="lbl-${q.id}-${optIndex}">
+            <input type="radio" name="${q.id}" value="${optIndex}">
+            <span>${opt}</span>
+          </label>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="quiz-question-text">${q.question}</div>
+        <div class="quiz-option-list">${optsHtml}</div>
+        <div class="quiz-explanation" id="explain-${q.id}"></div>
+      `;
+      container.appendChild(card);
+    });
+
+    submitBtn.addEventListener('click', () => {
       let score = 0;
-
       questions.forEach(q => {
-        const correctIdx = parseInt(q.dataset.correct, 10);
-        const btns = q.querySelectorAll('.quiz-option-btn');
-        const reason = q.querySelector('.quiz-reason');
-        let selectedIdx = -1;
+        const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+        const explainBox = document.getElementById(`explain-${q.id}`);
 
-        btns.forEach((btn, idx) => {
-          if (btn.classList.contains('selected')) {
-            selectedIdx = idx;
-          }
+        q.options.forEach((_, optIndex) => {
+          const lbl = document.getElementById(`lbl-${q.id}-${optIndex}`);
+          lbl.classList.remove('correct', 'incorrect');
         });
 
-        if (selectedIdx !== -1) {
-          answeredCount++;
-          if (selectedIdx === correctIdx) {
+        if (selected) {
+          const val = parseInt(selected.value, 10);
+          const selLbl = document.getElementById(`lbl-${q.id}-${val}`);
+
+          if (val === q.correct) {
             score++;
-            btns[selectedIdx].classList.add('correct');
+            selLbl.classList.add('correct');
+            explainBox.className = 'quiz-explanation visible correct';
+            explainBox.innerHTML = `<strong>Correct.</strong> ${q.explanation}`;
           } else {
-            btns[selectedIdx].classList.add('incorrect');
-            btns[correctIdx].classList.add('correct');
+            selLbl.classList.add('incorrect');
+            const correctLbl = document.getElementById(`lbl-${q.id}-${q.correct}`);
+            correctLbl.classList.add('correct');
+            explainBox.className = 'quiz-explanation visible incorrect';
+            explainBox.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
           }
         } else {
-          btns[correctIdx].classList.add('correct');
+          explainBox.className = 'quiz-explanation visible incorrect';
+          explainBox.innerHTML = `<strong>Not answered.</strong> ${q.explanation}`;
         }
-
-        if (reason) reason.removeAttribute('hidden');
       });
 
-      if (quizScore) {
-        const pct = Math.round((score / questions.length) * 100);
-        quizScore.className = 'quiz-score ' + (pct >= 60 ? 'score-pass' : 'score-fail');
-        quizScore.innerHTML = `Your Score: <strong>${score} / ${questions.length}</strong> (${pct}%) &mdash; ` +
-          (pct >= 60 ? '&#127881; Great job!' : '&#128161; Review the theory and try again.');
-        quizScore.removeAttribute('hidden');
-      }
+      scoreBanner.style.display = 'block';
+      scoreBanner.className = 'inspector-explanation';
+      scoreBanner.style.backgroundColor = 'var(--vlab-info-bg)';
+      scoreBanner.style.borderColor = 'var(--vlab-primary-brown)';
+      scoreBanner.innerHTML = `<strong>Assessment Result: ${score} / ${questions.length} (${(score/questions.length * 100).toFixed(0)}%)</strong>`;
     });
-  }
 
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
+    resetBtn.addEventListener('click', () => {
       questions.forEach(q => {
-        const btns = q.querySelectorAll('.quiz-option-btn');
-        btns.forEach(b => b.classList.remove('selected', 'correct', 'incorrect'));
-        const reason = q.querySelector('.quiz-reason');
-        if (reason) reason.setAttribute('hidden', '');
+        const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+        if (selected) selected.checked = false;
+        q.options.forEach((_, optIndex) => {
+          const lbl = document.getElementById(`lbl-${q.id}-${optIndex}`);
+          lbl.classList.remove('correct', 'incorrect');
+        });
+        const explainBox = document.getElementById(`explain-${q.id}`);
+        explainBox.className = 'quiz-explanation';
+        explainBox.innerHTML = '';
       });
-      if (quizScore) {
-        quizScore.setAttribute('hidden', '');
-        quizScore.innerHTML = '';
-      }
+      scoreBanner.style.display = 'none';
     });
   }
-}
 
-function initTabs() {
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabPanels = document.querySelectorAll('.tab-content');
+  // Auto-init on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const selectedTab = button.dataset.tab;
-
-      tabButtons.forEach(tabButton => {
-        const isSelected = tabButton === button;
-        tabButton.classList.toggle('active', isSelected);
-        tabButton.setAttribute('aria-selected', String(isSelected));
-      });
-
-      tabPanels.forEach(panel => {
-        const isSelected = panel.dataset.tabPanel === selectedTab;
-        panel.classList.toggle('active', isSelected);
-        panel.toggleAttribute('hidden', !isSelected);
-      });
-    });
-  });
-}
-
-/* ============================================================
-   INIT ON DOM READY
-   ============================================================ */
-
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initAutoKey();
-  initSimulationHandlers();
-  initVerifyAndTamper();
-  initSummaryTable();
-  initQuiz();
-});
+  return {
+    init,
+    state
+  };
+})();
