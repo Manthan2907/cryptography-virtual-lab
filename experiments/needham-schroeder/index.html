@@ -3,317 +3,607 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Needham-Schroeder Symmetric Key Protocol Virtual Lab - simulate the protocol and establish a shared session key.">
-    <title>Needham-Schroeder Symmetric Key Protocol</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
+    <meta name="description" content="Virtual Cryptography Laboratory experiment">
+    <title>Needham-Schroeder Symmetric Key Protocol | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
   <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
     <div class="experiment-container">
       <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
         <h1 id="exp-title">Needham-Schroeder Symmetric Key Protocol</h1>
         <p id="exp-description">Simulate the 5-message symmetric-key authentication protocol and demonstrate the establishment of a shared session key between two entities.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">1 Aim &amp; Objectives</button>
-        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">2 Theory</button>
-        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">3 Procedure</button>
-        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">4 Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">5 Quiz</button>
-        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">6 References</button>
-        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">7 Feedback</button>
-      </nav>
+  <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim & Objectives</button>
+  <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory & Beginner Guide</button>
+  <button class="tab-btn" type="button" data-tab="pretest" aria-selected="false">Pretest</button>
+  <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+  <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+  <button class="tab-btn" type="button" data-tab="posttest" aria-selected="false">Posttest</button>
+  <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+  <button class="tab-btn" type="button" data-tab="contributors" aria-selected="false">Contributors</button>
+  <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+</nav>
 
-      <main class="tab-content-container">
+
+      <main class="content-area">
+
+
+        <!-- 1. AIM & OBJECTIVES TAB -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+
+          <h2 class="vlab-section-heading">Estimated Time</h2>
+          <p class="vlab-paragraph">1 hour</p>
+
+          <h2 class="vlab-section-heading">Learning Objective of the Experiment</h2>
+          <p class="vlab-paragraph">
+            To identify, trace, and analyze the steps of the <strong>Needham-Schroeder Symmetric Key Protocol
+              (1978)</strong> for establishing a temporary shared secret key and achieving mutual authentication between
+            two untrusted network nodes via a trusted Server (Key Distribution Center / KDC).
+          </p>
+          <ul style="margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.95rem; color: #333; line-height: 1.7;">
+            <li>Understand the architectural role of a centralized Server (KDC) in symmetric key management.</li>
+            <li>Analyze how Alice's Random Challenge Number (N_A) and Bob's Random Challenge Number (N_B) prevent replay
+              attacks.</li>
+            <li>Observe ticket generation and ticket forwarding mechanics.</li>
+            <li>Evaluate challenge-response nonce verification (N_B - 1) for mutual authentication.</li>
+          </ul>
         
-        <!-- Tab 1: Aim & Objectives -->
-        <section id="aim" class="tab-pane active" aria-labelledby="aim-tab">
-          <h2>Aim</h2>
-          <p>To simulate the Needham-Schroeder symmetric-key authentication protocol and demonstrate the establishment of a shared session key between two communicating entities mediated by a Key Distribution Center (KDC).</p>
-          
-          <h2>Objectives</h2>
-          <ul>
-            <li><strong>Explain</strong> the need for a trusted third party (KDC) in symmetric key distribution.</li>
-            <li><strong>Trace</strong> the 5 message exchanges in the Needham-Schroeder protocol.</li>
-            <li><strong>Simulate</strong> the generation and verification of nonces for freshness.</li>
-            <li><strong>Identify</strong> the vulnerability of the protocol to replay attacks (Denning-Sacco).</li>
-            <li><strong>Compare</strong> the original protocol with the timestamp-based fix used in systems like Kerberos.</li>
+</section>
+
+        <!-- 2. THEORY & BEGINNER GUIDE TAB -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+
+          <h2 class="vlab-section-heading">Real-World Story Analogy: The Secure Bank Manager &amp; Sealed Envelopes</h2>
+          <div class="inspector-explanation"
+            style="margin-bottom:1.5rem; background-color:#ffffff; border-left:4px solid var(--vlab-primary-brown);">
+            <p class="vlab-paragraph">
+              Imagine Alice and Bob both have safe deposit boxes inside a high-security Bank Branch, managed by a
+              trusted Bank Manager (Server / KDC). Alice shares a secret passcode combination with the Bank Manager
+              (<strong>Alice's Secret Master Password</strong>), and Bob shares a different combination with the Manager
+              (<strong>Bob's Secret Master Password</strong>). Neither Alice nor Bob knows each other's passcode.
+            </p>
+            <p class="vlab-paragraph">
+              When Alice wants to open a private line of communication with Bob, she asks the Bank Manager for a
+              temporary one-time passcode (<strong>Temporary Shared Secret Key / Session Key</strong>). The Manager
+              locks this temporary key inside a sealed box encrypted with Alice's passcode. Inside that same box, the
+              Manager places a second sealed envelope (<strong>The Ticket</strong>) locked with Bob's passcode.
+            </p>
+            <p class="vlab-paragraph" style="margin-bottom:0;">
+              Alice unlocks her box, retrieves the temporary key, and hands the sealed envelope to Bob. Bob uses his
+              secret combination to open his envelope, proving to both parties that the Bank Manager issued the
+              temporary key!
+            </p>
+          </div>
+
+          <h2 class="vlab-section-heading">Full Plain-English Variable Mapping</h2>
+          <div class="vlab-card">
+            <table class="inspector-table">
+              <thead>
+                <tr>
+                  <th>Formal Notation</th>
+                  <th>Plain-English Descriptive Name</th>
+                  <th>Role &amp; Real-World Explanation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>A, B</strong></td>
+                  <td>Alice (Initiator) &amp; Bob (Responder)</td>
+                  <td>The two network users attempting to communicate securely.</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>Server S (Key Distribution Center)</td>
+                  <td>The trusted central server holding master passwords for all registered users.</td>
+                </tr>
+                <tr>
+                  <td><strong>K_A</strong></td>
+                  <td>Alice's Secret Master Password</td>
+                  <td>Secret password shared exclusively between Alice and the Server.</td>
+                </tr>
+                <tr>
+                  <td><strong>K_B</strong></td>
+                  <td>Bob's Secret Master Password</td>
+                  <td>Secret password shared exclusively between Bob and the Server.</td>
+                </tr>
+                <tr>
+                  <td><strong>K_AB</strong></td>
+                  <td>Temporary Shared Secret Key (Session Key)</td>
+                  <td>A temporary password generated by the Server just for Alice and Bob's chat.</td>
+                </tr>
+                <tr>
+                  <td><strong>N_A</strong></td>
+                  <td>Alice's Random Challenge Number</td>
+                  <td>A unique, single-use ticket number sent by Alice to ensure Server responses are fresh.</td>
+                </tr>
+                <tr>
+                  <td><strong>N_B</strong></td>
+                  <td>Bob's Random Challenge Number</td>
+                  <td>A unique, single-use test number sent by Bob to verify Alice's identity.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 class="vlab-section-heading">5-Step Protocol Message Breakdown</h2>
+          <div class="inspector-code-block">
+            <div><strong>Step 1 (A -&gt; S):</strong> A, B, Alice Challenge Number</div>
+            <div style="margin-top:0.35rem;"><strong>Step 2 (S -&gt; A):</strong> { Alice Challenge Number, B, Temporary
+              Session Key, { Temporary Session Key, A }_BobPassword }_AlicePassword</div>
+            <div style="margin-top:0.35rem;"><strong>Step 3 (A -&gt; B):</strong> { Temporary Session Key, A
+              }_BobPassword</div>
+            <div style="margin-top:0.35rem;"><strong>Step 4 (B -&gt; A):</strong> { Bob Challenge Number }_SessionKey
+            </div>
+            <div style="margin-top:0.35rem;"><strong>Step 5 (A -&gt; B):</strong> { f(Bob Challenge Number) }_SessionKey
+              where f(N_B) = N_B - 1</div>
+          </div>
+
+          <h2 class="vlab-section-heading">Security Analysis &amp; The Denning-Sacco Vulnerability</h2>
+          <p class="vlab-paragraph">
+            In 1981, Dorothy Denning and Giovanni Sacco identified a major flaw in the original 1978 protocol: Step 3's
+            ticket contains no timestamp or Bob-generated challenge. If a hacker steals an old temporary session key,
+            they can replay the old ticket to Bob. Bob will unlock it with his password and accept the compromised key!
+            Modern systems (like <strong>Kerberos</strong>) fix this by embedding encrypted timestamps inside tickets.
+          </p>
+        
+</section>
+
+        <!-- 3. PRETEST TAB -->
+        <section id="pretest" class="tab-content" data-tab-panel="pretest" hidden>
+
+          <h2 class="vlab-section-heading">Pretest Questions</h2>
+          <p class="vlab-paragraph">Evaluate your baseline knowledge of symmetric cryptography and Key Distribution
+            Centers prior to running the experiment.</p>
+
+          <div id="pretestQuestionsContainer"></div>
+
+          <div class="vlab-btn-group">
+            <button id="btnPretestSubmit" class="btn-vlab-primary">Submit Pretest</button>
+            <button id="btnPretestReset" class="btn-vlab-reset">Reset Options</button>
+          </div>
+          <div id="pretestScore" style="display:none; margin-top:1rem;"></div>
+        
+</section>
+
+        <!-- 4. PROCEDURE TAB -->
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+
+          <h2 class="vlab-section-heading">Simulation Instructions</h2>
+          <p class="vlab-paragraph">Follow these instructions to configure, run, and inspect the Needham-Schroeder
+            protocol in the interactive simulation:</p>
+
+          <div style="display:flex; flex-direction:column; gap:1rem; margin-top:1rem;">
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-brown); margin-bottom:0.35rem; font-size:0.95rem;">Step 1: Configure
+                Identities &amp; Challenge Mode</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                On the <strong>Interactive Simulation</strong> tab, select Client A Identity (Alice), Client B Identity
+                (Bob), and choose the Challenge Number Mode (Auto 16-bit Hex Nonces or Fixed Demo Values).
+              </p>
+            </div>
+
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-brown); margin-bottom:0.35rem; font-size:0.95rem;">Step 2: Initialize
+                Protocol Handshake</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Click <strong>"Initialize Handshake"</strong>. This generates 16-bit challenge numbers and transmits
+                Step 1 (A -&gt; S) requesting a temporary session key from the Server.
+              </p>
+            </div>
+
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-brown); margin-bottom:0.35rem; font-size:0.95rem;">Step 3:
+                Step-by-Step Execution</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Click <strong>"Next Step"</strong> to step through transmissions 2 to 5. Watch the data packet traverse
+                the topology map and monitor node status badges.
+              </p>
+            </div>
+
+            <div class="vlab-card">
+              <h4 style="color:var(--vlab-primary-brown); margin-bottom:0.35rem; font-size:0.95rem;">Step 4: Payload
+                &amp; Plain English Story Inspection</h4>
+              <p class="vlab-paragraph" style="margin-bottom:0;">
+                Review the <strong>Message Inspection Panel</strong> for raw wire format ciphertext, decrypted field
+                tables, and the <strong>Plain English Story</strong> column for layman explanations.
+              </p>
+            </div>
+          </div>
+        
+</section>
+
+        <!-- 5. INTERACTIVE SIMULATION TAB (SINGLE-VIEWPORT DASHBOARD) -->
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+
+          <div class="sim-dashboard-container">
+
+            <!-- Top Dashboard Card: Controls & Stepper Row -->
+            <div class="sim-top-card">
+              <div class="sim-controls-row">
+                <div class="sim-field-group-inline">
+                  <label for="selectAlice">Client A Identity (Alice):</label>
+                  <select id="selectAlice" class="sim-select-sm">
+                    <option value="Alice" selected>Alice (User_101)</option>
+                    <option value="Client_A">Client_A (Node_A)</option>
+                    <option value="Department_HR">Department_HR</option>
+                  </select>
+                </div>
+
+                <div class="sim-field-group-inline">
+                  <label for="selectBob">Client B Identity (Bob):</label>
+                  <select id="selectBob" class="sim-select-sm">
+                    <option value="Bob" selected>Bob (User_202)</option>
+                    <option value="Client_B">Client_B (Node_B)</option>
+                    <option value="Finance_Server">Finance_Server</option>
+                  </select>
+                </div>
+
+                <div class="sim-field-group-inline">
+                  <label for="selectNonceMode">Challenge Number Mode:</label>
+                  <select id="selectNonceMode" class="sim-select-sm">
+                    <option value="auto" selected>Auto 16-bit Hex Nonces (Random)</option>
+                    <option value="fixed">Fixed Demo Values (NA=0x4F92, NB=0x8A1C)</option>
+                  </select>
+                </div>
+
+                <div class="vlab-btn-group-inline">
+                  <button id="btnInitHandshake" class="btn-vlab-primary btn-vlab-sm">Initialize Handshake</button>
+                  <button id="btnNextStep" class="btn-vlab-primary btn-vlab-sm">Next Step</button>
+                  <button id="btnResetSim" class="btn-vlab-reset btn-vlab-sm">Reset Protocol</button>
+                  <button id="btnToggleConcepts" class="btn-vlab-reset btn-vlab-sm"
+                    style="background:#eef6f9; color:var(--vlab-btn-blue); border-color:#b3e5fc;">Beginner
+                    Concepts</button>
+                </div>
+              </div>
+
+              <!-- Compact Stepper Pills Row -->
+              <div class="stepper-pills-row">
+                <div class="step-pill-item active" data-step="0">
+                  <span class="step-pill-num">1</span> <span>Setup</span>
+                </div>
+                <span class="step-pill-arrow">&rarr;</span>
+
+                <div class="step-pill-item" data-step="1">
+                  <span class="step-pill-num">2</span> <span>NS-REQ</span>
+                </div>
+                <span class="step-pill-arrow">&rarr;</span>
+
+                <div class="step-pill-item" data-step="2">
+                  <span class="step-pill-num">3</span> <span>NS-REP</span>
+                </div>
+                <span class="step-pill-arrow">&rarr;</span>
+
+                <div class="step-pill-item" data-step="3">
+                  <span class="step-pill-num">4</span> <span>TICKET</span>
+                </div>
+                <span class="step-pill-arrow">&rarr;</span>
+
+                <div class="step-pill-item" data-step="4">
+                  <span class="step-pill-num">5</span> <span>CHALLENGE</span>
+                </div>
+                <span class="step-pill-arrow">&rarr;</span>
+
+                <div class="step-pill-item" data-step="5">
+                  <span class="step-pill-num">6</span> <span>VERIFIED</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Collapsible Beginner Concepts Box -->
+            <div class="fresher-collapsible-box" id="fresherCollapsibleBox">
+              <div class="fresher-concept-grid">
+                <div class="fresher-concept-card">
+                  <div class="fresher-concept-title">Secret Master Password</div>
+                  <div class="fresher-concept-body">
+                    A private combination passcode known only to you and the central Server. Used to lock and unlock
+                    private messages.
+                  </div>
+                </div>
+
+                <div class="fresher-concept-card">
+                  <div class="fresher-concept-title">Encryption</div>
+                  <div class="fresher-concept-body">
+                    Putting a message inside a locked digital box. Only someone with the exact matching password can
+                    unlock and read it.
+                  </div>
+                </div>
+
+                <div class="fresher-concept-card">
+                  <div class="fresher-concept-title">Session Key &amp; Ticket</div>
+                  <div class="fresher-concept-body">
+                    A temporary visitor badge created just for this chat. Allows Alice and Bob to talk without giving
+                    away permanent master passwords.
+                  </div>
+                </div>
+
+                <div class="fresher-concept-card">
+                  <div class="fresher-concept-title">Random Challenge Number</div>
+                  <div class="fresher-concept-body">
+                    A unique single-use ticket number (Nonce). Guarantees that a message is brand new and not an old
+                    recording replayed by a hacker.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Single-Viewport 2-Column Dashboard Grid -->
+            <div class="sim-dashboard-grid">
+
+              <!-- Left Column: Visual Node Topology Canvas -->
+              <div class="sim-canvas-column">
+                <div class="topology-container-compact">
+                  <svg class="topology-svg-canvas" id="topologySvg">
+                    <defs>
+                      <!-- Arrowhead marker for active transmissions -->
+                      <marker id="markerArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+                        orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#764b38" />
+                      </marker>
+                      <!-- Terminal dots for base interconnection links -->
+                      <marker id="markerDot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+                        <circle cx="5" cy="5" r="3.5" fill="#764b38" opacity="0.6" />
+                      </marker>
+                    </defs>
+
+                    <!-- Base Permanent Interconnection Links (Connecting All 3 Entities) -->
+                    <g class="topology-base-lines">
+                      <path id="lineBaseAliceKdc" class="topology-svg-path base-link" marker-start="url(#markerDot)"
+                        marker-end="url(#markerDot)" />
+                      <path id="lineBaseKdcBob" class="topology-svg-path base-link" marker-start="url(#markerDot)"
+                        marker-end="url(#markerDot)" />
+                      <path id="lineBaseAliceBob" class="topology-svg-path base-link" marker-start="url(#markerDot)"
+                        marker-end="url(#markerDot)" />
+                    </g>
+
+                    <!-- Active Step Directional Transmission Line -->
+                    <g class="topology-active-lines">
+                      <path id="lineActiveTransmission" class="topology-svg-path active-transmission"
+                        marker-end="url(#markerArrow)" />
+                    </g>
+
+                    <!-- Interconnection Channel Text Badges -->
+                    <g class="topology-labels">
+                      <text id="labelAliceKdc" class="topology-channel-text">K_A Channel</text>
+                      <text id="labelKdcBob" class="topology-channel-text">K_B Channel</text>
+                      <text id="labelAliceBob" class="topology-channel-text">K_AB Channel</text>
+                    </g>
+                  </svg>
+
+                  <!-- Node 1: Alice -->
+                  <div class="entity-card-compact alice" id="cardAlice">
+                    <div class="entity-header-compact">
+                      <div class="entity-icon-circle-sm">A</div>
+                      <div>
+                        <div class="entity-name-sm" id="nameAlice">Alice</div>
+                        <div class="entity-role-sm">Initiator (Client A)</div>
+                      </div>
+                    </div>
+                    <span class="entity-badge-sm status-idle" id="badgeAlice">IDLE</span>
+                    <table class="entity-key-table-sm">
+                      <tr>
+                        <td class="entity-key-name-sm">Alice's Secret Master Password:</td>
+                        <td class="entity-key-val-sm" id="valAliceKA">0x9A4F8B2C</td>
+                      </tr>
+                      <tr>
+                        <td class="entity-key-name-sm">Temporary Session Key:</td>
+                        <td class="entity-key-val-sm" id="valAliceKAB">None</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- Node 2: Server (KDC) -->
+                  <div class="entity-card-compact kdc" id="cardKdc">
+                    <div class="entity-header-compact">
+                      <div class="entity-icon-circle-sm" style="background:#5e3b2b;">S</div>
+                      <div>
+                        <div class="entity-name-sm">Server (KDC)</div>
+                        <div class="entity-role-sm">Key Distribution Center</div>
+                      </div>
+                    </div>
+                    <span class="entity-badge-sm status-idle" id="badgeKdc">LISTENING</span>
+                    <table class="entity-key-table-sm">
+                      <tr>
+                        <td class="entity-key-name-sm">Alice's Secret Master Password:</td>
+                        <td class="entity-key-val-sm" id="valKdcKA">0x9A4F8B2C</td>
+                      </tr>
+                      <tr>
+                        <td class="entity-key-name-sm">Bob's Secret Master Password:</td>
+                        <td class="entity-key-val-sm" id="valKdcKB">0x3C81D5E9</td>
+                      </tr>
+                      <tr>
+                        <td class="entity-key-name-sm">Temporary Session Key:</td>
+                        <td class="entity-key-val-sm" id="valKdcKAB">None</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- Node 3: Bob -->
+                  <div class="entity-card-compact bob" id="cardBob">
+                    <div class="entity-header-compact">
+                      <div class="entity-icon-circle-sm">B</div>
+                      <div>
+                        <div class="entity-name-sm" id="nameBob">Bob</div>
+                        <div class="entity-role-sm">Responder (Client B)</div>
+                      </div>
+                    </div>
+                    <span class="entity-badge-sm status-idle" id="badgeBob">IDLE</span>
+                    <table class="entity-key-table-sm">
+                      <tr>
+                        <td class="entity-key-name-sm">Bob's Secret Master Password:</td>
+                        <td class="entity-key-val-sm" id="valBobKB">0x3C81D5E9</td>
+                      </tr>
+                      <tr>
+                        <td class="entity-key-name-sm">Temporary Session Key:</td>
+                        <td class="entity-key-val-sm" id="valBobKAB">None</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- Animated Packet -->
+                  <div class="visual-packet-sm" id="visualPacket">Step 1</div>
+                </div>
+              </div>
+
+              <!-- Right Column: Inspector & Plain English Breakdown -->
+              <div class="sim-inspector-column">
+                <div class="inspector-card-compact" style="max-height: 380px; overflow-y: auto;">
+                  <div class="vlab-card-title" id="inspectorTitle" style="font-size:0.95rem; margin-bottom:0.5rem;">Step
+                    1: System Setup (Idle)</div>
+
+                  <!-- Pinned Plain English Story Box at the top -->
+                  <div class="story-callout-box" id="inspectorStoryCallout" style="margin-bottom:0.6rem;">
+                    <strong>Plain English Story:</strong> The system is ready. Click "Initialize Handshake" to see how
+                    Alice and Bob establish a temporary session pass using Server S.
+                  </div>
+
+                  <div style="font-size:0.75rem; font-weight:600; color:var(--vlab-text-muted); margin-bottom:0.2rem;">
+                    Mathematical Structure:</div>
+                  <div class="inspector-code-block-sm" id="inspectorMath" style="color:#f59e0b;">
+                    Alice -&gt; Server : Alice, Bob, Alice Challenge Number
+                  </div>
+
+                  <div style="font-size:0.75rem; font-weight:600; color:var(--vlab-text-muted); margin-bottom:0.2rem;">
+                    Raw Wire Format Ciphertext:</div>
+                  <div class="inspector-code-block-sm" id="inspectorCiphertext">
+                    No active payload transmitted yet. Click "Initialize Handshake" to begin.
+                  </div>
+
+                  <div style="font-size:0.75rem; font-weight:600; color:var(--vlab-text-muted); margin-bottom:0.25rem;">
+                    Decrypted Field Breakdown:</div>
+                  <table class="inspector-table-compact">
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                        <th>Key Used</th>
+                        <th>Security Purpose</th>
+                        <th>Plain English Story</th>
+                      </tr>
+                    </thead>
+                    <tbody id="inspectorTableBody">
+                      <tr>
+                        <td colspan="5" style="text-align:center; color:#777;">Click "Initialize Handshake" to inspect
+                          step details.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Integrated Audit Log Console -->
+                <div class="inspector-card-compact">
+                  <div
+                    style="font-size:0.85rem; font-weight:700; color:var(--vlab-primary-brown); margin-bottom:0.35rem; display:flex; justify-content:space-between; align-items:center;">
+                    <span>Real-Time Audit Log</span>
+                    <button class="btn-vlab-reset" style="padding:0.15rem 0.45rem; font-size:0.72rem;"
+                      onclick="document.getElementById('auditConsole').innerHTML=''">Clear</button>
+                  </div>
+                  <div class="audit-console-compact" id="auditConsole"></div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        
+</section>
+
+        <!-- 6. POSTTEST TAB -->
+        <section id="posttest" class="tab-content" data-tab-panel="posttest" hidden>
+
+          <h2 class="vlab-section-heading">Posttest Assessment</h2>
+          <p class="vlab-paragraph">Assess your understanding of ticket decryption, nonce challenges, and protocol
+            security vulnerabilities.</p>
+
+          <div id="posttestQuestionsContainer"></div>
+
+          <div class="vlab-btn-group">
+            <button id="btnPosttestSubmit" class="btn-vlab-primary">Submit Posttest</button>
+            <button id="btnPosttestReset" class="btn-vlab-reset">Reset Options</button>
+          </div>
+          <div id="posttestScore" style="display:none; margin-top:1rem;"></div>
+        
+</section>
+
+        <!-- 7. REFERENCES TAB -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+
+          <h2 class="vlab-section-heading">References &amp; Further Reading</h2>
+          <ul style="margin-left: 1.5rem; line-height: 1.8; color: #333; font-size: 0.95rem;">
+            <li>Needham, R. M., &amp; Schroeder, M. D. (1978). <em>Using encryption for authentication in large networks
+                of computers.</em> Communications of the ACM, 21(12), 993-999.</li>
+            <li>Denning, D. E., &amp; Sacco, G. M. (1981). <em>Timestamps in key distribution protocols.</em>
+              Communications of the ACM, 24(8), 533-536.</li>
+            <li>Stallings, W. (2017). <em>Cryptography and Network Security: Principles and Practice.</em> Pearson
+              Education (7th Edition).</li>
+            <li>Menezes, A. J., van Oorschot, P. C., &amp; Vanstone, S. A. (1996). <em>Handbook of Applied
+                Cryptography.</em> CRC Press.</li>
           </ul>
+        
+</section>
 
-          <h2>Prerequisites</h2>
-          <p>Basic understanding of symmetric encryption (e.g., AES) and the concept of a shared secret key.</p>
-          
-          <h2>What you will observe</h2>
-          <p>You will see how Alice and Bob exchange messages via the KDC to establish a secure session key. You will observe how encryption protects the ticket, how nonces ensure freshness, and how a compromised old key can be used by an attacker to launch a replay attack.</p>
-        </section>
+        <!-- 8. CONTRIBUTORS TAB -->
+        <section id="contributors" class="tab-content" data-tab-panel="contributors" hidden>
 
-        <!-- Tab 2: Theory -->
-        <section id="theory" class="tab-pane" aria-labelledby="theory-tab">
-          <h2>Need for Authentication & Key Distribution</h2>
-          <p>In a network with <em>N</em> users, symmetric cryptography requires <em>N(N-1)/2</em> keys if every pair shares a key. This is unscalable. A Key Distribution Center (KDC) solves this by sharing a long-term key with each user. When Alice wants to talk to Bob, the KDC generates a temporary session key and distributes it securely to both.</p>
-
-          <h2>Protocol Concepts</h2>
-          <ul>
-            <li><strong>Nonces:</strong> A nonce (number used once) is a random value generated for a specific protocol run. It ensures freshness—if a nonce sent in message 1 is returned inside an encrypted message 2, the sender knows message 2 was freshly generated, preventing replay of old messages.</li>
-            <li><strong>The Ticket:</strong> A block of data meant for Bob, encrypted with Bob's long-term key. Alice cannot read it, but she forwards it to Bob.</li>
-          </ul>
-
-          <h2>The 5 Messages</h2>
-          <ol>
-            <li><strong>A &rarr; S : A, B, N<sub>a</sub></strong><br>
-            Alice tells the KDC she wants to talk to Bob and sends her nonce N<sub>a</sub>.</li>
-            <li><strong>S &rarr; A : {N<sub>a</sub>, B, K<sub>ab</sub>, {K<sub>ab</sub>, A}K<sub>bs</sub>}K<sub>as</sub></strong><br>
-            The KDC replies with a message encrypted with Alice's key K<sub>as</sub>. Inside, Alice finds her nonce (proving freshness), Bob's identity (proving it's for Bob), the new session key K<sub>ab</sub>, and the ticket {K<sub>ab</sub>, A}K<sub>bs</sub>.</li>
-            <li><strong>A &rarr; B : {K<sub>ab</sub>, A}K<sub>bs</sub></strong><br>
-            Alice forwards the ticket to Bob. Bob decrypts it with his key K<sub>bs</sub> and learns K<sub>ab</sub> and that Alice is the initiator.</li>
-            <li><strong>B &rarr; A : {N<sub>b</sub>}K<sub>ab</sub></strong><br>
-            Bob generates his own nonce N<sub>b</sub>, encrypts it with the new session key, and sends it to Alice as a challenge.</li>
-            <li><strong>A &rarr; B : {N<sub>b</sub> - 1}K<sub>ab</sub></strong><br>
-            Alice decrypts, subtracts 1 from N<sub>b</sub> (to prove she can manipulate the data), encrypts it with K<sub>ab</sub>, and sends it back to authenticate herself to Bob.</li>
-          </ol>
-
-          <h2>Security Goals Achieved</h2>
-          <p>The protocol achieves mutual authentication, key confidentiality, and key freshness for Alice.</p>
-
-          <h2>Vulnerability: The Denning-Sacco Replay Attack</h2>
-          <p>In 1981, Denning and Sacco pointed out a flaw: Bob has no way to check that message 3 is fresh. If an attacker (Mallory) compromises an old session key K<sub>ab</sub>, she can replay an old ticket {K<sub>ab</sub>, A}K<sub>bs</sub> to Bob. Bob will accept it, and Mallory can impersonate Alice.</p>
-          <p><strong>The Fix:</strong> Add timestamps or lifetimes to the ticket. This ensures Bob rejects stale tickets. This concept is foundational to Kerberos.</p>
-
-          <div class="key-points-box">
-            <h3>Key Points</h3>
-            <ul>
-              <li>KDC distributes session keys using long-term keys.</li>
-              <li>Nonces prove freshness for Alice, but not for Bob in the original protocol.</li>
-              <li>Replay attacks exploit the lack of freshness guarantees for Bob's ticket.</li>
-            </ul>
+          <h2 class="vlab-section-heading">Experiment Contributors</h2>
+          <div class="vlab-card">
+            <h4 style="color:var(--vlab-primary-brown); font-size:0.95rem;">Department of Computer Science and
+              Engineering</h4>
+            <p class="vlab-paragraph" style="margin-top:0.4rem; font-size:0.9rem;">
+              <strong>Developer:</strong>Jeremiah Yangal<br>
+              <strong>Institute:</strong> FR.Crce<br>
+              <strong>Teacher incharge:</strong> Monali shetty
+            </p>
           </div>
-        </section>
+        
+</section>
 
-        <!-- Tab 3: Procedure -->
-        <section id="procedure" class="tab-pane" aria-labelledby="procedure-tab">
-          <h2>Procedure</h2>
-          <ol>
-            <li>Go to the <strong>Simulation</strong> tab.</li>
-            <li><strong>Setup:</strong> Enter identifiers for Alice and Bob, or leave the defaults. Observe the pre-shared keys (Kas, Kbs) derived from passphrases.</li>
-            <li><strong>Scenario Selection:</strong> Choose a scenario from the dropdown (e.g., Normal Run, Replay Attack).</li>
-            <li><strong>Step-by-Step Execution:</strong> Click "Next Step" to trace the protocol message by message.
-              <ul>
-                <li>Observe how knowledge panels update as entities learn nonces and keys.</li>
-                <li>Click on ciphertext in the Message Log to see its decrypted form.</li>
-              </ul>
-            </li>
-            <li><strong>Attack Scenarios:</strong> 
-              <ul>
-                <li>Run the "Replay attack by Mallory" scenario. Note how Bob accepts the compromised key.</li>
-                <li>Run the "Replay attack with Timestamp fix ON" scenario. Observe how Bob rejects the stale ticket.</li>
-              </ul>
-            </li>
-            <li><strong>Results:</strong> Check the Observations &amp; Results panel to see if mutual authentication was achieved.</li>
-          </ol>
-          <div class="note-box">
-            <strong>Real lab vs virtual lab note:</strong> In a real implementation, keys are typically 256-bit random bytes rather than derived from short passphrases, and messages are sent over TCP/UDP sockets rather than simulated in a single browser window. We use AES-256-GCM for encryption as a modern standard, though the original 1978 paper assumed DES.
-          </div>
-        </section>
+        <!-- 9. FEEDBACK TAB -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
 
-        <!-- Tab 4: Simulation -->
-        <section id="simulation" class="tab-pane" aria-labelledby="simulation-tab">
-          <div class="simulation-controls card">
-            <div class="control-group">
-              <label for="scenario-select">Scenario:</label>
-              <select id="scenario-select">
-                <option value="normal">Normal Run</option>
-                <option value="wrong_kas">Wrong Kas (KDC to Alice fails)</option>
-                <option value="tampered_ticket">Tampered Ticket</option>
-                <option value="nonce_mismatch">Nonce Mismatch (A checks Na)</option>
-                <option value="wrong_nb1">Wrong Nb-1 Reply (A to B fails)</option>
-                <option value="replay_attack">Replay Attack (Denning-Sacco)</option>
-                <option value="replay_timestamp">Replay Attack with Timestamp Fix ON</option>
-              </select>
-            </div>
-            <div class="control-actions">
-              <button id="btn-reset" class="btn secondary">Reset</button>
-              <button id="btn-next" class="btn primary">Next Step &rarr;</button>
-              <button id="btn-auto" class="btn secondary">Auto-play</button>
-              <label><input type="range" id="speed-slider" min="1" max="5" value="3"> Speed</label>
-              <button id="btn-demo" class="btn hidden-demo" title="Hidden Demo Mode">Demo Mode</button>
-            </div>
-          </div>
-
-          <div class="simulation-grid">
-            <!-- Alice -->
-            <div class="entity-panel card" id="panel-alice">
-              <h3>Alice (Initiator)</h3>
-              <div class="knowledge-base">
-                <p><strong>Kas:</strong> <span id="alice-kas" class="mono"></span></p>
-                <p><strong>Na:</strong> <span id="alice-na" class="mono text-muted">Waiting...</span></p>
-                <p><strong>Kab:</strong> <span id="alice-kab" class="mono text-muted">Unknown</span></p>
-                <p><strong>Ticket:</strong> <span id="alice-ticket" class="mono text-muted">None</span></p>
+          <h2 class="vlab-section-heading">Experiment Feedback</h2>
+          <div class="vlab-card">
+            <form id="vlabFeedbackForm"
+              onsubmit="event.preventDefault(); alert('Thank you for submitting your feedback.');">
+              <div class="sim-field-group" style="margin-bottom:1rem;">
+                <label for="fbUserName">Your Name:</label>
+                <input type="text" id="fbUserName" class="sim-input" placeholder="Enter your name">
               </div>
-            </div>
 
-            <!-- KDC -->
-            <div class="entity-panel card" id="panel-kdc">
-              <h3>S (KDC)</h3>
-              <div class="knowledge-base">
-                <p><strong>Kas:</strong> <span id="kdc-kas" class="mono"></span></p>
-                <p><strong>Kbs:</strong> <span id="kdc-kbs" class="mono"></span></p>
-                <p><strong>New Kab:</strong> <span id="kdc-kab" class="mono text-muted">Waiting...</span></p>
+              <div class="sim-field-group" style="margin-bottom:1rem;">
+                <label for="fbEmail">Email Address:</label>
+                <input type="email" id="fbEmail" class="sim-input" placeholder="Enter your email">
               </div>
-              <div class="anim-area" id="anim-area-kdc">
-                 <div id="message-arrow" class="arrow hidden">Message</div>
+
+              <div class="sim-field-group" style="margin-bottom:1rem;">
+                <label for="fbComments">Comments / Bug Reports / Suggestions:</label>
+                <textarea id="fbComments" class="sim-input" rows="4" placeholder="Share your experience..."></textarea>
               </div>
-            </div>
 
-            <!-- Bob -->
-            <div class="entity-panel card" id="panel-bob">
-              <h3>Bob (Responder)</h3>
-              <div class="knowledge-base">
-                <p><strong>Kbs:</strong> <span id="bob-kbs" class="mono"></span></p>
-                <p><strong>Nb:</strong> <span id="bob-nb" class="mono text-muted">Waiting...</span></p>
-                <p><strong>Kab:</strong> <span id="bob-kab" class="mono text-muted">Unknown</span></p>
-              </div>
-            </div>
+              <button type="submit" class="btn-vlab-primary">Submit Feedback</button>
+            </form>
           </div>
+        
+</section>
 
-          <div class="message-log card mt-4">
-            <h3>Message Log</h3>
-            <div class="table-responsive">
-              <table id="log-table">
-                <thead>
-                  <tr>
-                    <th>Step</th>
-                    <th>Sender &rarr; Receiver</th>
-                    <th>Plaintext</th>
-                    <th>Ciphertext (Click to inspect)</th>
-                    <th>Verification</th>
-                  </tr>
-                </thead>
-                <tbody id="log-tbody">
-                  <!-- Logs injected here -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="results-panel card mt-4">
-            <h3>Observations &amp; Results</h3>
-            <div class="table-responsive">
-              <table id="results-table">
-                <thead>
-                  <tr>
-                    <th>Scenario</th>
-                    <th>Expected Result</th>
-                    <th>Actual Result</th>
-                    <th>Session Key Established?</th>
-                    <th>Authenticated?</th>
-                  </tr>
-                </thead>
-                <tbody id="results-tbody">
-                  <tr>
-                    <td id="res-scenario">-</td>
-                    <td id="res-expected">-</td>
-                    <td id="res-actual">-</td>
-                    <td id="res-key">-</td>
-                    <td id="res-auth">-</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="student-conclusion mt-4">
-              <label for="conclusion-text">Student Conclusion:</label>
-              <textarea id="conclusion-text" rows="3" placeholder="Enter your conclusion based on the observations..."></textarea>
-              <button id="btn-print" class="btn primary mt-2">Print / Copy Results</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Tab 5: Quiz -->
-        <section id="quiz" class="tab-pane" aria-labelledby="quiz-tab">
-          <h2>Quiz</h2>
-          <div id="quiz-container">
-            <!-- Quiz injected via JS -->
-          </div>
-          <div id="quiz-score" class="hidden card mt-4"></div>
-          <button id="btn-submit-quiz" class="btn primary mt-4">Submit Quiz</button>
-          <button id="btn-retry-quiz" class="btn secondary mt-4 hidden">Retry Quiz</button>
-        </section>
-
-        <!-- Tab 6: References -->
-        <section id="references" class="tab-pane" aria-labelledby="references-tab">
-          <h2>References</h2>
-          <ul>
-            <li>Needham, R. M., & Schroeder, M. D. (1978). <a href="https://dl.acm.org/doi/10.1145/359657.359659" target="_blank">Using encryption for authentication in large networks of computers</a>. Communications of the ACM, 21(12), 993-999.</li>
-            <li>Denning, D. E., & Sacco, G. M. (1981). <a href="https://dl.acm.org/doi/10.1145/358722.358740" target="_blank">Timestamps in key distribution protocols</a>. Communications of the ACM, 24(8), 533-536.</li>
-            <li>Stallings, W. "Cryptography and Network Security: Principles and Practice". Pearson.</li>
-            <li>Menezes, A. J., van Oorschot, P. C., & Vanstone, S. A. <a href="https://cacr.uwaterloo.ca/hac/" target="_blank">"Handbook of Applied Cryptography"</a> Chapter 12.</li>
-            <li>RFC 4120: <a href="https://datatracker.ietf.org/doc/html/rfc4120" target="_blank">The Kerberos Network Authentication Service (V5)</a>.</li>
-            <li>W3C: <a href="https://www.w3.org/TR/WebCryptoAPI/" target="_blank">Web Cryptography API</a>.</li>
-            <li>MDN: <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto" target="_blank">SubtleCrypto Interface</a>.</li>
-          </ul>
-        </section>
-
-        <!-- Tab 7: Feedback -->
-        <section id="feedback" class="tab-pane" aria-labelledby="feedback-tab">
-          <h2>Feedback</h2>
-          <form id="feedback-form" class="card">
-            <div class="form-group">
-              <label for="fb-name">Name (Optional):</label>
-              <input type="text" id="fb-name" placeholder="Your name">
-            </div>
-            <div class="form-group">
-              <label>Rating (1-5 stars):</label>
-              <div class="star-rating">
-                <input type="radio" name="rating" id="star5" value="5"><label for="star5" title="5 stars">★</label>
-                <input type="radio" name="rating" id="star4" value="4"><label for="star4" title="4 stars">★</label>
-                <input type="radio" name="rating" id="star3" value="3"><label for="star3" title="3 stars">★</label>
-                <input type="radio" name="rating" id="star2" value="2"><label for="star2" title="2 stars">★</label>
-                <input type="radio" name="rating" id="star1" value="1"><label for="star1" title="1 star">★</label>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="fb-clarity">Clarity:</label>
-              <select id="fb-clarity" required>
-                <option value="">Select...</option>
-                <option value="Very Clear">Very Clear</option>
-                <option value="Clear">Clear</option>
-                <option value="Neutral">Neutral</option>
-                <option value="Confusing">Confusing</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="fb-difficulty">Difficulty:</label>
-              <select id="fb-difficulty" required>
-                <option value="">Select...</option>
-                <option value="Too Easy">Too Easy</option>
-                <option value="Just Right">Just Right</option>
-                <option value="Too Hard">Too Hard</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="fb-comments">Comments:</label>
-              <textarea id="fb-comments" rows="4" placeholder="Any suggestions or issues?" required></textarea>
-            </div>
-            <button type="submit" class="btn primary">Submit Feedback</button>
-            <button type="button" id="btn-copy-feedback" class="btn secondary hidden">Copy Feedback</button>
-            <div id="fb-message" class="mt-2 text-success"></div>
-          </form>
-        </section>
-      </main>
+      
+</main>
     </div>
-    
-    <!-- Modal for Ciphertext Inspection -->
-    <div id="crypto-modal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Message Details</h2>
-        <p><strong>Ciphertext (Hex):</strong></p>
-        <div id="modal-ciphertext" class="mono word-wrap"></div>
-        <p><strong>Decrypted Plaintext:</strong></p>
-        <div id="modal-plaintext" class="mono word-wrap"></div>
-        <p class="text-muted text-sm mt-2">Note: AES-256-GCM is used here for simulation. The original 1978 protocol used DES.</p>
-      </div>
-    </div>
 
-    <script src="script.js" type="module"></script>
+    <script src="../../js/common.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>
