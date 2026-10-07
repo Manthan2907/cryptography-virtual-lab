@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="RSA as a Digital Signature — Virtual Cryptography Laboratory, Fr. Conceicao Rodrigues College of Engineering">
+    <title>RSA as a Digital Signature | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="style.css?v=3">
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -19,77 +20,973 @@
     <div class="experiment-container">
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems &middot; Experiment #9</p>
+        <h1 id="exp-title">RSA as a Digital Signature</h1>
+        <p id="exp-description">Generate an RSA digital signature for a given message and verify the signature using the corresponding public key.</p>
+        <p style="margin-top: 8px; font-size: 13px; opacity: 0.9; font-family: Arial, sans-serif;">
+          <strong>Assigned Group:</strong> Arnav Potale, Joel Wilson, Omkar Patil, Rahul Senapati &bull; <em>Branch: group-rsa</em>
+        </p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" data-tab="observations" aria-selected="false">Observations &amp; Results</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+        <!-- ========================================== -->
+        <!-- 1. AIM & OBJECTIVES TAB                    -->
+        <!-- ========================================== -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="rsa-intro-box">
+            <h2>Aim &amp; Overview</h2>
+            <p><strong>Aim:</strong> To generate an RSA digital signature for a given message and verify the signature using the corresponding public key.</p>
+          </div>
+
+          <div style="background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-3);">
+            <h3 style="margin-top: 0; color: var(--color-primary);">Key Learning Objectives</h3>
+            <ul>
+              <li>Understand how asymmetric public-key cryptography enables message authentication and integrity.</li>
+              <li>Learn how the RSA key pair (Public Key and Private Key) is mathematically constructed from prime numbers.</li>
+              <li>Observe digital signature creation using the signer's private exponent: <code>s = m^d mod n</code>.</li>
+              <li>Perform digital signature verification using the signer's public exponent: <code>m' = s^e mod n</code>.</li>
+              <li>Simulate man-in-the-middle message interception and observe how tampering invalidates the signature.</li>
+            </ul>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'theory\']').click();">Proceed to Theory &rarr;</button>
           </div>
         </section>
 
+        <!-- ========================================== -->
+        <!-- 2. THEORY TAB (5 Compact Concepts)        -->
+        <!-- ========================================== -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="rsa-intro-box">
+            <h2>Core Theory of RSA Digital Signatures</h2>
+            <p>A digital signature is a mathematical technique that binds a sender to a message, proving who sent it and that it was not modified in transit.</p>
+          </div>
+
+          <div class="theory-grid">
+            <!-- Concept A -->
+            <div class="theory-card">
+              <div class="theory-card-header">
+                <span class="theory-badge">Concept 1</span>
+                <h3>A. What is RSA?</h3>
+              </div>
+              <p>RSA is an asymmetric (public-key) cryptographic algorithm. It uses two mathematically linked keys:</p>
+              <ul>
+                <li><strong>Public Key (e, n):</strong> Shared openly with anyone to verify signatures.</li>
+                <li><strong>Private Key (d, n):</strong> Kept secret by the signer to generate signatures.</li>
+              </ul>
+              <p>In this experiment, RSA is used to create and verify a digital signature.</p>
+            </div>
+
+            <!-- Concept B -->
+            <div class="theory-card">
+              <div class="theory-card-header">
+                <span class="theory-badge">Concept 2</span>
+                <h3>B. How are Keys Created?</h3>
+              </div>
+              <div class="theory-formula-box">
+                1. Choose primes: p and q<br>
+                2. Calculate: n = p &times; q<br>
+                3. Calculate: phi(n) = (p - 1)(q - 1)<br>
+                4. Choose e such that: gcd(e, phi(n)) = 1<br>
+                5. Calculate d: e &times; d &equiv; 1 (mod phi(n))
+              </div>
+              <div>
+                <strong>Public Key:</strong> (e, n) &emsp; <strong>Private Key:</strong> (d, n)
+              </div>
+              <button type="button" class="why-toggle" data-target="whyD" data-original-text="▼ Why do we need d?">▼ Why do we need d?</button>
+              <div class="why-content" id="whyD">
+                d is the private exponent used to generate the signature. Only the signer knows d, ensuring nobody else can forge the signature.
+              </div>
+              <button type="button" class="why-toggle" data-target="whyE" data-original-text="▼ Why must e be valid?">▼ Why must e be valid?</button>
+              <div class="why-content" id="whyE">
+                e must have a modular inverse modulo phi(n), which is only possible when gcd(e, phi(n)) = 1.
+              </div>
+            </div>
+
+            <!-- Concept C -->
+            <div class="theory-card">
+              <div class="theory-card-header">
+                <span class="theory-badge">Concept 3</span>
+                <h3>C. How is the Message Signed?</h3>
+              </div>
+              <p>The sender uses their secret private key exponent <code>d</code>:</p>
+              <div class="theory-formula-box">
+                s = m^d mod n
+              </div>
+              <p style="margin-top: 6px;">
+                <strong>MESSAGE</strong> &rarr; <strong>Private Key (d, n)</strong> &rarr; <strong>SIGNATURE (s)</strong>
+              </p>
+              <p style="font-size: 13px; color: var(--color-text-muted);">
+                The numerical message m must satisfy <code>0 &lt; m &lt; n</code>.
+              </p>
+            </div>
+
+            <!-- Concept D -->
+            <div class="theory-card">
+              <div class="theory-card-header">
+                <span class="theory-badge">Concept 4</span>
+                <h3>D. How is the Signature Verified?</h3>
+              </div>
+              <p>The receiver uses the signer's public key exponent <code>e</code>:</p>
+              <div class="theory-formula-box">
+                m' = s^e mod n<br>
+                If m' = m &rarr; VALID SIGNATURE
+              </div>
+              <button type="button" class="why-toggle" data-target="whyVerify" data-original-text="▼ Why use the public key?">▼ Why use the public key?</button>
+              <div class="why-content" id="whyVerify">
+                Anyone with the public key can check whether the signature matches the message without needing the secret private key.
+              </div>
+            </div>
+
+            <!-- Concept E -->
+            <div class="theory-card" style="grid-column: 1 / -1;">
+              <div class="theory-card-header">
+                <span class="theory-badge">Concept 5</span>
+                <h3>E. What Does a Digital Signature Show?</h3>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                <div style="background: var(--color-surface); padding: 10px; border-radius: 4px; border: 1px solid var(--color-border);">
+                  <strong style="color: #93c5fd;">1. Authentication</strong>
+                  <p style="font-size: 13px; margin: 4px 0 0; color: var(--color-text-muted);">Confirms the message came from the entity holding private key d.</p>
+                </div>
+                <div style="background: var(--color-surface); padding: 10px; border-radius: 4px; border: 1px solid var(--color-border);">
+                  <strong style="color: #86efac;">2. Message Integrity</strong>
+                  <p style="font-size: 13px; margin: 4px 0 0; color: var(--color-text-muted);">Any change to message m causes verification to fail immediately.</p>
+                </div>
+                <div style="background: var(--color-surface); padding: 10px; border-radius: 4px; border: 1px solid var(--color-border);">
+                  <strong style="color: #fde68a;">3. Non-Repudiation</strong>
+                  <p style="font-size: 13px; margin: 4px 0 0; color: var(--color-text-muted);">The signer cannot deny signing because only they possess private key d.</p>
+                </div>
+              </div>
+              <div style="background: rgba(180, 83, 9, 0.15); border: 1px solid #f59e0b; padding: 10px 14px; border-radius: 4px; margin-top: 4px; font-size: 13px; color: #fde68a;">
+                <strong>Important Security Note:</strong> A digital signature does <em>NOT</em> provide confidentiality. The message itself is transmitted in plain view alongside signature s.
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <button type="button" class="btn-secondary-action" onclick="document.querySelector('.tab-btn[data-tab=\'aim\']').click();">&larr; Back to Aim</button>
+            <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'procedure\']').click();">Proceed to Procedure &rarr;</button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 3. PROCEDURE TAB (7 Visual Steps)         -->
+        <!-- ========================================== -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+          <div class="rsa-intro-box">
+            <h2>Visual Laboratory Stepper</h2>
+            <p>Follow these 7 sequential laboratory steps to execute the experiment:</p>
+          </div>
+
+          <div class="stepper-container">
+            <div class="step-item">
+              <div class="step-num-badge">1</div>
+              <div class="step-details">
+                <h4>STEP 1: Choose or Generate Prime Numbers</h4>
+                <p>Enter two distinct prime numbers p and q manually (e.g. p = 7, q = 23), or click <em>"Generate Random Primes"</em>.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num-badge">2</div>
+              <div class="step-details">
+                <h4>STEP 2: Generate RSA Key Pair</h4>
+                <p>Compute modulus n = p &times; q, phi(n) = (p - 1)(q - 1), select coprime e where gcd(e, phi(n)) = 1, and compute private exponent d = e⁻¹ mod phi(n).</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num-badge">3</div>
+              <div class="step-details">
+                <h4>STEP 3: Enter Message &amp; Select Hash Algorithm</h4>
+                <p>Provide message m (0 &lt; m &lt; n) and select a cryptographic hash function: <strong>MD5</strong> (128-bit) or <strong>SHA-1</strong> (160-bit).</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num-badge">4</div>
+              <div class="step-details">
+                <h4>STEP 4: Generate Message Digest &amp; Sign</h4>
+                <p>Compute message digest H(m) and apply private exponent d to compute digital signature <code>s = m^d mod n</code>.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num-badge">5</div>
+              <div class="step-details">
+                <h4>STEP 5: Verify Signature via Public Key &amp; Digest Match</h4>
+                <p>Receiver calculates H(m) using the same hash algorithm, recovers message representation <code>m' = s^e mod n</code>, and compares digests.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num-badge">6</div>
+              <div class="step-details">
+                <h4>STEP 6: Simulate Tampering or Algorithm Mismatch</h4>
+                <p>Observe how altering the message or changing hash algorithm causes digest mismatch (INVALID SIGNATURE).</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num-badge">7</div>
+              <div class="step-details">
+                <h4>STEP 7: Review Observations &amp; Complete Assessment</h4>
+                <p>Analyze the final parameters in Observations and evaluate understanding with the self-evaluation quiz.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <button type="button" class="btn-secondary-action" onclick="document.querySelector('.tab-btn[data-tab=\'theory\']').click();">&larr; Back to Theory</button>
+            <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'simulation\']').click();">Launch Simulation &rarr;</button>
           </div>
         </section>
 
+        <!-- ========================================== -->
+        <!-- 4. SIMULATION TAB (Core Laboratory)        -->
+        <!-- ========================================== -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+          <!-- Security Concept Visual Process Flow -->
+          <div class="security-diagram-box">
+            <div class="diagram-header">Security Architecture: Key Generation &rarr; Hash &rarr; Sign &rarr; Transit &rarr; Hashed Verify</div>
+            <div class="diagram-track">
+              <div class="diagram-step active" id="diagSender">
+                <div class="diagram-step-title">Message &amp; Hash</div>
+                <div class="diagram-step-content" id="diagSenderContent">m = 23 &bull; SHA-1</div>
+              </div>
+              <div class="diagram-link-arrow">&rarr;</div>
+              <div class="diagram-step active" id="diagSignature">
+                <div class="diagram-step-title">Private Key (d, n)</div>
+                <div class="diagram-step-content" id="diagSignatureContent">Signature s = 46</div>
+              </div>
+              <div class="diagram-link-arrow">&rarr;</div>
+              <div class="diagram-step" id="diagInterceptor">
+                <div class="diagram-step-title">Channel</div>
+                <div class="diagram-step-content">(m, s) in transit</div>
+              </div>
+              <div class="diagram-link-arrow">&rarr;</div>
+              <div class="diagram-step active" id="diagReceiver">
+                <div class="diagram-step-title">Receiver</div>
+                <div class="diagram-step-content" id="diagReceiverContent">Public Key (e, n)</div>
+              </div>
+              <div class="diagram-link-arrow">&rarr;</div>
+              <div class="diagram-step active" id="diagVerify">
+                <div class="diagram-step-title">Verification</div>
+                <div class="diagram-step-content" id="diagVerifyContent">Compare H(m) vs H(m')</div>
+              </div>
+              <div class="diagram-link-arrow">&rarr;</div>
+              <div class="diagram-step active" id="diagResult">
+                <div class="diagram-step-title">Verdict</div>
+                <div class="diagram-step-content" id="diagResultContent" style="color: #86efac;">VALID</div>
+              </div>
+            </div>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+
+          <!-- STAGE 1: PRIME SELECTION -->
+          <div class="sim-stage-card">
+            <div class="sim-stage-header">
+              <h3 class="sim-stage-title"><span class="step-num-badge" style="width:24px; height:24px; font-size:12px;">1</span> Stage 1: Prime Selection</h3>
+              <span class="sim-stage-badge">Manual Input &amp; Auto Generation</span>
+            </div>
+
+            <p style="margin: 0; font-size: 14px; color: var(--color-text-muted);">
+              RSA begins with two prime numbers p and q. Enter them manually or click <em>Generate Random Primes</em>.
+            </p>
+
+            <div id="primeAlert" class="sim-alert"></div>
+
+            <div class="input-grid-2">
+              <div class="sim-input-group">
+                <label for="inputP">Prime p:</label>
+                <input type="number" id="inputP" value="7" min="2">
+                <span class="input-helper-note">Must be a prime integer</span>
+              </div>
+              <div class="sim-input-group">
+                <label for="inputQ">Prime q:</label>
+                <input type="number" id="inputQ" value="23" min="2">
+                <span class="input-helper-note">Must be a distinct prime (q &ne; p)</span>
+              </div>
+            </div>
+
+            <!-- Prime Mathematics Status Indicator -->
+            <div id="primeMathStatus" class="math-calc-line" style="margin-top: 8px; font-size: 13px; display: flex; flex-wrap: wrap; gap: 16px;">
+              <span id="primeStatusP" style="color: #86efac; font-weight: bold;">p = 7: &check; Prime</span>
+              <span id="primeStatusQ" style="color: #86efac; font-weight: bold;">q = 23: &check; Prime</span>
+            </div>
+
+            <!-- Animated Generation Status Indicator -->
+            <div id="primeGenStatus" class="generation-status-box"></div>
+
+            <div class="sim-button-row">
+              <button type="button" class="btn-primary-action" id="btnRandomPrimes">&#127922; Generate Random Primes</button>
+              <button type="button" class="btn-secondary-action" id="btnUseExample">&#8634; Use Example (p=7, q=23)</button>
+              <button type="button" class="btn-secondary-action" id="btnUseExample17">&#8634; Use Example (p=17, q=11)</button>
+              <button type="button" class="why-toggle" data-target="whyPrimes" data-original-text="▼ How were these chosen?">▼ How were these chosen?</button>
+            </div>
+
+            <div class="why-content" id="whyPrimes">
+              RSA security relies on prime factorization. Multiplying two primes p and q yields modulus n. Because primes have no divisors other than 1 and themselves, calculating phi(n) without knowing p and q is computationally difficult.
+            </div>
+          </div>
+
+          <!-- STAGE 2: KEY GENERATION -->
+          <div class="sim-stage-card">
+            <div class="sim-stage-header">
+              <h3 class="sim-stage-title"><span class="step-num-badge" style="width:24px; height:24px; font-size:12px;">2</span> Stage 2: RSA Key Generation</h3>
+              <span class="sim-stage-badge">Progressive Mathematical Derivation</span>
+            </div>
+
+            <div id="keyAlert" class="sim-alert"></div>
+
+            <!-- Progressive Pipeline: p and q -> n -> phi(n) -> e -> d -> Keys Ready -->
+            <div class="calc-pipeline">
+              <div class="pipeline-node highlight">p &amp; q</div>
+              <div class="pipeline-arrow">&darr;</div>
+              <div class="pipeline-node highlight" id="pipeN">n = 161</div>
+              <div class="pipeline-arrow">&darr;</div>
+              <div class="pipeline-node highlight" id="pipePhi">phi(n) = 132</div>
+              <div class="pipeline-arrow">&darr;</div>
+              <div class="pipeline-node highlight" id="pipeE">e = 5</div>
+              <div class="pipeline-arrow">&darr;</div>
+              <div class="pipeline-node highlight" id="pipeD">d = 53</div>
+              <div class="pipeline-arrow">&darr;</div>
+              <div class="pipeline-node" id="pipeStatus" style="color: #86efac; font-weight: bold;">Keys Ready</div>
+            </div>
+
+            <div class="input-grid-2" style="max-width: 400px; margin-top: 6px;">
+              <div class="sim-input-group">
+                <label for="inputE">Public Exponent e:</label>
+                <input type="number" id="inputE" value="5" min="2">
+                <span class="input-helper-note">1 &lt; e &lt; phi(n) and gcd(e, phi(n)) = 1</span>
+              </div>
+            </div>
+
+            <div class="sim-button-row">
+              <button type="button" class="btn-primary-action" id="btnGenerateKeys">&#9881; Generate Keys</button>
+              <button type="button" class="btn-secondary-action" id="btnSuggestE">&#128161; Generate Valid e</button>
+            </div>
+
+            <!-- Key Pair Badges -->
+            <div class="key-pairs-container">
+              <div class="key-card key-card-public" id="cardPubKey">
+                <span class="key-card-label">&#128273; PUBLIC KEY (Shared for Verification)</span>
+                <span class="key-card-value" id="badgePublicKey">(e = 5, n = 161)</span>
+              </div>
+              <div class="key-card key-card-private" id="cardPrivKey">
+                <span class="key-card-label">&#128274; PRIVATE KEY (Secret for Signing)</span>
+                <span class="key-card-value" id="badgePrivateKey">(d = 53, n = 161)</span>
+              </div>
+            </div>
+
+            <div class="sim-button-row" style="margin-top: 12px;">
+              <button type="button" class="btn-secondary-action" id="btnToggleKeyMath" data-expanded="false">&#128221; Show Mathematical Working</button>
+            </div>
+
+            <!-- Detailed Key Math Working (Collapsible) -->
+            <div id="keyMathWorkingPanel" class="math-working-box">
+              <div class="math-step-card">
+                <div class="math-step-header">
+                  <span class="math-step-title">STEP 1 &mdash; Modulus</span>
+                  <span class="math-code-tag">Implemented by: n = p * q</span>
+                </div>
+                <div class="math-calc-line">Formula: n = p &times; q</div>
+                <div class="math-calc-line math-calc-subst" id="mathKeyStep1Subst">n = 7 &times; 23</div>
+                <div class="math-calc-line math-calc-result" id="mathKeyStep1Result">n = 161</div>
+              </div>
+
+              <div class="math-step-card">
+                <div class="math-step-header">
+                  <span class="math-step-title">STEP 2 &mdash; Euler's Totient</span>
+                  <span class="math-code-tag">Implemented by: phi = (p - 1n) * (q - 1n)</span>
+                </div>
+                <div class="math-calc-line">Formula: phi(n) = (p - 1)(q - 1)</div>
+                <div class="math-calc-line math-calc-subst" id="mathKeyStep2Subst">phi(n) = (7 - 1)(23 - 1) = 6 &times; 22</div>
+                <div class="math-calc-line math-calc-result" id="mathKeyStep2Result">phi(n) = 132</div>
+                <div class="math-explanation-note">phi(n) is used to determine the modular relationship needed to create the private exponent.</div>
+              </div>
+
+              <div class="math-step-card">
+                <div class="math-step-header">
+                  <span class="math-step-title">STEP 3 &mdash; Public Exponent Validity</span>
+                  <span class="math-code-tag">Implemented by: gcd(e, phi)</span>
+                </div>
+                <div class="math-calc-line" id="mathKeyStep3E">e = 5</div>
+                <div class="math-calc-line math-calc-subst" id="mathKeyStep3Gcd">gcd(e, phi(n)) = gcd(5, 132) = 1</div>
+                <div class="math-calc-line math-calc-result" id="mathKeyStep3Status">Therefore: e is valid.</div>
+                <div class="math-explanation-note">e must be coprime with phi(n) so that its modular inverse exists (e &times; d &equiv; 1 mod phi(n)).</div>
+              </div>
+
+              <div class="math-step-card">
+                <div class="math-step-header">
+                  <span class="math-step-title">STEP 4 &mdash; Calculate Private Exponent (Extended Euclidean Algorithm)</span>
+                  <span class="math-code-tag">Implemented by: modInverse(e, phi)</span>
+                </div>
+                <div class="math-calc-line">Formula: d = e⁻¹ mod phi(n) &hArr; e &times; d &equiv; 1 (mod phi(n))</div>
+                <div class="math-calc-line" style="margin-top: 6px; font-weight: bold; color: var(--color-primary);">Euclidean Division Steps:</div>
+                <div class="math-calc-line math-calc-subst" id="mathKeyStep4Div">132 = 26 &times; 5 + 2<br>5 = 2 &times; 2 + 1</div>
+                <div class="math-calc-line" style="margin-top: 6px; font-weight: bold; color: var(--color-primary);">Extended Euclidean Derivation (Back-Substitution):</div>
+                <div class="math-calc-line math-calc-subst" id="mathKeyStep4BackSub">1 = 5 - 2 &times; 2<br>1 = 5 - 2 &times; (132 - 26 &times; 5)<br>1 = 53 &times; 5 - 2 &times; 132</div>
+                <div class="math-calc-line math-calc-result" id="mathKeyStep4Result" style="margin-top: 4px;">Therefore: d = 53</div>
+                <div class="math-calc-line" style="margin-top: 6px; font-weight: bold; color: var(--color-primary);">Verification:</div>
+                <div class="math-calc-line math-calc-subst" id="mathKeyStep4Verify">5 &times; 53 = 265 &rarr; 265 mod 132 = 1. Therefore d = 53 is correct.</div>
+              </div>
+
+              <div class="math-step-card">
+                <div class="math-step-header">
+                  <span class="math-step-title">Key Formation Summary</span>
+                  <span class="math-code-tag">Asymmetric Key Pair</span>
+                </div>
+                <div class="math-calc-line"><strong style="color: #93c5fd;">PUBLIC KEY (e, n):</strong> <span id="mathKeyPubDisplay">(5, 161)</span></div>
+                <div class="math-calc-line"><strong style="color: #fde68a;">PRIVATE KEY (d, n):</strong> <span id="mathKeyPrivDisplay">(53, 161)</span></div>
+                <div class="math-explanation-note">Anyone can use the public key to verify the signature. The private key is kept strictly secret by the signer.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STAGE 3: SIGN MESSAGE -->
+          <div class="sim-stage-card">
+            <div class="sim-stage-header">
+              <h3 class="sim-stage-title"><span class="step-num-badge" style="width:24px; height:24px; font-size:12px;">3</span> Stage 3: Sign Message</h3>
+              <span class="sim-stage-badge">Message &rarr; Hash &rarr; RSA Signing</span>
+            </div>
+
+            <div id="signAlert" class="sim-alert"></div>
+
+            <div class="input-grid-2" style="max-width: 520px;">
+              <div class="sim-input-group">
+                <label for="inputMsg">Message (m):</label>
+                <input type="number" id="inputMsg" value="23" min="1">
+                <span class="input-helper-note" id="msgRangeNote">Requirement: 0 &lt; m &lt; 161</span>
+              </div>
+
+              <!-- HASH ALGORITHM SELECTOR -->
+              <div class="sim-input-group">
+                <label>Hash Algorithm:</label>
+                <div class="hash-selector-grid">
+                  <label class="hash-option-card" id="cardHashMd5">
+                    <input type="radio" name="signHashAlgo" value="MD5" id="radioSignMd5">
+                    <div class="hash-card-content">
+                      <div class="hash-card-title">MD5</div>
+                      <div class="hash-card-sub">128 bit &middot; 32 hex</div>
+                    </div>
+                  </label>
+                  <label class="hash-option-card active" id="cardHashSha1">
+                    <input type="radio" name="signHashAlgo" value="SHA-1" id="radioSignSha1" checked>
+                    <div class="hash-card-content">
+                      <div class="hash-card-title">SHA-1</div>
+                      <div class="hash-card-sub">160 bit &middot; 40 hex</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="sim-notice-note" style="margin-top: 4px; color: #fde68a;">
+              &#9888; MD5 and SHA-1 are included for educational purposes. Both are considered unsuitable for modern secure digital-signature systems.
+            </div>
+
+            <div class="sim-button-row" style="margin-top: 8px;">
+              <button type="button" class="btn-primary-action" id="btnSign">&#9997; Generate Signature</button>
+              <button type="button" class="btn-secondary-action" id="btnGenHash">&#9881; Generate Hash</button>
+            </div>
+
+            <!-- Hash Output Section -->
+            <div class="hash-digest-result-box" style="margin-top: 8px;">
+              <div class="digest-meta-row">
+                <span>Selected Hash: <strong id="signSelectedHashText" style="color: #93c5fd;">SHA-1</strong></span>
+                <span id="signDigestLengthBadge" class="digest-len-badge">SHA-1 &rarr; 160 bits / 40 hexadecimal characters</span>
+              </div>
+              <div class="digest-title-label">Message Digest:</div>
+              <div class="sha-digest-box" id="signDigestDisplay">d435a6cdd786300dff204ee7c2ef942d3e9034e2</div>
+              <p class="math-explanation-note" style="margin-top: 6px;">
+                Hashing converts the message into a fixed-length message digest. The detailed working of MD5 and SHA-1 is explained in the next node of the Virtual Lab.
+              </p>
+            </div>
+
+            <!-- Signing Math Box -->
+            <div class="clean-math-box" style="margin-top: 10px;">
+              <div class="math-line-formula" id="signMathFormula">Educational RSA Signing Operation: s = m^d mod n</div>
+              <div class="math-line-subst" id="signMathSubst">Substitution: s = 23^53 mod 161 (Using Private Key d = 53, n = 161)</div>
+              <div class="math-line-result" id="signMathResult">Digital Signature s = 46</div>
+              <div style="margin-top: 8px;">
+                <button type="button" class="btn-secondary-action btn-sm-action" id="btnToggleSignPowMath" data-expanded="false">&#128221; How is this power calculated? (Repeated Squaring)</button>
+              </div>
+            </div>
+
+            <div class="educational-disclaimer-box" style="margin-top: 6px;">
+              <strong>Educational RSA demonstration:</strong> In standardized RSA (such as PKCS#1 v1.5 or RSA-PSS), a 2048-bit modulus directly signs a formatted hash digest. In this educational demonstration with small modulus n, the mathematical operation <code>s = m^d mod n</code> demonstrates the private-key binding on message <code>m</code>, while the cryptographic hash digest binds message integrity and authenticates against modification.
+            </div>
+
+            <!-- Repeated Squaring Breakdown for Signing -->
+            <div id="signPowMathPanel" class="math-working-box">
+              <div class="math-step-header">
+                <span class="math-step-title">Modular Exponentiation: s = m^d mod n</span>
+                <span class="math-code-tag">Implemented by: modPow(m, d, n)</span>
+              </div>
+              <p class="math-explanation-note" style="margin-bottom: 8px;">
+                Computing <span id="signPowHeading">23^53 mod 161</span> does NOT compute the astronomical number 23^53 first. It decomposes exponent <code>d</code> into binary and computes powers of 2 using modular repeated squaring!
+              </p>
+              <div class="math-calc-line" id="signPowBinary">53 in binary: 53 = 110101₂ (32 + 16 + 4 + 1)</div>
+
+              <div class="squaring-table-wrapper">
+                <table class="squaring-table" id="signPowTable">
+                  <thead>
+                    <tr>
+                      <th>Power (2^i)</th>
+                      <th>Binary Bit</th>
+                      <th>Modular Square Value</th>
+                      <th>Included in Product?</th>
+                    </tr>
+                  </thead>
+                  <tbody id="signPowTableBody">
+                    <!-- Populated dynamically by modPow trace in script.js -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="math-calc-line" style="margin-top: 6px;"><strong>Accumulated Modular Multiplications:</strong></div>
+              <div class="math-calc-line math-calc-subst" id="signPowAccumSteps">
+                <!-- Populated dynamically -->
+              </div>
+              <div class="math-calc-line math-calc-result" id="signPowFinalResult" style="margin-top: 4px;">
+                Final Result: 23^53 mod 161 = 46
+              </div>
+            </div>
+          </div>
+
+          <!-- STAGE 4: SIGNATURE VERIFICATION -->
+          <div class="sim-stage-card">
+            <div class="sim-stage-header">
+              <h3 class="sim-stage-title"><span class="step-num-badge" style="width:24px; height:24px; font-size:12px;">4</span> Stage 4: Signature Verification</h3>
+              <span class="sim-stage-badge">5-Step Receiver Verification Pipeline</span>
+            </div>
+
+            <div id="verifAlert" class="sim-alert"></div>
+
+            <div class="verification-step-flow">
+              <!-- Step 1: Received Message -->
+              <div class="verif-step-row">
+                <span class="verif-step-tag">Step 1</span>
+                <div class="verif-step-body">
+                  <strong>Received Message:</strong>
+                  <div class="verif-val-highlight"><code id="verifStep1Msg">23</code></div>
+                </div>
+              </div>
+
+              <!-- Step 2: Selected Hash Algorithm -->
+              <div class="verif-step-row">
+                <span class="verif-step-tag">Step 2</span>
+                <div class="verif-step-body">
+                  <strong>Selected Hash Algorithm:</strong>
+                  <div class="hash-selector-grid" style="max-width: 340px; margin-top: 4px;">
+                    <label class="hash-option-card" id="cardVerifMd5">
+                      <input type="radio" name="verifHashAlgo" value="MD5" id="radioVerifMd5">
+                      <div class="hash-card-content">
+                        <div class="hash-card-title">MD5</div>
+                        <div class="hash-card-sub">128 bit</div>
+                      </div>
+                    </label>
+                    <label class="hash-option-card active" id="cardVerifSha1">
+                      <input type="radio" name="verifHashAlgo" value="SHA-1" id="radioVerifSha1" checked>
+                      <div class="hash-card-content">
+                        <div class="hash-card-title">SHA-1</div>
+                        <div class="hash-card-sub">160 bit</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div id="hashMismatchWarning" class="mismatch-warning-box" style="display: none;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prominent Verification Action Bar -->
+            <div class="verif-action-bar">
+              <button type="button" class="btn-primary-action" id="btnVerifyOriginal">&#128269; Verify Signature</button>
+              <span class="action-helper-text">Computes message digest &rarr; performs modular recovery (m' = s^e mod n) &rarr; validates match</span>
+            </div>
+
+            <div class="verification-step-flow">
+              <!-- Step 3: Calculate Message Digest -->
+              <div class="verif-step-row">
+                <span class="verif-step-tag">Step 3</span>
+                <div class="verif-step-body">
+                  <strong>Calculate Message Digest H(m):</strong>
+                  <div class="math-calc-line">H(m) using <span id="verifAlgoLabelStep3">SHA-1</span>:</div>
+                  <div class="sha-digest-box" id="verifCalcDigest">d435a6cdd786300dff204ee7c2ef942d3e9034e2</div>
+                </div>
+              </div>
+
+              <!-- Step 4: Use Public Key to process signature -->
+              <div class="verif-step-row">
+                <span class="verif-step-tag">Step 4</span>
+                <div class="verif-step-body">
+                  <strong>Public Key Processing &amp; Recovered Digest Representation:</strong>
+                  <div class="clean-math-box" style="padding: 8px 12px; margin-top: 4px;">
+                    <div class="math-line-formula" id="verifMathFormula">Verification Equation: m' = s^e mod n (Using Public Key e = 5, n = 161)</div>
+                    <div class="math-line-subst" id="verifMathSubst">Substitution: m' = 46^5 mod 161 = 23</div>
+                    <div class="math-line-result" id="verifMathRecovered">Recovered Message m' = 23</div>
+                    <div style="margin-top: 8px;">
+                      <button type="button" class="btn-secondary-action btn-sm-action" id="btnToggleVerifyPowMath" data-expanded="false">&#128221; How is this power calculated? (Repeated Squaring)</button>
+                    </div>
+                  </div>
+                  <div style="margin-top: 6px;">Recovered Digest Representation H(m'):</div>
+                  <div class="sha-digest-box" id="verifRecoveredDigest">d435a6cdd786300dff204ee7c2ef942d3e9034e2</div>
+                </div>
+              </div>
+
+              <!-- Step 5: Compare digests -->
+              <div class="verif-step-row">
+                <span class="verif-step-tag">Step 5</span>
+                <div class="verif-step-body">
+                  <strong>Compare Calculated Message Digest vs Recovered Digest:</strong>
+                  <div id="digestCompareBox" class="digest-compare-status match">
+                    Calculated Digest = Recovered Digest &rarr; Match
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Verdict Banner -->
+            <div id="verdictBox" class="verdict-banner valid" style="margin-top: 10px;">
+              <div class="verdict-banner-title" id="verdictTitle">&check; VALID SIGNATURE</div>
+              <div class="verdict-banner-body" id="verdictText">
+                During verification, the receiver hashes the received message using the selected hash algorithm and compares it with the digest represented by the signature. If they match, the signature is valid.
+              </div>
+            </div>
+
+            <div class="sim-notice-note" style="margin-top: 8px;">
+              During verification, the receiver hashes the received message using the selected hash algorithm and compares it with the digest represented by the signature. If they match, the signature is valid.
+            </div>
+
+            <div class="sim-notice-note" style="margin-top: 4px; color: var(--color-text-muted);">
+              Detailed MD5 and SHA-1 hashing algorithms are explained in the next Virtual Lab node.
+            </div>
+
+            <!-- Repeated Squaring Breakdown for Verification -->
+            <div id="verifyPowMathPanel" class="math-working-box">
+              <div class="math-step-header">
+                <span class="math-step-title">Modular Exponentiation: m' = s^e mod n</span>
+                <span class="math-code-tag">Implemented by: modPow(s, e, n)</span>
+              </div>
+              <p class="math-explanation-note" style="margin-bottom: 8px;">
+                The receiver calculates <span id="verifyPowHeading">46^5 mod 161</span> using modular repeated squaring to recover message m':
+              </p>
+              <div class="math-calc-line" id="verifyPowBinary">5 in binary: 5 = 101₂ (4 + 1)</div>
+
+              <div class="squaring-table-wrapper">
+                <table class="squaring-table" id="verifyPowTable">
+                  <thead>
+                    <tr>
+                      <th>Power (2^i)</th>
+                      <th>Binary Bit</th>
+                      <th>Modular Square Value</th>
+                      <th>Included in Product?</th>
+                    </tr>
+                  </thead>
+                  <tbody id="verifyPowTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="math-calc-line" style="margin-top: 6px;"><strong>Accumulated Modular Multiplications:</strong></div>
+              <div class="math-calc-line math-calc-subst" id="verifyPowAccumSteps">
+                <!-- Populated dynamically -->
+              </div>
+              <div class="math-calc-line math-calc-result" id="verifyPowFinalResult" style="margin-top: 4px;">
+                Final Result: 46^5 mod 161 = 23
+              </div>
+            </div>
+          </div>
+
+          <!-- STAGE 5: SIMULATE MESSAGE INTERCEPTION / TAMPERING -->
+          <div class="interception-card">
+            <h3>&#9889; Simulate Message Interception &amp; Tampering</h3>
+            <p style="margin: 0; font-size: 13px; color: var(--color-text);">
+              Demonstrate what happens if an attacker intercepts the transmitted package and modifies the message before verification:
+            </p>
+
+            <div class="transit-flow-display">
+              <div>Transmitted Message: <code><span id="transitMsgDisplay">88</span></code></div>
+              <div>&bull;</div>
+              <div>Transmitted Signature: <code><span id="transitSigDisplay">11</span></code></div>
+              <div>&bull;</div>
+              <div>Status: <span id="transitStatusPill" class="pipeline-node" style="color:#86efac;">Untampered</span></div>
+            </div>
+
+            <div class="tamper-actions-grid">
+              <button type="button" class="btn-danger-action" id="btnInterceptMessage">&#9888; 1. Intercept &amp; Modify Message</button>
+              <button type="button" class="btn-primary-action" id="btnVerifyTampered">&#128269; 2. Verify Tampered Message</button>
+              <button type="button" class="btn-success-action" id="btnRestoreOriginal">&#8635; 3. Restore Original Data</button>
+            </div>
+
+            <!-- Tampering Explanation & Mathematical Breakdown Card -->
+            <div id="tamperMathCard" style="display: none; background: var(--color-surface); border-left: 3px solid #ef4444; padding: 12px 14px; border-radius: 4px; font-size: 13px; color: var(--color-text); margin-top: 10px;">
+              <div style="font-weight: bold; color: #fca5a5; margin-bottom: 6px;">&#9888; Interception Mathematics: Why Verification Failed</div>
+              
+              <div class="math-step-card" style="border-left-color: #ef4444; margin-bottom: 8px;">
+                <div class="math-calc-line"><strong>Original Sender's Data:</strong> Message m = <span id="tamperMathOrigM">88</span>, Signature s = <span id="tamperMathOrigS">11</span></div>
+                <div class="math-calc-line math-calc-subst">Original Verification: s^e mod n = <span id="tamperMathOrigVerif">11^7 mod 187 = 88</span> (Authentic)</div>
+              </div>
+
+              <div class="math-step-card" style="border-left-color: #ef4444; margin-bottom: 8px;">
+                <div class="math-calc-line"><strong>Attacker Action:</strong> Alters message <span id="tamperMathFromM">88</span> &rarr; <span id="tamperMathToM">89</span>, but signature remains <span id="tamperMathSigKept">11</span>.</div>
+                <div class="math-calc-line">The attacker cannot forge a valid signature for 89 because they do not possess private key d.</div>
+              </div>
+
+              <div class="math-step-card" style="border-left-color: #ef4444; margin-bottom: 8px;">
+                <div class="math-calc-line"><strong>Receiver's Calculation:</strong></div>
+                <div class="math-calc-line math-calc-subst">m' = s^e mod n = <span id="tamperMathRecCalc">11^7 mod 187 = 88</span></div>
+                <div class="math-calc-line">Received Message = <span id="tamperMathRecReceived">89</span>, Recovered Message m' = <span id="tamperMathRecRecovered">88</span></div>
+                <div class="math-calc-line math-calc-result" style="color: #fca5a5;">Comparison: 88 &ne; 89 &rarr; &#10005; INVALID SIGNATURE (Tampering Detected!)</div>
+              </div>
+
+              <!-- Educational SHA-256 Digest Comparison -->
+              <div class="sha-educational-card" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.08); margin-top: 8px;">
+                <div style="font-weight: bold; color: #fca5a5; margin-bottom: 4px;">&#128279; Cryptographic Hash Digest Comparison:</div>
+                <div>SHA-256(Original <span id="tamperShaOrigM">88</span>):</div>
+                <div class="sha-digest-box" id="tamperShaDigestOrig">8b940be7fb78aaa6b6567dd7a3987996947460df1c668e698eb92ca77e425349</div>
+                <div style="margin-top: 4px;">SHA-256(Tampered <span id="tamperShaModM">89</span>):</div>
+                <div class="sha-digest-box" id="tamperShaDigestMod">cd70bea023f752a0564abb6ed08d42c1440f2e33e29914e55e0be1595e24f45a</div>
+                <div class="math-calc-line" style="margin-top: 6px; color: #fca5a5; font-weight: bold;">
+                  Digest(Original) &ne; Digest(Tampered)
+                </div>
+                <p class="math-explanation-note" style="margin-top: 4px;">
+                  This is why standardized digital-signature schemes bind the signature to a message digest rather than directly signing arbitrary-length raw message data. An attacker cannot alter even a single bit without completely altering the digest.
+                </p>
+              </div>
+            </div>
+
+            <!-- Manual Experimentation -->
+            <div class="custom-tamper-box">
+              <span class="custom-tamper-title">Test Custom Tampering Values:</span>
+              <div class="custom-tamper-row">
+                <div class="sim-input-group">
+                  <label for="manualMsgInput">Received Message:</label>
+                  <input type="number" id="manualMsgInput" value="89">
+                </div>
+                <div class="sim-input-group">
+                  <label for="manualSigInput">Received Signature:</label>
+                  <input type="number" id="manualSigInput" value="11">
+                </div>
+                <button type="button" class="btn-secondary-action" id="btnVerifyManual">&#128269; Verify Custom Values</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================================ -->
+          <!-- MASTER MATHEMATICAL WORKING: COMPLETE STEP-BY-STEP RSA CALC  -->
+          <!-- ============================================================ -->
+          <div class="sim-stage-card" style="margin-top: var(--space-4); border-top: 3px solid var(--color-primary);" id="masterMathCard">
+            <div class="sim-stage-header">
+              <h3 class="sim-stage-title">&#128221; Mathematical Working &mdash; Step-by-Step RSA Calculation</h3>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="sim-stage-badge">Live Computed</span>
+                <button type="button" class="btn-secondary-action btn-sm-action" id="btnToggleMasterMath" data-expanded="true">&#128221; Collapse / Expand</button>
+              </div>
+            </div>
+            <p style="margin: 0; font-size: 14px; color: var(--color-text-muted);">
+              Educational transparent walkthrough showing how each intermediate value is calculated by the JavaScript code from your current inputs:
+            </p>
+            <div id="masterMathWorkingContent" class="math-working-box visible">
+              <!-- Dynamically populated with complete synchronized derivation -->
+            </div>
+          </div>
+
+          <div class="sim-bottom-nav">
+            <button type="button" class="btn-secondary-action" onclick="document.querySelector('.tab-btn[data-tab=\'procedure\']').click();">&larr; Back to Procedure</button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn-danger-action btn-reset-experiment" id="btnResetSimTab">&#8635; Reset Experiment</button>
+              <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'observations\']').click();">View Observations &rarr;</button>
+            </div>
           </div>
         </section>
 
+        <!-- ========================================== -->
+        <!-- 5. OBSERVATIONS & RESULTS TAB              -->
+        <!-- ========================================== -->
+        <section id="observations" class="tab-content" data-tab-panel="observations" hidden>
+          <div class="rsa-intro-box">
+            <h2>Observations &amp; Results Dashboard</h2>
+            <p>The values below are automatically populated from your active simulation session.</p>
+          </div>
+
+          <div class="obs-dashboard-grid">
+            <!-- Card 1: Inputs -->
+            <div class="obs-summary-card">
+              <h4>INPUT</h4>
+              <div class="obs-row"><span>p:</span> <code id="obsP">7</code></div>
+              <div class="obs-row"><span>q:</span> <code id="obsQ">23</code></div>
+              <div class="obs-row"><span>e:</span> <code id="obsE">5</code></div>
+              <div class="obs-row"><span>message:</span> <code id="obsMsg">23</code></div>
+            </div>
+
+            <!-- Card 2: Key Parameters -->
+            <div class="obs-summary-card">
+              <h4>KEYS</h4>
+              <div class="obs-row"><span>n = p &times; q:</span> <code id="obsN">161</code></div>
+              <div class="obs-row"><span>phi(n):</span> <code id="obsPhi">132</code></div>
+              <div class="obs-row"><span>d:</span> <code id="obsD">53</code></div>
+              <div class="obs-row"><span>Public / Private:</span> <code>(5, 161) / (53, 161)</code></div>
+            </div>
+
+            <!-- Card 3: Hashing -->
+            <div class="obs-summary-card">
+              <h4>HASHING</h4>
+              <div class="obs-row"><span>Algorithm:</span> <strong id="obsSignHashAlgo" style="color: #93c5fd;">SHA-1</strong></div>
+              <div class="obs-row" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+                <span>Digest:</span>
+                <code id="obsSignDigest" style="font-size: 11px; word-break: break-all;">d435a6cdd786300dff204ee7c2ef942d3e9034e2</code>
+              </div>
+            </div>
+
+            <!-- Card 4: Signature -->
+            <div class="obs-summary-card">
+              <h4>SIGNATURE</h4>
+              <div class="obs-row"><span>Signature s:</span> <code id="obsSig">46</code></div>
+              <div class="obs-row"><span>Formula:</span> <code>s = m^d mod n</code></div>
+            </div>
+
+            <!-- Card 5: Verification -->
+            <div class="obs-summary-card" style="grid-column: 1 / -1;">
+              <h4>VERIFICATION</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px;">
+                <div class="obs-row"><span>Hash Algorithm:</span> <strong id="obsVerifHashAlgo" style="color: #93c5fd;">SHA-1</strong></div>
+                <div class="obs-row"><span>Verification Result:</span> <strong id="obsVerifStatus" style="color:#86efac;">VALID</strong></div>
+              </div>
+              <div class="obs-row" style="flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 6px;">
+                <span>Calculated Digest H(m):</span>
+                <code id="obsVerifCalcDigest" style="font-size: 11px; word-break: break-all;">d435a6cdd786300dff204ee7c2ef942d3e9034e2</code>
+              </div>
+              <div class="obs-row" style="flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 4px;">
+                <span>Recovered Digest / Signature Representation:</span>
+                <code id="obsVerifRecDigest" style="font-size: 11px; word-break: break-all;">d435a6cdd786300dff204ee7c2ef942d3e9034e2 (m' = 23)</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mathematical Working Summary Card -->
+          <div class="math-working-box visible" style="margin-bottom: var(--space-3); border-left: 3px solid var(--color-primary);" id="obsMathSummaryCard">
+            <h4 style="margin: 0 0 10px 0; color: var(--color-primary); font-family: Arial, sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+              &#128221; Mathematical Working Summary
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; font-family: 'Courier New', Courier, monospace; font-size: 13px;">
+              <div style="background: var(--color-surface-muted); padding: 10px 12px; border-radius: 4px; border: 1px solid var(--color-border);">
+                <div style="font-weight: bold; color: #93c5fd; margin-bottom: 6px; font-family: Arial, sans-serif;">KEY GENERATION</div>
+                <div>p = <span id="obsMathP">7</span>, q = <span id="obsMathQ">23</span></div>
+                <div>n = <span id="obsMathNExpr">7 &times; 23 = 161</span></div>
+                <div>phi(n) = <span id="obsMathPhiExpr">(7 - 1)(23 - 1) = 132</span></div>
+                <div>gcd(<span id="obsMathEGcd">5, 132</span>) = 1</div>
+                <div>d = <span id="obsMathD">53</span></div>
+                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--color-border);">
+                  <div>Public Key = (<span id="obsMathPub">5, 161</span>)</div>
+                  <div>Private Key = (<span id="obsMathPriv">53, 161</span>)</div>
+                </div>
+              </div>
+
+              <div style="background: var(--color-surface-muted); padding: 10px 12px; border-radius: 4px; border: 1px solid var(--color-border);">
+                <div style="font-weight: bold; color: #fde68a; margin-bottom: 6px; font-family: Arial, sans-serif;">SIGNING &amp; VERIFICATION</div>
+                <div>Signing formula: s = m^d mod n</div>
+                <div style="color: #fde68a;">s = <span id="obsMathSignSubst">23^53 mod 161</span></div>
+                <div style="font-weight: bold; color: #86efac;">s = <span id="obsMathSignVal">46</span></div>
+                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--color-border);">
+                  <div>Verification formula: m' = s^e mod n</div>
+                  <div style="color: #fde68a;">m' = <span id="obsMathVerifSubst">46^5 mod 161</span></div>
+                  <div style="font-weight: bold; color: #86efac;">m' = <span id="obsMathVerifVal">23</span></div>
+                  <div style="margin-top: 4px;"><span id="obsMathCompare">23 = 23 &rarr; VALID</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-3);">
+            <h4 style="margin-top: 0; color: var(--color-primary);">Conclusion</h4>
+            <p style="font-size: 14px; color: var(--color-text); line-height: 1.6; margin: 0;">
+              1. <strong>Verification Correctness:</strong> When the untampered signature is verified, <code>m' = s^e mod n = 23</code> equals original message <code>23</code> and the calculated digest matches the signature digest representation, confirming mathematical authenticity.<br>
+              2. <strong>Integrity Guarantee:</strong> When the message is altered or the hash algorithm is mismatched, the message digest changes, proving that any modification is detected immediately.<br>
+              3. <strong>Unforgeability:</strong> The interceptor cannot produce a valid signature for a modified message without knowing private exponent d.
+            </p>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <button type="button" class="btn-danger-action" id="btnResetSim">&#8635; Reset Experiment</button>
+            <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'quiz\']').click();">Take Self-Evaluation Quiz &rarr;</button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 6. ASSESSMENT / QUIZ TAB                   -->
+        <!-- ========================================== -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
-          <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+          <div class="rsa-intro-box">
+            <h2>Self-Evaluation Quiz (10 Questions)</h2>
+            <p>Answer the questions below to test your understanding of RSA digital signatures, key generation, coprimality, and hash-based verification.</p>
           </div>
-        </section>
-              <!-- References -->
-        <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="references-container">
-            <h2>References &amp; Further Reading</h2>
-            <div class="reference-card">
-              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
-              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
-            </div>
-            <div class="reference-card">
-              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
-              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
-            </div>
-            <div class="reference-card">
-              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
-              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
-            </div>
+
+          <!-- Score Banner -->
+          <div id="quizScoreBanner" class="quiz-score-banner">
+            <h3 style="margin-top: 0; color: var(--color-secondary);">Quiz Completed!</h3>
+            <div style="font-size: 15px;">Your Final Score:</div>
+            <div id="quizScoreText" style="font-size: 32px; font-weight: bold; color: var(--color-secondary); margin: 6px 0;">0 / 10 (0%)</div>
+            <p id="quizAppraisalText" style="font-size: 14px; margin-bottom: 12px;"></p>
+            <button type="button" class="btn-secondary-action" id="btnResetQuiz">&#8635; Retake Quiz</button>
+          </div>
+
+          <form id="quizForm" class="quiz-wrapper" onsubmit="return false;">
+            <!-- 10 Questions dynamically generated by script.js -->
+          </form>
+
+          <div style="margin-top: var(--space-3); display: flex; gap: 12px;">
+            <button type="button" class="btn-primary-action" id="btnSubmitQuiz">&check; Submit Answers &amp; Check Score</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: var(--space-4);">
+            <button type="button" class="btn-secondary-action" onclick="document.querySelector('.tab-btn[data-tab=\'observations\']').click();">&larr; Back to Observations</button>
+            <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'references\']').click();">View References &rarr;</button>
           </div>
         </section>
 
-              <!-- Feedback -->
+        <!-- ========================================== -->
+        <!-- 7. REFERENCES TAB                          -->
+        <!-- ========================================== -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="rsa-intro-box">
+            <h2>References &amp; Academic Reading</h2>
+            <p>Recommended curriculum references and foundational cryptographic literature:</p>
+          </div>
+
+          <div style="background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3);">
+            <ul>
+              <li><strong>Original Paper:</strong> Rivest, R. L., Shamir, A., &amp; Adleman, L. (1978). <em>&ldquo;A Method for Obtaining Digital Signatures and Public-Key Cryptosystems.&rdquo;</em> Communications of the ACM, 21(2), 120&ndash;126.</li>
+              <li><strong>Textbook:</strong> Stallings, W. (2017). <em>&ldquo;Cryptography and Network Security: Principles and Practice.&rdquo;</em> Pearson Education, 7th Edition. Chapter on Public-Key Cryptography and RSA.</li>
+              <li><strong>Standard Reference:</strong> Forouzan, B. A. (2015). <em>&ldquo;Cryptography and Network Security.&rdquo;</em> McGraw-Hill Education, 3rd Edition.</li>
+              <li><strong>NIST Standard:</strong> National Institute of Standards and Technology (NIST). <em>&ldquo;FIPS PUB 186-5: Digital Signature Standard (DSS).&rdquo;</em></li>
+              <li><strong>Benchmark:</strong> Virtual Labs Initiative, Ministry of Education, Govt. of India &mdash; IIT Kharagpur Cryptography Lab.</li>
+            </ul>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: var(--space-3);">
+            <button type="button" class="btn-secondary-action" onclick="document.querySelector('.tab-btn[data-tab=\'quiz\']').click();">&larr; Back to Quiz</button>
+            <button type="button" class="btn-primary-action" onclick="document.querySelector('.tab-btn[data-tab=\'feedback\']').click();">Give Feedback &rarr;</button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 8. FEEDBACK TAB                            -->
+        <!-- ========================================== -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
           <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
         </section>
@@ -97,9 +994,13 @@
       </main>
     </div>
 
+    <!-- Common tab navigation handler -->
     <script src="../../js/common.js"></script>
+    <!-- Vendor CryptoJS for MD5 and SHA-1 -->
+    <script src="../../js/vendor/crypto-js.min.js"></script>
+    <!-- Experiment-specific logic -->
     <script src="script.js"></script>
-      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
   </body>
 </html>
