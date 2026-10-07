@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Feedback Portal | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/experiment.css">
+    <style>
+      .portal-container {
+        width: min(calc(100% - 48px), 1280px);
+        margin: 0 auto;
+        padding: var(--space-4) 0 var(--space-6);
+      }
+
+      .portal-header {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-4);
+        margin-bottom: var(--space-4);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+      }
+
+      .portal-title-block h1 {
+        margin: 0 0 6px;
+        font-size: var(--font-size-2xl);
+        color: var(--color-text);
+      }
+
+      .portal-title-block p {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+      }
+
+      .badge-security {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(46, 213, 115, 0.15);
+        color: #2ed573;
+        border: 1px solid #2ed573;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+      }
+
+      /* Lock Screen Modal */
+      .lock-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-5);
+        max-width: 520px;
+        margin: var(--space-5) auto;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+      }
+
+      .lock-icon-lg {
+        font-size: 48px;
+        margin-bottom: var(--space-2);
+        display: block;
+      }
+
+      .lock-card h2 {
+        margin: 0 0 var(--space-1);
+        color: var(--color-text);
+      }
+
+      .lock-card p {
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--space-4);
+      }
+
+      .lock-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+        text-align: left;
+      }
+
+      .lock-input-group label {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+      }
+
+      .lock-input-group input {
+        padding: 12px 14px;
+        background: var(--color-surface-muted);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        color: var(--color-text);
+        font-size: var(--font-size-md);
+      }
+
+      .unlock-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--color-secondary);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: var(--font-size-md);
+        cursor: pointer;
+        transition: background 150ms ease;
+      }
+
+      .unlock-btn:hover {
+        background: var(--color-secondary-dark);
+      }
+
+      /* Analytics Dashboard */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+
+      .stat-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3);
+        text-align: center;
+      }
+
+      .stat-val {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--color-secondary);
+        margin: 4px 0;
+      }
+
+      .stat-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+        font-weight: 600;
+      }
+
+      /* Control Toolbar */
+      .toolbar {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3);
+        margin-bottom: var(--space-4);
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .toolbar-filters {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .toolbar select,
+      .toolbar input {
+        padding: 8px 12px;
+        background: var(--color-surface-muted);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        color: var(--color-text);
+        font-size: var(--font-size-sm);
+      }
+
+      .toolbar-actions {
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      .btn-secondary {
+        background: var(--color-surface-muted);
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--color-border-strong);
+        background: var(--color-primary-dark);
+      }
+
+      .btn-export {
+        background: #2ed573;
+        border: none;
+        color: #111;
+        font-weight: 700;
+      }
+
+      .btn-export:hover {
+        background: #26af5f;
+      }
+
+      /* Submissions Table */
+      .table-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        overflow-x: auto;
+      }
+
+      .feedback-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--font-size-sm);
+        text-align: left;
+      }
+
+      .feedback-table th {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+        padding: 12px 14px;
+        border-bottom: 2px solid var(--color-border);
+        white-space: nowrap;
+      }
+
+      .feedback-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--color-border);
+        vertical-align: top;
+      }
+
+      .feedback-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .badge-exp {
+        background: rgba(76, 140, 232, 0.15);
+        color: var(--color-secondary);
+        padding: 2px 8px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 12px;
+        display: inline-block;
+      }
+
+      .star-score {
+        color: #f5a623;
+        font-weight: 700;
+      }
+
+      .comment-cell {
+        max-width: 380px;
+        word-break: break-word;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fr. CRCE College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="portal-container">
+      <div class="portal-header">
+        <div class="portal-title-block">
+          <a class="back-link" href="../index.html">&larr; Return to Laboratory Homepage</a>
+          <h1>Faculty &amp; Deployer Feedback Portal</h1>
+          <p>End-to-End Cryptographically Secured Feedback Repository &middot; CSS TH-ISE</p>
+        </div>
+        <div>
+          <span class="badge-security">&#128274; RSA-2048 / AES-256 Decryption Active</span>
+        </div>
+      </div>
+
+      <!-- Password Lock Screen -->
+      <section id="lockSection" class="lock-card">
+        <span class="lock-icon-lg">&#128272;</span>
+        <h2>Authenticate to Decrypt</h2>
+        <p>Student feedbacks are stored encrypted. Enter the administrative master passphrase to derive the private key and decrypt all entries.</p>
+        
+        <form id="unlockForm">
+          <div class="lock-input-group">
+            <label for="masterPassword">Master Passphrase</label>
+            <input type="password" id="masterPassword" placeholder="Enter administrative password..." required autocomplete="current-password">
+          </div>
+          <button type="submit" id="unlockBtn" class="unlock-btn">Unlock &amp; Decrypt Data</button>
+        </form>
+
+        <div id="unlockStatus" class="feedback-status" hidden style="margin-top: 16px;"></div>
+      </section>
+
+      <!-- Decrypted Dashboard Content (Hidden until unlocked) -->
+      <main id="dashboardSection" hidden>
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="statTotalSubmissions">0</div>
+            <div class="stat-label">Total Submissions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statAvgRating">0.0</div>
+            <div class="stat-label">Average Rating (out of 5)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statDistinctExp">0</div>
+            <div class="stat-label">Experiments Covered</div>
+          </div>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div class="toolbar">
+          <div class="toolbar-filters">
+            <input type="text" id="searchInput" placeholder="Search by student, roll no, keywords..." style="min-width: 250px;">
+            <select id="expFilter">
+              <option value="">All Experiments</option>
+            </select>
+            <select id="ratingFilter">
+              <option value="">All Ratings</option>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
+          <div class="toolbar-actions">
+            <button type="button" id="refreshBtn" class="btn-secondary">&#8635; Refresh</button>
+            <button type="button" id="exportBtn" class="btn-secondary btn-export">&#128190; Export to CSV</button>
+          </div>
+        </div>
+
+        <!-- Submissions Table -->
+        <div class="table-card">
+          <table class="feedback-table">
+            <thead>
+              <tr>
+                <th>Date &amp; Time</th>
+                <th>Experiment</th>
+                <th>Student Name</th>
+                <th>Roll No</th>
+                <th>Rating</th>
+                <th>Clarity / Ease</th>
+                <th>Feedback &amp; Suggestions</th>
+              </tr>
+            </thead>
+            <tbody id="feedbackTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+                  Loading encrypted entries...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
