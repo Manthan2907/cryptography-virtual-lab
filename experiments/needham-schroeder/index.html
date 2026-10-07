@@ -573,37 +573,15 @@
 
         <!-- 9. FEEDBACK TAB -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+        </section>
 
-          <h2 class="vlab-section-heading">Experiment Feedback</h2>
-          <div class="vlab-card">
-            <form id="vlabFeedbackForm"
-              onsubmit="event.preventDefault(); alert('Thank you for submitting your feedback.');">
-              <div class="sim-field-group" style="margin-bottom:1rem;">
-                <label for="fbUserName">Your Name:</label>
-                <input type="text" id="fbUserName" class="sim-input" placeholder="Enter your name">
-              </div>
-
-              <div class="sim-field-group" style="margin-bottom:1rem;">
-                <label for="fbEmail">Email Address:</label>
-                <input type="email" id="fbEmail" class="sim-input" placeholder="Enter your email">
-              </div>
-
-              <div class="sim-field-group" style="margin-bottom:1rem;">
-                <label for="fbComments">Comments / Bug Reports / Suggestions:</label>
-                <textarea id="fbComments" class="sim-input" rows="4" placeholder="Share your experience..."></textarea>
-              </div>
-
-              <button type="submit" class="btn-vlab-primary">Submit Feedback</button>
-            </form>
-          </div>
-        
-</section>
-
-      
-</main>
+      </main>
     </div>
 
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>

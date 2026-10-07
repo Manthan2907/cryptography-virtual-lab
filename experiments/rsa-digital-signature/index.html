@@ -74,6 +74,7 @@
             <label for="plainMsg">Message Text:</label>
             <input type="text" id="plainMsg" value="Approve Transaction #9872">
             <button type="button" id="btnRsaSign">Sign and Verify</button>
+            <button type="button" id="btnTamperTest">Run Tamper Test</button>
           </div>
           <div class="simulation-output" aria-live="polite">
             <h2>Simulation Output</h2>
@@ -82,12 +83,124 @@
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <div class="quiz-panel">
-            <h2>Assessment / Quiz</h2>
-            <p>1. Can a third party forge an RSA signature without knowing private key <em>d</em>?</p>
-            <p>2. What security service does a digital signature provide that symmetric MAC does not?</p>
-          </div>
-        </section>
+    <div class="content-placeholder">
+        <h2>Assessment / Quiz</h2>
+
+        <div class="quiz-question">
+            <h3>1. Can a third party forge an RSA signature without knowing the private key d?</h3>
+
+            <label>
+                <input type="radio" name="q1" value="a">
+                A. Yes, always
+            </label>
+
+            <label>
+                <input type="radio" name="q1" value="b">
+                B. No, assuming RSA is implemented securely
+            </label>
+
+            <label>
+                <input type="radio" name="q1" value="c">
+                C. Only when the message is short
+            </label>
+
+            <p id="answer1" class="quiz-answer"></p>
+        </div>
+
+
+        <div class="quiz-question">
+            <h3>2. What security service does a digital signature provide that a symmetric MAC does not?</h3>
+
+            <label>
+                <input type="radio" name="q2" value="a">
+                A. Confidentiality
+            </label>
+
+            <label>
+                <input type="radio" name="q2" value="b">
+                B. Public verifiability and non-repudiation
+            </label>
+
+            <label>
+                <input type="radio" name="q2" value="c">
+                C. Faster encryption
+            </label>
+
+            <p id="answer2" class="quiz-answer"></p>
+        </div>
+
+
+        <div class="quiz-question">
+            <h3>3. Which RSA key is used to create a digital signature?</h3>
+
+            <label>
+                <input type="radio" name="q3" value="a">
+                A. Public key
+            </label>
+
+            <label>
+                <input type="radio" name="q3" value="b">
+                B. Private key
+            </label>
+
+            <label>
+                <input type="radio" name="q3" value="c">
+                C. Session key
+            </label>
+
+            <p id="answer3" class="quiz-answer"></p>
+        </div>
+
+
+        <div class="quiz-question">
+            <h3>4. Which RSA key is used to verify a digital signature?</h3>
+
+            <label>
+                <input type="radio" name="q4" value="a">
+                A. Public key
+            </label>
+
+            <label>
+                <input type="radio" name="q4" value="b">
+                B. Private key
+            </label>
+
+            <label>
+                <input type="radio" name="q4" value="c">
+                C. Password
+            </label>
+
+            <p id="answer4" class="quiz-answer"></p>
+        </div>
+
+
+        <div class="quiz-question">
+            <h3>5. What happens if the signed message is modified?</h3>
+
+            <label>
+                <input type="radio" name="q5" value="a">
+                A. Verification fails
+            </label>
+
+            <label>
+                <input type="radio" name="q5" value="b">
+                B. The signature automatically changes
+            </label>
+
+            <label>
+                <input type="radio" name="q5" value="c">
+                C. Nothing happens
+            </label>
+
+            <p id="answer5" class="quiz-answer"></p>
+        </div>
+
+
+        <button type="button" id="checkQuiz">Check Answers</button>
+
+        <h3 id="quizScore"></h3>
+    </div>
+</section>
 
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="content-placeholder">
@@ -100,16 +213,46 @@
         </section>
 
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Feedback</h2>
-            <p>Please share your feedback regarding this experiment simulation.</p>
-          </div>
-        </section>
+  <div class="content-placeholder">
+    <h2>Feedback</h2>
+
+    <p>Please share your feedback regarding this experiment simulation.</p>
+
+    <label for="feedbackRating">Rate this experiment:</label>
+    <select id="feedbackRating">
+      <option value="">Select a rating</option>
+      <option value="5">5 - Excellent</option>
+      <option value="4">4 - Very Good</option>
+      <option value="3">3 - Good</option>
+      <option value="2">2 - Needs Improvement</option>
+      <option value="1">1 - Poor</option>
+    </select>
+
+    <br><br>
+
+    <label for="feedbackComment">Your comments:</label>
+    <br>
+    <textarea
+      id="feedbackComment"
+      rows="5"
+      cols="50"
+      placeholder="Enter your feedback here..."
+    ></textarea>
+
+    <br><br>
+
+    <button type="button" id="submitFeedback">Submit Feedback</button>
+
+    <p id="feedbackMessage"></p>
+  </div>
+</section>
       </main>
     </div>
 
     <script src="../../js/common.js"></script>
     <script src="../../js/vendor/forge.min.js"></script>
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>
