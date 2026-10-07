@@ -51,7 +51,14 @@
         <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
           <div class="content-placeholder">
             <h2>Theory</h2>
-            <p>Access control is the selective restriction of access to a place or other resource. In computer security, access control involves three primary abstractions: Subjects (active entities like users or processes), Objects (passive resources like files, records, or devices), and Operations (read, write, execute, delete). Security models include DAC (owner decides), MAC (security labels/clearance), and RBAC (roles determine rights).</p>
+            <p>Access control is a fundamental component of data security that dictates who is allowed to access and use company information and resources. Through authentication and authorization, access control policies ensure that users are who they say they are and that they have appropriate access to company data.</p>
+            <p>In computer security, access control involves three primary abstractions: <strong>Subjects</strong>, <strong>Objects</strong>, and <strong>Operations</strong>. A <em>Subject</em> is an active entity, such as a user, process, or device, that requests access to a resource. An <em>Object</em> is a passive resource, such as a file, database record, network port, or hardware device, that is being accessed. An <em>Operation</em> is the specific action the subject wishes to perform on the object, typically categorized as Read, Write, Execute, or Delete.</p>
+            <h3>1. Discretionary Access Control (DAC)</h3>
+            <p>Discretionary Access Control (DAC) is a model where the owner of an object has complete control over it. The owner can grant or deny access to other subjects at their discretion. This is typically implemented using Access Control Lists (ACLs). While flexible, DAC can be vulnerable to compromised user accounts and malicious programs like Trojan horses, because any program run by a user inherits all of that user's privileges.</p>
+            <h3>2. Mandatory Access Control (MAC)</h3>
+            <p>Mandatory Access Control (MAC) is a strict, centrally managed access control model often used in high-security environments like government and military. In MAC, both subjects and objects are assigned security labels or clearances (e.g., Unclassified, Confidential, Secret, Top Secret). Access decisions are strictly enforced by the operating system based on these labels, following security rules such as the Bell-LaPadula model (for confidentiality) which dictates "no read up, no write down", or the Biba model (for integrity). Users cannot override these policies.</p>
+            <h3>3. Role-Based Access Control (RBAC)</h3>
+            <p>Role-Based Access Control (RBAC) simplifies management by grouping permissions into roles rather than assigning them directly to individual users. Users are then assigned to one or more roles (e.g., Administrator, Faculty, Student), and they inherit the permissions associated with those roles. This model aligns closely with organizational structures and greatly reduces the administrative overhead of managing user access, especially in large organizations. It enforces the principle of least privilege by ensuring users only have the access necessary for their specific job functions.</p>
           </div>
         </section>
 
@@ -59,10 +66,12 @@
           <div class="content-placeholder">
             <h2>Procedure</h2>
             <ol>
-              <li>Select the requesting Subject (User / Role).</li>
-              <li>Select the target Object (e.g., Financial_Report.pdf, System_Kernel.bin).</li>
-              <li>Select the requested Operation (Read, Write, Delete).</li>
-              <li>Click "Evaluate Access Request" to test the authorization engine.</li>
+              <li>Select the desired <strong>Access Control Model</strong> (DAC, MAC, or RBAC).</li>
+              <li>Enter the requesting <strong>Subject Identity</strong> (e.g., Alice, Bob, Admin).</li>
+              <li>Select the <strong>Subject Role/Clearance</strong> representing the user's privilege level.</li>
+              <li>Select the target <strong>Object</strong> you wish to access.</li>
+              <li>Select the requested <strong>Operation</strong> (Read, Write, Execute, Delete).</li>
+              <li>Click "Evaluate Access Request" to observe the authorization decision and audit log.</li>
             </ol>
           </div>
         </section>
@@ -70,7 +79,17 @@
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
             <h2>Simulation Controls</h2>
-            <label for="subRole">Subject Role:</label>
+            <label for="acModel">Access Control Model:</label>
+            <select id="acModel" style="display: block; width: 100%; max-width: 300px; padding: 0.5rem; margin-top: 5px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+              <option value="rbac" selected>Role-Based Access Control (RBAC)</option>
+              <option value="mac">Mandatory Access Control (MAC)</option>
+              <option value="dac">Discretionary Access Control (DAC)</option>
+            </select>
+
+            <label for="subIdentity">Subject Identity:</label>
+            <input type="text" id="subIdentity" placeholder="e.g., Alice, Bob" style="display: block; width: 100%; max-width: 300px; padding: 0.5rem; margin-top: 5px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+            
+            <label for="subRole">Subject Role/Clearance:</label>
             <select id="subRole">
               <option value="guest">Guest</option>
               <option value="student" selected>Student</option>
@@ -82,26 +101,82 @@
               <option value="public_syllabus">Public_Syllabus.pdf</option>
               <option value="lab_assignment">Lab_Assignment_Grades.xlsx</option>
               <option value="system_config">Server_Config.env</option>
+              <option value="system_kernel">System_Kernel.bin</option>
             </select>
             <label for="opType" style="margin-top: 10px;">Operation:</label>
             <select id="opType">
               <option value="read">READ</option>
               <option value="write">WRITE</option>
+              <option value="execute">EXECUTE</option>
               <option value="delete">DELETE</option>
             </select>
             <button type="button" id="btnEvalAccess">Evaluate Access Request</button>
           </div>
           <div class="simulation-output" aria-live="polite">
             <h2>Simulation Output</h2>
-            <div id="accessOutput">Select parameters and evaluate request...</div>
+            
+            <!-- Visualizer -->
+            <div id="visualizer" style="display: flex; align-items: center; justify-content: center; gap: 20px; padding: 20px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 20px; min-height: 120px; overflow: hidden;">
+              <div style="text-align: center; z-index: 2;">
+                <div style="font-size: 3rem;">👤</div>
+                <div id="visSubject" style="font-weight: bold; font-size: 0.9rem;">Subject</div>
+              </div>
+              <div id="visLock" style="font-size: 2.5rem; transition: transform 0.3s, color 0.3s; display: flex; flex-direction: column; align-items: center; z-index: 2; position: relative;">
+                <span id="visLockIcon">🔒</span>
+                <span id="visOp" style="font-size: 0.8rem; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; margin-top: 5px; color: #333;">Operation</span>
+              </div>
+              <div style="text-align: center; z-index: 2;">
+                <div style="font-size: 3rem;">📄</div>
+                <div id="visObject" style="font-weight: bold; font-size: 0.9rem;">Object</div>
+              </div>
+            </div>
+
+            <div id="accessOutput" style="margin-bottom: 20px;">Select parameters and evaluate request...</div>
+            
+            <h2>Audit Policy Log</h2>
+            <div style="max-height: 200px; overflow-y: auto; background: var(--bg-alt); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 20px;">
+              <ul id="auditLog" style="list-style-type: none; padding: 0; margin: 0; font-family: monospace; font-size: 0.9rem;">
+                <!-- Log entries will be added here -->
+              </ul>
+            </div>
+
+            <h2>Expected Observations & Results</h2>
+            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px 15px; font-size: 0.95rem; border-radius: 0 4px 4px 0;">
+              <ul style="margin: 0; padding-left: 20px; color: #1e3a8a;">
+                <li><strong>DAC</strong>: Try entering <em>Alice</em> and observe how she gains full access to <em>Public_Syllabus</em> based on ownership.</li>
+                <li><strong>MAC (Confidentiality)</strong>: Observe that a <em>Student</em> (Clearance 2) cannot <em>Read</em> the <em>System_Kernel</em> (Classification 4) due to the "No Read Up" rule.</li>
+                <li><strong>MAC (Integrity)</strong>: Notice that subjects can only <em>Write</em> to objects matching their exact clearance level, preserving data integrity.</li>
+                <li><strong>RBAC</strong>: Select <em>Faculty</em> and observe how they inherit broad rights over academic files but are denied access to core system files.</li>
+              </ul>
+            </div>
           </div>
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
           <div class="quiz-panel">
             <h2>Assessment / Quiz</h2>
-            <p>1. What is the fundamental difference between DAC and MAC?</p>
-            <p>2. In RBAC, are permissions assigned directly to users or to roles?</p>
+            <form id="quizForm">
+              <div class="quiz-question">
+                <p><strong>1. Which access control model allows the owner of a file to decide who can access it?</strong></p>
+                <label><input type="radio" name="q1" value="mac"> Mandatory Access Control (MAC)</label><br>
+                <label><input type="radio" name="q1" value="dac"> Discretionary Access Control (DAC)</label><br>
+                <label><input type="radio" name="q1" value="rbac"> Role-Based Access Control (RBAC)</label>
+              </div>
+              <div class="quiz-question" style="margin-top: 15px;">
+                <p><strong>2. In the Bell-LaPadula MAC model, which principle prevents a user with 'Secret' clearance from viewing 'Top Secret' data?</strong></p>
+                <label><input type="radio" name="q2" value="readup"> No Read Up</label><br>
+                <label><input type="radio" name="q2" value="writedown"> No Write Down</label><br>
+                <label><input type="radio" name="q2" value="readdown"> No Read Down</label>
+              </div>
+              <div class="quiz-question" style="margin-top: 15px;">
+                <p><strong>3. How does Role-Based Access Control (RBAC) primarily assign permissions?</strong></p>
+                <label><input type="radio" name="q3" value="user"> By directly assigning permissions to individual user accounts.</label><br>
+                <label><input type="radio" name="q3" value="label"> By comparing subject clearance with object labels.</label><br>
+                <label><input type="radio" name="q3" value="role"> By assigning permissions to roles, and then assigning roles to users.</label>
+              </div>
+              <button type="button" id="btnSubmitQuiz" style="margin-top: 20px;">Submit Quiz</button>
+            </form>
+            <div id="quizOutput" style="margin-top: 15px; font-weight: bold;"></div>
           </div>
         </section>
 
@@ -126,5 +201,7 @@
 
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>
