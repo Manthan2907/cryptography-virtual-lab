@@ -3,10 +3,646 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="Argon2 Password Hashing - Virtual Cryptography Laboratory">
+    <title>Argon2 Password Hashing | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <script src="https://cdn.jsdelivr.net/npm/argon2-browser@1.18.0/dist/argon2-bundled.min.js"></script>
+    <style>
+      /* Scoped custom styling for Group 12 Argon2 Experiment */
+      .exp-authors {
+        margin-top: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 0.88rem;
+        opacity: 0.95;
+      }
+      .exp-authors a {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      /* Information grid & concept boxes */
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .info-box {
+        background: #FFF8F5;
+        padding: 18px;
+        border-radius: 8px;
+        border: 1px solid #E2CFC4;
+        border-top: 4px solid #AD806D;
+      }
+      .info-box h3 {
+        margin: 6px 0 8px;
+        color: #7A5545;
+        font-size: 1.1rem;
+      }
+      .info-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #AD806D;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+
+      /* Variant comparison table */
+      .variant-table {
+        overflow-x: auto;
+        margin: 18px 0;
+      }
+      .variant-table table, .table-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .variant-table th, .variant-table td,
+      .table-wrapper th, .table-wrapper td {
+        padding: 10px 14px;
+        text-align: left;
+        border: 1px solid #D8BFB2;
+      }
+      .variant-table th, .table-wrapper th {
+        background: #AD806D;
+        color: #FFFFFF;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .variant-table td, .table-wrapper td {
+        background: #FFFFFF;
+        font-size: 0.9rem;
+      }
+      .variant-table tr:nth-child(even) td,
+      .table-wrapper tr:nth-child(even) td {
+        background: #FFF8F5;
+      }
+
+      /* Formula callout */
+      .formula {
+        background: #7A5545;
+        color: #FFFFFF;
+        padding: 16px 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 1rem;
+        margin: 20px 0;
+        font-family: monospace;
+      }
+      .formula span {
+        padding: 0 8px;
+        color: #EBDAD1;
+      }
+
+      /* Section sub-cards inside Simulation */
+      .sim-subcard {
+        background: #FFFFFF;
+        border: 1px solid #E5D4CB;
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(105, 70, 55, 0.05);
+      }
+      .sim-subcard h3 {
+        margin: 0 0 10px;
+        color: #7A5545;
+        font-size: 1.25rem;
+        border-bottom: 2px solid #E8D8D0;
+        padding-bottom: 6px;
+      }
+      .sim-subcard p.description {
+        margin-top: 0;
+        color: #6B554B;
+        font-size: 0.92rem;
+      }
+
+      /* Experiment Grid (controls + results) */
+      .experiment-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 14px;
+      }
+      @media (max-width: 860px) {
+        .experiment-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .experiment-form {
+        padding: 4px;
+      }
+      .show-password {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 6px 0 16px;
+        font-size: 0.9rem;
+      }
+      .show-password input {
+        width: auto !important;
+      }
+      .show-password label {
+        margin: 0 !important;
+        font-weight: normal !important;
+      }
+
+      /* Hash results panel */
+      .result-panel {
+        background: #FFF8F5;
+        border: 1px solid #E2CFC4;
+        border-radius: 10px;
+        padding: 18px;
+      }
+      .result-panel h3 {
+        margin: 0 0 12px;
+        color: #7A5545;
+      }
+      .hash-result-box {
+        background: #FFFFFF;
+        border: 1px solid #E2CFC4;
+        border-left: 4px solid #AD806D;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-top: 14px;
+      }
+      .hash-result-box label {
+        color: #7A5545;
+        font-weight: bold;
+        font-size: 0.88rem;
+        margin: 0 0 6px;
+      }
+      .hash-result-box textarea {
+        min-height: 85px;
+        word-break: break-all;
+        font-family: monospace;
+        font-size: 11.5px;
+        background: #FFF8F5;
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #D8BFB2;
+        border-radius: 6px;
+        resize: vertical;
+      }
+      .hash-time {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px solid #E5D4CB;
+        font-size: 0.85rem;
+      }
+      .hash-time strong {
+        color: #7A5545;
+      }
+
+      /* Telemetry parameter stats */
+      .stats {
+        margin-top: 14px;
+      }
+      .stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #E5D4CB;
+        font-size: 0.88rem;
+      }
+      .stat strong {
+        color: #7A5545;
+      }
+
+      /* Custom dropdowns */
+      .custom-select {
+        position: relative;
+        width: 100%;
+        margin-bottom: 12px;
+      }
+      .select-trigger {
+        width: 100%;
+        min-height: 42px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #ffffff;
+        border: 1px solid #D8C7BE;
+        border-radius: 6px;
+        color: #3F302A;
+        font-size: 14px;
+        cursor: pointer;
+        text-align: left;
+      }
+      .select-trigger:hover {
+        border-color: #AD806D;
+      }
+      .select-arrow {
+        font-size: 10px;
+        transition: transform 0.2s ease;
+      }
+      .custom-select.open .select-arrow {
+        transform: rotate(180deg);
+      }
+      .select-options {
+        display: none;
+        position: absolute;
+        z-index: 1000;
+        top: calc(100% + 4px);
+        left: 0;
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #D8C7BE;
+        border-radius: 6px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+      }
+      .custom-select.open .select-options {
+        display: block;
+      }
+      .select-option {
+        width: 100%;
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        border: none;
+        border-bottom: 1px solid #EEE4DF;
+        background: #ffffff;
+        color: #3F302A;
+        text-align: left;
+        cursor: pointer;
+      }
+      .select-option:last-child {
+        border-bottom: none;
+      }
+      .select-option strong {
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+      .select-option span {
+        display: none;
+        margin-top: 4px;
+        font-size: 11.5px;
+        line-height: 1.4;
+        color: #75645C;
+      }
+      .select-option:hover span {
+        display: block;
+      }
+      .select-option:hover {
+        background: #FFF8F5;
+      }
+      .select-option.selected {
+        background: #F8EEE9;
+      }
+      .hidden-select {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Buttons & Status badges */
+      .primary-btn {
+        background: #AD806D;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+      .primary-btn:hover {
+        background: #8F6755;
+      }
+      .primary-btn:disabled, .secondary-btn:disabled {
+        background: #C8B5AB;
+        cursor: not-allowed;
+      }
+      .secondary-btn {
+        background: #7A5545;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+      .secondary-btn:hover {
+        background: #624337;
+      }
+
+      .status {
+        padding: 11px 14px;
+        border-radius: 6px;
+        margin: 12px 0;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .status.neutral {
+        background: #F4E9E3;
+        color: #6B493B;
+        border: 1px solid #E2CFC4;
+      }
+      .status.success {
+        background: #EEF6EF;
+        color: #35613B;
+        border: 1px solid #BDD6C1;
+      }
+      .status.error {
+        background: #FBECEC;
+        color: #8A3F3F;
+        border: 1px solid #E4BBBB;
+      }
+
+      /* Analysis controls */
+      .analysis-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+      .observation-box {
+        background: #FFF8F5;
+        padding: 16px;
+        border-radius: 6px;
+        border-left: 4px solid #AD806D;
+        color: #5A4035;
+        font-size: 0.92rem;
+        margin-top: 14px;
+        line-height: 1.5;
+      }
+
+      /* Quiz formatting */
+      .quiz-question {
+        background: #FFF8F5;
+        padding: 16px;
+        margin-bottom: 14px;
+        border-radius: 6px;
+        border: 1px solid #E5D4CB;
+      }
+      .quiz-question p {
+        font-weight: 700;
+        color: #6B493B;
+        margin: 0 0 10px;
+      }
+      .quiz-question label {
+        display: block;
+        font-weight: normal;
+        margin: 6px 0;
+        color: #3F332E;
+        cursor: pointer;
+      }
+      .quiz-question input[type="radio"] {
+        margin-right: 8px;
+        width: auto !important;
+      }
+      .quiz-feedback {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      .quiz-result {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 6px;
+        font-weight: 700;
+      }
+      .question-box {
+        background: #FFF8F5;
+        border-left: 4px solid #AD806D;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        border: 1px solid #E5D4CB;
+      }
+      .question-box h3 {
+        margin: 0 0 6px;
+        color: #7A5545;
+        font-size: 1rem;
+      }
+      .question-box p {
+        margin: 4px 0;
+        font-size: 0.92rem;
+      }
+
+      /* Digital Interactive Test Suite */
+      .tc-dashboard {
+        margin-top: 16px;
+      }
+      .tc-control-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .tc-btn-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tc-master-btn {
+        background: #8F6755;
+        color: #FFFFFF;
+        font-size: 13.5px;
+        font-weight: bold;
+        padding: 9px 16px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+      .tc-master-btn:hover {
+        background: #7A5545;
+      }
+      .tc-reset-btn {
+        background: #FFF8F5;
+        color: #7A5545;
+        border: 1px solid #D8BFB2;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+      .tc-reset-btn:hover {
+        background: #F4E9E3;
+      }
+      .tc-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tc-filter-pill {
+        background: #FFF8F5;
+        border: 1px solid #D8BFB2;
+        color: #6B554B;
+        padding: 5px 11px;
+        border-radius: 18px;
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.15s ease;
+      }
+      .tc-filter-pill:hover, .tc-filter-pill.active {
+        background: #8F6755;
+        color: #FFFFFF;
+        border-color: #8F6755;
+      }
+      .tc-summary-box {
+        background: #FFF8F5;
+        border: 1px solid #E5D4CB;
+        border-radius: 8px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+      }
+      .tc-summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tc-summary-title {
+        font-size: 13.5px;
+        font-weight: bold;
+        color: #6B493B;
+      }
+      .tc-progress-container {
+        height: 8px;
+        background: #EBDAD1;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 10px 0 12px;
+      }
+      .tc-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: #35613B;
+        border-radius: 999px;
+        transition: width 0.3s ease;
+      }
+      .tc-metric-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tc-metric-chip {
+        background: #FFFFFF;
+        border: 1px solid #D8BFB2;
+        border-radius: 5px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #5A4035;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .tc-metric-chip span.num {
+        color: #8F6755;
+      }
+      .tc-metric-chip.pass span.num {
+        color: #35613B;
+      }
+      .tc-metric-chip.fail span.num {
+        color: #8A3F3F;
+      }
+      .tc-id-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .tc-id-text {
+        font-weight: bold;
+        color: #7A5545;
+        font-size: 0.9rem;
+      }
+      .tc-badge {
+        font-size: 9.5px;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        width: fit-content;
+      }
+      .tc-badge.val { background: #FDF2E9; color: #B3541E; border: 1px solid #F5CBA7; }
+      .tc-badge.sec { background: #EBF5FB; color: #1F618D; border: 1px solid #AED6F1; }
+      .tc-badge.ver { background: #E8F8F5; color: #117864; border: 1px solid #A3E4D7; }
+      .tc-badge.par { background: #FEF9E7; color: #B7950B; border: 1px solid #F9E79F; }
+      .tc-badge.quiz { background: #F4ECF7; color: #76448A; border: 1px solid #D2B4DE; }
+
+      .tc-status-pill {
+        font-size: 11.5px;
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      .tc-status-pill.pending { background: #F4E9E3; color: #6B493B; border: 1px solid #E2CFC4; }
+      .tc-status-pill.running { background: #EBF5FB; color: #1F618D; border: 1px solid #AED6F1; }
+      .tc-status-pill.pass { background: #EEF6EF; color: #35613B; border: 1px solid #BDD6C1; }
+      .tc-status-pill.fail { background: #FBECEC; color: #8A3F3F; border: 1px solid #E4BBBB; }
+
+      .tc-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 95px;
+      }
+      .tc-action-btn {
+        border: none;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 5px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.15s ease;
+        text-align: center;
+        width: 100%;
+      }
+      .tc-run-btn { background: #8F6755; color: #FFFFFF; }
+      .tc-run-btn:hover { background: #7A5545; }
+      .tc-load-btn { background: #F4E9E3; color: #6B493B; border: 1px solid #D8BFB2; }
+      .tc-load-btn:hover { background: #EBDAD1; }
+      .tc-trace-btn { background: #FFFFFF; color: #7A5545; border: 1px solid #D8BFB2; }
+      .tc-trace-btn:hover { background: #F4E9E3; }
+      .tc-trace-drawer {
+        background: #FFF8F5;
+        border: 1px dashed #D8BFB2;
+        border-radius: 6px;
+        padding: 8px 10px;
+        margin-top: 6px;
+        font-family: monospace;
+        font-size: 11px;
+        color: #4A3B32;
+        line-height: 1.45;
+      }
+      .tc-trace-drawer[hidden] {
+        display: none !important;
+      }
+    </style>
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -19,9 +655,12 @@
     <div class="experiment-container">
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems &middot; Group 12</p>
+        <h1 id="exp-title">Argon2 Password Hashing</h1>
+        <p id="exp-description">Implement Argon2 password hashing and verification and analyze the effect of memory cost, time cost, and parallelism parameters.</p>
+        <div class="exp-authors">
+          <strong>Developed by:</strong> Aarya Sawant &bull; Disha Shetty &bull; Chris Pereira &bull; Lebron Pereira
+        </div>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
@@ -29,51 +668,1022 @@
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
         <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" data-tab="testcases" aria-selected="false">Test Cases</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
+
+        <!-- ================= TAB 1: THEORY & AIM ================= -->
         <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
           <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+            <div class="aim-section" style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #E5D4CB;">
+              <h2>Aim &amp; Objectives</h2>
+              <p><strong>Aim:</strong> To implement Argon2 password hashing and verification and analyze the effect of memory cost, time cost, and parallelism parameters.</p>
+              <p><strong>Objectives:</strong></p>
+              <ul>
+                <li>Understand the algorithmic foundation of memory-hard password hashing and why conventional hashes (MD5, SHA-256) are vulnerable to GPU and ASIC brute-force attacks.</li>
+                <li>Analyze the three official variants of Argon2: Argon2i (data-independent memory access), Argon2d (data-dependent memory access), and Argon2id (hybrid mode recommended by RFC 9106).</li>
+                <li>Generate salted password hashes in client-side WebAssembly and verify passwords using constant-time verification.</li>
+                <li>Benchmark and study parameter scaling: memory cost (m in KiB), time cost (t passes), and parallelism (p lanes).</li>
+                <li>Execute an interactive digital test suite (TC01–TC12) evaluating boundary validation, parameter scaling, and assertion mechanics.</li>
+              </ul>
+            </div>
+
+            <h2>Relevant Theoretical Concepts</h2>
+            
+            <h3>1. Background and The Password Hashing Competition</h3>
+            <p>
+              In modern computing, password authentication relies on cryptographic one-way functions to store credentials securely without keeping passwords in plaintext. Early authentication schemes used general-purpose cryptographic hash functions such as MD5, SHA-1, and SHA-256. While these primitives are secure for message integrity verification, their high computation speed and low memory footprint make them fundamentally dangerous for password hashing. A modern attacker with commodity GPUs or custom ASICs can compute hundreds of billions of SHA-256 candidate hashes per second, rendering brute-force and dictionary attacks trivially fast.
+            </p>
+            <p>
+              To address this vulnerability, the cryptographic community initiated the Password Hashing Competition (PHC) from 2013 to 2015. In July 2015, <strong>Argon2</strong>, designed by Alex Biryukov, Daniel Dinu, and Dmitry Khovratovich at the University of Luxembourg, was formally selected as the winner of the competition. Argon2 provides state-of-the-art protection against GPU-based password cracking, ASIC acceleration, and side-channel timing attacks, and is standardized in <strong>RFC 9106</strong>.
+            </p>
+
+            <h3>2. Memory-Hardness and Algorithmic Working Principle</h3>
+            <p>
+              Argon2 is a <em>memory-hard function</em> (MHF). An algorithm is considered memory-hard if evaluating it requires significant random-access memory (RAM) that cannot be traded away for computation time without exponential performance penalties. By filling a large matrix of memory blocks and referencing prior blocks iteratively, Argon2 forces an attacker with specialized hardware (ASICs or FPGA clusters) to allocate physical silicon memory for every concurrent attack lane, driving attacking hardware costs prohibitively high.
+            </p>
+            <p>
+              The execution pipeline of Argon2 operates in structured phases:
+            </p>
+            <ol>
+              <li><strong>Initialization ($H_0$):</strong> Variable-length inputs—password, salt, secret key, associated data, time cost $t$, memory cost $m$, parallelism $p$, and hash length—are compressed into an initial 64-byte digest using BLAKE2b.</li>
+              <li><strong>Memory Matrix Allocation:</strong> A 2D memory array of $p$ lanes and $q = \lfloor m / (4p) \rfloor \times 4$ columns of 1024-byte blocks is allocated in memory.</li>
+              <li><strong>Block Generation &amp; Mixing:</strong> The first two columns of each lane are initialized using BLAKE2b. Subsequent blocks are computed using the compression function $G$, which operates on 1024-byte blocks using eight rounds of BLAKE2b's round function across rows and columns.</li>
+              <li><strong>Multi-Pass Iteration:</strong> The algorithm performs $t$ complete iteration passes over the memory matrix, overwriting and re-indexing blocks to prevent time-memory trade-off (TMTO) shortcuts.</li>
+              <li><strong>Final Tag Derivation:</strong> The final memory blocks from each lane are XORed and hashed with BLAKE2b to produce the derived output key or authentication tag.</li>
+            </ol>
+
+            <div class="formula">
+              Password + Salt + Parameters &rarr; Initial Digest ($H_0$) &rarr; Memory Matrix ($p \times q$) &rarr; $t$ Passes ($G$) &rarr; Encoded Hash
+            </div>
+
+            <h3>3. Important Cryptographic Parameters</h3>
+            <div class="info-grid">
+              <div class="info-box">
+                <div class="info-icon">M</div>
+                <h3>Memory Cost (m)</h3>
+                <p>Specifies the amount of RAM used in KiB (e.g., 65,536 KiB = 64 MiB). Increasing memory cost forces an attacker's hardware to dedicate physical memory for every parallel guess.</p>
+              </div>
+              <div class="info-box">
+                <div class="info-icon">T</div>
+                <h3>Time Cost (t)</h3>
+                <p>Specifies the number of iteration passes over the memory matrix. Each additional pass re-reads and modifies all allocated memory, linearly increasing execution latency.</p>
+              </div>
+              <div class="info-box">
+                <div class="info-icon">P</div>
+                <h3>Parallelism (p)</h3>
+                <p>Defines the number of independent execution lanes or threads. This allows multi-core systems to execute hashing concurrently without reducing memory-hardness.</p>
+              </div>
+            </div>
+
+            <h3>4. Argon2 Variants Comparison</h3>
+            <div class="variant-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Variant</th>
+                    <th>Memory Access Pattern</th>
+                    <th>Primary Defense &amp; Recommended Use Case</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Argon2d</strong></td>
+                    <td>Data-dependent indexing: prior block contents determine which memory address is accessed next.</td>
+                    <td>Maximizes resistance against GPU/ASIC parallel crackers and Time-Memory Trade-Off (TMTO) attacks. Vulnerable to side-channel cache attacks if running on untrusted shared hardware. Ideal for cryptocurrencies and proof-of-work.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Argon2i</strong></td>
+                    <td>Data-independent indexing: memory access sequence is deterministic and pseudo-randomly scheduled.</td>
+                    <td>Immune to cache-timing and side-channel attacks because memory access patterns do not depend on the password secret. Slightly more susceptible to TMTO attacks than Argon2d. Preferred for password hashing in side-channel vulnerable environments.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Argon2id</strong></td>
+                    <td>Hybrid mode: first half of the first pass uses data-independent indexing (Argon2i); remainder uses data-dependent indexing (Argon2d).</td>
+                    <td>Provides both side-channel resistance and strong TMTO defense against GPU acceleration. <strong>Officially recommended by RFC 9106 and OWASP</strong> for general password hashing and key derivation.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>5. Encoded PHC String Anatomy</h3>
+            <p>
+              Argon2 encodes its output in the standardized Password Hashing Competition (PHC) serialized string format:
+            </p>
+            <div class="formula">
+              $argon2id$v=19$m=65536,t=3,p=1$&lt;salt-base64&gt;$&lt;hash-base64&gt;
+            </div>
+            <ul>
+              <li><code>argon2id</code>: Specifies the algorithm variant used.</li>
+              <li><code>v=19</code>: Specifies Argon2 version (0x13 = decimal 19).</li>
+              <li><code>m=65536,t=3,p=1</code>: Explicit serialized parameters ensuring deterministic re-computation during verification.</li>
+              <li><code>&lt;salt&gt;</code>: Base64-encoded cryptographically random 16-byte salt preventing rainbow table lookups.</li>
+              <li><code>&lt;hash&gt;</code>: Base64-encoded derived output tag.</li>
+            </ul>
           </div>
         </section>
 
+        <!-- ================= TAB 2: PROCEDURE ================= -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
           <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+            <h2>Step-by-Step Procedure</h2>
+            <p>Follow these numbered steps to execute the Argon2 simulation and parameter analysis:</p>
+            <ol>
+              <li><strong>Enter Password &amp; Configure Input:</strong> Navigate to the <em>Simulation</em> tab. Enter a plaintext candidate password into the input field. Optionally toggle the "Show password" checkbox to verify masking behavior.</li>
+              <li><strong>Configure Cost Parameters:</strong> Select the desired Memory Cost ($m$), Time Cost ($t$), and Parallelism ($p$) using the interactive parameter dropdowns.</li>
+              <li><strong>Generate Triple-Variant Hashes:</strong> Click <strong>Generate All Argon2 Hashes</strong>. The WebAssembly engine compiles the password and generates Argon2i, Argon2d, and Argon2id simultaneously using the same cryptographically secure 16-byte random salt.</li>
+              <li><strong>Inspect Output Encodings &amp; Telemetry:</strong> Observe the serialized RFC 9106 string outputs in each textarea and observe the elapsed execution latency measured in milliseconds.</li>
+              <li><strong>Verify Authentic Password:</strong> Scroll to the <em>Password Verification</em> card. Enter the authentic password and click <strong>Verify Password</strong> to observe constant-time validation success (<code>✓ Password Verified</code>).</li>
+              <li><strong>Test Mismatch Rejection:</strong> Enter an incorrect password and verify that the system rejects the credential securely (<code>✗ Verification Failed</code>) without leaking timing hints.</li>
+              <li><strong>Execute Parameter Benchmark:</strong> Scroll to the <em>Parameter Analysis</em> section. Choose custom memory, time, and parallelism configurations and click <strong>Run Benchmark</strong> to append timing telemetry to the observation table.</li>
+              <li><strong>Run Digital Test Suite:</strong> Switch to the <em>Test Cases</em> tab to run individual live assertions (TC01–TC12) or click <strong>Run All 12 Test Cases</strong> to validate full test suite compliance.</li>
+              <li><strong>Take Self-Assessment:</strong> Switch to the <em>Quiz</em> tab, answer the 10 conceptual questions, and review detailed cryptographic feedback.</li>
+            </ol>
           </div>
         </section>
 
+        <!-- ================= TAB 3: SIMULATION ================= -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+          
+          <!-- Subcard 1: Argon2 Triple-Variant Generation -->
+          <div class="sim-subcard" id="experiment">
+            <h3>Interactive Argon2 Password Hashing</h3>
+            <p class="description">
+              Enter a candidate password and select cost parameters. WebAssembly will compute <strong>Argon2i</strong>, <strong>Argon2d</strong>, and <strong>Argon2id</strong> using the same random salt and parameters for comparison.
+            </p>
+
+            <div class="experiment-grid">
+              <!-- Left Column: Controls -->
+              <div class="experiment-form">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password to hash" value="VirtualLabPassword123">
+
+                <div class="show-password">
+                  <input type="checkbox" id="showPassword">
+                  <label for="showPassword">Show password</label>
+                </div>
+
+                <label for="memory">Memory Cost (m)</label>
+                <div class="custom-select" data-parameter="memory">
+                  <button type="button" class="select-trigger">
+                    <span class="selected-value">64 MB</span>
+                    <span class="select-arrow">&#9660;</span>
+                  </button>
+                  <div class="select-options">
+                    <button type="button" class="select-option" data-value="16384">
+                      <strong>16 MB</strong>
+                      <span>16,384 KiB RAM. Faster execution with minimal memory footprint.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="32768">
+                      <strong>32 MB</strong>
+                      <span>32,768 KiB RAM. Moderate memory hardness.</span>
+                    </button>
+                    <button type="button" class="select-option selected" data-value="65536">
+                      <strong>64 MB</strong>
+                      <span>65,536 KiB RAM. Standard recommended memory hardness.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="131072">
+                      <strong>128 MB</strong>
+                      <span>131,072 KiB RAM. High memory hardness for hardened defense.</span>
+                    </button>
+                  </div>
+                  <select id="memory" class="hidden-select">
+                    <option value="16384">16 MB</option>
+                    <option value="32768">32 MB</option>
+                    <option value="65536" selected>64 MB</option>
+                    <option value="131072">128 MB</option>
+                  </select>
+                </div>
+
+                <label for="time">Time Cost (t - passes)</label>
+                <div class="custom-select" data-parameter="time">
+                  <button type="button" class="select-trigger">
+                    <span class="selected-value">3</span>
+                    <span class="select-arrow">&#9660;</span>
+                  </button>
+                  <div class="select-options">
+                    <button type="button" class="select-option" data-value="1">
+                      <strong>1</strong>
+                      <span>1 memory pass. Lowest latency execution.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="2">
+                      <strong>2</strong>
+                      <span>2 memory passes. Balanced computation.</span>
+                    </button>
+                    <button type="button" class="select-option selected" data-value="3">
+                      <strong>3</strong>
+                      <span>3 memory passes. Recommended default pass count.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="4">
+                      <strong>4</strong>
+                      <span>4 memory passes. Higher computational resistance.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="5">
+                      <strong>5</strong>
+                      <span>5 memory passes. Maximum time-cost hardness.</span>
+                    </button>
+                  </div>
+                  <select id="time" class="hidden-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                </div>
+
+                <label for="parallelism">Parallelism (p - lanes)</label>
+                <div class="custom-select" data-parameter="parallelism">
+                  <button type="button" class="select-trigger">
+                    <span class="selected-value">1</span>
+                    <span class="select-arrow">&#9660;</span>
+                  </button>
+                  <div class="select-options">
+                    <button type="button" class="select-option selected" data-value="1">
+                      <strong>1</strong>
+                      <span>1 execution lane. Single-threaded computation.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="2">
+                      <strong>2</strong>
+                      <span>2 execution lanes for parallel execution.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="3">
+                      <strong>3</strong>
+                      <span>3 execution lanes.</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="4">
+                      <strong>4</strong>
+                      <span>4 execution lanes utilizing multi-core hardware.</span>
+                    </button>
+                  </div>
+                  <select id="parallelism" class="hidden-select">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                </div>
+
+                <button type="button" id="hashBtn" class="primary-btn" style="width: 100%; margin-top: 10px;">
+                  Generate All Argon2 Hashes
+                </button>
+              </div>
+
+              <!-- Right Column: Outputs -->
+              <div class="result-panel">
+                <h3>Hash Results</h3>
+                <div id="hashStatus" class="status neutral">
+                  Enter a password and click Generate All Argon2 Hashes.
+                </div>
+
+                <div class="hash-result-box">
+                  <label>Argon2i Hash (Data-Independent)</label>
+                  <textarea id="argon2iOutput" readonly placeholder="Argon2i hash will appear here..."></textarea>
+                  <div class="hash-time">
+                    <span>Execution Time:</span>
+                    <strong id="argon2iTime">-</strong>
+                  </div>
+                </div>
+
+                <div class="hash-result-box">
+                  <label>Argon2d Hash (Data-Dependent)</label>
+                  <textarea id="argon2dOutput" readonly placeholder="Argon2d hash will appear here..."></textarea>
+                  <div class="hash-time">
+                    <span>Execution Time:</span>
+                    <strong id="argon2dTime">-</strong>
+                  </div>
+                </div>
+
+                <div class="hash-result-box">
+                  <label>Argon2id Hash (Hybrid RFC 9106)</label>
+                  <textarea id="argon2idOutput" readonly placeholder="Argon2id hash will appear here..."></textarea>
+                  <div class="hash-time">
+                    <span>Execution Time:</span>
+                    <strong id="argon2idTime">-</strong>
+                  </div>
+                </div>
+
+                <div class="stats">
+                  <div class="stat">
+                    <span>Active Memory Cost:</span>
+                    <strong id="resultMemory">-</strong>
+                  </div>
+                  <div class="stat">
+                    <span>Active Time Passes:</span>
+                    <strong id="resultTime">-</strong>
+                  </div>
+                  <div class="stat">
+                    <span>Active Parallelism Lanes:</span>
+                    <strong id="resultParallelism">-</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+
+          <!-- Subcard 2: Password Verification -->
+          <div class="sim-subcard" id="verification">
+            <h3>Password Verification</h3>
+            <p class="description">
+              Verify whether an entered password matches the stored <strong>Argon2i</strong> hash. The verification algorithm extracts the salt and cost parameters from the serialized hash and performs constant-time comparison.
+            </p>
+
+            <label for="verifyPassword">Enter Password to Verify</label>
+            <input type="password" id="verifyPassword" placeholder="Enter password to verify against stored hash">
+
+            <button type="button" id="verifyBtn" class="secondary-btn" style="margin-top: 12px;">
+              Verify Password
+            </button>
+
+            <div id="verifyResult" class="status neutral" style="margin-top: 14px;">
+              Generate an Argon2i hash first.
+            </div>
+          </div>
+
+          <!-- Subcard 3: Parameter Analysis & Benchmarking -->
+          <div class="sim-subcard" id="analysis">
+            <h3>Parameter Analysis &amp; Benchmark</h3>
+            <p class="description">
+              Vary cost factors to benchmark performance trade-offs. Each trial records real-time execution duration in the observation table.
+            </p>
+
+            <div class="analysis-controls">
+              <div>
+                <label for="analysisMemory">Memory Cost</label>
+                <div class="custom-select" data-parameter="analysis-memory">
+                  <button type="button" class="select-trigger">
+                    <span class="selected-value">64 MB</span>
+                    <span class="select-arrow">&#9660;</span>
+                  </button>
+                  <div class="select-options">
+                    <button type="button" class="select-option" data-value="16384">
+                      <strong>16 MB</strong>
+                      <span>16,384 KiB RAM</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="32768">
+                      <strong>32 MB</strong>
+                      <span>32,768 KiB RAM</span>
+                    </button>
+                    <button type="button" class="select-option selected" data-value="65536">
+                      <strong>64 MB</strong>
+                      <span>65,536 KiB RAM</span>
+                    </button>
+                  </div>
+                  <select id="analysisMemory" class="hidden-select">
+                    <option value="16384">16 MB</option>
+                    <option value="32768">32 MB</option>
+                    <option value="65536" selected>64 MB</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label for="analysisTime">Time Passes</label>
+                <div class="custom-select" data-parameter="analysis-time">
+                  <button type="button" class="select-trigger">
+                    <span class="selected-value">3</span>
+                    <span class="select-arrow">&#9660;</span>
+                  </button>
+                  <div class="select-options">
+                    <button type="button" class="select-option" data-value="1">
+                      <strong>1</strong>
+                      <span>1 pass</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="2">
+                      <strong>2</strong>
+                      <span>2 passes</span>
+                    </button>
+                    <button type="button" class="select-option selected" data-value="3">
+                      <strong>3</strong>
+                      <span>3 passes</span>
+                    </button>
+                  </div>
+                  <select id="analysisTime" class="hidden-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label for="analysisParallelism">Parallelism</label>
+                <div class="custom-select" data-parameter="analysis-parallelism">
+                  <button type="button" class="select-trigger">
+                    <span class="selected-value">1</span>
+                    <span class="select-arrow">&#9660;</span>
+                  </button>
+                  <div class="select-options">
+                    <button type="button" class="select-option selected" data-value="1">
+                      <strong>1</strong>
+                      <span>1 lane</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="2">
+                      <strong>2</strong>
+                      <span>2 lanes</span>
+                    </button>
+                    <button type="button" class="select-option" data-value="3">
+                      <strong>3</strong>
+                      <span>3 lanes</span>
+                    </button>
+                  </div>
+                  <select id="analysisParallelism" class="hidden-select">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" id="benchmarkBtn" class="primary-btn">
+              Run Benchmark
+            </button>
+
+            <div id="benchmarkStatus" class="status neutral" style="margin-top: 14px;">
+              No benchmark has been performed.
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Trial #</th>
+                    <th>Memory</th>
+                    <th>Time Cost</th>
+                    <th>Parallelism</th>
+                    <th>Execution Time</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsTable"></tbody>
+              </table>
+            </div>
+
+            <div id="observations" class="observation-box">
+              Run the benchmark to generate observations regarding parameter scaling.
+            </div>
           </div>
         </section>
 
+        <!-- ================= TAB 4: QUIZ ================= -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
             <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <p style="margin-bottom: 18px; color: #6B554B;">
+              Answer all 10 questions below to test your understanding of Argon2, memory-hardness, variants, and verification mechanics.
+            </p>
+
+            <!-- Question 1 -->
+            <div class="quiz-question">
+              <p><strong>1.</strong> Two users choose the identical password "SecretPass123" and hash it with Argon2i. What will be the relationship between their stored hashes?</p>
+              <label><input type="radio" name="q1" value="a"> The resulting hashes will always be identical byte-for-byte</label>
+              <label><input type="radio" name="q1" value="b"> The resulting hashes will normally be different due to unique random salts</label>
+              <label><input type="radio" name="q1" value="c"> The second hash will be flagged as invalid by the system</label>
+              <label><input type="radio" name="q1" value="d"> Argon2i will reject the second password</label>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="quiz-question">
+              <p><strong>2.</strong> The memory cost parameter $m$ is increased from 32 MiB to 128 MiB. What is the direct cryptographic consequence?</p>
+              <label><input type="radio" name="q2" value="a"> The password string becomes four times longer</label>
+              <label><input type="radio" name="q2" value="b"> The encoded output hash string becomes four times longer</label>
+              <label><input type="radio" name="q2" value="c"> Argon2 requires substantially more physical RAM during hashing, raising cracking costs</label>
+              <label><input type="radio" name="q2" value="d"> The cryptographic salt is no longer required</label>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="quiz-question">
+              <p><strong>3.</strong> A user creates an Argon2i hash and later enters an incorrect password during verification. What should happen?</p>
+              <label><input type="radio" name="q3" value="a"> The stored hash is decrypted to display the original password</label>
+              <label><input type="radio" name="q3" value="b"> The verification function fails and returns a mismatch securely</label>
+              <label><input type="radio" name="q3" value="c"> A replacement password is automatically generated</label>
+              <label><input type="radio" name="q3" value="d"> The salt is stripped from the database</label>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="quiz-question">
+              <p><strong>4.</strong> Consider the following serialized PHC string: <code>$argon2i$v=19$m=65536,t=3,p=2$...</code> What do <strong>m=65536, t=3, p=2</strong> represent?</p>
+              <label><input type="radio" name="q4" value="a"> Memory = 65,536 KiB (64 MiB), Time Cost = 3 passes, Parallelism = 2 lanes</label>
+              <label><input type="radio" name="q4" value="b"> Memory = 65,536 bytes, Time Cost = 2 passes, Parallelism = 3 threads</label>
+              <label><input type="radio" name="q4" value="c"> Memory = 3 KiB, Time Cost = 65,536 iterations, Parallelism = 2 lanes</label>
+              <label><input type="radio" name="q4" value="d"> Memory = 2 KiB, Time Cost = 3 passes, Parallelism = 65,536 lanes</label>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="quiz-question">
+              <p><strong>5.</strong> During benchmarking, the time cost is increased from 2 to 4 passes. What explains the observed increase in execution latency?</p>
+              <label><input type="radio" name="q5" value="a"> The password string becomes more complex</label>
+              <label><input type="radio" name="q5" value="b"> The salt size increases automatically</label>
+              <label><input type="radio" name="q5" value="c"> Argon2 performs more computational passes across memory blocks</label>
+              <label><input type="radio" name="q5" value="d"> The output tag is encrypted multiple times</label>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="quiz-question">
+              <p><strong>6.</strong> Which Argon2 variant utilizes data-independent memory access to provide resistance against side-channel cache attacks?</p>
+              <label><input type="radio" name="q6" value="a"> Argon2d</label>
+              <label><input type="radio" name="q6" value="b"> Argon2i</label>
+              <label><input type="radio" name="q6" value="c"> Argon2id</label>
+              <label><input type="radio" name="q6" value="d"> All variants use data-independent access</label>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="quiz-question">
+              <p><strong>7.</strong> Why is a cryptographically secure random salt necessary when hashing passwords?</p>
+              <label><input type="radio" name="q7" value="a"> To compress the password length</label>
+              <label><input type="radio" name="q7" value="b"> To speed up the WebAssembly execution time</label>
+              <label><input type="radio" name="q7" value="c"> To ensure identical passwords produce distinct hashes and neutralize rainbow tables</label>
+              <label><input type="radio" name="q7" value="d"> To allow the stored hash to be decrypted</label>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="quiz-question">
+              <p><strong>8.</strong> A stored password hash cannot be mathematically decrypted back into plaintext because:</p>
+              <label><input type="radio" name="q8" value="a"> The output hash is compressed with gzip</label>
+              <label><input type="radio" name="q8" value="b"> Cryptographic hashing is a one-way mathematical function; verification re-hashes the input</label>
+              <label><input type="radio" name="q8" value="c"> The salt encrypts the password</label>
+              <label><input type="radio" name="q8" value="d"> The browser hides the key</label>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="quiz-question">
+              <p><strong>9.</strong> When parallelism $p$ is increased from 1 to 4 while memory and time costs are held constant, what occurs?</p>
+              <label><input type="radio" name="q9" value="a"> The hash output becomes four times longer</label>
+              <label><input type="radio" name="q9" value="b"> Memory is partitioned into 4 lanes, enabling concurrent multi-threaded execution</label>
+              <label><input type="radio" name="q9" value="c"> The password is encrypted four consecutive times</label>
+              <label><input type="radio" name="q9" value="d"> The salt becomes four times larger</label>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="quiz-question">
+              <p><strong>10.</strong> During password verification, how does the system validate an entered candidate password?</p>
+              <label><input type="radio" name="q10" value="a"> It hashes the candidate password using the salt and parameters extracted from the encoded hash, then compares</label>
+              <label><input type="radio" name="q10" value="b"> It decrypts the stored hash with a master key</label>
+              <label><input type="radio" name="q10" value="c"> It compares the password plaintext directly against the base64 string</label>
+              <label><input type="radio" name="q10" value="d"> It queries a centralized key server</label>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
+              <button type="button" id="quizBtn" class="primary-btn">Submit Quiz</button>
+              <button type="button" id="quizResetBtn" class="secondary-btn">Retake Quiz</button>
+            </div>
+
+            <div id="quizResult" class="quiz-result"></div>
+
+            <hr style="border: 0; border-top: 1px solid #E5D4CB; margin: 30px 0 20px;">
+            <h3>Key Learning Checks</h3>
+            <div class="question-box">
+              <h3>Core Purpose of Argon2</h3>
+              <p>Argon2 is an adaptive, memory-hard key derivation function engineered to protect passwords against mass parallel cracking on GPUs and custom ASICs.</p>
+            </div>
+            <div class="question-box">
+              <h3>Defense Against Side Channels</h3>
+              <p>Argon2i uses data-independent indexing so memory access addresses never depend on password data, eliminating cache-timing leakage.</p>
+            </div>
+            <div class="question-box">
+              <h3>Hybrid Recommendation (RFC 9106)</h3>
+              <p>Argon2id combines data-independent and data-dependent passes, offering simultaneous side-channel resistance and maximum TMTO defense.</p>
+            </div>
           </div>
         </section>
-              <!-- References -->
+
+        <!-- ================= TAB 5: TEST CASES ================= -->
+        <section id="testcases" class="tab-content" data-tab-panel="testcases" hidden>
+          <div class="content-placeholder">
+            <h2>Digital Interactive Test Suite &amp; Test Cases</h2>
+            <p>
+              Digitally executable test suite for Argon2i, Argon2d, and Argon2id. Run tests in-situ to observe live assertion execution, evaluate security and memory boundaries, or click <strong>Load in Lab</strong> to transfer any test scenario directly into the experiment workbench.
+            </p>
+
+            <div class="tc-dashboard">
+              <!-- Control Bar -->
+              <div class="tc-control-bar">
+                <div class="tc-btn-group">
+                  <button type="button" id="tcRunAllBtn" class="tc-master-btn">Run All 12 Test Cases</button>
+                  <button type="button" id="tcResetBtn" class="tc-reset-btn">Reset Suite</button>
+                </div>
+
+                <div class="tc-filters" role="group" aria-label="Filter test cases">
+                  <button type="button" class="tc-filter-pill active" data-filter="all">All (12)</button>
+                  <button type="button" class="tc-filter-pill" data-filter="val">Validation (2)</button>
+                  <button type="button" class="tc-filter-pill" data-filter="sec">Security &amp; Hashes (3)</button>
+                  <button type="button" class="tc-filter-pill" data-filter="ver">Verification (3)</button>
+                  <button type="button" class="tc-filter-pill" data-filter="par">Parameters (1)</button>
+                  <button type="button" class="tc-filter-pill" data-filter="quiz">Quiz (3)</button>
+                </div>
+              </div>
+
+              <!-- Summary & Metric Dashboard -->
+              <div class="tc-summary-box">
+                <div class="tc-summary-header">
+                  <div class="tc-summary-title">Suite Execution Summary</div>
+                  <div class="tc-metric-chips">
+                    <span class="tc-metric-chip" id="tcChipTotal">Total: <span class="num">12</span></span>
+                    <span class="tc-metric-chip pass" id="tcChipPass">Passed: <span class="num">0</span></span>
+                    <span class="tc-metric-chip fail" id="tcChipFail">Failed: <span class="num">0</span></span>
+                    <span class="tc-metric-chip" id="tcChipPending">Pending: <span class="num">12</span></span>
+                  </div>
+                </div>
+
+                <div class="tc-progress-container">
+                  <div id="tcProgressFill" class="tc-progress-fill" style="width: 0%;"></div>
+                </div>
+
+                <div style="font-size: 12.5px; color: #6B554B; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                  <span id="tcStatusMessage">Suite ready. Click "Run All 12 Test Cases" or test individually below.</span>
+                  <span id="tcDurationLabel" style="font-family: monospace;">Duration: -</span>
+                </div>
+              </div>
+
+              <!-- Interactive Table -->
+              <div class="table-wrapper">
+                <table class="tc-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 80px;">TC ID</th>
+                      <th style="width: 25%;">Test Scenario</th>
+                      <th style="width: 25%;">Expected Result</th>
+                      <th style="width: 25%;">Live Assertion Result</th>
+                      <th style="width: 100px;">Status</th>
+                      <th style="width: 110px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tcTableBody">
+
+                    <!-- TC01 -->
+                    <tr id="tc-row-tc01" data-category="val">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC01</span>
+                          <span class="tc-badge val">VAL</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Empty Password Guard</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Click <em>Generate All Argon2 Hashes</em> with empty password input.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">Validation error prompts user to enter a password; execution halts and no hashes computed.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc01" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc01" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc01">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc01">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc01">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc01">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC02 -->
+                    <tr id="tc-row-tc02" data-category="sec">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC02</span>
+                          <span class="tc-badge sec">SEC</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Triple-Variant Generation</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Compute Argon2i, Argon2d &amp; Argon2id at 64 MB, t=3, p=1.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">All three encoded hashes generated via WebAssembly with positive elapsed execution times (&gt;0 ms).</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc02" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc02" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc02">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc02">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc02">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc02">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC03 -->
+                    <tr id="tc-row-tc03" data-category="val">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC03</span>
+                          <span class="tc-badge val">VAL</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Password Visibility Toggle</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Toggle the <em>Show password</em> checkbox.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">Input field type toggles dynamically between <code>password</code> and <code>text</code>.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc03" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc03" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc03">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc03">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc03">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc03">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC04 -->
+                    <tr id="tc-row-tc04" data-category="ver">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC04</span>
+                          <span class="tc-badge ver">VER</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Matching Password Verification</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Verify authentic password against stored Argon2i hash.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">Verification succeeds with <code>✓ Password Verified</code> success confirmation.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc04" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc04" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc04">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc04">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc04">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc04">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC05 -->
+                    <tr id="tc-row-tc05" data-category="ver">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC05</span>
+                          <span class="tc-badge ver">VER</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Mismatched Password Rejection</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Verify an incorrect password against stored Argon2i hash.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">Verification rejects mismatch securely with <code>✗ Verification Failed</code> in constant time.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc05" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc05" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc05">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc05">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc05">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc05">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC06 -->
+                    <tr id="tc-row-tc06" data-category="ver">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC06</span>
+                          <span class="tc-badge ver">VER</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Pre-Hash Guard Integrity</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Attempt verification before any hash has been generated.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">Error prompts user to generate hash first; uninitialized state safely guarded.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc06" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc06" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc06">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc06">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc06">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc06">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC07 -->
+                    <tr id="tc-row-tc07" data-category="sec">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC07</span>
+                          <span class="tc-badge sec">SEC</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Memory Hardness Scaling</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Scale memory cost from 64 MB (65,536 KiB) to 128 MB (131,072 KiB).</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">RAM requirement doubles; hash successfully generated with memory hardness scaling recorded.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc07" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc07" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc07">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc07">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc07">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc07">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC08 -->
+                    <tr id="tc-row-tc08" data-category="sec">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC08</span>
+                          <span class="tc-badge sec">SEC</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Time Cost Pass Scaling</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Compare execution time across iteration passes (t=1 vs t=3 passes).</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">Hashing execution time scales upward monotonically as pass count increases.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc08" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc08" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc08">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc08">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc08">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc08">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC09 -->
+                    <tr id="tc-row-tc09" data-category="par">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC09</span>
+                          <span class="tc-badge par">PAR</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Benchmark Telemetry &amp; Table</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Run benchmark trial and append row to analysis telemetry table.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">New row with trial number, memory in MB, passes, parallelism, and timing appended.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc09" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc09" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc09">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc09">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc09">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc09">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC10 -->
+                    <tr id="tc-row-tc10" data-category="quiz">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC10</span>
+                          <span class="tc-badge quiz">QUIZ</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Empty Quiz Submission Guard</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Submit assessment with no answers selected.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">10 warning badges displayed for unselected questions; score evaluates to 0/10.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc10" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc10" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc10">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc10">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc10">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc10">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC11 -->
+                    <tr id="tc-row-tc11" data-category="quiz">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC11</span>
+                          <span class="tc-badge quiz">QUIZ</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Perfect Quiz Score Evaluation</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Submit quiz with all 10 correct cryptographic answers.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">All 10 questions validated correct; final score evaluates to 10/10 (100%) with "Excellent!" banner.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc11" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc11" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc11">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc11">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc11">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc11">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- TC12 -->
+                    <tr id="tc-row-tc12" data-category="quiz">
+                      <td>
+                        <div class="tc-id-wrapper">
+                          <span class="tc-id-text">TC12</span>
+                          <span class="tc-badge quiz">QUIZ</span>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>Assessment Reset &amp; Slate Clearing</strong>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #5A4035;">Click <em>Retake Quiz</em> button after an evaluation.</p>
+                      </td>
+                      <td>
+                        <span style="font-size: 12px; color: #3F332E;">All radio selections unchecked, all feedback alerts removed, score banner cleared.</span>
+                      </td>
+                      <td>
+                        <div id="tc-result-tc12" style="font-size: 12px; color: #6B554B;">Pending execution.</div>
+                        <div class="tc-trace-drawer" id="tc-trace-tc12" hidden></div>
+                      </td>
+                      <td><span class="tc-status-pill pending" id="tc-status-tc12">&bull; Pending</span></td>
+                      <td>
+                        <div class="tc-actions">
+                          <button type="button" class="tc-action-btn tc-run-btn" data-run="tc12">Run Test</button>
+                          <button type="button" class="tc-action-btn tc-load-btn" data-load="tc12">Load in Lab</button>
+                          <button type="button" class="tc-action-btn tc-trace-btn" data-trace="tc12">Trace</button>
+                        </div>
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- References -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="references-container">
             <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">RFC 9106 — Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications</div>
+              <div class="reference-meta">Biryukov, Dinu, Khovratovich, Josefsson (2021). Official IETF specification defining Argon2d, Argon2i, and Argon2id.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">Password Hashing Competition (PHC) — Argon2 Official Submission</div>
+              <div class="reference-meta">Biryukov, Dinu, Khovratovich (2015). University of Luxembourg. Winning design of the Password Hashing Competition.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">OWASP Foundation — Password Storage Cheat Sheet</div>
+              <div class="reference-meta">Industry standard security guidance recommending Argon2id for adaptive password key derivation and storage.</div>
+            </div>
             <div class="reference-card">
               <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
               <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
@@ -82,14 +1692,10 @@
               <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
               <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
             </div>
-            <div class="reference-card">
-              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
-              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
-            </div>
           </div>
         </section>
 
-              <!-- Feedback -->
+        <!-- Feedback -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
           <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
         </section>
@@ -99,7 +1705,7 @@
 
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
-      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
   </body>
 </html>
