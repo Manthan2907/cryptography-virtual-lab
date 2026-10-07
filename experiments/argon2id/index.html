@@ -4,9 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <title>Argon2id | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <style>
+      /* Small additions scoped to this experiment; shared CSS is untouched. */
+      .quiz-panel input[type="radio"], .simulation-controls input[type="checkbox"] { width: auto; margin-right: 6px; }
+      .quiz-panel fieldset { border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin: 0 0 var(--space-2); padding: var(--space-2); }
+      .quiz-panel legend { font-weight: 700; padding: 0 6px; }
+      .quiz-panel fieldset label { font-weight: 400; margin-bottom: 4px; }
+      .a2-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-2); }
+      .a2-hint { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: 4px !important; }
+      .a2-err { color: #9b1c1c; font-weight: 700; margin-top: var(--space-2) !important; }
+      .a2-ok { color: #1e6b34; font-weight: 700; }
+      .a2-bad { color: #9b1c1c; font-weight: 700; }
+      .a2-mono { font-family: "Courier New", monospace; word-break: break-all; font-size: 0.9em; }
+      .a2-table-wrap { overflow-x: auto; margin-top: var(--space-2); }
+      .a2-table { border-collapse: collapse; width: 100%; font-size: var(--font-size-sm); }
+      .a2-table th, .a2-table td { border: 1px solid var(--color-border); padding: 6px 8px; text-align: left; vertical-align: top; }
+      .a2-table th { background: var(--color-surface-muted); }
+      .a2-steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: Arial, sans-serif; font-size: var(--font-size-sm); margin: 0 0 var(--space-2); }
+      .a2-steps span { padding: 4px 10px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); background: var(--color-surface); }
+      .simulation-controls textarea { min-height: 70px; }
+      #theory h3 { color: var(--color-primary-dark); margin: var(--space-3) 0 var(--space-1); }
+    </style>
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -20,8 +41,8 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <h1 id="exp-title">Argon2id Password Hashing</h1>
+        <p id="exp-description">Implement Argon2id for password hashing and compare its output and computational parameters with conventional hash functions.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
@@ -29,49 +50,146 @@
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
         <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
         <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
-          </div>
+          <h2>Theory</h2>
+          <h3>Aim</h3>
+          <p>To implement Argon2id password hashing and verification, and to compare its output and computational parameters with conventional hash functions (MD5, SHA-1, SHA-256 and PBKDF2-SHA256).</p>
+          <h3>Objectives</h3>
+          <p>After this experiment you should be able to: (1) hash a password with Argon2id and read the encoded result; (2) explain how memory cost, time cost and parallelism change the work done; (3) verify a password against a stored hash; (4) explain why fast general-purpose hashes are unsuitable for storing passwords.</p>
+          <h3>Hashing versus encryption</h3>
+          <p>Encryption is reversible with a key. A hash function is one-way: it maps any input to a fixed-length digest and there is no key to undo it. Systems therefore store a hash of the password, never the password itself. At login the entered password is hashed again and the two results are compared.</p>
+          <h3>Why SHA-256 or MD5 alone is not enough</h3>
+          <p>MD5, SHA-1 and SHA-256 are designed to be fast. A fast hash lets an attacker who steals a database test billions of guesses per second on GPUs. Passwords also come from a small, predictable set of choices, so speed helps the attacker directly. Password hashing needs a deliberately expensive function.</p>
+          <h3>Salt</h3>
+          <p>A salt is a random value stored next to the hash and mixed into it. The same password with two different salts gives two different hashes, so identical passwords cannot be spotted and precomputed (rainbow) tables become useless. A salt is not secret; its job is uniqueness. Argon2 requires at least 8 bytes, and 16 random bytes is recommended.</p>
+          <h3>Argon2 and its variants</h3>
+          <p>Argon2 won the Password Hashing Competition in 2015 and is specified in RFC 9106. It is <em>memory-hard</em>: it fills a large block of memory and repeatedly reads it in an order that is hard to shortcut, so cheap parallel hardware loses its advantage. <strong>Argon2d</strong> uses data-dependent memory access (strong against GPU cracking but exposed to side-channel timing attacks). <strong>Argon2i</strong> uses data-independent access (resistant to side channels but weaker against time-memory trade-offs). <strong>Argon2id</strong> combines them: the first half of the first pass is data-independent and the rest is data-dependent. RFC 9106 and OWASP recommend Argon2id for password hashing.</p>
+          <h3>Parameters</h3>
+          <p><strong>Memory cost (m)</strong> is the memory used, in KiB. <strong>Time cost (t)</strong> is the number of passes over that memory. <strong>Parallelism (p)</strong> is the number of independent lanes. Raising m or t makes each guess more expensive for the defender and the attacker alike, so you choose values that keep login acceptably fast on your server. The output length here is 32 bytes.</p>
+          <h3>Encoded output and verification</h3>
+          <p>Argon2id output is normally stored as one string: <span class="a2-mono">$argon2id$v=19$m=19456,t=2,p=1$&lt;salt&gt;$&lt;hash&gt;</span>. It holds the algorithm, version (19 = 0x13), the parameters, the salt and the digest, all base64 (salt and digest without padding). To verify, the library reads the parameters and salt from the string, hashes the entered password with them and compares the digests.</p>
+          <h3>Comparison with conventional hashes</h3>
+          <p>MD5 (128-bit) and SHA-1 (160-bit) are broken for collision resistance and are very fast. SHA-256 is secure as a general hash but still fast. PBKDF2 repeats HMAC many times, which adds CPU cost but not memory cost. Argon2id adds memory cost as well, which is why it is preferred for new systems.</p>
+          <h3>References</h3>
+          <p>[1] A. Biryukov, D. Dinu, D. Khovratovich, "Argon2: the memory-hard function for password hashing and other applications", 2015. [2] RFC 9106, "Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications", 2021. [3] OWASP Password Storage Cheat Sheet. [4] NIST SP 800-132, Recommendation for Password-Based Key Derivation (PBKDF2). [5] hash-wasm library documentation (bundled in js/vendor).</p>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
-          </div>
+          <h2>Procedure</h2>
+          <ol>
+            <li>Open the <strong>Simulation</strong> tab and type a password, for example <em>correct horse battery staple</em>.</li>
+            <li>Click <strong>Random salt</strong> to generate a 16-byte salt (or type your own salt of at least 8 characters).</li>
+            <li>Set the Argon2id parameters: memory cost (KiB), time cost (iterations) and parallelism. The defaults follow OWASP's minimum recommendation.</li>
+            <li>Click <strong>Generate Argon2id hash</strong>. Read the encoded hash, its parsed fields, and the measured time. The run is added to the observation table.</li>
+            <li>Change one parameter at a time (for example memory 4096 then 65536) and generate again. Compare the measured times in the observation table.</li>
+            <li>In <strong>Verify password</strong>, enter the correct password and click Verify (MATCH), then a wrong password (NO MATCH).</li>
+            <li>Click <strong>Run comparison</strong> to hash the same password with MD5, SHA-1, SHA-256, PBKDF2-SHA256 and Argon2id, and read the comparison table.</li>
+            <li>Open the <strong>Quiz</strong> tab, answer all questions and submit to see your score.</li>
+          </ol>
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
             <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+            <p class="a2-steps" aria-hidden="true"><span>Password</span> + <span>Salt</span> + <span>m, t, p</span> &rarr; <span>Argon2id</span> &rarr; <span>Encoded hash</span> &rarr; <span>Verify</span></p>
+            <div class="a2-row">
+              <div>
+                <label for="a2-pw">Password</label>
+                <input id="a2-pw" type="password" autocomplete="off" value="correct horse battery staple">
+                <p class="a2-hint"><input id="a2-show" type="checkbox"><label for="a2-show" style="display:inline">Show password</label></p>
+              </div>
+              <div>
+                <label for="a2-salt">Salt (text, at least 8 characters)</label>
+                <input id="a2-salt" type="text" autocomplete="off" value="ab12cd34ef56gh78">
+                <button id="a2-rand" type="button">Random salt</button>
+              </div>
+            </div>
+            <div class="a2-row">
+              <div>
+                <label for="a2-mem">Memory cost m (KiB, 8 to 65536)</label>
+                <input id="a2-mem" type="number" min="8" max="65536" step="1" value="19456">
+              </div>
+              <div>
+                <label for="a2-iter">Time cost t (iterations, 1 to 10)</label>
+                <input id="a2-iter" type="number" min="1" max="10" step="1" value="2">
+              </div>
+              <div>
+                <label for="a2-par">Parallelism p (lanes, 1 to 4)</label>
+                <input id="a2-par" type="number" min="1" max="4" step="1" value="1">
+              </div>
+            </div>
+            <p class="a2-hint">Memory is limited to 64 MiB so the browser does not freeze. Higher values take longer; the first run also loads the WebAssembly module.</p>
+            <button id="a2-hash" type="button">Generate Argon2id hash</button>
+            <button id="a2-compare" type="button">Run comparison</button>
+            <p id="a2-error" class="a2-err" role="alert"></p>
+
+            <h2 style="margin-top:24px">Verify password</h2>
+            <label for="a2-vhash">Stored Argon2id hash</label>
+            <textarea id="a2-vhash" spellcheck="false" placeholder="Generate a hash first, or paste an $argon2id$... string"></textarea>
+            <label for="a2-vpw" style="margin-top:8px">Password to check</label>
+            <input id="a2-vpw" type="password" autocomplete="off">
+            <button id="a2-verify" type="button">Verify</button>
           </div>
+
           <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
             <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+            <div id="a2-out"><p>Results will appear here after you generate a hash.</p></div>
+            <div id="a2-verify-out"></div>
+            <h2 style="margin-top:24px">Observations</h2>
+            <p class="a2-hint">Times are measured in this browser and depend on your device. Compare runs on the same device only.</p>
+            <div class="a2-table-wrap" id="a2-obs"></div>
+            <button id="a2-clear" type="button" style="margin-top:8px;padding:6px 12px">Clear observations</button>
+            <h2 style="margin-top:24px">Comparison with conventional hashes</h2>
+            <div id="a2-cmp"><p>Click <strong>Run comparison</strong> to hash the password with each algorithm.</p></div>
           </div>
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
             <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <div id="a2-quiz"></div>
+            <button id="a2-qsubmit" type="button">Submit answers</button>
+            <button id="a2-qreset" type="button">Try again</button>
+            <p id="a2-qresult" role="status" style="margin-top:12px"></p>
           </div>
         </section>
+              <!-- References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
+              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
+              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+            </div>
+          </div>
+        </section>
+
+              <!-- Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+        </section>
+
       </main>
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="../../js/vendor/crypto-js.min.js"></script>
+    <script src="../../js/vendor/hash-wasm.min.js"></script>
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>
