@@ -169,6 +169,39 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('final-service-name').textContent = sName;
   }
 
+  // Update Observations & Results Tab dynamically based on steps
+  function updateObservations(step) {
+    const elTgt = document.getElementById('obs-tgt');
+    const elKtgs = document.getElementById('obs-ktgs');
+    const elSt = document.getElementById('obs-st');
+    const elKcv = document.getElementById('obs-kcv');
+    const elStatus = document.getElementById('obs-status');
+    
+    if (!elTgt) return; // Skip if tab not rendered yet
+    
+    if (step === 1) {
+      elTgt.textContent = 'Not generated yet'; elTgt.style.color = 'var(--color-text-muted)';
+      elKtgs.textContent = 'Not generated yet'; elKtgs.style.color = 'var(--color-text-muted)';
+      elSt.textContent = 'Not generated yet'; elSt.style.color = 'var(--color-text-muted)';
+      elKcv.textContent = 'Not generated yet'; elKcv.style.color = 'var(--color-text-muted)';
+      elStatus.textContent = 'Initialized. AS-REQ Pending...'; elStatus.style.color = '#ff9800';
+    } else if (step === 2) {
+      elStatus.textContent = 'AS-REQ Sent. Waiting for AS-REP...'; elStatus.style.color = '#ff9800';
+    } else if (step === 3) {
+      elTgt.textContent = state.tgt; elTgt.style.color = '#4caf50';
+      elKtgs.textContent = state.kcTgs; elKtgs.style.color = '#4caf50';
+      elStatus.textContent = 'TGT Received. TGS-REQ Pending...'; elStatus.style.color = '#ff9800';
+    } else if (step === 4) {
+      elStatus.textContent = 'TGS-REQ Sent. Waiting for TGS-REP...'; elStatus.style.color = '#ff9800';
+    } else if (step === 5) {
+      elSt.textContent = state.serviceTicket; elSt.style.color = '#4caf50';
+      elKcv.textContent = state.kcV; elKcv.style.color = '#4caf50';
+      elStatus.textContent = 'Service Ticket Received. AP-REQ Pending...'; elStatus.style.color = '#ff9800';
+    } else if (step === 6) {
+      elStatus.textContent = 'Authentication Successful'; elStatus.style.color = '#4caf50';
+    }
+  }
+
   // ==================== STEP 1: INITIALIZE ====================
   const btnStep1 = document.getElementById('btn-step1');
   if (btnStep1) {
@@ -210,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       generateDynamicTokens();
       updateDynamicFields();
+      updateObservations(1);
 
       document.getElementById('step1-status').style.display = 'inline-flex';
       document.getElementById('btn-step2').disabled = false;
@@ -233,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
       animatePacket(0, 1, 'AS-REQ', () => {
         document.getElementById('step2-status').style.display = 'inline-flex';
         document.getElementById('btn-step3').disabled = false;
+        updateObservations(2);
 
         setTimeout(() => {
           showStepCard(3);
@@ -252,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tgt-display-box').style.display = 'block';
         document.getElementById('step3-status').style.display = 'inline-flex';
         document.getElementById('btn-step4').disabled = false;
+        updateObservations(3);
 
         setTimeout(() => {
           showStepCard(4);
@@ -270,6 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
       animatePacket(0, 2, 'TGS-REQ', () => {
         document.getElementById('step4-status').style.display = 'inline-flex';
         document.getElementById('btn-step5').disabled = false;
+        updateObservations(4);
 
         setTimeout(() => {
           showStepCard(5);
@@ -289,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('st-display-box').style.display = 'block';
         document.getElementById('step5-status').style.display = 'inline-flex';
         document.getElementById('btn-step6').disabled = false;
+        updateObservations(5);
 
         setTimeout(() => {
           showStepCard(6);
@@ -307,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       animatePacket(0, 3, 'AP-REQ', () => {
         document.getElementById('bob-check-sequence').style.display = 'block';
         document.getElementById('step6-status').style.display = 'inline-flex';
+        updateObservations(6);
 
         setTimeout(() => {
           showStepCard(7);
@@ -336,6 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.getElementById('asreq-time').textContent = 'Pending send...';
       document.getElementById('flow-status-text').textContent = 'Simulation reset. Click Initialize to start a new authentication run.';
+
+      updateObservations(1); // Reset observations to initial
 
       // Go back to Step 1
       showStepCard(1);

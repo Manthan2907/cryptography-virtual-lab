@@ -656,15 +656,33 @@
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+        <button class="tab-btn" type="button" data-tab="observations" aria-selected="false">Observations &amp; Results</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
+        <!-- ==================== AIM TAB ==================== -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="content-placeholder">
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> To understand and simulate the Kerberos Authentication Protocol, including Ticket Granting Tokens and Service Tickets.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Understand the ticket-based authentication architecture.</li>
+              <li>Observe the 6-step authentication flow interactively.</li>
+              <li>Analyze how session keys and authenticators protect against replay attacks.</li>
+            </ul>
+          </div>
+        </section>
+
         <!-- ==================== THEORY TAB ==================== -->
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
           <div class="content-placeholder">
             <div class="theory-section">
               <h3>What is Kerberos?</h3>
@@ -1052,6 +1070,25 @@
           </div>
         </section>
 
+        <!-- ==================== OBSERVATIONS TAB ==================== -->
+        <section id="observations" class="tab-content" data-tab-panel="observations" hidden>
+          <div class="content-placeholder">
+            <h2>Observations &amp; Results</h2>
+            <p>This section dynamically updates as you progress through the <strong>Simulation</strong> tab.</p>
+            
+            <div class="theory-section">
+              <h3>Current Session State</h3>
+              <div class="ticket-box">
+                <div class="ticket-row"><span>TGT (Ticket Granting Ticket):</span><span class="ticket-val" id="obs-tgt" style="color:var(--color-text-muted);">Not generated yet</span></div>
+                <div class="ticket-row"><span>Session Key (Client-TGS):</span><span class="ticket-val" id="obs-ktgs" style="color:var(--color-text-muted);">Not generated yet</span></div>
+                <div class="ticket-row"><span>Service Ticket (ST):</span><span class="ticket-val" id="obs-st" style="color:var(--color-text-muted);">Not generated yet</span></div>
+                <div class="ticket-row"><span>Session Key (Client-Server):</span><span class="ticket-val" id="obs-kcv" style="color:var(--color-text-muted);">Not generated yet</span></div>
+                <div class="ticket-row"><span>Authentication Status:</span><span class="ticket-val" id="obs-status" style="color:#ff9800;">Pending</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- ==================== QUIZ TAB (10 Questions & Score Display) ==================== -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
           <div class="quiz-panel">
@@ -1302,6 +1339,26 @@
               <button class="btn-primary" id="btn-submit-quiz">Submit Quiz</button>
               <button class="btn-secondary" id="btn-reset-quiz">Retake Quiz</button>
             </div>
+          </div>
+        </section>
+
+        <!-- ==================== REFERENCES TAB ==================== -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="content-placeholder">
+            <h2>References</h2>
+            <ul>
+              <li>William Stallings, <em>Cryptography and Network Security: Principles and Practice</em>, Pearson.</li>
+              <li>RFC 1510 - The Kerberos Network Authentication Service (V5).</li>
+              <li>RFC 4120 - The Kerberos Network Authentication Service (V5) [Updated].</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ==================== FEEDBACK TAB ==================== -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <div class="content-placeholder">
+            <h2>Experiment Feedback</h2>
+            <p>Please share your feedback to help us improve this virtual lab simulation.</p>
           </div>
         </section>
       </main>
