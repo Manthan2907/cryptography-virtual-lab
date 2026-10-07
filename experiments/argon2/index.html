@@ -642,24 +642,6 @@
       .tc-trace-drawer[hidden] {
         display: none !important;
       }
-
-      /* Rating controls in Feedback */
-      .rating {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 14px;
-        margin: 10px 0 16px;
-      }
-      .rating label {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        cursor: pointer;
-        font-weight: normal;
-      }
-      .rating input[type="radio"] {
-        width: auto !important;
-      }
     </style>
   </head>
   <body>
@@ -682,37 +664,33 @@
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
-        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
         <button class="tab-btn" type="button" data-tab="testcases" aria-selected="false">Test Cases</button>
-        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
-        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
 
-        <!-- ================= TAB 1: AIM & OBJECTIVES ================= -->
-        <section id="aim" class="tab-content active" data-tab-panel="aim">
+        <!-- ================= TAB 1: THEORY & AIM ================= -->
+        <section id="theory" class="tab-content active" data-tab-panel="theory">
           <div class="content-placeholder">
-            <h2>Aim &amp; Objectives</h2>
-            <p><strong>Aim:</strong> To implement Argon2 password hashing and verification and analyze the effect of memory cost, time cost, and parallelism parameters.</p>
-            <p><strong>Objectives:</strong></p>
-            <ul>
-              <li>Understand the algorithmic foundation of memory-hard password hashing and why conventional hashes (MD5, SHA-256) are vulnerable to GPU and ASIC brute-force attacks.</li>
-              <li>Analyze the three official variants of Argon2: Argon2i (data-independent memory access), Argon2d (data-dependent memory access), and Argon2id (hybrid mode recommended by RFC 9106).</li>
-              <li>Generate salted password hashes in client-side WebAssembly and verify passwords using constant-time verification.</li>
-              <li>Benchmark and study parameter scaling: memory cost (m in KiB), time cost (t passes), and parallelism (p lanes).</li>
-              <li>Execute an interactive digital test suite (TC01–TC12) evaluating boundary validation, parameter scaling, and assertion mechanics.</li>
-            </ul>
-          </div>
-        </section>
+            <div class="aim-section" style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #E5D4CB;">
+              <h2>Aim &amp; Objectives</h2>
+              <p><strong>Aim:</strong> To implement Argon2 password hashing and verification and analyze the effect of memory cost, time cost, and parallelism parameters.</p>
+              <p><strong>Objectives:</strong></p>
+              <ul>
+                <li>Understand the algorithmic foundation of memory-hard password hashing and why conventional hashes (MD5, SHA-256) are vulnerable to GPU and ASIC brute-force attacks.</li>
+                <li>Analyze the three official variants of Argon2: Argon2i (data-independent memory access), Argon2d (data-dependent memory access), and Argon2id (hybrid mode recommended by RFC 9106).</li>
+                <li>Generate salted password hashes in client-side WebAssembly and verify passwords using constant-time verification.</li>
+                <li>Benchmark and study parameter scaling: memory cost (m in KiB), time cost (t passes), and parallelism (p lanes).</li>
+                <li>Execute an interactive digital test suite (TC01–TC12) evaluating boundary validation, parameter scaling, and assertion mechanics.</li>
+              </ul>
+            </div>
 
-        <!-- ================= TAB 2: THEORY ================= -->
-        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <div class="content-placeholder">
             <h2>Relevant Theoretical Concepts</h2>
             
             <h3>1. Background and The Password Hashing Competition</h3>
@@ -808,7 +786,7 @@
           </div>
         </section>
 
-        <!-- ================= TAB 3: PROCEDURE ================= -->
+        <!-- ================= TAB 2: PROCEDURE ================= -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
           <div class="content-placeholder">
             <h2>Step-by-Step Procedure</h2>
@@ -822,12 +800,12 @@
               <li><strong>Test Mismatch Rejection:</strong> Enter an incorrect password and verify that the system rejects the credential securely (<code>✗ Verification Failed</code>) without leaking timing hints.</li>
               <li><strong>Execute Parameter Benchmark:</strong> Scroll to the <em>Parameter Analysis</em> section. Choose custom memory, time, and parallelism configurations and click <strong>Run Benchmark</strong> to append timing telemetry to the observation table.</li>
               <li><strong>Run Digital Test Suite:</strong> Switch to the <em>Test Cases</em> tab to run individual live assertions (TC01–TC12) or click <strong>Run All 12 Test Cases</strong> to validate full test suite compliance.</li>
-              <li><strong>Take Self-Assessment:</strong> Switch to the <em>Assessment / Quiz</em> tab, answer the 10 conceptual questions, and review detailed cryptographic feedback.</li>
+              <li><strong>Take Self-Assessment:</strong> Switch to the <em>Quiz</em> tab, answer the 10 conceptual questions, and review detailed cryptographic feedback.</li>
             </ol>
           </div>
         </section>
 
-        <!-- ================= TAB 4: SIMULATION ================= -->
+        <!-- ================= TAB 3: SIMULATION ================= -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           
           <!-- Subcard 1: Argon2 Triple-Variant Generation -->
@@ -1150,10 +1128,10 @@
           </div>
         </section>
 
-        <!-- ================= TAB 5: QUIZ ================= -->
+        <!-- ================= TAB 4: QUIZ ================= -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
           <div class="quiz-panel">
-            <h2>Self Assessment &amp; Quiz</h2>
+            <h2>Knowledge check</h2>
             <p style="margin-bottom: 18px; color: #6B554B;">
               Answer all 10 questions below to test your understanding of Argon2, memory-hardness, variants, and verification mechanics.
             </p>
@@ -1272,7 +1250,7 @@
           </div>
         </section>
 
-        <!-- ================= TAB 6: TEST CASES ================= -->
+        <!-- ================= TAB 5: TEST CASES ================= -->
         <section id="testcases" class="tab-content" data-tab-panel="testcases" hidden>
           <div class="content-placeholder">
             <h2>Digital Interactive Test Suite &amp; Test Cases</h2>
@@ -1690,41 +1668,36 @@
           </div>
         </section>
 
-        <!-- ================= TAB 7: REFERENCES ================= -->
+        <!-- References -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="content-placeholder">
-            <h2>References &amp; Standards</h2>
-            <ul>
-              <li>Biryukov, A., Dinu, D., Khovratovich, D., and Josefsson, S. (2021). <em>Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications</em>. <a href="https://www.rfc-editor.org/rfc/rfc9106" target="_blank" rel="noopener noreferrer">RFC 9106</a>.</li>
-              <li>Biryukov, A., Dinu, D., and Khovratovich, D. (2015). <em>Argon2: New Generation of Memory-Hard Functions for Password Hashing and Other Applications</em>. Password Hashing Competition (PHC).</li>
-              <li>OWASP Foundation. <em>Password Storage Cheat Sheet</em>. <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">OWASP Cheat Sheets</a>.</li>
-              <li>Antelle. <em>argon2-browser: Argon2 WebAssembly and JavaScript Implementation</em>. <a href="https://github.com/antelle/argon2-browser" target="_blank" rel="noopener noreferrer">GitHub Repository</a>.</li>
-              <li>William Stallings. <em>Cryptography and Network Security: Principles and Practice</em>, 8th Edition, Pearson.</li>
-            </ul>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">RFC 9106 — Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications</div>
+              <div class="reference-meta">Biryukov, Dinu, Khovratovich, Josefsson (2021). Official IETF specification defining Argon2d, Argon2i, and Argon2id.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">Password Hashing Competition (PHC) — Argon2 Official Submission</div>
+              <div class="reference-meta">Biryukov, Dinu, Khovratovich (2015). University of Luxembourg. Winning design of the Password Hashing Competition.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">OWASP Foundation — Password Storage Cheat Sheet</div>
+              <div class="reference-meta">Industry standard security guidance recommending Argon2id for adaptive password key derivation and storage.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
+              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
+            </div>
           </div>
         </section>
 
-        <!-- ================= TAB 8: FEEDBACK ================= -->
+        <!-- Feedback -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Experiment Feedback</h2>
-            <p>Please share your evaluation of this virtual laboratory simulation:</p>
-            
-            <label>Overall Experience</label>
-            <div class="rating">
-              <label><input type="radio" name="rating" value="5"> Very Good</label>
-              <label><input type="radio" name="rating" value="4"> Good</label>
-              <label><input type="radio" name="rating" value="3"> Average</label>
-              <label><input type="radio" name="rating" value="2"> Poor</label>
-              <label><input type="radio" name="rating" value="1"> Very Poor</label>
-            </div>
-
-            <label for="feedbackText">Suggestions &amp; Observations</label>
-            <textarea id="feedbackText" placeholder="Enter suggestions or comments regarding the Argon2 simulation..."></textarea>
-
-            <button type="button" id="feedbackBtn" class="secondary-btn" style="margin-top: 12px;">Submit Feedback</button>
-            <div id="feedbackResult" style="margin-top: 14px; font-weight: bold;"></div>
-          </div>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
         </section>
 
       </main>
@@ -1732,5 +1705,7 @@
 
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>
