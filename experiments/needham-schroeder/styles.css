@@ -1,23 +1,23 @@
 /* Needham-Schroeder Protocol Virtual Lab Stylesheet */
 :root {
-  --primary-header: #8c5e4a;
-  --header-text: #ffffff;
-  --bg-cream: #fdf8f5;
-  --card-bg: #ffffff;
-  --card-border: #e5d4cb;
-  --text-main: #2c221e;
-  --text-muted: #6b5c54;
-  --accent-navy: #006699;
-  --accent-navy-hover: #004d73;
-  --accent-terracotta: #d97757;
-  --accent-terracotta-hover: #bf5e3e;
-  --success-color: #2e7d32;
-  --success-bg: #e8f5e9;
-  --warning-color: #c62828;
-  --warning-bg: #ffebee;
-  --info-bg: #e3f2fd;
-  --info-color: #1565c0;
-  --box-shadow: 0 4px 12px rgba(140, 94, 74, 0.08);
+  --primary-header: var(--color-primary-dark);
+  --header-text: var(--color-on-primary);
+  --bg-cream: var(--color-background);
+  --card-bg: var(--color-surface);
+  --card-border: var(--color-border);
+  --text-main: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --accent-navy: var(--color-secondary);
+  --accent-navy-hover: var(--color-secondary-dark);
+  --accent-terracotta: var(--color-primary);
+  --accent-terracotta-hover: var(--color-primary-dark);
+  --success-color: #2ed573;
+  --success-bg: rgba(46, 213, 115, 0.15);
+  --warning-color: #ff4757;
+  --warning-bg: rgba(255, 71, 87, 0.15);
+  --info-bg: rgba(76, 140, 232, 0.15);
+  --info-color: var(--color-secondary);
+  --box-shadow: var(--shadow-sm);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
@@ -481,7 +481,7 @@ input:checked + .slider:before {
   position: absolute;
   z-index: 5;
   width: 210px;
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   border: 2px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: 0.85rem;
@@ -643,7 +643,7 @@ input:checked + .slider:before {
 }
 
 .inspector-card {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: 1.25rem;
@@ -694,7 +694,7 @@ input:checked + .slider:before {
 /* Audit Log Console */
 .audit-log-box {
   height: 240px;
-  background-color: #fafafa;
+  background-color: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
   padding: 0.75rem;
@@ -731,7 +731,7 @@ input:checked + .slider:before {
 
 /* Theory & Documentation Styles */
 .theory-section {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--card-border);
@@ -794,7 +794,7 @@ input:checked + .slider:before {
 
 /* Quiz Styles */
 .quiz-card {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: 1.5rem;
