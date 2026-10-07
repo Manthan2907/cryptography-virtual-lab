@@ -533,25 +533,331 @@
   }
 
   /* ---------- extras: algorithm explorer, strength meter, block inspector, comparison inputs ---------- */
-  function algInit() {
-    var items = document.querySelectorAll('#alg-list li'), cur = -1, tm = 0;
-    if (!items.length) return;
-    function pick(n) {
-      cur = (n + items.length) % items.length;
-      items.forEach(function (li, i) { li.classList.toggle('on', i === cur); });
-      put('alg-count', 'Step ' + (cur + 1) + ' of ' + items.length);
-    }
-    items.forEach(function (li, i) {
-      li.tabIndex = 0; li.addEventListener('click', function () { pick(i); });
-      li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(i); } });
-    });
-    on('alg-prev', function () { pick(cur - 1); }); on('alg-next', function () { pick(cur + 1); });
-    on('alg-play', function () {
-      if (tm) { clearInterval(tm); tm = 0; this.textContent = '\u25B6 Auto-play'; }
-      else { this.textContent = '\u23F8 Stop'; pick(cur + 1); tm = setInterval(function () { pick(cur + 1); }, 2500); }
-    });
-    pick(0);
+  /* ALGO-START */
+  var AL = { step: 0, t: 0, play: true, speed: 1, p: 2, T: 2, raf: 0, last: 0 };
+  var CL = { cell: '#3a2e2a', fill: '#4e3d36', line: '#6b5646', text: '#f0e2cc', mute: '#c9b8a6', amber: '#e8a24a', blue: '#5b8def', green: '#8ee29c', cream: '#ffe9cf', card: '#33261f' };
+  var ALS = [
+    { n: 'H0 seed', title: '1. Hash every input into the 64-byte seed H0', dur: 8,
+      text: 'Argon2id first mixes all inputs (password, salt, m, t, p, tag length, version 0x13 and the type y = 2 for Argon2id) into one 64-byte seed H0 with BLAKE2b-512. Every memory block is derived from H0, so changing any single input changes everything that follows.',
+      math: 'H0 = BLAKE2b-512( p \u2016 T \u2016 m \u2016 t \u2016 v \u2016 y \u2016 len(P) \u2016 P \u2016 len(S) \u2016 S \u2016 len(K) \u2016 K \u2016 len(X) \u2016 X )',
+      why: 'Why it matters: this is the only place the password and salt enter. The rest of the algorithm works on H0 and the memory.' },
+    { n: 'Memory layout', title: '2. Allocate the memory matrix (lanes, slices, blocks)', dur: 8,
+      text: 'The memory is a matrix of 1024-byte blocks: p lanes (rows), each with q columns, and every lane is cut into 4 slices. Change p and t with the selectors under the animation: the matrix reshapes and the numbers below use the memory m from your Simulation controls.',
+      math: "m' = 4\u00B7p\u00B7\u230A m / 4p \u230B ;  q = m' / p ;  slice length = q / 4",
+      why: 'Why it matters: m is the amount of memory every single guess needs. That is what makes cheap parallel hardware struggle.' },
+    { n: 'Seed blocks', title: '3. Seed the first two blocks of every lane', dur: 8,
+      text: "Each lane starts from H0. Block 0 and block 1 of lane i are produced by H', a variable-length BLAKE2b that outputs 1024 bytes. Lane number i is part of the input, so lanes never start identically.",
+      math: "B[i][0] = H'( H0 \u2016 0 \u2016 i )     B[i][1] = H'( H0 \u2016 1 \u2016 i )",
+      why: "Why it matters: H' stretches the 64-byte seed to full 1024-byte blocks. Everything else in the lane is built from these two." },
+    { n: 'Compress G', title: '4. Compute every new block with the compression function G', dur: 9,
+      text: 'A new block needs two earlier blocks: the previous one X and a reference block Y. G computes R = X \u2295 Y, treats R as an 8 \u00D7 8 matrix of 16-byte registers, applies the BLAKE2b round permutation P to every row and then every column, and XORs the result with R.',
+      math: 'B[i][j] = G( B[i][j\u22121], B[l][z] )   (passes 2+: result \u2295 old B[i][j])',
+      why: 'Why it matters: each block depends on two earlier blocks, so skipping storage forces recomputing chains of blocks. This is the time-memory trade-off.' },
+    { n: 'Pick reference', title: '5. Choose the reference block (l, z)', dur: 9,
+      text: 'Two 32-bit values J1 and J2 pick the reference block: J2 chooses the lane l, J1 the column z (recent blocks are favoured). Argon2id uses a data-independent source for slices 1 and 2 of pass 1 and a data-dependent source after that. In the very first slice of pass 1 the reference must stay in the same lane.',
+      math: 'pass 1, slices 1\u20132:  (J1,J2) = G(counter block)      otherwise:  (J1,J2) = first 64 bits of B[i][j\u22121]',
+      why: 'Why it matters: the independent start gives timing side-channel resistance; the dependent rest makes memory-saving shortcuts expensive.' },
+    { n: 'Slices & passes', title: '6. Run lanes in parallel, slice by slice, for t passes', dur: 10,
+      text: 'Inside a slice the p lanes can run at the same time. At the end of every slice they must wait for each other (a barrier), because the next slice may reference blocks from other lanes. The whole matrix is then swept t times; passes after the first overwrite blocks and XOR with the old value.',
+      math: 'for pass = 1..t:  for slice = 1..4:  all lanes in parallel, then synchronise',
+      why: 'Why it matters: more lanes can use more CPU cores, more passes cost more time for you and for an attacker.' },
+    { n: 'Finalise', title: '7. XOR the last blocks and hash down to the tag', dur: 10,
+      text: "After the last pass, the final block of every lane is XORed together into C. H' then compresses C into the T-byte tag (32 bytes here). The tag, salt and parameters are written out as the encoded string you generate in the Simulation tab.",
+      math: "C = B[0][q\u22121] \u2295 B[1][q\u22121] \u2295 \u2026 ;   tag = H'( C, T )",
+      why: 'Why it matters: this is the string stored in a database and the one you verify against.' }
+  ];
+  function durOf(i) { return i === 5 ? 2.5 + AL.T * 4 * 1.3 : ALS[i].dur; }
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ease(v) { v = clamp01(v); return v < 0.5 ? 2 * v * v : 1 - Math.pow(-2 * v + 2, 2) / 2; }
+  function sg(t, a, b) { return ease((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function hv(a, b, c) { var v = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719) * 43758.5453; return v - Math.floor(v); }
+  function rr(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+  function txt(x, s, X, Y, col, size, al, bold) { x.fillStyle = col || CL.text; x.font = (bold ? 'bold ' : '') + (size || 13) + 'px Arial'; x.textAlign = al || 'left'; x.textBaseline = 'middle'; x.fillText(s, X, Y); }
+  function box(x, X, Y, w, h, label, col, a, glow) {
+    x.save(); x.globalAlpha = a == null ? 1 : a;
+    if (glow) { x.shadowColor = col || CL.amber; x.shadowBlur = glow; }
+    rr(x, X, Y, w, h, 8); x.fillStyle = CL.card; x.fill(); x.shadowBlur = 0; x.strokeStyle = col || CL.line; x.lineWidth = 1.5; x.stroke();
+    if (label) txt(x, label, X + w / 2, Y + h / 2, CL.text, 13, 'center', true);
+    x.restore();
   }
+  function arrow(x, x1, y1, x2, y2, col, k) {
+    k = k == null ? 1 : k; if (k <= 0) return;
+    var ex = lerp(x1, x2, k), ey = lerp(y1, y2, k), a = Math.atan2(y2 - y1, x2 - x1);
+    x.strokeStyle = col; x.fillStyle = col; x.lineWidth = 2; x.beginPath(); x.moveTo(x1, y1); x.lineTo(ex, ey); x.stroke();
+    x.beginPath(); x.moveTo(ex, ey); x.lineTo(ex - 9 * Math.cos(a - 0.4), ey - 9 * Math.sin(a - 0.4)); x.lineTo(ex - 9 * Math.cos(a + 0.4), ey - 9 * Math.sin(a + 0.4)); x.closePath(); x.fill();
+  }
+  function curve(x, x1, y1, x2, y2, col, k, lift) {
+    if (k <= 0) return;
+    var mx = (x1 + x2) / 2, my = Math.min(y1, y2) - lift, n = 30;
+    x.strokeStyle = col; x.lineWidth = 2; x.beginPath();
+    for (var i = 0; i <= n * k; i++) { var u = i / n, px = (1 - u) * (1 - u) * x1 + 2 * (1 - u) * u * mx + u * u * x2, py = (1 - u) * (1 - u) * y1 + 2 * (1 - u) * u * my + u * u * y2; if (i === 0) x.moveTo(px, py); else x.lineTo(px, py); }
+    x.stroke();
+    if (k >= 1) { x.fillStyle = col; x.beginPath(); x.arc(x2, y2, 4, 0, 6.3); x.fill(); }
+  }
+  function geo(W, H, p) { var x0 = 64, y0 = 92, ch = Math.max(14, Math.min(34, (H - y0 - 90) / p - 8)); return { x0: x0, y0: y0, cols: 24, cw: (W - x0 - 14) / 24, ch: ch, rowH: ch + 8, p: p }; }
+  function cellXY(g, l, c) { return [g.x0 + c * g.cw, g.y0 + l * g.rowH]; }
+  function dCell(x, g, l, c, col, a, glow) { var P = cellXY(g, l, c); x.save(); x.globalAlpha = a == null ? 1 : a; x.fillStyle = col; if (glow) { x.shadowColor = col; x.shadowBlur = glow; } x.fillRect(P[0] + 1, P[1], g.cw - 2, g.ch); x.restore(); }
+  function laneLabels(x, g, a) { x.save(); x.globalAlpha = a; for (var l = 0; l < g.p; l++) txt(x, 'Lane ' + l, 8, g.y0 + l * g.rowH + g.ch / 2, CL.mute, 12); x.restore(); }
+  function hex8(v) { var s = Math.floor(v * 4294967295).toString(16); while (s.length < 8) s = '0' + s; return s; }
+
+  function s1(x, W, H, t) {
+    var items = [['P', 'password'], ['S', 'salt'], ['m', 'memory'], ['t', 'passes'], ['p', 'lanes'], ['T', 'tag length'], ['v', '0x13'], ['y', '2 = Argon2id']];
+    var bw = Math.min(180, W * 0.24), bh = 96, cx = W * 0.46, cy = H / 2 - 6, cwid = Math.min(128, W * 0.22), st = (H - 70) / 8;
+    items.forEach(function (it, i) {
+      var k = sg(t, i * 0.32, i * 0.32 + 1.2), sx = 12, sy = 26 + i * st, tx = cx - bw / 2 - cwid + 24, ty = cy - 12;
+      x.save(); x.globalAlpha = 0.25; rr(x, sx, sy, cwid, 24, 6); x.strokeStyle = CL.line; x.lineWidth = 1; x.stroke(); x.restore();
+      x.save(); x.globalAlpha = k < 0.8 ? 1 : 1 - (k - 0.8) / 0.2;
+      var px = lerp(sx, tx, k), py = lerp(sy, ty, k); rr(x, px, py, cwid, 24, 6); x.fillStyle = CL.card; x.fill(); x.strokeStyle = CL.amber; x.lineWidth = 1.5; x.stroke();
+      txt(x, it[0] + ' \u00B7 ' + it[1], px + 8, py + 12, CL.text, 12, 'left', true); x.restore();
+    });
+    var g = sg(t, 2.6, 4.4), glow = t > 2.6 && t < 4.6 ? 10 + 8 * Math.sin(t * 8) : 0;
+    box(x, cx - bw / 2, cy - bh / 2, bw, bh, null, CL.amber, 1, glow);
+    txt(x, 'BLAKE2b-512', cx, cy - 14, CL.text, 15, 'center', true);
+    x.fillStyle = CL.cell; x.fillRect(cx - bw / 2 + 16, cy + 14, bw - 32, 8); x.fillStyle = CL.amber; x.fillRect(cx - bw / 2 + 16, cy + 14, (bw - 32) * g, 8);
+    var ox = cx + bw / 2 + 44, cs = Math.max(6, Math.min(14, (W - ox - 14) / 16 - 2)), oy = cy - 2 * (cs + 2);
+    arrow(x, cx + bw / 2 + 4, cy, ox - 6, cy, CL.amber, sg(t, 4, 4.5));
+    if (t > 4) txt(x, 'H0 \u00B7 64 bytes', ox, oy - 16, CL.mute, 12);
+    var n = Math.floor(sg(t, 4.2, 6.4) * 64);
+    for (var i = 0; i < n; i++) { var r = Math.floor(i / 16), c = i % 16; x.fillStyle = 'rgba(232,162,74,' + (0.3 + 0.7 * hv(r, c, 9)) + ')'; x.fillRect(ox + c * (cs + 2), oy + r * (cs + 2), cs, cs); }
+    x.save(); x.globalAlpha = sg(t, 6.6, 7.4); txt(x, 'Every memory block will be derived from H0', W / 2, H - 22, CL.cream, 14, 'center', true); x.restore();
+  }
+  function s2(x, W, H, t) {
+    var p = AL.p, g = geo(W, H, p), show = sg(t, 0, 3.2) * 24, m = vp().m, mp = 4 * p * Math.floor(m / (4 * p)), q = mp / p;
+    for (var l = 0; l < p; l++) for (var c = 0; c < 24; c++) { var a = clamp01(show - c); if (a > 0) dCell(x, g, l, c, CL.fill, a); }
+    laneLabels(x, g, sg(t, 0.2, 1));
+    for (var k = 0; k < 4; k++) {
+      var a2 = sg(t, 3.2 + k * 0.35, 3.8 + k * 0.35), X0 = g.x0 + k * 6 * g.cw + 2, X1 = X0 + 6 * g.cw - 4;
+      x.save(); x.globalAlpha = a2; x.strokeStyle = CL.amber; x.lineWidth = 2; x.beginPath(); x.moveTo(X0, g.y0 - 10); x.lineTo(X1, g.y0 - 10); x.stroke(); txt(x, 'Slice ' + k, (X0 + X1) / 2, g.y0 - 24, CL.cream, 12, 'center', true); x.restore();
+    }
+    var yb = g.y0 + p * g.rowH + 22, fa = sg(t, 4.4, 5.4);
+    x.save(); x.globalAlpha = fa;
+    txt(x, 'm = ' + m + ' KiB,  p = ' + p + '   \u2192   m\u2032 = 4\u00B7p\u00B7\u230Am/4p\u230B = ' + mp + ' blocks of 1024 bytes', 14, yb, CL.text, 13, 'left', true);
+    txt(x, 'each lane: q = m\u2032/p = ' + q + ' blocks      each slice: q/4 = ' + (q / 4) + ' blocks', 14, yb + 22, CL.cream, 13, 'left', true);
+    txt(x, 'The picture shows 24 columns per lane as a schematic.', 14, yb + 44, CL.mute, 12);
+    x.restore();
+  }
+  function s3(x, W, H, t) {
+    var p = AL.p, g = geo(W, H, p);
+    for (var l = 0; l < p; l++) for (var c = 0; c < 24; c++) dCell(x, g, l, c, CL.cell, 0.7);
+    laneLabels(x, g, 1);
+    box(x, g.x0, 16, 96, 30, 'H0', CL.amber, 1, 8);
+    for (var i = 0; i < p; i++) {
+      var s0 = 0.6 + i * 0.7, k0 = sg(t, s0, s0 + 1.1), k1 = sg(t, s0 + 1.6, s0 + 2.7), a = cellXY(g, i, 0), b = cellXY(g, i, 1);
+      arrow(x, g.x0 + 30, 48, a[0] + g.cw / 2, a[1] - 2, CL.blue, k0);
+      arrow(x, g.x0 + 66, 48, b[0] + g.cw / 2, b[1] - 2, CL.amber, k1);
+      if (k0 >= 1) dCell(x, g, i, 0, CL.blue, 1, 10); if (k1 >= 1) dCell(x, g, i, 1, CL.amber, 1, 10);
+      if (k1 >= 1 && g.rowH > 20) { x.save(); x.globalAlpha = sg(t, s0 + 2.7, s0 + 3.2); txt(x, "B[" + i + "][0] = H'(H0\u2016 0 \u2016" + i + ")    B[" + i + "][1] = H'(H0\u2016 1 \u2016" + i + ")", g.x0 + g.cw * 2.6, g.y0 + i * g.rowH + g.ch / 2, CL.cream, 12, 'left', true); x.restore(); }
+    }
+    x.save(); x.globalAlpha = sg(t, 5.5, 6.5); txt(x, "Only two blocks per lane exist so far. H' stretches 64 bytes to 1024 bytes.", 14, g.y0 + p * g.rowH + 24, CL.mute, 13); x.restore();
+  }
+  function mg(x, X, Y, cs, seed, rgb, a, rows, cols, hr, hc) {
+    x.save(); x.globalAlpha = a;
+    for (var r = 0; r < 8; r++) for (var c = 0; c < 8; c++) {
+      var sd = c < cols ? seed + 2 : (r < rows ? seed + 1 : seed), v = hv(r, c, sd);
+      x.fillStyle = 'rgba(' + rgb + ',' + (0.2 + 0.8 * v) + ')'; x.fillRect(X + c * cs, Y + r * cs, cs - 1, cs - 1);
+    }
+    x.strokeStyle = CL.amber; x.lineWidth = 2;
+    if (hr >= 0) x.strokeRect(X - 1, Y + hr * cs - 1, 8 * cs + 1, cs + 1);
+    if (hc >= 0) x.strokeRect(X + hc * cs - 1, Y - 1, cs + 1, 8 * cs + 1);
+    x.restore();
+  }
+  function s4(x, W, H, t) {
+    var cs = Math.max(6, Math.min(14, (W - 40) / 52)), gw = 8 * cs, gap = (W - 20 - 5 * gw) / 4, Y = 74, X = [], i;
+    for (i = 0; i < 5; i++) X.push(10 + i * (gw + gap));
+    var names = ['X = B[i][j\u22121]', 'Y = B[l][z]', 'R = X \u2295 Y', 'Z = P(rows, cols)', 'B[i][j] = Z \u2295 R'];
+    var al = [sg(t, 0, 1), sg(t, 0.4, 1.4), sg(t, 1.8, 2.8), sg(t, 2.8, 3.4), sg(t, 6.9, 7.8)];
+    var rows = Math.floor(sg(t, 3, 4.9) * 8 + 0.001), cols = Math.floor(sg(t, 5, 6.9) * 8 + 0.001);
+    var hr = t > 3 && t < 4.9 ? Math.min(7, rows) : -1, hc = t > 5 && t < 6.9 ? Math.min(7, cols) : -1;
+    for (i = 0; i < 5; i++) { x.save(); x.globalAlpha = al[i]; txt(x, names[i], X[i] + gw / 2, Y - 18, CL.mute, Math.max(10, Math.min(12, gw / 8)), 'center', true); x.restore(); }
+    mg(x, X[0], Y, cs, 1, '91,141,239', al[0], 0, 0, -1, -1);
+    mg(x, X[1], Y, cs, 2, '232,162,74', al[1], 0, 0, -1, -1);
+    mg(x, X[2], Y, cs, 3, '201,184,166', al[2], 0, 0, -1, -1);
+    mg(x, X[3], Y, cs, 3, '201,184,166', al[3], rows, cols, hr, hc);
+    mg(x, X[4], Y, cs, 7, '255,233,207', al[4], 0, 0, -1, -1);
+    var ops = ['\u2295', '=', 'P', '\u2295 R'];
+    for (i = 0; i < 4; i++) { x.save(); x.globalAlpha = i === 0 ? al[1] : i === 1 ? al[2] : i === 2 ? al[3] : al[4]; txt(x, ops[i], X[i] + gw + gap / 2, Y + gw / 2, CL.amber, 18, 'center', true); x.restore(); }
+    var cap = t < 1.8 ? 'Take two 1024-byte blocks: X is the previous block, Y is the reference block.' : t < 3 ? 'R = X \u2295 Y  (bitwise XOR of the two blocks).' :
+      t < 5 ? 'Apply the BLAKE2b round permutation P to each of the 8 rows (16-byte registers).' : t < 6.9 ? 'Then apply P to each of the 8 columns.' : 'New block = Z \u2295 R. (In passes 2+ it is also XORed with the old block.)';
+    txt(x, cap, W / 2, Y + gw + 34, CL.cream, 13, 'center', true);
+    var sy = H - 54, n = 22, sw = Math.min(26, (W - 40) / n), sx = (W - n * sw) / 2, kk = sg(t, 7.2, 8.4);
+    for (i = 0; i < n; i++) { x.fillStyle = i < 12 ? CL.fill : CL.cell; x.fillRect(sx + i * sw + 1, sy, sw - 2, 16); }
+    x.save(); x.globalAlpha = kk; x.fillStyle = CL.cream; x.shadowColor = CL.cream; x.shadowBlur = 10; x.fillRect(sx + 12 * sw + 1, sy, sw - 2, 16); x.restore();
+    arrow(x, X[4] + gw / 2, Y + gw + 4 + 14, sx + 12.5 * sw, sy - 4, CL.cream, kk);
+    txt(x, 'lane i', sx - 4, sy + 8, CL.mute, 11, 'right'); txt(x, 'B[i][j]', sx + 12.5 * sw, sy + 28, CL.cream, 11, 'center', true);
+  }
+  function s5(x, W, H, t) {
+    var p = AL.p, g = geo(W, H, p), j = 2 + Math.floor(sg(t, 0.3, 8.2) * 21.99), indep = j < 12, sl = Math.floor(j / 6);
+    var r = hv(j, 3, 1), z = Math.max(0, j - 1 - Math.floor(r * r * (j - 1))), l2 = p > 1 ? Math.floor(hv(j, 5, 2) * p) : 0;
+    if (l2 !== 0) { var lim = 6 * sl - 1; if (lim < 0) l2 = 0; else z = Math.min(z, lim); }
+    for (var l = 0; l < p; l++) for (var c = 0; c < 24; c++) {
+      if (l === 0 && c === j) continue;
+      if (l === 0 ? c < j : c < 6 * sl) dCell(x, g, l, c, c < 12 ? CL.blue : CL.amber, 0.8); else dCell(x, g, l, c, CL.cell, 0.7);
+    }
+    laneLabels(x, g, 1);
+    var cur = cellXY(g, 0, j), ref = cellXY(g, l2, z);
+    dCell(x, g, 0, j, CL.cream, 1, 14);
+    curve(x, cur[0] + g.cw / 2, cur[1], ref[0] + g.cw / 2, ref[1], CL.cream, 1, 22 + Math.abs(j - z) * 3);
+    dCell(x, g, l2, z, CL.green, 1, 14);
+    var bw = Math.min(250, (W - 40) / 2);
+    box(x, 12, 10, bw, 44, null, CL.blue, indep ? 1 : 0.35, indep ? 8 : 0); box(x, W - bw - 12, 10, bw, 44, null, CL.amber, indep ? 0.35 : 1, indep ? 0 : 8);
+    x.save(); x.globalAlpha = indep ? 1 : 0.4; txt(x, 'DATA-INDEPENDENT', 12 + bw / 2, 24, CL.blue, 12, 'center', true); txt(x, 'J1,J2 = G(counter block): no memory read', 12 + bw / 2, 42, CL.text, 11, 'center'); x.restore();
+    x.save(); x.globalAlpha = indep ? 0.4 : 1; txt(x, 'DATA-DEPENDENT', W - bw / 2 - 12, 24, CL.amber, 12, 'center', true); txt(x, 'J1,J2 = first 64 bits of B[i][j\u22121]', W - bw / 2 - 12, 42, CL.text, 11, 'center'); x.restore();
+    if (!indep) { var pv = cellXY(g, 0, j - 1); arrow(x, pv[0] + g.cw / 2, pv[1] - 2, W - bw / 2 - 12, 58, CL.amber, 1); }
+    var yb = g.y0 + p * g.rowH + 22;
+    txt(x, 'Pass 1 \u00B7 slice ' + (sl + 1) + ' \u00B7 computing block ' + j + ' of lane 0', 14, yb, CL.cream, 13, 'left', true);
+    txt(x, 'J1 = 0x' + hex8(hv(j, 7, 3)) + '   J2 = 0x' + hex8(hv(j, 8, 4)) + '   \u2192 reference B[' + l2 + '][' + z + ']  (recent blocks are favoured)', 14, yb + 22, CL.mute, 12);
+    txt(x, 'cream = block being computed, green = reference block, blue / orange = filled blocks', 14, yb + 44, CL.mute, 11);
+  }
+  function s6(x, W, H, t) {
+    var p = AL.p, T = AL.T, sl = Math.max(0, (t - 0.8)) / 1.3, tot = T * 4, idx, f;
+    if (sl >= tot) { idx = tot - 1; f = 1; } else { idx = Math.floor(sl); f = sl - idx; }
+    var pass = Math.floor(idx / 4), slice = idx % 4, bx = 74, bwid = W - bx - 16, sw = bwid / 4, fl = [0.55, 0.7, 0.85, 0.95];
+    txt(x, 'Pass ' + (pass + 1) + ' / ' + T, 12, 24, CL.cream, 18, 'left', true); txt(x, 'Slice ' + (slice + 1) + ' / 4', 12, 50, CL.mute, 13, 'left', true);
+    txt(x, pass === 0 ? 'Pass 1: blocks are written for the first time' : 'Pass ' + (pass + 1) + ': every new block is also XORed with the block it overwrites', 140, 24, CL.mute, 12);
+    var done = sl >= tot;
+    for (var l = 0; l < p; l++) {
+      var y = 80 + l * 46; txt(x, 'Lane ' + l, 10, y + 15, CL.mute, 12);
+      for (var s = 0; s < 4; s++) {
+        var cur = s === slice && !done, ps = done || s < slice, prog = ps ? 1 : cur ? Math.min(1, f / fl[l]) : 0, X0 = bx + s * sw + 2, w = sw - 4;
+        x.fillStyle = CL.cell; x.fillRect(X0, y, w, 30);
+        if (pass > 0 && !ps) { x.save(); x.globalAlpha = 0.45; x.fillStyle = CL.cream; x.fillRect(X0, y, w, 30); x.restore(); }
+        x.fillStyle = pass === 0 ? (s < 2 ? CL.blue : CL.amber) : CL.cream; x.fillRect(X0, y, w * prog, 30);
+        if (cur && f > fl[l] && f < 1) { x.save(); x.globalAlpha = 0.5 + 0.5 * Math.sin(t * 10); txt(x, 'waiting at barrier', X0 + w / 2, y + 15, CL.text, 11, 'center', true); x.restore(); }
+      }
+    }
+    var yb = 80 + p * 46;
+    for (s = 1; s < 4; s++) { x.save(); x.strokeStyle = CL.line; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(bx + s * sw, 70); x.lineTo(bx + s * sw, yb - 8); x.stroke(); x.restore(); }
+    if (!done && f > 0.93) { x.save(); x.globalAlpha = (f - 0.93) / 0.07; x.strokeStyle = CL.green; x.lineWidth = 3; x.beginPath(); var bxx = bx + (slice + 1) * sw; x.moveTo(bxx, 70); x.lineTo(bxx, yb - 8); x.stroke(); x.restore(); }
+    txt(x, done ? 'All ' + T + ' pass(es) finished.' : 'Lanes run in parallel; all must reach the barrier before the next slice starts.', 14, yb + 14, CL.cream, 13, 'left', true);
+    txt(x, 'blue = data-independent, orange = data-dependent, light = later passes', 14, yb + 38, CL.mute, 12);
+  }
+  function s7(x, W, H, t) {
+    var p = AL.p, g = geo(W, H, p), m = vp().m, l, c;
+    for (l = 0; l < p; l++) for (c = 0; c < 23; c++) dCell(x, g, l, c, CL.fill, 0.9);
+    laneLabels(x, g, 1);
+    var pulse = t < 3 ? 6 + 8 * Math.sin(t * 7) : 0;
+    for (l = 0; l < p; l++) dCell(x, g, l, 23, CL.cream, 1, pulse);
+    var yy = g.y0 + p * g.rowH + 36, xc = W * 0.14;
+    var k0 = sg(t, 1, 3);
+    for (l = 0; l < p; l++) { var pt = cellXY(g, l, 23), kk = clamp01((k0 * 1.4) - l * 0.12); if (kk > 0 && kk < 1) { var px = lerp(pt[0] + g.cw / 2, xc, kk), py = lerp(pt[1] + g.ch, yy, kk); x.fillStyle = CL.cream; x.fillRect(px - 5, py - 5, 10, 10); } }
+    x.save(); x.globalAlpha = sg(t, 0.8, 1.6); x.strokeStyle = CL.amber; x.lineWidth = 2; x.beginPath(); x.arc(xc, yy, 16, 0, 6.3); x.stroke(); txt(x, '\u2295', xc, yy, CL.amber, 20, 'center', true); x.restore();
+    var cx = W * 0.3, aC = sg(t, 3, 4), aH = sg(t, 4.2, 5.2);
+    arrow(x, xc + 18, yy, cx - 4, yy, CL.amber, aC); box(x, cx, yy - 16, 70, 32, 'C', CL.amber, aC);
+    var hx = W * 0.46; arrow(x, cx + 72, yy, hx - 4, yy, CL.amber, aH); box(x, hx, yy - 16, 70, 32, "H'", CL.amber, aH, aH > 0.9 ? 8 : 0);
+    var tx = W * 0.62, cs = Math.max(5, Math.min(12, (W - tx - 14) / 16 - 2)), n = Math.floor(sg(t, 5.2, 6.8) * 32);
+    arrow(x, hx + 72, yy, tx - 6, yy, CL.amber, sg(t, 5, 5.4));
+    if (t > 5.2) txt(x, 'tag \u00B7 32 bytes', tx, yy - 26, CL.mute, 12);
+    for (var i = 0; i < n; i++) { x.fillStyle = 'rgba(142,226,156,' + (0.35 + 0.65 * hv(i, 1, 5)) + ')'; x.fillRect(tx + (i % 16) * (cs + 2), yy - cs - 1 + Math.floor(i / 16) * (cs + 2), cs, cs); }
+    var s = '$argon2id$v=19$m=' + m + ',t=' + AL.T + ',p=' + p + '$<salt>$<tag>', len = Math.floor(clamp01((t - 7) / 2.2) * s.length);
+    txt(x, 'Encoded string:', 14, H - 48, CL.mute, 12); txt(x, s.slice(0, len), 14, H - 26, CL.cream, 13, 'left', true);
+  }
+  var ALSC = [s1, s2, s3, s4, s5, s6, s7];
+
+  function alInfo() {
+    var S = ALS[AL.step];
+    put('al-title', S.title); put('al-text', S.text); put('al-math', S.math); put('al-why', S.why);
+    document.querySelectorAll('.al-chip').forEach(function (b, i) { b.classList.toggle('on', i === AL.step); b.querySelector('i').style.width = i < AL.step ? '100%' : '0'; });
+  }
+  function alDraw() {
+    var c = $('al-cv'), W = c.clientWidth || 800, H = W < 560 ? 400 : 380, dpr = window.devicePixelRatio || 1, d = durOf(AL.step);
+    if (c.width !== Math.round(W * dpr) || c.height !== Math.round(H * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); c.style.height = H + 'px'; }
+    var x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    ALSC[AL.step](x, W, H, Math.min(AL.t, d));
+    x.fillStyle = CL.amber; x.fillRect(0, H - 3, W * Math.min(1, AL.t / d), 3);
+    var chip = document.querySelectorAll('.al-chip')[AL.step]; if (chip) chip.querySelector('i').style.width = (100 * Math.min(1, AL.t / d)) + '%';
+    if (AL.play) $('al-scrub').value = Math.round(1000 * Math.min(1, AL.t / d));
+  }
+  function alGo(i, keep) { AL.step = (i + ALS.length) % ALS.length; AL.t = 0; alInfo(); alDraw(); }
+  function alSetPlay(on) { AL.play = on; $('al-play').textContent = on ? '\u23F8 Pause' : '\u25B6 Play'; }
+  function alTick(now) {
+    if (AL.play) { var dt = Math.min(0.05, (now - AL.last) / 1000); AL.t += dt * AL.speed; if (AL.t >= durOf(AL.step)) alGo(AL.step + 1); }
+    AL.last = now; alDraw(); AL.raf = requestAnimationFrame(alTick);
+  }
+  function alRun(on) {
+    if (on && !AL.raf) { AL.last = performance.now(); AL.raf = requestAnimationFrame(alTick); }
+    else if (!on && AL.raf) { cancelAnimationFrame(AL.raf); AL.raf = 0; }
+  }
+  function algInit() {
+    var c = $('al-cv'), st = $('al-steps');
+    if (!c) return;
+    ALS.forEach(function (S, i) {
+      var b = el('button', (i + 1) + '. ' + S.n, 'al-chip'); b.type = 'button'; b.appendChild(document.createElement('i'));
+      b.addEventListener('click', function () { alGo(i); }); st.appendChild(b);
+    });
+    on('al-prev', function () { alGo(AL.step - 1); }); on('al-next', function () { alGo(AL.step + 1); });
+    on('al-rep', function () { AL.t = 0; alDraw(); }); on('al-play', function () { alSetPlay(!AL.play); });
+    $('al-speed').addEventListener('input', function () { AL.speed = Number(this.value) || 1; });
+    $('al-p').addEventListener('change', function () { AL.p = Number(this.value); alDraw(); });
+    $('al-t').addEventListener('change', function () { AL.T = Number(this.value); AL.t = Math.min(AL.t, durOf(AL.step)); alDraw(); });
+    $('al-scrub').addEventListener('input', function () { alSetPlay(false); AL.t = Number(this.value) / 1000 * durOf(AL.step); alDraw(); });
+    if (reduce) alSetPlay(false);
+    alInfo(); alDraw();
+    if (window.IntersectionObserver) new IntersectionObserver(function (en) { alRun(en[0].isIntersecting); }).observe(c); else alRun(true);
+  }
+  /* ALGO-END */
+
+  function procInit() {
+    var box = $('proc-box');
+    if (!box) return;
+    var P = [
+      { t: 'Type a password', d: 'In the Simulation tab type a password, for example correct horse battery staple. The strength bar reacts as you type.', go: '#a2-pw', r: [['input', '#a2-pw']] },
+      { t: 'Generate a random salt', d: 'Click Random salt for a 16-byte salt (or type 8 or more characters). Same password plus a different salt gives a completely different hash.', go: '#a2-rand', r: [['click', '#a2-rand']] },
+      { t: 'Set m, t and p', d: 'Use the \u2212 / + buttons, sliders or number boxes. Read the live hint under each control and watch the memory grid change shape.', go: '.pgrid', r: [['click', '.pm'], ['input', '#a2-mem,#a2-iter,#a2-par,#sl-m,#sl-t,#sl-p']] },
+      { t: 'Generate the Argon2id hash', d: 'Click Generate. The process diagram lights up node by node while the real Argon2id runs in the background.', go: '#a2-hash', r: [['click', '#a2-hash']] },
+      { t: 'Inspect the memory visualizer', d: 'Pause, replay, change the speed and hover squares to see lane, slice and phase (blue = data-independent, orange = data-dependent).', go: '.vz', r: [['click', '#a2-vplay,#a2-vpause,#a2-vreplay'], ['input', '#a2-speed']] },
+      { t: 'Change one parameter, hash again', d: 'Change only m (for example 4096, then 65536) and generate again. Compare the measured times in the Observations table.', go: '#a2-hash', need: 2, r: [['click', '#a2-hash']] },
+      { t: 'Verify: right, then wrong password', d: 'In Verify password click Verify with the correct password (MATCH), then with a wrong one (NO MATCH).', go: '#a2-verify', need: 2, r: [['click', '#a2-verify']] },
+      { t: 'Compare algorithms and A vs B', d: 'Click Run comparison for MD5, SHA-1, SHA-256, PBKDF2 and Argon2id, then Compare A vs B for two Argon2id settings.', go: '#a2-compare', r: [['click', '#a2-compare,#a2-cfg']] },
+      { t: 'Run the Attack lab', d: 'Click Launch dictionary attack. Note who is cracked under SHA-256 and under Argon2id, then change m, launch again and read the GPU calculator.', go: 'ATTACK', r: [['click', 'ATTACK']] },
+      { t: 'Take the quiz', d: 'Answer all 10 compulsory questions in the Quiz tab and submit.', tab: 'quiz', go: '#a2-qsubmit', r: [['click', '#a2-qsubmit']] }
+    ];
+    var top = el('div', undefined, 'pr-top'), bar = el('div', undefined, 'bar'), fill = el('i'), cnt = el('b'), nxt = el('button', 'Take me to the next step', 'a2-btn'), rst = el('button', 'Reset', 'a2-btn');
+    nxt.type = 'button'; rst.type = 'button'; bar.appendChild(fill); top.append(cnt, bar, nxt, rst); box.appendChild(top);
+    var msg = el('p', '', 'a2-ok'); box.appendChild(msg);
+    var cards = P.map(function (s, i) {
+      var c = el('div', undefined, 'pr-card'), n = el('button', undefined, 'pr-n'), tx = el('div'), g = el('button', 'Show me', 'a2-btn');
+      n.type = 'button'; n.setAttribute('aria-label', 'Mark step ' + (i + 1) + ' done or not done'); n.innerHTML = '<span>' + (i + 1) + '</span><svg viewBox="0 0 24 24"><path d="M4 13l5 5 11-12"/></svg>';
+      tx.appendChild(el('b', s.t)); tx.appendChild(el('p', s.d)); g.type = 'button';
+      n.addEventListener('click', function () { s.done = !s.done; s.n = s.done ? Math.max(s.n || 0, s.need || 1) : 0; render(); });
+      g.addEventListener('click', function () { go(i); });
+      c.append(n, tx, g); box.appendChild(c); return c;
+    });
+    function render() {
+      var d = 0, cur = -1;
+      P.forEach(function (s, i) { if (s.done) d++; else if (cur < 0) cur = i; cards[i].classList.toggle('done', !!s.done); cards[i].classList.toggle('cur', i === cur); });
+      cnt.textContent = d + ' / ' + P.length + ' completed'; fill.style.width = (100 * d / P.length) + '%';
+      nxt.disabled = cur < 0; msg.textContent = d === P.length ? 'All steps complete. Great work!' : '';
+    }
+    function setDone(i) { if (!P[i].done) { P[i].done = true; render(); } }
+    function go(i) {
+      var s = P[i], tb = document.querySelector('.tab-btn[data-tab="' + (s.tab || 'simulation') + '"]');
+      if (tb) tb.click();
+      setTimeout(function () {
+        var t = s.go === 'ATTACK' ? (Array.prototype.filter.call(document.querySelectorAll('#simulation button'), function (b) { return /attack/i.test(b.textContent); })[0] || $('a2-compare')) : document.querySelector(s.go);
+        if (!t) return;
+        t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.classList.remove('a2-pulse'); void t.offsetWidth; t.classList.add('a2-pulse');
+        setTimeout(function () { t.classList.remove('a2-pulse'); }, 2600);
+      }, 180);
+    }
+    function hit(e) {
+      var tg = e.target; if (!tg || !tg.closest) return;
+      P.forEach(function (s, i) {
+        if (s.done) return;
+        s.r.forEach(function (r) {
+          if (r[0] !== e.type) return;
+          var ok = r[1] === 'ATTACK' ? (function () { var b = tg.closest('button'); return b && /attack/i.test(b.textContent); })() : tg.closest(r[1]);
+          if (ok) s.n = (s.n || 0) + 1;
+        });
+        if ((s.n || 0) >= (s.need || 1)) setDone(i);
+      });
+    }
+    document.addEventListener('click', hit); document.addEventListener('input', hit);
+    nxt.addEventListener('click', function () { for (var i = 0; i < P.length; i++) if (!P[i].done) { go(i); return; } });
+    rst.addEventListener('click', function () { P.forEach(function (s) { s.done = false; s.n = 0; }); render(); });
+    render();
+  }
+
   function strength() {
     var pw = $('a2-pw').value, pool = 0;
     if (/[a-z]/.test(pw)) pool += 26; if (/[A-Z]/.test(pw)) pool += 26; if (/\d/.test(pw)) pool += 10; if (/[^A-Za-z0-9]/.test(pw)) pool += 32;
@@ -600,7 +906,7 @@
         on('a2-rand', function () { $('a2-salt').value = toHex(crypto.getRandomValues(new Uint8Array(16))); sync(); });
         $('a2-show').addEventListener('change', function (e) { $('a2-pw').type = e.target.checked ? 'text' : 'password'; });
       },
-      paramInit, vizInit, hoverInit, algInit, extrasInit,
+      paramInit, vizInit, hoverInit, algInit, procInit, extrasInit,
       function () { $('a2-qsubmit').addEventListener('click', submitQuiz); $('a2-qreset').addEventListener('click', renderQuiz); renderQuiz(); }
     ];
     steps.forEach(function (s) { try { s(); } catch (e) { console.error('Argon2id init step failed:', e); } });
