@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
-    <link rel="stylesheet" href="../../css/variables.css">
-    <link rel="stylesheet" href="../../css/experiment.css">
-    <style>
 
-      /* Kerberos Experiment Specific Enhancements - Designed for Portal Palette */
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Virtual Cryptography Laboratory experiment">
+  <title>Experiment | Virtual Cryptography Laboratory</title>
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/experiment.css">
+  <style>
+    /* Kerberos Experiment Specific Enhancements - Designed for Portal Palette */
     .exp-title-badge {
       display: inline-block;
       padding: 4px 10px;
@@ -485,6 +485,490 @@
       color: var(--color-text-muted);
     }
 
+    /* =========================================================
+   Kerberos Theory - Additional Styling
+   ========================================================= */
+
+    /* Aim & Objective Cards */
+    .theory-objectives-grid {
+      margin-top: 16px;
+    }
+
+    /* Highlight / Important Information */
+    .theory-highlight {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--color-surface-muted);
+      border-left: 4px solid var(--color-secondary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: var(--color-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .theory-highlight span {
+      font-family: monospace;
+      font-weight: 600;
+      color: var(--color-secondary);
+    }
+
+    .theory-note {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: var(--color-surface-muted);
+      border-left: 4px solid var(--color-primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: var(--color-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+
+    /* Small Lists inside Theory Cards */
+    .theory-small-list {
+      margin: 10px 0 0;
+      padding-left: 20px;
+      color: var(--color-text-muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .theory-small-list code {
+      color: var(--color-secondary);
+      font-weight: 600;
+    }
+
+
+    /* Small Highlight inside Important Terms Cards */
+    .theory-mini-highlight {
+      margin-top: 10px;
+      padding: 7px 10px;
+      background: rgba(76, 140, 232, 0.08);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-secondary);
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+
+    /* Three-Stage Authentication Flow */
+    .theory-flow {
+      margin-top: 16px;
+    }
+
+    .theory-flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .theory-flow-step h4 {
+      margin: 0 0 5px;
+      color: var(--color-secondary);
+      font-size: 15px;
+    }
+
+    .theory-flow-step p {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .theory-flow-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .theory-flow-arrow {
+      text-align: center;
+      padding: 6px 0;
+      color: var(--color-secondary);
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+
+    /* Six-Step Protocol Flow */
+    .theory-step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .theory-protocol-step {
+      display: flex;
+      gap: 14px;
+      padding: 14px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .theory-step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--color-primary-dark);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .theory-step-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .theory-step-content h4 {
+      margin: 0 0 6px;
+      color: var(--color-primary);
+      font-size: 15px;
+    }
+
+    .theory-step-content p {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .theory-step-content code {
+      padding: 1px 4px;
+      background: var(--color-surface);
+      border-radius: 3px;
+      color: var(--color-secondary);
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    .theory-message {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: monospace;
+      font-size: 12.5px;
+    }
+
+    .theory-message strong {
+      color: var(--color-secondary);
+    }
+
+    .theory-message span {
+      color: var(--color-text-muted);
+    }
+
+    .theory-success-message {
+      border-color: rgba(76, 175, 80, 0.4);
+    }
+
+    .theory-success-message strong {
+      color: #4caf50;
+    }
+
+    .theory-success-message span {
+      color: #4caf50;
+    }
+
+
+    /* Kerberos Flow at a Glance */
+    .kerberos-overview {
+      margin-top: 16px;
+      padding: 18px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .kerberos-kdc {
+      padding: 14px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-secondary);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .kerberos-kdc-title {
+      margin-bottom: 12px;
+      color: var(--color-secondary);
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+    }
+
+    .kerberos-kdc-components {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .kerberos-kdc-components>div {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+
+    .kerberos-kdc-components strong {
+      font-size: 13px;
+      color: var(--color-text);
+    }
+
+    .kerberos-kdc-components span {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .kerberos-flow-line {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 20px;
+    }
+
+    .kerberos-flow-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .flow-label {
+      color: var(--color-secondary);
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .flow-direction {
+      color: var(--color-secondary);
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .kerberos-participants {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .kerberos-participant {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+
+    .kerberos-participant strong {
+      color: var(--color-text);
+      font-size: 15px;
+    }
+
+    .kerberos-participant span {
+      margin-top: 3px;
+      color: var(--color-text-muted);
+      font-size: 12px;
+    }
+
+
+    /* Password Safety Flow */
+    .password-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .password-flow-item {
+      padding: 9px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .password-flow-arrow {
+      color: var(--color-secondary);
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .password-flow-final {
+      border-color: var(--color-secondary);
+      color: var(--color-secondary);
+    }
+
+
+    /* Security Features Table */
+    .theory-table-wrapper {
+      margin-top: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .theory-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-surface-muted);
+      font-size: 14px;
+    }
+
+    .theory-table th {
+      padding: 11px 14px;
+      background: var(--color-surface);
+      color: var(--color-primary);
+      font-size: 13px;
+      font-weight: bold;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .theory-table td {
+      padding: 11px 14px;
+      color: var(--color-text-muted);
+      line-height: 1.45;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .theory-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .theory-table td:first-child {
+      color: var(--color-text);
+      white-space: nowrap;
+    }
+
+
+    /* Final Key Takeaway */
+    .theory-takeaway {
+      margin-top: var(--space-4);
+      padding: 16px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    .theory-takeaway h3 {
+      border-bottom: none;
+      margin-bottom: 8px;
+    }
+
+    .theory-takeaway p {
+      margin-bottom: 14px;
+    }
+
+    .takeaway-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 12px;
+      background: var(--color-surface);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .takeaway-flow span {
+      color: var(--color-text-muted);
+    }
+
+    .takeaway-flow span:nth-child(even) {
+      color: var(--color-secondary);
+    }
+
+    .takeaway-flow strong {
+      color: #4caf50;
+    }
+
+
+    /* Theory Responsive Adjustments */
+    @media (max-width: 650px) {
+
+      .kerberos-kdc-components {
+        grid-template-columns: 1fr;
+      }
+
+      .kerberos-participants {
+        grid-template-columns: 1fr;
+      }
+
+      .theory-message {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .theory-protocol-step {
+        gap: 10px;
+      }
+
+      .takeaway-flow {
+        flex-direction: column;
+      }
+
+      .takeaway-flow span:nth-child(even) {
+        transform: rotate(90deg);
+      }
+
+      .password-flow {
+        flex-direction: column;
+      }
+
+      .password-flow-arrow {
+        transform: rotate(0deg);
+      }
+
+    }
+
     /* Quiz Styling - Updated for Deferred Scoring & Unattempted Handling */
     .quiz-score-banner {
       background: var(--color-surface);
@@ -638,169 +1122,1015 @@
     .procedure-list strong {
       color: var(--color-primary);
     }
-    </style>
-  </head>
-  <body>
-    <!-- Fr. CRCE Official College Header Banner -->
-    <div class="college-banner-strip">
-      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
-        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
-      </a>
-    </div>
 
-    <div class="experiment-container">
-      <header class="exp-header">
-        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Kerberos Authentication Protocol</h1>
+    /* =========================================================
+   Kerberos Procedure - Additional Styling
+   ========================================================= */
+
+    .procedure-intro {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+
+    /* Procedure Steps */
+    .procedure-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .procedure-step {
+      display: flex;
+      gap: 14px;
+      padding: 16px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    .procedure-step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .procedure-step-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .procedure-step-content h3 {
+      margin: 0 0 8px;
+      color: var(--color-primary);
+      font-size: var(--font-size-lg);
+    }
+
+    .procedure-step-content p {
+      margin: 0 0 8px;
+      color: var(--color-text-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .procedure-step-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .procedure-step-content ul {
+      margin: 8px 0 10px;
+      padding-left: 20px;
+      color: var(--color-text-muted);
+    }
+
+    .procedure-step-content li {
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .procedure-step-content code {
+      padding: 1px 5px;
+      background: var(--color-surface);
+      border-radius: 3px;
+      color: var(--color-secondary);
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+
+    /* Expected Result */
+    .procedure-result {
+      margin-top: 24px;
+      padding: 18px;
+      background: var(--color-surface-muted);
+      border: 1px solid var(--color-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    .procedure-result h3 {
+      margin: 0 0 8px;
+      color: var(--color-primary);
+      font-size: var(--font-size-xl);
+    }
+
+    .procedure-result p {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .procedure-result-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 12px;
+      background: var(--color-surface);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      font-family: monospace;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .procedure-result-flow span:nth-child(even) {
+      color: var(--color-secondary);
+    }
+
+    .procedure-result-flow strong {
+      color: #4caf50;
+    }
+
+
+    /* Procedure Responsive Layout */
+    @media (max-width: 650px) {
+
+      .procedure-step {
+        gap: 10px;
+        padding: 13px;
+      }
+
+      .procedure-step-number {
+        flex: 0 0 30px;
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+      }
+
+      .procedure-result-flow {
+        flex-direction: column;
+      }
+
+      .procedure-result-flow span:nth-child(even) {
+        transform: rotate(90deg);
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Fr. CRCE Official College Header Banner -->
+  <div class="college-banner-strip">
+    <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+      <img src="../../assets/logos/crce-header-banner.png"
+        alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory"
+        class="college-banner-img">
+    </a>
+  </div>
+
+  <div class="experiment-container">
+    <header class="exp-header">
+      <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+      <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+      <h1 id="exp-title">Kerberos Authentication Protocol</h1>
       <p id="exp-description">Interactive step-by-step visualization of ticket-based authentication across Client Alice,
         Authentication Server (AS), Ticket Granting Server (TGS), and Server Identity Bob.</p>
     </header>
 
-      <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
-        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
-        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
-        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
-      </nav>
+    <nav class="tab-navigation" aria-label="Experiment sections">
+      <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+      <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+      <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+      <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+      <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+      <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+    </nav>
 
-      <main class="content-area">
+    <main class="content-area">
 
-        <!-- theory part -->
-        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+      <!-- ==================== THEORY TAB ==================== -->
+      <section id="theory" class="tab-content" data-tab-panel="theory">
         <div class="content-placeholder">
-          <div class="theory-section">
-            <h3>What is Kerberos?</h3>
-            <p>
-              <strong>Kerberos</strong> is a computer-network authentication protocol designed to allow individuals
-              communicating over a non-secure network to prove their identity to one another in a secure manner. Named
-              after Cerberus, the mythical three-headed watchdog of Hades, Kerberos relies on a trusted third party
-              known as the <strong>Key Distribution Center (KDC)</strong> to facilitate mutual authentication between
-              clients and network servers.
-            </p>
-          </div>
 
+          <!-- Aim & Objectives -->
           <div class="theory-section">
-            <h3>Why is Kerberos Used?</h3>
-            <p>
-              In traditional network systems, passing user passwords repeatedly across unencrypted connections exposes
-              credentials to eavesdropping and replay attacks. Kerberos solves this through a <strong>ticket-based
-                architecture</strong>:
-            </p>
-            <ul>
-              <li><strong>Single Sign-On (SSO):</strong> Users authenticate only once with their password to get an
-                initial ticket, after which they can access multiple network services without re-entering credentials.
-              </li>
-              <li><strong>No Password Transmission:</strong> Passwords are never sent over the network in plain text or
-                hash form during routine service requests.</li>
-              <li><strong>Mutual Authentication:</strong> Both the client and the Server Identity verify each other's
-                identity before exchanging sensitive data.</li>
-              <li><strong>Replay Protection:</strong> Timestamps and single-use authenticators ensure that captured
-                tickets cannot be replayed by eavesdroppers at a later time.</li>
-            </ul>
-          </div>
+            <h3>Aim &amp; Objectives</h3>
 
-          <div class="theory-section">
-            <h3>Core Protocol Actors</h3>
-            <div class="theory-grid">
+            <p>
+              The objective of this experiment is to understand how the
+              <strong>Kerberos authentication protocol</strong> securely authenticates
+              a user and allows the user to access network services without sending
+              the password over the network.
+            </p>
+
+            <div class="theory-grid theory-objectives-grid">
+
               <div class="theory-card">
-                <h4>1. Client (Alice)</h4>
-                <p>The user or application requesting access to a network resource hosted on a remote server.</p>
+                <h4>Understand Ticket-Based Authentication</h4>
+                <p>
+                  Learn how Kerberos uses <strong>tickets</strong> instead of repeatedly
+                  sending a user's password to network servers.
+                </p>
               </div>
+
               <div class="theory-card">
-                <h4>2. Authentication Server (AS)</h4>
-                <p>Verifies the client's initial identity request and issues a Ticket Granting Ticket (TGT) encrypted
-                  with the client's secret key.</p>
+                <h4>Understand the Role of the KDC</h4>
+                <p>
+                  Understand how the <strong>Key Distribution Center (KDC)</strong>
+                  acts as a trusted authority that helps authenticate users and
+                  provide secure tickets.
+                </p>
               </div>
+
               <div class="theory-card">
-                <h4>3. Ticket Granting Server (TGS)</h4>
-                <p>Validates the client's TGT and issues a Service Ticket specific to the requested target server.</p>
+                <h4>Understand Secure Service Access</h4>
+                <p>
+                  Observe how a user obtains a <strong>Ticket Granting Ticket (TGT)</strong>
+                  and then uses it to obtain a <strong>Service Ticket</strong> for
+                  accessing a particular server.
+                </p>
               </div>
-              <div class="theory-card">
-                <h4>4. Server Identity (Bob)</h4>
-                <p>The application or resource server (e.g. File Server) that validates the client's Service Ticket and
-                  grants access.</p>
-              </div>
+
             </div>
           </div>
 
+
+          <!-- What is Kerberos -->
           <div class="theory-section">
-            <h3>Key Cryptographic Tokens</h3>
-            <ul>
-              <li><strong>TGT (Ticket Granting Ticket):</strong> A reusable token issued by the AS that proves the
-                client has authenticated with the KDC. Encrypted with the TGS secret key so only TGS can read it.</li>
-              <li><strong>Service Ticket (ST):</strong> A single-service token issued by the TGS that grants access to a
-                specific Server Identity (Bob). Encrypted with the Server Identity's key.</li>
-              <li><strong>Authenticator:</strong> A short-lived data structure containing the client's identity and
-                current timestamp, encrypted with the session key shared between the client and server. Proves that the
-                request is fresh and originates from the legitimate ticket owner.</li>
-              <li><strong>Session Keys:</strong> Temporary symmetric keys generated by the KDC ($K_{c,tgs}$ for TGS
-                communication, $K_{c,v}$ for Server Identity communication) to encrypt subsequent interactions.</li>
-            </ul>
+            <h3>What is Kerberos?</h3>
+
+            <p>
+              <strong>Kerberos</strong> is a network authentication protocol used to
+              securely verify the identity of users and services over an untrusted
+              network.
+            </p>
+
+            <p>
+              Instead of sending a password every time a user wants to access a
+              service, Kerberos uses <strong>encrypted tickets</strong> and
+              <strong>temporary session keys</strong>.
+            </p>
+
+            <p>
+              Kerberos works with the help of a trusted third party called the
+              <strong>Key Distribution Center (KDC)</strong>.
+            </p>
+
+            <!-- <div class="theory-highlight">
+        <strong>Simple idea:</strong>
+        <span>Password → Authentication → Ticket → Service Access</span>
+      </div> -->
           </div>
 
+
+          <!-- Why is Kerberos Used -->
           <div class="theory-section">
-            <h3>The 6-Step Authentication Flow</h3>
+            <h3>Why is Kerberos Used?</h3>
+
             <p>
-              The complete Kerberos protocol operates across three distinct request-response exchanges:
+              Sending passwords repeatedly over a network can expose them to
+              attackers. Kerberos avoids this by using tickets.
             </p>
-            <ol>
-              <li><strong>AS-REQ:</strong> Alice sends her identity and a nonce to the Authentication Server (AS).</li>
-              <li><strong>AS-REP:</strong> The AS returns a TGT and session key $K_{c,tgs}$.</li>
-              <li><strong>TGS-REQ:</strong> Alice presents the TGT and an Authenticator to the Ticket Granting Server
-                (TGS), asking to access Bob.</li>
-              <li><strong>TGS-REP:</strong> The TGS returns a Service Ticket and session key $K_{c,v}$.</li>
-              <li><strong>AP-REQ:</strong> Alice presents the Service Ticket and a fresh Authenticator to Bob.</li>
-              <li><strong>Verification:</strong> Bob validates the ticket, authenticator, and freshness
-                (nonce/timestamp), completing mutual authentication.</li>
-            </ol>
+
+            <div class="theory-grid">
+
+              <div class="theory-card">
+                <h4>No Password Transmission</h4>
+                <p>
+                  The user's password is not sent to the network server when
+                  requesting a service.
+                </p>
+              </div>
+
+              <div class="theory-card">
+                <h4>Single Sign-On</h4>
+                <p>
+                  The user authenticates once and can then access multiple authorized
+                  services without entering the password again.
+                </p>
+              </div>
+
+              <!-- <div class="theory-card">
+          <h4>Mutual Authentication</h4>
+          <p>
+            Kerberos can verify both the <strong>client</strong> and the
+            <strong>server</strong>, helping prevent communication with an
+            impersonated server.
+          </p>
+        </div> -->
+
+              <div class="theory-card">
+                <h4>Replay Protection</h4>
+                <p>
+                  Kerberos uses timestamps and authenticators to help prevent old
+                  authentication messages from being reused by an attacker.
+                </p>
+              </div>
+
+            </div>
           </div>
+
+
+          <!-- Main Components -->
+          <div class="theory-section">
+            <h3>Main Components of Kerberos</h3>
+
+            <p>
+              Kerberos mainly involves four participants:
+            </p>
+
+            <div class="theory-grid">
+
+              <div class="theory-card">
+                <h4>1. Client (Alice)</h4>
+                <p>
+                  The user requesting access to a network service.
+                </p>
+              </div>
+
+              <div class="theory-card">
+                <h4>2. Authentication Server (AS)</h4>
+                <p>
+                  Performs the initial authentication and provides a
+                  <strong>Ticket Granting Ticket (TGT)</strong>.
+                </p>
+              </div>
+
+              <div class="theory-card">
+                <h4>3. Ticket Granting Server (TGS)</h4>
+                <p>
+                  Provides a <strong>Service Ticket</strong> for the requested
+                  server.
+                </p>
+              </div>
+
+              <div class="theory-card">
+                <h4>4. Server (Bob)</h4>
+                <p>
+                  The service or resource that Alice wants to access.
+                </p>
+              </div>
+
+            </div>
+
+            <div class="theory-note">
+              <strong>Note:</strong>
+              The <strong>Authentication Server (AS)</strong> and
+              <strong>Ticket Granting Server (TGS)</strong> together form the
+              <strong>Key Distribution Center (KDC)</strong>.
+            </div>
+          </div>
+
+
+          <!-- Important Kerberos Terms
+    <div class="theory-section">
+      <h3>Important Kerberos Terms</h3>
+
+      <div class="theory-grid">
+
+        <div class="theory-card">
+          <h4>Key Distribution Center (KDC)</h4>
+          <p>
+            The <strong>KDC</strong> is the trusted authority in Kerberos.
+            It contains the Authentication Server (AS) and Ticket Granting
+            Server (TGS). It helps users prove their identity and obtain
+            the tickets required to access services.
+          </p>
+        </div>
+
+        <div class="theory-card">
+          <h4>Ticket Granting Ticket (TGT)</h4>
+          <p>
+            The <strong>TGT</strong> is obtained after the initial
+            authentication. Alice uses it to request service tickets from
+            the TGS without entering her password again.
+          </p>
+
+          <div class="theory-mini-highlight">
+            TGT = Permission to request service tickets
+          </div>
+        </div>
+
+        <div class="theory-card">
+          <h4>Service Ticket</h4>
+          <p>
+            A <strong>Service Ticket</strong> is issued by the TGS for a
+            particular server. Alice presents this ticket to Bob when she
+            wants to access his service.
+          </p>
+
+          <div class="theory-mini-highlight">
+            Service Ticket = Permission to access a particular service
+          </div>
+        </div>
+
+        <div class="theory-card">
+          <h4>Authenticator</h4>
+          <p>
+            An <strong>Authenticator</strong> contains information such as
+            the client's identity and a timestamp. It helps the server verify
+            that the request is fresh and is not simply a replay of an old
+            request.
+          </p>
+        </div>
+
+        <div class="theory-card">
+          <h4>Session Key</h4>
+          <p>
+            A <strong>Session Key</strong> is a temporary secret key used
+            for secure communication between two parties.
+          </p>
+
+          <ul class="theory-small-list">
+            <li><code>Kc,tgs</code> → Client ↔ TGS</li>
+            <li><code>Kc,v</code> → Client ↔ Server</li>
+          </ul>
+        </div>
+
+      </div>
+    </div> -->
+
+
+          <!-- How Kerberos Authentication Works -->
+          <div class="theory-section">
+            <h3>How Kerberos Authentication Works</h3>
+
+            <p>
+              Kerberos authentication can be understood in
+              <strong>three simple stages</strong>:
+            </p>
+
+            <div class="theory-flow">
+
+              <div class="theory-flow-step">
+                <span class="theory-flow-number">1</span>
+
+                <div>
+                  <h4>Get a TGT</h4>
+                  <p>
+                    Alice first contacts the <strong>Authentication Server</strong>
+                    and authenticates herself. The AS provides Alice with a
+                    <strong>TGT</strong> and a temporary session key.
+                  </p>
+                </div>
+              </div>
+
+              <div class="theory-flow-arrow">↓</div>
+
+              <div class="theory-flow-step">
+                <span class="theory-flow-number">2</span>
+
+                <div>
+                  <h4>Get a Service Ticket</h4>
+                  <p>
+                    Alice sends her TGT to the <strong>Ticket Granting Server</strong>
+                    and requests access to Bob's service. The TGS verifies the
+                    request and provides a <strong>Service Ticket</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <div class="theory-flow-arrow">↓</div>
+
+              <div class="theory-flow-step">
+                <span class="theory-flow-number">3</span>
+
+                <div>
+                  <h4>Access the Server</h4>
+                  <p>
+                    Alice sends the Service Ticket and an Authenticator to
+                    <strong>Bob</strong>. Bob verifies them and, if everything is
+                    valid, grants Alice access.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- Six Step Authentication Flow -->
+          <!-- <div class="theory-section">
+      <h3>The 6-Step Kerberos Authentication Flow</h3>
+
+      <p>
+        The complete authentication process can be understood through the
+        following six steps:
+      </p>
+
+      <div class="theory-step-list">
+
+        <div class="theory-protocol-step">
+          <div class="theory-step-number">1</div>
+
+          <div class="theory-step-content">
+            <h4>AS-REQ — Authentication Request</h4>
+            <p>
+              Alice sends a request to the <strong>Authentication Server (AS)</strong>.
+              She identifies herself and requests authentication.
+            </p>
+
+            <div class="theory-message">
+              <strong>Alice → AS</strong>
+              <span>Identity + Request</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="theory-protocol-step">
+          <div class="theory-step-number">2</div>
+
+          <div class="theory-step-content">
+            <h4>AS-REP — Authentication Response</h4>
+            <p>
+              The AS verifies Alice and sends back a
+              <strong>TGT</strong> and a session key
+              <code>Kc,tgs</code>. The TGT is protected so that only the
+              TGS can read it.
+            </p>
+
+            <div class="theory-message">
+              <strong>AS → Alice</strong>
+              <span>TGT + Kc,tgs</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="theory-protocol-step">
+          <div class="theory-step-number">3</div>
+
+          <div class="theory-step-content">
+            <h4>TGS-REQ — Ticket Granting Request</h4>
+            <p>
+              Alice wants to access Bob's service. She sends the
+              <strong>TGT</strong>, an <strong>Authenticator</strong>, and
+              identifies the service she wants to access.
+            </p>
+
+            <div class="theory-message">
+              <strong>Alice → TGS</strong>
+              <span>TGT + Authenticator + Service Request</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="theory-protocol-step">
+          <div class="theory-step-number">4</div>
+
+          <div class="theory-step-content">
+            <h4>TGS-REP — Service Ticket Response</h4>
+            <p>
+              The TGS verifies the TGT and Authenticator. If they are valid,
+              the TGS creates a <strong>Service Ticket</strong> for Bob and
+              provides a client-server session key <code>Kc,v</code>.
+            </p>
+
+            <div class="theory-message">
+              <strong>TGS → Alice</strong>
+              <span>Service Ticket + Kc,v</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="theory-protocol-step">
+          <div class="theory-step-number">5</div>
+
+          <div class="theory-step-content">
+            <h4>AP-REQ — Service Request</h4>
+            <p>
+              Alice sends the <strong>Service Ticket</strong> and a fresh
+              <strong>Authenticator</strong> to Bob.
+            </p>
+
+            <div class="theory-message">
+              <strong>Alice → Bob</strong>
+              <span>Service Ticket + Authenticator</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="theory-protocol-step">
+          <div class="theory-step-number">6</div>
+
+          <div class="theory-step-content">
+            <h4>Verification &amp; Access</h4>
+            <p>
+              Bob verifies the Service Ticket, Authenticator, and timestamp.
+              If everything is valid, Bob accepts Alice's request and grants
+              access to the service.
+            </p>
+
+            <div class="theory-message theory-success-message">
+              <strong>Authentication Successful</strong>
+              <span>Service Access Granted</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div> -->
+
+
+          <!-- Kerberos Flow at a Glance -->
+          <!-- <div class="theory-section">
+      <h3>Kerberos Flow at a Glance</h3>
+
+      <div class="kerberos-overview">
+
+        <div class="kerberos-kdc">
+          <div class="kerberos-kdc-title">
+            KEY DISTRIBUTION CENTER (KDC)
+          </div>
+
+          <div class="kerberos-kdc-components">
+            <div>
+              <strong>Authentication Server</strong>
+              <span>AS</span>
+            </div>
+
+            <div>
+              <strong>Ticket Granting Server</strong>
+              <span>TGS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kerberos-flow-line">
+
+          <div class="kerberos-flow-item">
+            <span class="flow-label">TGT</span>
+            <span class="flow-direction">↓</span>
+          </div>
+
+          <div class="kerberos-flow-item">
+            <span class="flow-label">Service Ticket</span>
+            <span class="flow-direction">↓</span>
+          </div>
+
+        </div>
+
+        <div class="kerberos-participants">
+
+          <div class="kerberos-participant">
+            <strong>Alice</strong>
+            <span>Client</span>
+          </div>
+
+          <div class="kerberos-participant">
+            <strong>Bob</strong>
+            <span>Server</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="theory-highlight theory-final-flow">
+        <strong>In simple words:</strong>
+        <span>
+          Alice authenticates with the AS → gets a TGT → uses the TGT with
+          the TGS → gets a Service Ticket → presents it to Bob → gets access.
+        </span>
+      </div>
+    </div> -->
+
+
+          <!-- How Kerberos Keeps Password Safe -->
+          <!-- <div class="theory-section">
+      <h3>How Kerberos Keeps the Password Safe</h3>
+
+      <p>
+        The important point is that <strong>Alice does not send her password
+        to Bob</strong>.
+      </p>
+
+      <p>
+        The password is used during the initial authentication process to help
+        protect the information returned by the AS. After that, Alice uses
+        <strong>tickets and temporary session keys</strong> to obtain access
+        to services.
+      </p>
+
+      <div class="password-flow">
+
+        <div class="password-flow-item">
+          <span>Password</span>
+        </div>
+
+        <span class="password-flow-arrow">↓</span>
+
+        <div class="password-flow-item">
+          <span>Initial Authentication</span>
+        </div>
+
+        <span class="password-flow-arrow">↓</span>
+
+        <div class="password-flow-item">
+          <span>TGT</span>
+        </div>
+
+        <span class="password-flow-arrow">↓</span>
+
+        <div class="password-flow-item">
+          <span>Service Ticket</span>
+        </div>
+
+        <span class="password-flow-arrow">↓</span>
+
+        <div class="password-flow-item password-flow-final">
+          <span>Service Access</span>
+        </div>
+
+      </div>
+    </div> -->
+
+
+          <!-- Security Features -->
+          <div class="theory-section">
+            <h3>Security Features of Kerberos</h3>
+
+            <div class="theory-table-wrapper">
+              <table class="theory-table">
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    <th>How Kerberos Provides It</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td><strong>Authentication</strong></td>
+                    <td>
+                      Verifies the identity of users and services.
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Single Sign-On</strong></td>
+                    <td>
+                      User authenticates once and reuses tickets.
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Password Protection</strong></td>
+                    <td>
+                      Password is not repeatedly transmitted over the network.
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Mutual Authentication</strong></td>
+                    <td>
+                      Client and server can verify each other's identity.
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Replay Protection</strong></td>
+                    <td>
+                      Timestamps and authenticators help prevent replay attacks.
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Secure Communication</strong></td>
+                    <td>
+                      Temporary session keys are used for communication.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
+          <!-- Key Takeaway -->
+          <!-- <div class="theory-section theory-takeaway">
+      <h3>Key Takeaway</h3>
+
+      <p>
+        Kerberos replaces repeated password-based authentication with a
+        <strong>trusted ticket-based system</strong>.
+      </p>
+
+      <div class="takeaway-flow">
+        <span>Authenticate</span>
+        <span>→</span>
+        <span>Get TGT</span>
+        <span>→</span>
+        <span>Request Service Ticket</span>
+        <span>→</span>
+        <span>Present Ticket</span>
+        <span>→</span>
+        <strong>Access Service</strong>
+      </div>
+    </div> -->
+
         </div>
       </section>
 
       <!-- ==================== PROCEDURE TAB ==================== -->
       <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
         <div class="content-placeholder">
-          <h2>Experiment Procedure</h2>
-          <p style="margin-bottom: 16px;">Follow these steps in the <strong>Simulation</strong> tab to observe and
-            interact with the Kerberos authentication exchange:</p>
 
-          <ol class="procedure-list">
-            <li>
-              <strong>Step 1 — Initialize Kerberos:</strong> Review the default client identity (<code>Alice</code>),
-              target server (<code>Bob</code>), nonce (<code>N12345</code>), and session key placeholder
-              (<code>KEY-12345</code>). Click <strong>Initialize Simulation</strong> to generate fresh session
-              parameters.
-            </li>
-            <li>
-              <strong>Step 2 — Send AS-REQ:</strong> Click <strong>Send AS-REQ</strong> to initiate the request from
-              Alice to the Authentication Server (AS). Observe the packet movement and generated timestamp.
-            </li>
-            <li>
-              <strong>Step 3 — Receive TGT (AS-REP):</strong> Click <strong>Generate TGT</strong> to receive the Ticket
-              Granting Ticket (TGT) and session key ($K_{c,tgs}$) from the AS. Notice the dynamic values generated.
-            </li>
-            <li>
-              <strong>Step 4 — Send TGS-REQ:</strong> Click <strong>Send TGS-REQ</strong> to present the TGT and an
-              automatically generated Authenticator to the Ticket Granting Server (TGS).
-            </li>
-            <li>
-              <strong>Step 5 — Receive Service Ticket (TGS-REP):</strong> Click <strong>Generate Service Ticket</strong>
-              to obtain the Service Ticket ($ST$) and client-server session key ($K_{c,v}$) from the TGS.
-            </li>
-            <li>
-              <strong>Step 6 — Service Authentication (AP-REQ):</strong> Click <strong>Send Service Request</strong> to
-              present the Service Ticket to Bob. Watch Bob verify ticket validity, authenticator match, and request
-              freshness (nonce verification).
-            </li>
-            <li>
-              <strong>Step 7 — Review Authentication Success & Reset:</strong> View the final authentication success
-              state and summary checklist. Click <strong>Reset Simulation</strong> to start a new run with newly
-              randomized tickets and session keys.
-            </li>
-          </ol>
+          <h2>Experiment Procedure</h2>
+
+          <p class="procedure-intro">
+            Follow the steps below in the <strong>Simulation</strong> tab to perform
+            the Kerberos authentication process and observe how tickets are
+            exchanged between the client, KDC, and server.
+          </p>
+
+
+          <div class="procedure-flow">
+
+            <!-- Step 1 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">1</div>
+
+              <div class="procedure-step-content">
+                <h3>Initialize the Simulation</h3>
+
+                <p>
+                  Enter or review the initial authentication details:
+                </p>
+
+                <ul>
+                  <li><strong>Client:</strong> Alice</li>
+                  <li><strong>Server:</strong> Bob</li>
+                  <li><strong>Nonce:</strong> N12345</li>
+                  <li><strong>Session Key:</strong> KEY-12345</li>
+                </ul>
+
+                <p>
+                  Click <strong>Initialize Simulation</strong> to create the
+                  initial parameters for the authentication exchange.
+                </p>
+              </div>
+            </div>
+
+
+            <!-- Step 2 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">2</div>
+
+              <div class="procedure-step-content">
+                <h3>Send AS-REQ</h3>
+
+                <p>
+                  Click <strong>Send AS-REQ</strong> to send Alice's authentication
+                  request to the <strong>Authentication Server (AS)</strong>.
+                </p>
+
+                <p>
+                  Observe the request moving from Alice to the AS and note the
+                  timestamp generated for the request.
+                </p>
+              </div>
+            </div>
+
+
+            <!-- Step 3 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">3</div>
+
+              <div class="procedure-step-content">
+                <h3>Receive the TGT — AS-REP</h3>
+
+                <p>
+                  Click <strong>Generate TGT</strong> to simulate the response
+                  from the Authentication Server.
+                </p>
+
+                <p>
+                  Observe the generated <strong>Ticket Granting Ticket (TGT)</strong>
+                  and the client-TGS session key <code>Kc,tgs</code>.
+                </p>
+              </div>
+            </div>
+
+
+            <!-- Step 4 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">4</div>
+
+              <div class="procedure-step-content">
+                <h3>Request a Service Ticket — TGS-REQ</h3>
+
+                <p>
+                  Click <strong>Send TGS-REQ</strong> to send Alice's TGT to the
+                  <strong>Ticket Granting Server (TGS)</strong>.
+                </p>
+
+                <p>
+                  The request also contains an <strong>Authenticator</strong>
+                  and identifies Bob as the server Alice wants to access.
+                </p>
+              </div>
+            </div>
+
+
+            <!-- Step 5 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">5</div>
+
+              <div class="procedure-step-content">
+                <h3>Receive the Service Ticket — TGS-REP</h3>
+
+                <p>
+                  Click <strong>Generate Service Ticket</strong> to simulate the
+                  TGS response.
+                </p>
+
+                <p>
+                  Observe the generated <strong>Service Ticket (ST)</strong> and
+                  the client-server session key <code>Kc,v</code>.
+                </p>
+              </div>
+            </div>
+
+
+            <!-- Step 6 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">6</div>
+
+              <div class="procedure-step-content">
+                <h3>Send the Service Request — AP-REQ</h3>
+
+                <p>
+                  Click <strong>Send Service Request</strong> to send the Service
+                  Ticket and Authenticator to <strong>Bob</strong>.
+                </p>
+
+                <p>
+                  Observe Bob checking the Service Ticket, Authenticator, and
+                  request freshness before accepting the authentication request.
+                </p>
+              </div>
+            </div>
+
+
+            <!-- Step 7 -->
+            <div class="procedure-step">
+              <div class="procedure-step-number">7</div>
+
+              <div class="procedure-step-content">
+                <h3>Verify the Authentication Result</h3>
+
+                <p>
+                  After Bob successfully verifies the request, observe the
+                  <strong>Authentication Successful</strong> message and the
+                  completed protocol checklist.
+                </p>
+
+                <p>
+                  Click <strong>Reset Simulation</strong> if you want to perform
+                  the authentication process again with new generated values.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+
+          <!-- Expected Result -->
+          <div class="procedure-result">
+
+            <h3>Expected Result</h3>
+
+            <p>
+              The authentication should complete successfully when each step is
+              performed in the correct order.
+            </p>
+
+            <div class="procedure-result-flow">
+              <span>AS-REQ</span>
+              <span>→</span>
+              <span>AS-REP</span>
+              <span>→</span>
+              <span>TGS-REQ</span>
+              <span>→</span>
+              <span>TGS-REP</span>
+              <span>→</span>
+              <span>AP-REQ</span>
+              <span>→</span>
+              <strong>Access Granted</strong>
+            </div>
+
+          </div>
+
         </div>
       </section>
 
@@ -1382,36 +2712,47 @@
           </div>
         </div>
       </section>
-              <!-- References -->
-        <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="references-container">
-            <h2>References &amp; Further Reading</h2>
-            <div class="reference-card">
-              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
-              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+      <!-- References -->
+      <section id="references" class="tab-content" data-tab-panel="references" hidden>
+        <div class="references-container">
+          <h2>References &amp; Further Reading</h2>
+          <div class="reference-card">
+            <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice
             </div>
-            <div class="reference-card">
-              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
-              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
-            </div>
-            <div class="reference-card">
-              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
-              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
-            </div>
+            <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic
+              primitives, hash algorithms, and security architecture. Pearson Education.</div>
           </div>
-        </section>
+          <div class="reference-card">
+            <div class="reference-title">Laboratory Course Material</div>
+            <div class="reference-meta">Fr. Conceicao Rodrigues College of Engineering, Cryptography and System
+              Security.</div>
+          </div>
 
-              <!-- Feedback -->
-        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
-        </section>
+          <div class="reference-card">
+            <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
+            <div class="reference-meta">National Institute of Standards and Technology Computer Security Division
+              publications, recommendations, and cryptographic standard guidelines.</div>
+          </div>
+          <div class="reference-card">
+            <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
+            <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications,
+              and protocol compliance benchmarks.</div>
+          </div>
+        </div>
+      </section>
 
-      </main>
-    </div>
+      <!-- Feedback -->
+      <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+        <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+      </section>
 
-    <script src="../../js/common.js"></script>
-    <script src="script.js"></script>
-      <script src="../../js/crypto-feedback.js"></script>
-    <script src="../../js/feedback.js"></script>
-  </body>
+    </main>
+  </div>
+
+  <script src="../../js/common.js"></script>
+  <script src="script.js"></script>
+  <script src="../../js/crypto-feedback.js"></script>
+  <script src="../../js/feedback.js"></script>
+</body>
+
 </html>
