@@ -598,18 +598,18 @@
       display: flex;
       align-items: flex-start;
       gap: 14px;
-      background: var(--accent-green-bg);
-      border: 1px solid var(--accent-green-border);
-      color: var(--accent-green);
+      background: rgba(63, 185, 80, 0.16);
+      border: 1px solid rgba(63, 185, 80, 0.45);
+      color: #4ade80;
     }
 
     .verify-banner.failure {
       display: flex;
       align-items: flex-start;
       gap: 14px;
-      background: var(--accent-red-bg);
-      border: 1px solid var(--accent-red-border);
-      color: var(--accent-red);
+      background: rgba(248, 81, 73, 0.16);
+      border: 1px solid rgba(248, 81, 73, 0.45);
+      color: #f87171;
     }
 
     .verify-icon {
@@ -621,23 +621,29 @@
       font-size: 16px;
       font-weight: 700;
       margin-bottom: 4px;
+      color: inherit;
     }
 
     .verify-content p {
       font-size: 13.5px;
       line-height: 1.45;
-      color: #d1d5db;
+      color: #e2e8f0;
     }
 
     .verify-details {
       margin-top: 10px;
       font-family: var(--font-mono);
       font-size: 11.5px;
-      color: #9ca3af;
-      background: rgba(0,0,0,0.3);
+      color: #cbd5e1;
+      background: rgba(0,0,0,0.4);
       padding: 8px 12px;
       border-radius: 4px;
       word-break: break-all;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .verify-details strong {
+      color: #f8fafc;
     }
 
     /* Modification Analysis Section */
@@ -930,6 +936,254 @@
       margin-bottom: 16px;
       display: none;
     }
+
+    /* Simulation Mode Switcher */
+    .mode-switcher-container {
+      background: #1d1612;
+      border: 1px solid #3d2f26;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 22px;
+    }
+
+    .mode-switcher-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .mode-switcher-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #dfcfc3;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .mode-switcher-hint {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .mode-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mode-tab-btn {
+      background: #2b201a;
+      border: 1px solid #4a382e;
+      border-radius: 8px;
+      color: #d1c0b3;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex: 1;
+      min-width: 240px;
+      justify-content: center;
+    }
+
+    .mode-tab-btn:hover:not(.active) {
+      background: #392b23;
+      color: #ffffff;
+      border-color: #5c473a;
+    }
+
+    .mode-tab-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #60a5fa;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .mode-tab-icon {
+      font-size: 16px;
+    }
+
+    /* In-Transit Network Channel */
+    .channel-card {
+      background: #191310;
+      border: 1px dashed #523f33;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 22px;
+    }
+
+    .channel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .channel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 700;
+      color: #e5d7cc;
+    }
+
+    .channel-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #3b82f6;
+      box-shadow: 0 0 8px #3b82f6;
+      animation: channelPulse 1.8s infinite;
+    }
+
+    @keyframes channelPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+
+    .channel-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .packet-display {
+      display: flex;
+      align-items: center;
+      background: #120e0c;
+      border: 1px solid #362921;
+      border-radius: 8px;
+      padding: 10px 14px;
+      gap: 10px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+
+    .packet-chunk {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 120px;
+    }
+
+    .chunk-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #9c897c;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .chunk-val {
+      font-size: 11.5px;
+      color: #7ee787;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 230px;
+    }
+
+    .packet-delim {
+      font-size: 16px;
+      font-weight: bold;
+      color: #5d483b;
+    }
+
+    .channel-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .channel-actions-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #d1c0b3;
+    }
+
+    .chip-active {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #60a5fa !important;
+    }
+
+    /* Decryption Result Box */
+    .decrypted-box {
+      background: rgba(63, 185, 80, 0.08);
+      border: 1px solid rgba(63, 185, 80, 0.35);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 14px;
+    }
+
+    .decrypted-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .decrypted-badge {
+      color: #7ee787;
+      font-weight: 700;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .decrypted-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #9cb19f;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .decrypted-text {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0fdf4;
+      background: #0f1c13;
+      border: 1px solid #1e452a;
+      border-radius: 6px;
+      padding: 12px 14px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .decrypted-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #8fa593;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hmac-decrypt-explainer {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: #231b17;
+      border: 1px dashed #4e3c31;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -1024,10 +1278,31 @@
               Due to the properties of the underlying cryptographic hash function, HMAC exhibits a strong <strong>Avalanche Effect</strong>: changing even a single bit or single character in either the message or the secret key causes approximately 50% of the output bits to flip pseudorandomly.
             </p>
 
-            <h3>5. Learning Outcomes</h3>
+            <h3>5. Can HMAC Be Decrypted? (Integrity vs. Confidentiality & Encrypt-then-MAC)</h3>
+            <p>
+              A common misconception in applied cryptography is asking: <em>"Can an HMAC be decrypted to recover the original message?"</em>
+            </p>
+            <p>
+              The short answer is <strong>NO. HMAC is a one-way mathematical digest, not an encryption cipher.</strong>
+            </p>
+            <ul>
+              <li><strong>Lossy Fixed-Size Compression:</strong> The hash function (SHA-256) compresses arbitrary input length down to exactly 256 bits. Millions of distinct messages map to the same hash (Pigeonhole principle), making mathematical inversion impossible.</li>
+              <li><strong>Confidentiality vs. Integrity:</strong> Ciphers (like AES) provide <em>Confidentiality</em> (two-way encryption and decryption). HMAC provides <em>Integrity and Authenticity</em> (one-way tamper detection).</li>
+              <li><strong>The Solution: Authenticated Encryption (Encrypt-then-MAC):</strong> In modern real-world protocols (IPsec, TLS, SSH), systems combine AES and HMAC using the <strong>Encrypt-then-MAC</strong> paradigm:
+                <ol style="margin-top: 6px; padding-left: 20px;">
+                  <li>Sender encrypts Plaintext $m$ with AES-256 into Ciphertext $c$.</li>
+                  <li>Sender computes HMAC tag $t = \text{HMAC}(K, \text{IV} \parallel c)$.</li>
+                  <li>Receiver first verifies the HMAC tag $t$ to confirm integrity.</li>
+                  <li>If and only if HMAC is verified, Receiver decrypts Ciphertext $c$ back to original Plaintext $m$!</li>
+                </ol>
+              </li>
+            </ul>
+
+            <h3>6. Learning Outcomes</h3>
             <ul>
               <li>Understand the operational mechanism of Keyed-Hash Message Authentication Codes.</li>
-              <li>Differentiate between confidentiality (encryption) and integrity/authenticity (HMAC).</li>
+              <li>Differentiate between confidentiality (encryption/decryption) and integrity/authenticity (HMAC).</li>
+              <li>Simulate the complete Authenticated Encryption pipeline (Encrypt → HMAC Tag → Transit/Tamper → Verify → Decrypt).</li>
               <li>Demonstrate how modifying a single character in the message breaks HMAC verification.</li>
               <li>Demonstrate how using an incorrect or altered secret key causes verification failure.</li>
               <li>Implement and evaluate HMAC generation and verification using the modern W3C <strong>Web Crypto API</strong>.</li>
@@ -1045,53 +1320,62 @@
           <p class="lab-card-subtitle">Follow these step-by-step instructions to perform the experiments.</p>
 
           <div class="prose">
-            <h3>Standard Experiment Workflow</h3>
+            <h3>Workflow A: Full Pipeline Simulation (Encrypt-then-MAC with Decryption)</h3>
             <ol>
-              <li>Navigate to the <strong>Simulation</strong> tab.</li>
-              <li>Review the <strong>Simulation Controls</strong> card containing the HMAC Generator and Verifier.</li>
-              <li>In the <strong>HMAC Generator</strong> section:
+              <li>Navigate to the <strong>Simulation</strong> tab. Ensure <strong>Full Pipeline: Encrypt-then-MAC (With Decryption)</strong> is selected.</li>
+              <li>In the <strong>1. Sender (Alice)</strong> card:
                 <ul>
-                  <li>Input your message text (e.g. <code>Hello World</code>).</li>
-                  <li>Enter your secret key (e.g. <code>mysecretkey</code>).</li>
-                  <li>Ensure the algorithm is set to <strong>HMAC-SHA-256</strong>.</li>
-                  <li>Click <strong>Generate HMAC</strong>.</li>
+                  <li>Input your message text (e.g. <code>Hello World</code>) and shared secret key (e.g. <code>mysecretkey</code>).</li>
+                  <li>Click <strong>⚡ Encrypt & Generate HMAC</strong>.</li>
+                  <li>Observe the AES-256 ciphertext, 16-byte IV, and 64-character HMAC-SHA-256 authentication tag produced.</li>
                 </ul>
               </li>
-              <li>Observe the 64-character hexadecimal HMAC string rendered in the <strong>Simulation Output</strong> card.</li>
-              <li>In the <strong>HMAC Verification</strong> section:
+              <li>Review the <strong>In-Transit Network Channel</strong>:
                 <ul>
-                  <li>Click <em>"Fill from Generator"</em> or manually enter the message, secret key, and generated HMAC.</li>
-                  <li>Click <strong>Verify HMAC</strong> to perform real-time verification using the Web Crypto API.</li>
-                  <li>Confirm that the green <strong>"✓ HMAC Verified"</strong> banner is displayed.</li>
+                  <li>Observe the transmitted packet: <code>[ IV ] + [ Ciphertext ] + [ HMAC Tag ]</code>.</li>
+                  <li>Test network attacks using the simulation buttons: <em>Tamper Ciphertext</em>, <em>Tamper HMAC</em>, or <em>Wrong Key</em>.</li>
                 </ul>
               </li>
-              <li>Proceed to the <strong>Modification Analysis</strong> section to explore message tampering and secret key variations:
+              <li>In the <strong>2. Receiver (Bob)</strong> card:
                 <ul>
-                  <li>Select <strong>A. Modify Message</strong>: Alter a single character (e.g. <code>Hello World</code> → <code>Hello world</code>).</li>
-                  <li>Select <strong>B. Modify Secret Key</strong>: Alter the key casing (e.g. <code>mysecretkey</code> → <code>mysecretKey</code>).</li>
-                  <li>Observe the resulting avalanche effect, the character diff highlighting, and the verification failure notice.</li>
+                  <li>Click <strong>🛡️ Verify HMAC & Decrypt</strong>.</li>
+                  <li>Observe the two-phase validation:
+                    <ul>
+                      <li><strong>Step 1 (HMAC Gate):</strong> Verifies the authentication tag over received ciphertext.</li>
+                      <li><strong>Step 2 (Decryption Engine):</strong> If HMAC is valid, decrypts ciphertext and displays the exact original plaintext: <code>Hello World</code>!</li>
+                    </ul>
+                  </li>
+                  <li>If tampered, notice that decryption is safely aborted to prevent padding oracle exploits. Click <em>⚠️ Force Decrypt (Unsafe)</em> to observe cryptographic padding corruption.</li>
                 </ul>
               </li>
-              <li>Once completed, proceed to the <strong>Quiz</strong> tab to test your comprehension.</li>
+            </ol>
+
+            <h3>Workflow B: Standard HMAC Digest & Verification (RFC 2104)</h3>
+            <ol>
+              <li>Switch the architecture mode to <strong>Standard HMAC: Digest Only (RFC 2104)</strong>.</li>
+              <li>Input plaintext message and secret key. Click <strong>Generate HMAC</strong>.</li>
+              <li>Click <strong>Send to Verifier</strong>, then <strong>Verify HMAC</strong> to confirm integrity check.</li>
+              <li>Click <strong>Attempt HMAC "Decryption"</strong> to inspect why raw HMAC cannot be inverted into plaintext.</li>
+              <li>Explore the <strong>Modification Analysis</strong> card below to evaluate the Avalanche Effect.</li>
             </ol>
 
             <h3>Preset Test Cases Matrix</h3>
             <div class="info-grid">
               <div class="info-card">
-                <h4>Test Case 1: Normal Verification</h4>
-                <p><strong>Message:</strong> <code>Hello World</code><br><strong>Key:</strong> <code>mysecretkey</code><br><strong>Expected:</strong> Valid HMAC (64 hex characters), Verification SUCCESS.</p>
+                <h4>Test Case 1: Clean Transmission</h4>
+                <p><strong>Action:</strong> Encrypt <code>Hello World</code>, verify HMAC, and decrypt.<br><strong>Expected:</strong> HMAC Valid, Decryption SUCCESS (recovers original plaintext).</p>
               </div>
               <div class="info-card">
-                <h4>Test Case 2: Modified Message</h4>
-                <p><strong>Original:</strong> <code>Hello World</code><br><strong>Modified:</strong> <code>Hello World!</code><br><strong>Expected:</strong> HMAC values differ completely, Verification FAILS.</p>
+                <h4>Test Case 2: Tampered Ciphertext</h4>
+                <p><strong>Action:</strong> Attacker flips a byte in ciphertext in transit.<br><strong>Expected:</strong> HMAC Verification FAILS, Decryption ABORTED for security.</p>
               </div>
               <div class="info-card">
-                <h4>Test Case 3: Modified Key</h4>
-                <p><strong>Original Key:</strong> <code>mysecretkey</code><br><strong>Modified Key:</strong> <code>mysecretKey</code><br><strong>Expected:</strong> HMAC values differ completely, Verification FAILS.</p>
+                <h4>Test Case 3: Tampered Secret Key</h4>
+                <p><strong>Action:</strong> Receiver uses incorrect key (e.g. <code>mysecretKey</code>).<br><strong>Expected:</strong> HMAC Verification FAILS, Decryption blocked.</p>
               </div>
               <div class="info-card">
-                <h4>Test Case 4: Corrupted HMAC</h4>
-                <p><strong>Supplied HMAC:</strong> Intentionally modified hex character.<br><strong>Expected:</strong> Recalculated HMAC does not match, Verification FAILS.</p>
+                <h4>Test Case 4: Corrupted HMAC Tag</h4>
+                <p><strong>Action:</strong> Forged or corrupted HMAC tag supplied.<br><strong>Expected:</strong> Recalculated HMAC does not match, rejected.</p>
               </div>
               <div class="info-card">
                 <h4>Test Case 5: Empty Input Validation</h4>
@@ -1150,179 +1434,514 @@
           <button type="button" class="chip-btn" id="loadPresetReset" style="background:#2a1b16; border-color:#5c392c;">Reset All</button>
         </div>
 
-        <!-- Card 1: Simulation Controls (Matching Screenshot 2) -->
+        <!-- Card 1: Simulation Controls -->
         <div class="lab-card">
           <h2 class="lab-card-title">Simulation controls</h2>
           <p class="lab-card-subtitle">Add inputs and controls for the experiment simulation.</p>
 
-          <div class="sim-split">
-            
-            <!-- Sub-Card 1: HMAC Generator -->
-            <div class="sub-card">
-              <div class="sub-card-title">
-                <span>1. HMAC Generator</span>
-                <span class="badge-tag badge-blue">Generation</span>
-              </div>
+          <!-- Simulation Architecture Mode Switcher -->
+          <div class="mode-switcher-container">
+            <div class="mode-switcher-header">
+              <span class="mode-switcher-label">Simulation Architecture:</span>
+              <span class="mode-switcher-hint">Switch between Full Authenticated Transmission (with Decryption) and Standard RFC 2104 HMAC</span>
+            </div>
+            <div class="mode-tabs">
+              <button type="button" class="mode-tab-btn active" id="btnModeEncryptMac">
+                <span class="mode-tab-icon">🔒</span>
+                <span>Full Pipeline: Encrypt-then-MAC (With Decryption)</span>
+                <span class="badge-tag badge-blue" style="font-size:10px; margin-left:6px;">Full Simulation</span>
+              </button>
+              <button type="button" class="mode-tab-btn" id="btnModeHmacOnly">
+                <span class="mode-tab-icon">🏷️</span>
+                <span>Standard HMAC: Digest Only (RFC 2104)</span>
+                <span class="badge-tag badge-amber" style="font-size:10px; margin-left:6px;">Integrity Only</span>
+              </button>
+            </div>
+          </div>
 
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="genMessage">
-                    <span>Message</span>
-                    <span class="hint">Plaintext data</span>
-                  </label>
-                  <textarea id="genMessage" class="textarea-control" placeholder="Enter message to authenticate (e.g. Hello World)">Hello World</textarea>
+          <!-- PANEL 1: FULL PIPELINE (ENCRYPT-THEN-MAC WITH DECRYPTION) -->
+          <div id="panelEncryptMac">
+            <div class="sim-split">
+              <!-- Sub-Card 1: Sender (Encrypt & HMAC Generation) -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>1. Sender (Alice): Encryption & HMAC</span>
+                  <span class="badge-tag badge-blue">Generation & Encrypt</span>
                 </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="genKey">
-                    <span>Secret Key</span>
-                    <span class="hint">Shared private key</span>
-                  </label>
-                  <div class="key-input-wrapper">
-                    <input type="password" id="genKey" class="input-control mono-input" value="mysecretkey" placeholder="Enter secret key">
-                    <button type="button" class="toggle-visibility-btn" id="btnToggleGenKey" title="Toggle key visibility">Show</button>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="pipeMessage">
+                      <span>Message</span>
+                      <span class="hint">Plaintext data</span>
+                    </label>
+                    <textarea id="pipeMessage" class="textarea-control" placeholder="Enter message to encrypt and authenticate (e.g. Hello World)">Hello World</textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="pipeKey">
+                      <span>Shared Secret Key</span>
+                      <span class="hint">AES + HMAC symmetric key</span>
+                    </label>
+                    <div class="key-input-wrapper">
+                      <input type="password" id="pipeKey" class="input-control mono-input" value="mysecretkey" placeholder="Enter shared secret key">
+                      <button type="button" class="toggle-visibility-btn" id="btnTogglePipeKey" title="Toggle key visibility">Show</button>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label" for="pipeCipher">
+                        <span>Cipher</span>
+                        <span class="hint">Confidentiality</span>
+                      </label>
+                      <select id="pipeCipher" class="select-control">
+                        <option value="AES-CBC" selected>AES-256-CBC</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="pipeHash">
+                        <span>HMAC Hash</span>
+                        <span class="hint">Integrity/Auth</span>
+                      </label>
+                      <select id="pipeHash" class="select-control">
+                        <option value="SHA-256" selected>HMAC-SHA-256 (Default)</option>
+                        <option value="SHA-384">HMAC-SHA-384</option>
+                        <option value="SHA-512">HMAC-SHA-512</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="btnPipeEncrypt">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                      </svg>
+                      Encrypt & Generate HMAC
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnPipeTransmit" title="Transmit encrypted package into channel">
+                      Transmit to Channel ↓
+                    </button>
                   </div>
                 </div>
+              </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="genAlgorithm">
-                    <span>Hash Algorithm</span>
-                    <span class="hint">Web Crypto API</span>
-                  </label>
-                  <select id="genAlgorithm" class="select-control">
-                    <option value="SHA-256" selected>HMAC-SHA-256 (Default)</option>
-                    <option value="SHA-384">HMAC-SHA-384</option>
-                    <option value="SHA-512">HMAC-SHA-512</option>
-                  </select>
+              <!-- Sub-Card 2: Receiver (HMAC Verification & Decryption) -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>2. Receiver (Bob): Verify & Decrypt</span>
+                  <span class="badge-tag badge-amber">Integrity & Decrypt</span>
                 </div>
 
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="pipeRxCiphertext">
+                      <span>Received Ciphertext (Base64)</span>
+                      <span class="hint">Encrypted data</span>
+                    </label>
+                    <textarea id="pipeRxCiphertext" class="textarea-control mono-input" style="font-size:12px; min-height:60px;" placeholder="Ciphertext received from channel"></textarea>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label" for="pipeRxIv">
+                        <span>Received IV (Hex)</span>
+                        <span class="hint">16-byte vector</span>
+                      </label>
+                      <input type="text" id="pipeRxIv" class="input-control mono-input" placeholder="Hex initialization vector">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="pipeRxKey">
+                        <span>Secret Key</span>
+                        <span class="hint">Receiver's key</span>
+                      </label>
+                      <div class="key-input-wrapper">
+                        <input type="password" id="pipeRxKey" class="input-control mono-input" value="mysecretkey" placeholder="Enter key">
+                        <button type="button" class="toggle-visibility-btn" id="btnTogglePipeRxKey" title="Toggle key visibility">Show</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="pipeRxHmac">
+                      <span>Supplied HMAC Authentication Tag (Hex)</span>
+                      <span class="hint">Auth code to verify</span>
+                    </label>
+                    <input type="text" id="pipeRxHmac" class="input-control mono-input" placeholder="Paste hexadecimal HMAC tag here">
+                  </div>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="btnPipeVerifyDecrypt">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
+                      Verify HMAC & Decrypt
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnPipeForceDecrypt" style="border-color:#7f1d1d; color:#fca5a5;" title="Attempt decryption without HMAC check to demonstrate failure/padding error">
+                      ⚠️ Force Decrypt (Unsafe)
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnPipeCopySender" title="Copy exact payload from Sender">
+                      Copy from Sender
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- In-Transit Network Channel & Attacker Simulator -->
+            <div class="channel-card">
+              <div class="channel-header">
+                <div class="channel-title">
+                  <span class="channel-pulse"></span>
+                  <span>In-Transit Network Channel (Attacker / MITM Interceptor)</span>
+                </div>
+                <div id="channelStatusBadge" class="badge-tag badge-green">Status: Clean (No Tampering)</div>
+              </div>
+              <p class="channel-desc">Data packet traveling across the untrusted network. An adversary can intercept and tamper with the ciphertext or HMAC tag before the receiver gets it.</p>
+              
+              <div class="packet-display">
+                <div class="packet-chunk">
+                  <span class="chunk-label">IV (16 Bytes)</span>
+                  <span class="chunk-val mono-input" id="packetIvDisplay">-</span>
+                </div>
+                <span class="packet-delim">+</span>
+                <div class="packet-chunk">
+                  <span class="chunk-label">Ciphertext (AES-256)</span>
+                  <span class="chunk-val mono-input" id="packetCtDisplay">-</span>
+                </div>
+                <span class="packet-delim">+</span>
+                <div class="packet-chunk">
+                  <span class="chunk-label">HMAC Tag (SHA-256)</span>
+                  <span class="chunk-val mono-input" id="packetHmacDisplay">-</span>
+                </div>
+              </div>
+
+              <div class="channel-actions">
+                <span class="channel-actions-label">Simulate In-Transit Attacks / Tampering:</span>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-primary" id="btnGenerate">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                    </svg>
-                    Generate HMAC
-                  </button>
-                  <button type="button" class="btn btn-secondary" id="btnSendToVerify" title="Transfer inputs and generated HMAC to verification">
-                    Send to Verifier ↓
-                  </button>
+                  <button type="button" class="chip-btn chip-active" id="btnChannelClean">✓ Clean Transmission</button>
+                  <button type="button" class="chip-btn" id="btnChannelTamperCt">⚠️ Tamper Ciphertext (Flip Byte)</button>
+                  <button type="button" class="chip-btn" id="btnChannelTamperHmac">⚠️ Tamper HMAC (Corrupt Tag)</button>
+                  <button type="button" class="chip-btn" id="btnChannelTamperKey">⚠️ Use Wrong Receiver Key</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 2: STANDARD HMAC ONLY (RFC 2104) -->
+          <div id="panelHmacOnly" style="display: none;">
+            <div class="sim-split">
+              <!-- Sub-Card 1: HMAC Generator -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>1. HMAC Generator</span>
+                  <span class="badge-tag badge-blue">Generation</span>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="genMessage">
+                      <span>Message</span>
+                      <span class="hint">Plaintext data</span>
+                    </label>
+                    <textarea id="genMessage" class="textarea-control" placeholder="Enter message to authenticate (e.g. Hello World)">Hello World</textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="genKey">
+                      <span>Secret Key</span>
+                      <span class="hint">Shared private key</span>
+                    </label>
+                    <div class="key-input-wrapper">
+                      <input type="password" id="genKey" class="input-control mono-input" value="mysecretkey" placeholder="Enter secret key">
+                      <button type="button" class="toggle-visibility-btn" id="btnToggleGenKey" title="Toggle key visibility">Show</button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="genAlgorithm">
+                      <span>Hash Algorithm</span>
+                      <span class="hint">Web Crypto API</span>
+                    </label>
+                    <select id="genAlgorithm" class="select-control">
+                      <option value="SHA-256" selected>HMAC-SHA-256 (Default)</option>
+                      <option value="SHA-384">HMAC-SHA-384</option>
+                      <option value="SHA-512">HMAC-SHA-512</option>
+                    </select>
+                  </div>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="btnGenerate">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                      </svg>
+                      Generate HMAC
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnSendToVerify" title="Transfer inputs and generated HMAC to verification">
+                      Send to Verifier ↓
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sub-Card 2: HMAC Verification -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>2. HMAC Verification</span>
+                  <span class="badge-tag badge-amber">Integrity Check</span>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="verMessage">
+                      <span>Message to Verify</span>
+                      <span class="hint">Received plaintext</span>
+                    </label>
+                    <textarea id="verMessage" class="textarea-control" placeholder="Enter message to verify">Hello World</textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="verKey">
+                      <span>Secret Key</span>
+                      <span class="hint">Verifier's secret key</span>
+                    </label>
+                    <div class="key-input-wrapper">
+                      <input type="password" id="verKey" class="input-control mono-input" value="mysecretkey" placeholder="Enter verification key">
+                      <button type="button" class="toggle-visibility-btn" id="btnToggleVerKey" title="Toggle key visibility">Show</button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="verHmac">
+                      <span>Supplied HMAC (Hex)</span>
+                      <span class="hint">Authentication code to test</span>
+                    </label>
+                    <input type="text" id="verHmac" class="input-control mono-input" placeholder="Paste hexadecimal HMAC here">
+                  </div>
+
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="btnVerify">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      Verify HMAC
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnFillFromGen">
+                      Copy from Generator
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Sub-Card 2: HMAC Verification -->
-            <div class="sub-card">
-              <div class="sub-card-title">
-                <span>2. HMAC Verification</span>
-                <span class="badge-tag badge-amber">Integrity Check</span>
+            <!-- Educational Notice: Can HMAC be decrypted? -->
+            <div class="hmac-decrypt-explainer">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div>
+                  <strong style="color:#fcd34d; font-size:14px;">❓ Can an HMAC Digest Be Decrypted Back to the Message?</strong>
+                  <p style="font-size:12.5px; color:#c7b6a9; margin-top:3px;">Learn the mathematical difference between One-Way Authentication (HMAC) and Two-Way Confidentiality (Encryption/Decryption).</p>
+                </div>
+                <button type="button" class="btn btn-secondary" id="btnAttemptHmacDecrypt" style="font-size:12.5px; padding:8px 16px;">
+                  Attempt HMAC "Decryption" 🔍
+                </button>
               </div>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="verMessage">
-                    <span>Message to Verify</span>
-                    <span class="hint">Received plaintext</span>
-                  </label>
-                  <textarea id="verMessage" class="textarea-control" placeholder="Enter message to verify">Hello World</textarea>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="verKey">
-                    <span>Secret Key</span>
-                    <span class="hint">Verifier's secret key</span>
-                  </label>
-                  <div class="key-input-wrapper">
-                    <input type="password" id="verKey" class="input-control mono-input" value="mysecretkey" placeholder="Enter verification key">
-                    <button type="button" class="toggle-visibility-btn" id="btnToggleVerKey" title="Toggle key visibility">Show</button>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="verHmac">
-                    <span>Supplied HMAC (Hex)</span>
-                    <span class="hint">Authentication code to test</span>
-                  </label>
-                  <input type="text" id="verHmac" class="input-control mono-input" placeholder="Paste hexadecimal HMAC here">
-                </div>
-
-                <div class="btn-group">
-                  <button type="button" class="btn btn-primary" id="btnVerify">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                    Verify HMAC
-                  </button>
-                  <button type="button" class="btn btn-secondary" id="btnFillFromGen">
-                    Copy from Generator
-                  </button>
-                </div>
+              <div id="hmacDecryptResult" style="display:none; margin-top:14px; padding:16px; background:#18110d; border-radius:8px; border:1px solid #4a382d;">
+                <div style="color:#ff7b72; font-weight:700; font-size:14px; margin-bottom:8px;">❌ HMAC is Mathematically Non-Reversible (Cannot be Decrypted)</div>
+                <p style="font-size:13px; color:#ded0c5; line-height:1.6; margin-bottom:10px;">
+                  <strong>Why HMAC cannot be decrypted:</strong>
+                </p>
+                <ol style="font-size:12.5px; color:#c7b6a9; padding-left:20px; line-height:1.6; margin-bottom:12px;">
+                  <li><strong>Lossy Fixed-Size Compression:</strong> The hash function (SHA-256) compresses arbitrary input length down to exactly 256 bits. An infinite number of possible inputs map to the same hash (Pigeonhole principle), making one-to-one reversal impossible.</li>
+                  <li><strong>One-Way Preimage Resistance:</strong> SHA-256 consists of non-invertible non-linear operations (modular addition, bit rotations, and XORs) across 64 compression rounds.</li>
+                  <li><strong>Confidentiality vs. Integrity:</strong> HMAC provides <em>Integrity and Authenticity</em>. To achieve <em>Confidentiality (Encryption & Decryption)</em>, modern systems combine HMAC with a symmetric cipher like AES-256 (Encrypt-then-MAC).</li>
+                </ol>
+                <button type="button" class="btn btn-primary" id="btnSwitchToPipelineFromExp" style="font-size:12px; padding:8px 14px;">
+                  Switch to Full Encrypt-then-MAC Simulation (With Decryption) →
+                </button>
               </div>
             </div>
-
           </div>
         </div>
 
-        <!-- Card 2: Simulation Output (Matching Screenshot 2) -->
+        <!-- Card 2: Simulation Output -->
         <div class="lab-card">
           <h2 class="lab-card-title">Simulation output</h2>
           <p class="lab-card-subtitle">Results will appear here after the simulation runs.</p>
 
-          <div class="sim-split">
-            <!-- Output Sub-Card 1: Generated HMAC -->
-            <div class="sub-card">
-              <div class="sub-card-title">
-                <span>Generated HMAC</span>
-                <span id="outputAlgoTag" class="badge-tag badge-blue">HMAC-SHA-256</span>
-              </div>
-              
-              <div class="output-box">
-                <div class="output-header">
-                  <span class="output-label" id="hexLenLabel">Hexadecimal Digest (64 chars / 256 bits)</span>
-                  <button type="button" class="copy-btn" id="btnCopyGenerated" title="Copy HMAC to clipboard">Copy Hex</button>
+          <!-- OUTPUT FOR FULL PIPELINE -->
+          <div id="outPanelEncryptMac">
+            <div class="sim-split">
+              <!-- Output Sub-Card 1: Sender Encrypted Output -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>Sender Cryptographic Output</span>
+                  <span class="badge-tag badge-blue" id="pipeSenderAlgoTag">AES-256-CBC + HMAC-SHA-256</span>
                 </div>
-                <div class="hex-display" id="generatedHmacDisplay">
-                  <span class="hex-placeholder">Click "Generate HMAC" above to produce the authentication code...</span>
+                
+                <div class="output-box" style="margin-bottom:12px;">
+                  <div class="output-header">
+                    <span class="output-label">AES-256 Ciphertext (Base64)</span>
+                    <button type="button" class="copy-btn" id="btnCopyPipeCt">Copy Ciphertext</button>
+                  </div>
+                  <div class="hex-display" id="pipeCiphertextDisplay" style="font-size:12px; word-break:break-all;">
+                    <span class="hex-placeholder">Click "Encrypt & Generate HMAC" to produce ciphertext...</span>
+                  </div>
+                </div>
+
+                <div class="output-box" style="margin-bottom:12px;">
+                  <div class="output-header">
+                    <span class="output-label">Initialization Vector (IV - Hex)</span>
+                    <button type="button" class="copy-btn" id="btnCopyPipeIv">Copy IV</button>
+                  </div>
+                  <div class="hex-display" id="pipeIvDisplay" style="font-size:12px;">-</div>
+                </div>
+
+                <div class="output-box">
+                  <div class="output-header">
+                    <span class="output-label">HMAC-SHA-256 Authentication Tag (Hex)</span>
+                    <button type="button" class="copy-btn" id="btnCopyPipeHmac">Copy Tag</button>
+                  </div>
+                  <div class="hex-display" id="pipeHmacDisplay" style="font-size:12px; color:#7ee787;">-</div>
+                </div>
+
+                <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                  <span>Ciphertext: <strong id="pipeCtLen" style="color: #e5d7cc;">0</strong> bytes</span>
+                  <span>HMAC Tag: <strong id="pipeHmacLen" style="color: #e5d7cc;">64</strong> hex chars (256 bits)</span>
                 </div>
               </div>
 
-              <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-                <span>Length: <strong id="outCharCount" style="color: #e5d7cc;">0</strong> characters</span>
-                <span>Binary length: <strong id="outBitLength" style="color: #e5d7cc;">0</strong> bits</span>
+              <!-- Output Sub-Card 2: Receiver Verification & Decryption Result -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>Receiver Verification & Decryption Result</span>
+                  <span id="pipeRxStatusBadge" class="badge-tag" style="background:#33261f; color:#a89587;">Pending</span>
+                </div>
+
+                <!-- Pending Banner -->
+                <div id="pipeRxPendingMsg" class="output-box" style="text-align: center; padding: 24px 16px;">
+                  <p style="color: #7b695d; font-size: 13.5px; font-style: italic;">
+                    Click <strong>Verify HMAC & Decrypt</strong> to execute cryptographic integrity verification followed by plaintext decryption.
+                  </p>
+                </div>
+
+                <!-- Phase 1: HMAC Verification Banner -->
+                <div class="verify-banner success" id="pipeHmacSuccessBanner" style="display:none; margin-bottom:14px;">
+                  <div class="verify-icon">✓</div>
+                  <div class="verify-content">
+                    <h4>Step 1: HMAC Verified</h4>
+                    <p>Message integrity and authenticity confirmed. Safe to decrypt!</p>
+                    <div class="verify-details" id="pipeHmacSuccessDetails"></div>
+                  </div>
+                </div>
+
+                <div class="verify-banner failure" id="pipeHmacFailureBanner" style="display:none; margin-bottom:14px;">
+                  <div class="verify-icon">✗</div>
+                  <div class="verify-content">
+                    <h4>Step 1: HMAC Verification Failed</h4>
+                    <p>Tampering or wrong secret key detected! Message rejected.</p>
+                    <div class="verify-details" id="pipeHmacFailureDetails"></div>
+                  </div>
+                </div>
+
+                <!-- Phase 2: Decryption Result Display -->
+                <div class="decrypted-box" id="pipeDecryptedSuccessBox" style="display:none;">
+                  <div class="decrypted-header">
+                    <span class="decrypted-badge">✓ Step 2: Decryption Successful</span>
+                    <button type="button" class="copy-btn" id="btnCopyDecrypted">Copy Plaintext</button>
+                  </div>
+                  <div class="decrypted-label">Decrypted Plaintext:</div>
+                  <div class="decrypted-text" id="pipeDecryptedTextDisplay"></div>
+                  <div class="decrypted-footer">
+                    <span>Authenticity: <strong style="color:#7ee787;">100% Authentic</strong></span>
+                    <span>Match: <strong style="color:#7ee787;">Identical to Sender Message</strong></span>
+                  </div>
+                </div>
+
+                <!-- Decryption Blocked Banner -->
+                <div class="verify-banner failure" id="pipeDecryptedAbortedBox" style="display:none;">
+                  <div class="verify-icon">⛔</div>
+                  <div class="verify-content">
+                    <h4>Step 2: Decryption Aborted for Security</h4>
+                    <p>In secure cryptographic systems (Encrypt-then-MAC), Bob strictly halts and refuses to decrypt untrusted ciphertext when HMAC verification fails. This completely prevents Chosen-Ciphertext and Padding Oracle attacks.</p>
+                  </div>
+                </div>
+
+                <!-- Unsafe Decryption Forced Banner -->
+                <div class="verify-banner failure" id="pipeForcedDecryptBox" style="display:none; background: rgba(127, 29, 29, 0.25); border-color: #ef4444;">
+                  <div class="verify-icon">💥</div>
+                  <div class="verify-content">
+                    <h4 style="color:#fca5a5;">Unsafe Force-Decryption Attempted</h4>
+                    <p id="pipeForcedDecryptErrorMsg" style="color:#fecaca; font-family:var(--font-mono); font-size:12px; margin-top:4px;"></p>
+                    <p style="font-size:11.5px; color:#fca5a5; margin-top:6px;">Educational Lesson: Bypassing HMAC verification exposes the system to cryptographic failures and padding corruption.</p>
+                  </div>
+                </div>
+
               </div>
             </div>
+          </div>
 
-            <!-- Output Sub-Card 2: Verification Result -->
-            <div class="sub-card">
-              <div class="sub-card-title">
-                <span>Verification Result</span>
-                <span id="verifyStatusBadge" class="badge-tag" style="background:#33261f; color:#a89587;">Pending</span>
-              </div>
+          <!-- OUTPUT FOR STANDARD HMAC (Original Output) -->
+          <div id="outPanelHmacOnly" style="display: none;">
+            <div class="sim-split">
+              <!-- Output Sub-Card 1: Generated HMAC -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>Generated HMAC</span>
+                  <span id="outputAlgoTag" class="badge-tag badge-blue">HMAC-SHA-256</span>
+                </div>
+                
+                <div class="output-box">
+                  <div class="output-header">
+                    <span class="output-label" id="hexLenLabel">Hexadecimal Digest (64 chars / 256 bits)</span>
+                    <button type="button" class="copy-btn" id="btnCopyGenerated" title="Copy HMAC to clipboard">Copy Hex</button>
+                  </div>
+                  <div class="hex-display" id="generatedHmacDisplay">
+                    <span class="hex-placeholder">Click "Generate HMAC" above to produce the authentication code...</span>
+                  </div>
+                </div>
 
-              <!-- Banner when not yet verified -->
-              <div id="verifyPendingMsg" class="output-box" style="text-align: center; padding: 24px 16px;">
-                <p style="color: #7b695d; font-size: 13.5px; font-style: italic;">
-                  Enter details in the verification control and click <strong>Verify HMAC</strong> to execute cryptographic recalculation.
-                </p>
-              </div>
-
-              <!-- Verification Success Banner -->
-              <div class="verify-banner success" id="verifySuccessBanner">
-                <div class="verify-icon">✓</div>
-                <div class="verify-content">
-                  <h4>HMAC Verified</h4>
-                  <p>Message integrity and authentication are valid.</p>
-                  <div class="verify-details" id="verifySuccessDetails"></div>
+                <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                  <span>Length: <strong id="outCharCount" style="color: #e5d7cc;">0</strong> characters</span>
+                  <span>Binary length: <strong id="outBitLength" style="color: #e5d7cc;">0</strong> bits</span>
                 </div>
               </div>
 
-              <!-- Verification Failure Banner -->
-              <div class="verify-banner failure" id="verifyFailureBanner">
-                <div class="verify-icon">✗</div>
-                <div class="verify-content">
-                  <h4>HMAC Verification Failed</h4>
-                  <p>The message or secret key may have been modified.</p>
-                  <div class="verify-details" id="verifyFailureDetails"></div>
+              <!-- Output Sub-Card 2: Verification Result -->
+              <div class="sub-card">
+                <div class="sub-card-title">
+                  <span>Verification Result</span>
+                  <span id="verifyStatusBadge" class="badge-tag" style="background:#33261f; color:#a89587;">Pending</span>
+                </div>
+
+                <!-- Banner when not yet verified -->
+                <div id="verifyPendingMsg" class="output-box" style="text-align: center; padding: 24px 16px;">
+                  <p style="color: #7b695d; font-size: 13.5px; font-style: italic;">
+                    Enter details in the verification control and click <strong>Verify HMAC</strong> to execute cryptographic recalculation.
+                  </p>
+                </div>
+
+                <!-- Verification Success Banner -->
+                <div class="verify-banner success" id="verifySuccessBanner">
+                  <div class="verify-icon">✓</div>
+                  <div class="verify-content">
+                    <h4>HMAC Verified</h4>
+                    <p>Message integrity and authentication are valid.</p>
+                    <div class="verify-details" id="verifySuccessDetails"></div>
+                  </div>
+                </div>
+
+                <!-- Verification Failure Banner -->
+                <div class="verify-banner failure" id="verifyFailureBanner">
+                  <div class="verify-icon">✗</div>
+                  <div class="verify-content">
+                    <h4>HMAC Verification Failed</h4>
+                    <p>The message or secret key may have been modified.</p>
+                    <div class="verify-details" id="verifyFailureDetails"></div>
+                  </div>
                 </div>
               </div>
             </div>

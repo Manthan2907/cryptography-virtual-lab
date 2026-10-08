@@ -95,6 +95,19 @@ is vulnerable to **Length Extension Attacks** on Merkle-Damgård hash functions 
 
 HMAC eliminates length extension attacks completely through its **nested two-pass hashing construction**: the inner hash output $H((K' \oplus \text{ipad}) \parallel m)$ is hashed a second time with the outer key pad $(K' \oplus \text{opad})$, preventing an attacker from continuing the hash state.
 
+### Can HMAC Be Decrypted? (Integrity vs. Confidentiality & Encrypt-then-MAC)
+
+A fundamental principle in security architecture:
+1. **HMAC is NOT Encryption:** HMAC is a one-way mathematical function. It compresses arbitrary data into a fixed 256-bit digest. It permanently discards input entropy and is mathematically impossible to invert or decrypt.
+2. **Confidentiality Requires Encryption:** If secrecy (confidentiality) is needed alongside authentication, systems use **Authenticated Encryption (AE)**, specifically the **Encrypt-then-MAC** paradigm (RFC 7366):
+   - **Sender:**
+     1. Encrypts plaintext $m$ using AES-256-CBC to produce ciphertext $c$ and IV.
+     2. Computes authentication tag $t = \text{HMAC}(K, \text{IV} \parallel c)$.
+     3. Transmits $( \text{IV} \parallel c \parallel t )$.
+   - **Receiver:**
+     1. Verifies authentication tag $t$ first. If invalid, **aborts immediately** to protect against Chosen-Ciphertext and Padding Oracle attacks.
+     2. If verified, decrypts ciphertext $c$ using AES-256-CBC to recover original plaintext $m$.
+
 ---
 
 ## 6. Algorithm
