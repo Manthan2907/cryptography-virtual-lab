@@ -53,7 +53,7 @@
               (1978)</strong> for establishing a temporary shared secret key and achieving mutual authentication between
             two untrusted network nodes via a trusted Server (Key Distribution Center / KDC).
           </p>
-          <ul style="margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.95rem; color: #333; line-height: 1.7;">
+          <ul style="margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.95rem; color: var(--color-text); line-height: 1.7;">
             <li>Understand the architectural role of a centralized Server (KDC) in symmetric key management.</li>
             <li>Analyze how Alice's Random Challenge Number (N_A) and Bob's Random Challenge Number (N_B) prevent replay
               attacks.</li>
@@ -69,55 +69,55 @@
   
   <div class="vlab-accordion" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;">
     <!-- T1. Why we need it -->
-    <details open class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details open class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">1. Why we need it</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <p class="vlab-paragraph">Two parties on an insecure network who have never met need (i) to prove who they are to each other (authentication) and (ii) a fresh secret key to protect their conversation (key distribution). With symmetric cryptography each pair of users would need its own pre-shared key. Needham and Schroeder (1978) <sup><a href="#ref1">[1]</a></sup> proposed using a trusted authentication server so that each user only shares ONE long-term key, with the server.</p>
-        <div class="vlab-callout vlab-callout-key" style="background:var(--vlab-bg-light, #f4f4f4); border-left:4px solid var(--vlab-primary-brown, #764b38); padding:1rem; margin:1rem 0;">
+        <div class="vlab-callout vlab-callout-key">
           <strong>Scalability point:</strong> <code>n</code> users need <code>n</code> long-term keys (one per user, held by the server) instead of <code>n(n-1)/2</code> pairwise keys. Example: 100 users &rarr; 100 keys vs 4,950 keys.
         </div>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T2. Notation -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">2. Notation</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <div class="vlab-card" style="overflow-x:auto;">
           <table class="inspector-table" style="width:100%; text-align:left; border-collapse:collapse;">
             <thead>
-              <tr style="border-bottom:2px solid var(--vlab-primary-brown, #764b38);">
+              <tr style="border-bottom:2px solid var(--color-primary);">
                 <th style="padding:0.5rem;">Symbol</th>
                 <th style="padding:0.5rem;">Meaning</th>
               </tr>
             </thead>
             <tbody>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>A</code>, <code>B</code></td>
                 <td style="padding:0.5rem;">Alice (initiator); Bob (responder)</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>S</code></td>
                 <td style="padding:0.5rem;">Trusted key distribution server (KDC)</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>Kas</code>, <code>Kbs</code></td>
                 <td style="padding:0.5rem;">Long-term key shared by A and S; Long-term key shared by B and S</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>Kab</code></td>
                 <td style="padding:0.5rem;">Fresh session key created by S for A and B</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>Na</code>, <code>Nb</code></td>
                 <td style="padding:0.5rem;">Nonce chosen by A; Nonce chosen by B</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>{X}K</code></td>
                 <td style="padding:0.5rem;">X encrypted under key K</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;"><code>A -&gt; B : M</code></td>
                 <td style="padding:0.5rem;">A sends message M to B</td>
               </tr>
@@ -128,30 +128,30 @@
             </tbody>
           </table>
         </div>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666; margin-top:1rem;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted); margin-top:1rem;"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T3. Assumptions and threat model -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">3. Assumptions and threat model</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
-        <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: #333; line-height: 1.7;">
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: var(--color-text); line-height: 1.7;">
           <li>The network is insecure: an attacker can read, insert, delete and modify messages. <sup><a href="#ref1">[1]</a><a href="#ref4">[4]</a></sup></li>
           <li>Each user's own machine is secure (encryption works as expected, keys do not leak).</li>
           <li>S is trusted and holds every long-term key; <code>Kas</code> and <code>Kbs</code> were shared with S out of band before the protocol starts.</li>
           <li>Encryption is assumed to guarantee that a message cannot be altered or forged without the key. In the simulator AES-256-GCM provides this explicitly through its authentication tag; a wrong key or tampering therefore shows as "decryption failed".</li>
           <li>The original paper used DES; AES-256-GCM <sup><a href="#ref8">[8]</a><a href="#ref9">[9]</a><a href="#ref10">[10]</a></sup> is the modern stand-in here.</li>
         </ul>
-        <div class="vlab-callout" style="background:#fff3cd; border-left:4px solid #ffc107; padding:1rem; margin:1rem 0;">
+        <div class="vlab-callout" style="background:rgba(255,193,7,0.1); border-left:4px solid #f59e0b; padding:1rem; margin:1rem 0; color:var(--color-text);">
           <strong>Warning:</strong> The original protocol relied solely on encryption for integrity, which can be vulnerable without proper modes like GCM.
         </div>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (b) wrong Kas, (c) tampered ticket</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (b) wrong Kas, (c) tampered ticket</em></p>
       </div>
     </details>
 
     <!-- T4. Key ideas -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">4. Key ideas</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <p class="vlab-paragraph"><strong>Nonce:</strong> a random number used once. If a reply contains my fresh nonce, the reply must have been created after my request, so it cannot be an old recording. Nonces give FRESHNESS, not secrecy.</p>
@@ -182,15 +182,15 @@
           </svg>
         </div>
 
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (e) wrong Nb-1 reply</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (e) wrong Nb-1 reply</em></p>
       </div>
     </details>
 
     <!-- T5. The protocol, message by message -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">5. The protocol, message by message</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
-        <ol style="margin-left: 1.5rem; margin-bottom: 1rem; color: #333; line-height: 1.7;">
+        <ol style="margin-left: 1.5rem; margin-bottom: 1rem; color: var(--color-text); line-height: 1.7;">
           <li><strong><code>A -&gt; S : A, B, Na</code></strong><br>A asks S for a key to talk to B and includes a fresh nonce. Sent in clear.</li>
           <li><strong><code>S -&gt; A : {Na, B, Kab, {Kab, A}Kbs}Kas</code></strong><br>S generates <code>Kab</code>. Only A can decrypt this (<code>Kas</code>). A checks: <code>Na</code> matches (reply is fresh, not a replay of an old message 2) and B is the intended peer (the request was not altered in transit). A now knows <code>Kab</code> and holds the ticket.</li>
           <li><strong><code>A -&gt; B : {Kab, A}Kbs</code></strong><br>A forwards the ticket. B decrypts with <code>Kbs</code> and learns <code>Kab</code> and that it is meant for a conversation with A.</li>
@@ -200,7 +200,7 @@
         <p class="vlab-paragraph">Result: A and B share <code>Kab</code>, and each has some evidence about the other. <sup><a href="#ref1">[1]</a><a href="#ref6">[6]</a></sup></p>
         
         <!-- Placeholder for step 2 screenshot -->
-        <div style="border:1px dashed #ccc; padding:2rem; text-align:center; margin:1rem 0; background:#f9f9f9;">
+        <div style="border:1px dashed var(--color-border); padding:2rem; text-align:center; margin:1rem 0; background:var(--color-surface-muted); color:var(--color-text-muted); border-radius:var(--radius-sm);">
           <em>Figure: screenshot of simulation, step 2</em>
         </div>
 
@@ -277,22 +277,22 @@
         </div>
         
         <!-- Placeholder for step 5 screenshot -->
-        <div style="border:1px dashed #ccc; padding:2rem; text-align:center; margin:1rem 0; background:#f9f9f9;">
+        <div style="border:1px dashed var(--color-border); padding:2rem; text-align:center; margin:1rem 0; background:var(--color-surface-muted); color:var(--color-text-muted); border-radius:var(--radius-sm);">
           <em>Figure: screenshot of simulation, step 5</em>
         </div>
 
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (d) nonce mismatch</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (d) nonce mismatch</em></p>
       </div>
     </details>
 
     <!-- T6. Who knows what -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">6. Who knows what</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <div class="vlab-card" style="overflow-x:auto;">
           <table class="inspector-table" style="width:100%; text-align:left; border-collapse:collapse;">
             <thead>
-              <tr style="border-bottom:2px solid var(--vlab-primary-brown, #764b38);">
+              <tr style="border-bottom:2px solid var(--color-primary);">
                 <th style="padding:0.5rem;">After message</th>
                 <th style="padding:0.5rem;">A knows</th>
                 <th style="padding:0.5rem;">S knows</th>
@@ -301,35 +301,35 @@
               </tr>
             </thead>
             <tbody>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;">Start</td>
                 <td style="padding:0.5rem;"><code>Kas</code></td>
                 <td style="padding:0.5rem;"><code>Kas</code>, <code>Kbs</code></td>
                 <td style="padding:0.5rem;"><code>Kbs</code></td>
                 <td style="padding:0.5rem;">nothing secret</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;">After 1</td>
                 <td style="padding:0.5rem;"><code>Kas</code></td>
                 <td style="padding:0.5rem;"><code>Kas</code>, <code>Kbs</code>, request</td>
                 <td style="padding:0.5rem;"><code>Kbs</code></td>
                 <td style="padding:0.5rem;">A, B, <code>Na</code></td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;">After 2</td>
                 <td style="padding:0.5rem;"><code>Kas</code>, <code>Kab</code>, ticket</td>
                 <td style="padding:0.5rem;"><code>Kas</code>, <code>Kbs</code>, <code>Kab</code></td>
                 <td style="padding:0.5rem;"><code>Kbs</code></td>
                 <td style="padding:0.5rem;">ciphertext only</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;">After 3</td>
                 <td style="padding:0.5rem;"><code>Kas</code>, <code>Kab</code>, ticket</td>
                 <td style="padding:0.5rem;">same</td>
                 <td style="padding:0.5rem;"><code>Kbs</code>, <code>Kab</code></td>
                 <td style="padding:0.5rem;">ciphertext only</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem;">After 4</td>
                 <td style="padding:0.5rem;">same</td>
                 <td style="padding:0.5rem;">same</td>
@@ -347,26 +347,26 @@
           </table>
         </div>
         <p class="vlab-paragraph">Note: S knows <code>Kab</code>, so S must be trusted.</p>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T7. Security goals achieved -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">7. Security goals achieved</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
-        <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: #333; line-height: 1.7;">
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: var(--color-text); line-height: 1.7;">
           <li><strong>Session key confidentiality:</strong> <code>Kab</code> only ever travels encrypted under <code>Kas</code> or <code>Kbs</code>.</li>
           <li><strong>Key freshness FOR A:</strong> guaranteed by <code>Na</code>.</li>
           <li><strong>Mutual authentication:</strong> A is convinced the key came from S for talking to B; B is convinced A holds <code>Kab</code> (messages 4-5).</li>
           <li><strong>Weakness:</strong> B has NO freshness guarantee for the ticket in message 3 (see next section).</li>
         </ul>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T8. The weakness: Denning-Sacco replay attack (1981) -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">8. The weakness: Denning-Sacco replay attack (1981)</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <p class="vlab-paragraph"><strong>Assumption:</strong> Mallory recorded the old ticket <code>{Kab, A}Kbs</code> from a previous session and has since obtained that old <code>Kab</code> (stolen, or cracked because old keys are weaker). <sup><a href="#ref2">[2]</a><a href="#ref6">[6]</a><a href="#ref7">[7]</a></sup></p>
@@ -410,41 +410,41 @@
         </div>
 
         <!-- Placeholder for replay attack result screenshot -->
-        <div style="border:1px dashed #ccc; padding:2rem; text-align:center; margin:1rem 0; background:#f9f9f9;">
+        <div style="border:1px dashed var(--color-border); padding:2rem; text-align:center; margin:1rem 0; background:var(--color-surface-muted); color:var(--color-text-muted); border-radius:var(--radius-sm);">
           <em>Figure: screenshot of simulation, replay attack result</em>
         </div>
 
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (f) replay attack</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (f) replay attack</em></p>
       </div>
     </details>
 
     <!-- T9. The fix: timestamps -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">9. The fix: timestamps</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <p class="vlab-paragraph">S adds a timestamp <code>T</code> to message 2 and to the ticket: <sup><a href="#ref2">[2]</a><a href="#ref7">[7]</a></sup></p>
-        <ol style="margin-left: 1.5rem; margin-bottom: 1rem; color: #333; line-height: 1.7; list-style-type: decimal;">
+        <ol style="margin-left: 1.5rem; margin-bottom: 1rem; color: var(--color-text); line-height: 1.7; list-style-type: decimal;">
           <li><code>A -&gt; S : A, B</code></li>
           <li><code>S -&gt; A : {B, Kab, T, {Kab, A, T}Kbs}Kas</code></li>
           <li><code>A -&gt; B : {Kab, A, T}Kbs</code></li>
         </ol>
         <p class="vlab-paragraph">B accepts only if <code>|Clock_B - T| &lt; Dt1 + Dt2</code>, where <code>Dt1</code> is the allowed difference between S's clock and B's clock and <code>Dt2</code> is the expected network delay. An old ticket therefore fails the check. <strong>Trade-offs:</strong> clocks must be synchronised and the time source must be trustworthy.</p>
         <p class="vlab-paragraph">Denning and Sacco also note that timestamps can replace the two-step handshake. Another remedy is to make B contribute a fresh nonce that S binds into the ticket (the "amended" protocol; see <sup><a href="#ref6">[6]</a></sup> for its specification).</p>
-        <div class="vlab-callout" style="background:#eef6f9; border-left:4px solid var(--vlab-btn-blue, #2196f3); padding:1rem; margin:1rem 0;">
+        <div class="vlab-callout" style="background:rgba(76,140,232,0.1); border-left:4px solid var(--color-secondary); padding:1rem; margin:1rem 0; color:var(--color-text);">
           <strong>Key point:</strong> Do not confuse this symmetric-key protocol with the Needham-Schroeder PUBLIC-key protocol, which has a different flaw (man-in-the-middle, found by Lowe in 1995).
         </div>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (g) replay attack with timestamp fix</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (g) replay attack with timestamp fix</em></p>
       </div>
     </details>
 
     <!-- T10. Comparison table -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">10. Comparison table</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <div class="vlab-card" style="overflow-x:auto;">
           <table class="inspector-table" style="width:100%; text-align:left; border-collapse:collapse;">
             <thead>
-              <tr style="border-bottom:2px solid var(--vlab-primary-brown, #764b38);">
+              <tr style="border-bottom:2px solid var(--color-primary);">
                 <th style="padding:0.5rem;">Feature</th>
                 <th style="padding:0.5rem;">Needham-Schroeder (1978)</th>
                 <th style="padding:0.5rem;">Denning-Sacco (1981)</th>
@@ -452,31 +452,31 @@
               </tr>
             </thead>
             <tbody>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem; font-weight:bold;">Freshness mechanism</td>
                 <td style="padding:0.5rem;">Nonces</td>
                 <td style="padding:0.5rem;">Timestamp</td>
                 <td style="padding:0.5rem;">Timestamps + authenticators</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem; font-weight:bold;">Ticket lifetime</td>
                 <td style="padding:0.5rem;">None</td>
                 <td style="padding:0.5rem;">Via timestamp window</td>
                 <td style="padding:0.5rem;">Explicit start/end times</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem; font-weight:bold;">Trusted third party</td>
                 <td style="padding:0.5rem;">S (KDC)</td>
                 <td style="padding:0.5rem;">S (KDC)</td>
                 <td style="padding:0.5rem;">Authentication Server + Ticket Granting Server</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem; font-weight:bold;">Replay of old ticket</td>
                 <td style="padding:0.5rem;">Possible (flaw)</td>
                 <td style="padding:0.5rem;">Prevented</td>
                 <td style="padding:0.5rem;">Prevented</td>
               </tr>
-              <tr style="border-bottom:1px solid #ddd;">
+              <tr style="border-bottom:1px solid var(--color-border);">
                 <td style="padding:0.5rem; font-weight:bold;">Clock sync needed</td>
                 <td style="padding:0.5rem;">No</td>
                 <td style="padding:0.5rem;">Yes</td>
@@ -492,24 +492,24 @@
           </table>
         </div>
         <p class="vlab-paragraph" style="font-size:0.9rem; margin-top:0.5rem;">Note: RFC 4120 states that the Kerberos model is based in part on the Needham-Schroeder trusted-third-party protocol <sup><a href="#ref3">[3]</a></sup>.</p>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T11. Limitations to mention -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">11. Limitations to mention</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <p class="vlab-paragraph">Single point of failure and trust (S knows every key and every session key); no ticket lifetime in the basic protocol; if long-term keys are derived from passwords they can be guessed offline; 1978 DES keys (56-bit) are far too weak today.</p>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T12. Glossary -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">12. Glossary</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
-        <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: #333; line-height: 1.7; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: var(--color-text); line-height: 1.7; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
           <li>Authentication</li>
           <li>Nonce</li>
           <li>Replay attack</li>
@@ -523,16 +523,16 @@
           <li>Handshake</li>
           <li>Authenticated encryption (GCM)</li>
         </ul>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T13. Key points box -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">13. Key points summary</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
-        <div class="vlab-callout vlab-callout-key" style="background:var(--vlab-bg-light, #f4f4f4); border-left:4px solid var(--vlab-primary-brown, #764b38); padding:1rem; margin:1rem 0;">
-          <ul style="margin-left: 1.5rem; color: #333; line-height: 1.7;">
+        <div class="vlab-callout vlab-callout-key">
+          <ul style="margin-left: 1.5rem; color: var(--color-text); line-height: 1.7;">
             <li><strong>Purpose:</strong> Mutual authentication and secure distribution of a shared session key via a trusted KDC.</li>
             <li><strong>The 5 Messages:</strong> 1 request, 1 KDC response, 1 ticket forwarding, 2 handshake steps.</li>
             <li><strong>Role of Na:</strong> Ensures the KDC's response (and the session key) is fresh for Alice.</li>
@@ -541,12 +541,12 @@
             <li><strong>Replay Weakness &amp; Fix:</strong> Bob cannot verify ticket freshness (Denning-Sacco attack); fixed using timestamps.</li>
           </ul>
         </div>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted);"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
     <!-- T14. Check yourself -->
-    <details class="vlab-accordion-item" style="border:1px solid #ddd; border-radius:4px; padding:0.5rem;">
+    <details class="vlab-accordion-item" style="border:1px solid var(--color-border); border-radius:4px; padding:0.5rem;">
       <summary class="vlab-accordion-header" style="font-weight:bold; cursor:pointer;">14. Check yourself</summary>
       <div class="vlab-accordion-content" style="margin-top:0.5rem;">
         <div class="vlab-card" style="display:flex; flex-direction:column; gap:1rem;">
@@ -581,7 +581,7 @@
             <span style="display:none; color:var(--vlab-primary-brown, #764b38); font-weight:bold; margin-left:0.5rem;">B rejects a ticket whose T is outside the allowed window.</span>
           </div>
         </div>
-        <p class="vlab-paragraph" style="font-size:0.85rem; color:#666; margin-top:1rem;"><em>Try it in the simulation: (a) normal run</em></p>
+        <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted); margin-top:1rem;"><em>Try it in the simulation: (a) normal run</em></p>
       </div>
     </details>
 
@@ -969,96 +969,96 @@
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
   <div class="references-container">
     <h2 class="vlab-section-heading">References &amp; Further Reading</h2>
-    <p class="vlab-paragraph" style="font-size:0.85rem; color:#666; margin-bottom:1.5rem;">Accessed: 7 October 2026</p>
+    <p class="vlab-paragraph" style="font-size:0.85rem; color:var(--color-text-muted); margin-bottom:1.5rem;">Accessed: 7 October 2026</p>
 
     <!-- [1] -->
-    <div class="reference-card" id="ref1" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref1" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[1] R. M. Needham and M. D. Schroeder, "Using encryption for authentication in large networks of computers," Communications of the ACM, vol. 21, no. 12, pp. 993-999, Dec. 1978.</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://doi.org/10.1145/359657.359659" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
         <a href="https://homes.cs.washington.edu/~arvind/cs422/doc/needham.pdf" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Free-to-read copy</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T1, T3, T5</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T1, T3, T5</span>
       </div>
     </div>
 
     <!-- [2] -->
-    <div class="reference-card" id="ref2" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref2" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[2] D. E. Denning and G. M. Sacco, "Timestamps in key distribution protocols," Communications of the ACM, vol. 24, no. 8, pp. 533-536, Aug. 1981.</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://cacmb4.acm.org/magazines/1981/8/10896-timestamps-in-key-distribution-protocols" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T8, T9</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T8, T9</span>
       </div>
     </div>
 
     <!-- [3] -->
-    <div class="reference-card" id="ref3" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref3" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[3] C. Neuman, T. Yu, S. Hartman and K. Raeburn, "The Kerberos Network Authentication Service (V5)," RFC 4120, IETF, Jul. 2005. (doi:10.17487/RFC4120)</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://datatracker.ietf.org/doc/html/rfc4120" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T10</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T10</span>
       </div>
     </div>
 
     <!-- [4] -->
-    <div class="reference-card" id="ref4" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref4" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[4] A. J. Menezes, P. C. van Oorschot and S. A. Vanstone, Handbook of Applied Cryptography, CRC Press, 1996, ch. 12 (see 12.3.2 and 12.9.1).</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://cacr.uwaterloo.ca/hac/" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
         <a href="https://cacr.uwaterloo.ca/hac/about/toc/toc12.html" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Chapter contents</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T3</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T3</span>
       </div>
     </div>
 
     <!-- [5] -->
-    <div class="reference-card" id="ref5" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref5" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[5] W. Stallings, Cryptography and Network Security: Principles and Practice, Pearson. [PLACEHOLDER: edition and official publisher URL to be added manually by the team]</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: background reading</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: background reading</span>
       </div>
     </div>
 
     <!-- [6] -->
-    <div class="reference-card" id="ref6" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref6" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[6] Security Protocols Open Repository (SPORE), "Needham Schroeder Symmetric Key."</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://lsv.ens-paris-saclay.fr/Software/spore/nssk.html" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T5, T8, T9</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T5, T8, T9</span>
       </div>
     </div>
 
     <!-- [7] -->
-    <div class="reference-card" id="ref7" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref7" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[7] Security Protocols Open Repository (SPORE), "Denning-Sacco shared key."</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://lsv.ens-paris-saclay.fr/Software/spore/denningSacco.html" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T8, T9</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T8, T9</span>
       </div>
     </div>
 
     <!-- [8] -->
-    <div class="reference-card" id="ref8" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref8" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[8] M. Dworkin, "Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC," NIST SP 800-38D, Nov. 2007. (doi:10.6028/NIST.SP.800-38D)</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://csrc.nist.gov/pubs/sp/800/38/d/final" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T3 (simulator)</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T3 (simulator)</span>
       </div>
     </div>
 
     <!-- [9] -->
-    <div class="reference-card" id="ref9" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref9" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[9] W3C, "Web Cryptography API," W3C Recommendation, 26 Jan. 2017.</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://www.w3.org/TR/WebCryptoAPI/" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T3 (simulator)</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T3 (simulator)</span>
       </div>
     </div>
 
     <!-- [10] -->
-    <div class="reference-card" id="ref10" style="border:1px solid #ddd; padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <div class="reference-card" id="ref10" style="border:1px solid var(--color-border); padding:1rem; border-radius:4px; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
       <div class="reference-title">[10] MDN Web Docs, "SubtleCrypto: encrypt() method."</div>
       <div class="reference-meta" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
         <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt" target="_blank" rel="noopener noreferrer" class="btn-vlab-primary" style="padding:0.3rem 0.6rem; text-decoration:none; font-size:0.8rem;">Open</a>
-        <span style="font-size:0.75rem; color:#666; padding:0.2rem 0.4rem; background:#eee; border-radius:3px;">Used in: T3 (simulator)</span>
+        <span style="font-size:0.75rem; color:var(--color-text-muted); padding:0.2rem 0.4rem; background:var(--color-surface-muted); border-radius:3px;">Used in: T3 (simulator)</span>
       </div>
     </div>
 
