@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const permExec = document.getElementById('permExec');
   const btnAddRule = document.getElementById('btnAddRule');
 
+  const sysUserName = document.getElementById('sysUserName');
+  const sysUserGroups = document.getElementById('sysUserGroups');
+  const btnSaveUser = document.getElementById('btnSaveUser');
+
   const simSubject = document.getElementById('simSubject');
   const simOperation = document.getElementById('simOperation');
   const btnEvaluate = document.getElementById('btnEvaluate');
@@ -95,9 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
       </thead>
       <tbody>`;
     
-    // Sort ACL: owner first, then specific users, then group owner, then specific groups, then other
+    // Sort ACL: owner first, then specific users, then group owner, then specific groups, then mask, then other
     const sortedAcl = [...file.acl].sort((a, b) => {
-      const order = { 'user': 1, 'group': 2, 'other': 3 };
+      const order = { 'user': 1, 'group': 2, 'mask': 3, 'other': 4 };
       if (a.type !== b.type) return order[a.type] - order[b.type];
       if (a.id === file.owner) return -1;
       if (b.id === file.owner) return 1;
@@ -107,8 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     sortedAcl.forEach((ace, index) => {
-      let typeLabel = ace.type === 'user' ? 'User' : (ace.type === 'group' ? 'Group' : 'Other');
-      let idLabel = ace.id === '' ? '*' : ace.id;
+      let typeLabel = ace.type === 'user' ? 'User' : (ace.type === 'group' ? 'Group' : (ace.type === 'mask' ? 'Mask' : 'Other'));
+      let idLabel = ace.id === '' && ace.type !== 'mask' ? '*' : ace.id;
+      if (ace.type === 'mask') idLabel = 'Maximum Allowed';
       
       let isBase = false;
       if (ace.type === 'user' && ace.id === file.owner) { idLabel += ' (owner)'; isBase = true; }
@@ -152,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (ace.type === 'user') cli += `user:${ace.id}:${pStr}\n`;
       else if (ace.type === 'group' && ace.id === file.group) cli += `group::${pStr}\n`;
       else if (ace.type === 'group') cli += `group:${ace.id}:${pStr}\n`;
+      else if (ace.type === 'mask') cli += `mask::${pStr}\n`;
       else if (ace.type === 'other') cli += `other::${pStr}\n`;
     });
     cliOutput.textContent = cli;
@@ -160,12 +166,59 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Event Listeners ---
   resourceSelect.addEventListener('change', renderAclTable);
 
+  btnSaveUser.addEventListener('click', () => {
+    const name = sysUserName.value.trim().toLowerCase();
+    if (!name) { alert('Please enter a username.'); return; }
+    const groups = sysUserGroups.value.split(',').map(s => s.trim()).filter(Boolean);
+    
+    if (!sysUsers[name]) {
+      sysUsers[name] = { groups };
+      const newOption = document.createElement('option');
+      newOption.value = name;
+      simSubject.appendChild(newOption);
+    } else {
+      sysUsers[name].groups = groups;
+    }
+    
+    const option = Array.from(simSubject.options).find(opt => opt.value === name);
+    if (option) {
+      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+      const groupStr = sysUsers[name].groups.join(', ') || 'none';
+      option.textContent = `${capitalized} (Groups: ${groupStr})`;
+    }
+    
+    alert(`User '${name}' saved with groups: [${groups.join(', ')}]`);
+    sysUserName.value = '';
+    sysUserGroups.value = '';
+  });
+
+  ruleType.addEventListener('change', () => {
+    if (['mask', 'other', 'owner'].includes(ruleType.value)) {
+      ruleName.value = '';
+      ruleName.disabled = true;
+      ruleName.placeholder = 'N/A';
+    } else {
+      ruleName.disabled = false;
+      ruleName.placeholder = 'e.g. alice, devs';
+    }
+  });
+
+
   btnAddRule.addEventListener('click', () => {
     const file = getActiveFile();
     const type = ruleType.value;
-    const name = ruleName.value.trim().toLowerCase();
     
-    if (!name) { alert("Please enter a user or group name."); return; }
+    let actualType = type;
+    let name = ruleName.value.trim().toLowerCase();
+    
+    if (type === 'owner') {
+      actualType = 'user';
+      name = file.owner;
+    } else if (['mask', 'other'].includes(type)) {
+      name = '';
+    }
+    
+    if (!name && !['mask', 'other'].includes(actualType)) { alert("Please enter a user or group name."); return; }
     
     let perms = [];
     if (permRead.checked) perms.push('r');
@@ -173,10 +226,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (permExec.checked) perms.push('x');
 
     // Remove existing ACE if exists for this type & id
-    file.acl = file.acl.filter(ace => !(ace.id === name && ace.type === type));
+    file.acl = file.acl.filter(ace => !(ace.id === name && ace.type === actualType));
     
     // Add new ACE
-    file.acl.push({ type, id: name, perms });
+    file.acl.push({ type: actualType, id: name, perms });
+    
+    // Add to simulation subjects dropdown if it's a new user
+    if (type === 'user' && !sysUsers[name] && name !== '') {
+      sysUsers[name] = { groups: [] };
+      const newOption = document.createElement('option');
+      newOption.value = name;
+      newOption.textContent = name.charAt(0).toUpperCase() + name.slice(1) + ' (Groups: none)';
+      simSubject.appendChild(newOption);
+    }
     
     renderAclTable();
     ruleName.value = '';
@@ -196,11 +258,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let grantedPerms = [];
     let matchedRule = false;
+    
+    // Determine MASK & Execution limits
+    const maskAce = file.acl.find(a => a.type === 'mask');
+    const anyExecute = file.acl.some(ace => ace.perms.includes('x'));
 
     // RULE 1: Root user bypass
     if (user === 'root') {
-      trace += `[SUPERUSER BYPASS] User is root. Automatic full access granted.\n`;
-      grantedPerms = ['r', 'w', 'x'];
+      trace += `[SUPERUSER BYPASS] User is root. Automatic read/write access granted.\n`;
+      grantedPerms = ['r', 'w'];
+      if (anyExecute) {
+        trace += `  -> At least one execute bit exists on file. Root gets execute.\n`;
+        grantedPerms.push('x');
+      } else {
+        trace += `  -> No execute bit exists. Root DOES NOT get execute.\n`;
+      }
       matchedRule = true;
     } 
     // RULE 2: Owner match
@@ -217,7 +289,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (userAce) {
         trace += `[MATCH] Found explicit Named User ACE for '${user}'.\n`;
         grantedPerms = userAce.perms;
-        trace += `  -> Applying User ACE Permissions: [${grantedPerms.join(',') || 'NONE'}]\n`;
+        if (maskAce) {
+           grantedPerms = grantedPerms.filter(p => maskAce.perms.includes(p));
+           trace += `  -> Applying MASK [${maskAce.perms.join(',') || 'NONE'}]. Effective perms: [${grantedPerms.join(',') || 'NONE'}]\n`;
+        } else {
+           trace += `  -> Applying Final User ACE Permissions: [${grantedPerms.join(',') || 'NONE'}]\n`;
+        }
         matchedRule = true;
       }
     }
@@ -234,7 +311,14 @@ document.addEventListener('DOMContentLoaded', () => {
           ace.perms.forEach(p => unionPerms.add(p));
         });
         grantedPerms = Array.from(unionPerms);
-        trace += `  -> Applying Union of Group Permissions: [${grantedPerms.join(',') || 'NONE'}]\n`;
+        
+        if (maskAce) {
+           grantedPerms = grantedPerms.filter(p => maskAce.perms.includes(p));
+           trace += `  -> Applying MASK [${maskAce.perms.join(',') || 'NONE'}]. Effective perms: [${grantedPerms.join(',') || 'NONE'}]\n`;
+        } else {
+           trace += `  -> Applying Union of Group Permissions: [${grantedPerms.join(',') || 'NONE'}]\n`;
+        }
+        
         matchedRule = true;
       }
     }
@@ -262,11 +346,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Quiz Logic ---
   const correctAnswers = {
-    q1: 'A', // ACLs attached to objects
-    q2: 'C', // Owner evaluated first
-    q3: 'D', // Fallback to Other
-    q4: 'B', // Specific user takes precedence over group
-    q5: 'C'  // Minimum privileges
+    q1: { ans: 'A', text: 'An authorized registry of rules attached directly to a resource (like a file) specifying who can access it.' },
+    q2: { ans: 'C', text: 'The Owner permissions / Named User entry.' },
+    q3: { ans: 'D', text: 'The authorization engine falls back to the "Other" (World) permissions.' },
+    q4: { ans: 'B', text: 'Only Read (the specific user ACE takes precedence over the group ACE).' },
+    q5: { ans: 'C', text: 'Users should only be given the bare minimum privileges necessary to perform their job.' }
   };
 
   document.getElementById('btnSubmitQuiz').addEventListener('click', () => {
@@ -274,24 +358,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('quizForm');
     const formData = new FormData(form);
 
-    for (const [qId, correctVal] of Object.entries(correctAnswers)) {
+    for (const [qId, correctData] of Object.entries(correctAnswers)) {
       const userVal = formData.get(qId);
       const feedbackDiv = document.getElementById(`feedback-${qId}`);
       
-      if (userVal === correctVal) {
+      if (!userVal) {
+        feedbackDiv.innerHTML = `<strong>Not answered.</strong> Correct answer: ${correctData.text}`;
+        feedbackDiv.className = 'quiz-feedback incorrect';
+      } else if (userVal === correctData.ans) {
         score++;
-        feedbackDiv.textContent = `Correct!`;
+        feedbackDiv.innerHTML = `<strong>Correct!</strong> Well done.`;
         feedbackDiv.className = 'quiz-feedback correct';
       } else {
-        feedbackDiv.textContent = `Incorrect. The correct answer is ${correctVal}.`;
+        feedbackDiv.innerHTML = `<strong>Incorrect.</strong> Correct answer: ${correctData.text}`;
         feedbackDiv.className = 'quiz-feedback incorrect';
       }
     }
 
     const scoreDiv = document.getElementById('quizScore');
     scoreDiv.textContent = `You scored ${score} out of 5.`;
-    scoreDiv.style.color = score === 5 ? '#15803d' : '#b45309';
+    scoreDiv.style.color = score === 5 ? '#10b981' : '#f59e0b';
   });
+
+
 
   // --- Feedback Logic ---
   document.getElementById('feedbackForm').addEventListener('submit', (e) => {
