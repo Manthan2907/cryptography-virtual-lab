@@ -1,115 +1,1083 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="RSA Digital Signature with Hash experiment">
-    <title>RSA Digital Signature with Hash | Virtual Cryptography Laboratory</title>
-    <link rel="stylesheet" href="../../css/variables.css">
-    <link rel="stylesheet" href="../../css/experiment.css">
-  </head>
-  <body>
-    <!-- Fr. CRCE Official College Header Banner -->
-    <div class="college-banner-strip">
-      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
-        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RSA Digital Signature with Hash experiment">
+
+  <title>RSA Digital Signature with Hash | Virtual Cryptography Laboratory</title>
+
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/experiment.css">
+
+  <style>
+    /* GENERAL */
+    .section-intro { margin-bottom: 18px; color: var(--color-text-muted); }
+
+    /* SIMULATION LAYOUT */
+    .sim-card {
+      margin-bottom: 20px; padding: 22px;
+      border: 1px solid var(--color-border); border-radius: 12px;
+      background: rgba(0, 0, 0, 0.10);
+    }
+    .sim-card h2 { margin-top: 0; margin-bottom: 8px; }
+    .sim-card h3 { margin-top: 0; }
+
+    /* FLOW */
+    .hash-flow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin: 20px 0; flex-wrap: wrap;
+    }
+    .flow-box {
+      min-width: 130px; padding: 12px 15px;
+      border: 1px solid var(--color-border); border-radius: 9px;
+      text-align: center; background: rgba(0, 0, 0, 0.12);
+    }
+    .flow-box strong { display: block; margin-bottom: 4px; }
+    .flow-arrow { font-size: 1.2rem; opacity: 0.7; }
+
+    /* HASH PLAYGROUND */
+    .hash-playground {
+      display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 18px; margin-top: 18px;
+    }
+    .hash-panel {
+      padding: 18px; border: 1px solid var(--color-border);
+      border-radius: 10px; background: rgba(0, 0, 0, 0.10);
+    }
+    .hash-panel h3 { margin-bottom: 10px; }
+
+    /* INPUTS */
+    .sim-label { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; font-weight: 600; }
+
+    .sim-textarea {
+      width: 100%; min-height: 105px; padding: 12px; box-sizing: border-box;
+      border: 1px solid var(--color-border); border-radius: 8px;
+      background: rgba(0, 0, 0, 0.18); color: var(--color-text);
+      resize: vertical; font-family: inherit;
+    }
+    .sim-textarea:focus { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+
+    .sim-input {
+      width: 100%; padding: 10px 12px; box-sizing: border-box;
+      border: 1px solid var(--color-border); border-radius: 8px;
+      background: rgba(0, 0, 0, 0.18); color: var(--color-text);
+      font-family: "Courier New", Courier, monospace; font-size: 0.9rem;
+    }
+    .sim-input:focus { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+
+    /* KEY INPUTS */
+    .key-panel {
+      margin-bottom: 18px; padding: 16px;
+      border: 1px solid var(--color-border); border-radius: 10px;
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .key-grid { display: grid; grid-template-columns: 2.2fr 0.8fr; gap: 14px; }
+    .key-grid-2 { display: grid; grid-template-columns: 2.2fr 0.8fr; gap: 14px; margin-top: 12px; }
+    .key-block { margin-top: 12px; }
+    .key-input {
+      min-height: 80px; font-family: "Courier New", Courier, monospace;
+      font-size: 0.8rem; word-break: break-all;
+    }
+
+    /* BUTTONS */
+    .sim-btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+    .secondary-btn {
+      padding: 9px 14px; border: 1px solid var(--color-border);
+      border-radius: 7px; background: transparent;
+      color: var(--color-text); cursor: pointer;
+    }
+    .secondary-btn:hover { background: rgba(0, 0, 0, 0.12); }
+
+    /* HASH RESULT */
+    .hash-result {
+      min-height: 105px; padding: 15px;
+      border: 1px solid var(--color-border); border-radius: 9px;
+      background: rgba(0, 0, 0, 0.18);
+    }
+    .hash-result-label { margin-bottom: 8px; font-size: 0.85rem; color: var(--color-text-muted); }
+    .hash-value-large {
+      display: block; word-break: break-all;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.92rem; line-height: 1.7; letter-spacing: 0.03em;
+    }
+    .hash-info-row {
+      display: flex; justify-content: space-between; gap: 10px;
+      margin-top: 10px; font-size: 0.85rem; color: var(--color-text-muted); flex-wrap: wrap;
+    }
+
+    /* HELP */
+    .help-toggle {
+      display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px;
+      border: 1px solid var(--color-border); border-radius: 6px;
+      background: transparent; color: var(--color-primary);
+      cursor: pointer; font-size: 0.82rem;
+    }
+    .help-box {
+      display: none; margin-top: 12px; padding: 13px 15px;
+      border-left: 3px solid var(--color-primary); border-radius: 6px;
+      background: rgba(0, 0, 0, 0.12); font-size: 0.9rem; line-height: 1.6;
+    }
+    .help-box.show { display: block; }
+
+    /* SHA VISUAL */
+    .sha-visual { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin-top: 18px; }
+    .sha-visual-box {
+      padding: 15px; min-height: 80px;
+      border: 1px solid var(--color-border); border-radius: 9px;
+      background: rgba(0, 0, 0, 0.12); text-align: center;
+    }
+    .sha-visual-box strong { display: block; margin-bottom: 8px; }
+    .sha-visual-arrow { font-size: 1.4rem; }
+
+    /* RSA */
+    .rsa-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+    .rsa-output {
+      padding: 13px; border: 1px solid var(--color-border);
+      border-radius: 8px; background: rgba(0, 0, 0, 0.12);
+    }
+    .crypto-code {
+      display: block; margin-top: 7px; word-break: break-all;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.82rem; line-height: 1.55;
+    }
+
+    /* STATUS */
+    .status-card {
+      margin-top: 15px; padding: 13px 15px; border-radius: 8px;
+      border: 1px solid var(--color-border); background: rgba(0, 0, 0, 0.10);
+    }
+    .status-valid { border-left: 4px solid #22c55e; }
+    .status-invalid { border-left: 4px solid #ef4444; }
+    .status-neutral { border-left: 4px solid var(--color-primary); }
+
+    /* COMPARISON */
+    .hash-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 15px; }
+    .comparison-box {
+      padding: 14px; border: 1px solid var(--color-border);
+      border-radius: 8px; background: rgba(0, 0, 0, 0.10);
+    }
+    .comparison-box strong { display: block; margin-bottom: 8px; }
+
+    /* TAMPERING */
+    .tamper-area { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+    .tamper-box {
+      padding: 16px; border: 1px solid var(--color-border);
+      border-radius: 9px; background: rgba(0, 0, 0, 0.10);
+    }
+    .tamper-result {
+      margin-top: 15px; padding: 15px; border-radius: 8px;
+      border: 1px solid var(--color-border);
+    }
+    .tamper-subhead { margin: 22px 0 0; font-size: 1.05rem; }
+
+    /* QUIZ */
+    .quiz-question {
+      margin-bottom: 18px; padding: 17px;
+      border: 1px solid var(--color-border); border-radius: 9px;
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .quiz-option {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      gap: 10px;
+      margin: 8px 0;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-weight: normal !important;
+      text-align: left;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .quiz-option input[type="radio"] {
+      flex: 0 0 auto;
+      width: auto !important;
+      height: auto !important;
+      margin: 4px 0 0 0 !important;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .quiz-option:hover { background: rgba(0, 0, 0, 0.10); border-color: var(--color-border); }
+    .quiz-option:has(input:checked) { background: rgba(0, 0, 0, 0.15); border-color: var(--color-primary); }
+
+    .quiz-score {
+      margin-top: 18px; padding: 16px;
+      border: 1px solid var(--color-border); border-radius: 9px;
+      background: rgba(0, 0, 0, 0.10);
+    }
+
+    /* REFERENCES */
+    .ref-list li { margin-bottom: 10px; line-height: 1.6; }
+
+    /* RESPONSIVE */
+    @media (max-width: 800px) {
+      .hash-playground, .tamper-area, .rsa-mini, .hash-comparison,
+      .key-grid, .key-grid-2 { grid-template-columns: 1fr; }
+      .sha-visual { grid-template-columns: 1fr; }
+      .sha-visual-arrow { transform: rotate(90deg); }
+    }
+
+    /* AIM & PROCEDURE: scoped visual enhancements only */
+    .aim-page, .procedure-page { display: grid; gap: 20px; }
+    .aim-hero, .procedure-hero {
+      position: relative; overflow: hidden; padding: clamp(22px, 4vw, 34px);
+      border: 1px solid var(--color-border); border-radius: 18px;
+      background: linear-gradient(135deg, rgba(85, 110, 230, .13), rgba(65, 190, 170, .08));
+    }
+    .aim-hero::after, .procedure-hero::after {
+      content: ""; position: absolute; width: 150px; height: 150px; right: -48px; top: -55px;
+      border-radius: 50%; border: 24px solid rgba(100, 120, 230, .10); pointer-events: none;
+    }
+    .aim-eyebrow, .procedure-eyebrow {
+      margin: 0 0 8px; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+      font-weight: 800; opacity: .72;
+    }
+    .aim-hero h2, .procedure-hero h2 { margin: 0 0 12px; font-size: clamp(1.5rem, 3vw, 2rem); }
+    .aim-hero p, .procedure-hero p { max-width: 850px; line-height: 1.75; margin: 0; }
+    .aim-section-title { margin: 0 0 -8px; font-size: 1.15rem; }
+    .aim-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .aim-card, .procedure-step, .aim-info-card {
+      min-width: 0; padding: 18px; border: 1px solid var(--color-border); border-radius: 14px;
+      background: rgba(127, 127, 127, .035); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .aim-card:hover, .procedure-step:hover, .aim-info-card:hover {
+      transform: translateY(-2px); border-color: var(--color-primary); box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    }
+    .aim-card-number, .procedure-step-number {
+      display: inline-grid; place-items: center; width: 34px; height: 34px; margin-bottom: 12px;
+      border-radius: 10px; font-weight: 800; background: rgba(100, 120, 230, .14);
+    }
+    .aim-card h3, .procedure-step h3, .aim-info-card h3 { margin: 0 0 8px; font-size: 1rem; }
+    .aim-card p, .procedure-step p, .aim-info-card p { margin: 0; line-height: 1.65; font-size: .94rem; }
+    .aim-two-column { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .aim-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+    .aim-flow-item { text-align: center; padding: 14px 10px; border-radius: 12px; border: 1px solid var(--color-border); background: rgba(127,127,127,.035); }
+    .aim-flow-item strong { display: block; margin-bottom: 5px; }
+    .aim-flow-item span { display: block; font-size: .82rem; opacity: .76; line-height: 1.45; }
+    .aim-note { padding: 16px 18px; border-left: 4px solid var(--color-primary); border-radius: 8px; background: rgba(100,120,230,.08); line-height: 1.7; }
+    .procedure-stepper { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .procedure-step { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; align-content: start; }
+    .procedure-step-number { margin: 0; }
+    .procedure-step h3 { padding-top: 5px; }
+    .procedure-step p { grid-column: 2; }
+    .procedure-label { display: inline-block; margin-top: 10px; padding: 5px 9px; border-radius: 999px; font-size: .78rem; font-weight: 700; background: rgba(100,120,230,.12); }
+    .procedure-observations { padding: 20px; border: 1px solid var(--color-border); border-radius: 14px; }
+    .procedure-observations li { margin: 8px 0; line-height: 1.6; }
+    @media (max-width: 800px) {
+      .aim-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .aim-flow { grid-template-columns: 1fr; }
+      .aim-two-column, .procedure-stepper { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) { .aim-card-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+  <!-- COLLEGE HEADER -->
+  <div class="college-banner-strip">
+    <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+      <img
+        src="../../assets/logos/crce-header-banner.png"
+        alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory"
+        class="college-banner-img">
+    </a>
+  </div>
+
+  <div class="experiment-container">
+    <!-- HEADER -->
+    <header class="exp-header">
+      <a class="back-link" href="../../index.html#experiments">
+        &larr; Back to experiment browser
       </a>
-    </div>
 
-    <div class="experiment-container">
-      <header class="exp-header">
-        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">RSA Digital Signature with Hash</h1>
-        <p id="exp-description">Generate the hash of a message, create an RSA digital signature using the hash, and verify the signature using the corresponding public key.</p>
-      </header>
+      <p class="exp-kicker">
+        CSS TH ISE &middot; Cryptographic Security Systems
+      </p>
 
-      <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
-        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
-        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
-        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
-        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
-        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
-      </nav>
+      <h1 id="exp-title">RSA Digital Signature with Hash</h1>
 
-      <main class="content-area">
-        <section id="aim" class="tab-content active" data-tab-panel="aim">
-          <div class="content-placeholder">
+      <p id="exp-description">
+        To generate the SHA-256 hash of a message, create an RSA digital
+        signature using the hash and private key, verify the signature using
+        the corresponding public key, and demonstrate message integrity
+        through tamper detection.
+      </p>
+    </header>
+
+    <!-- TABS -->
+    <nav class="tab-navigation" aria-label="Experiment sections">
+      <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+      <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+      <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+      <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+      <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+      <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+      <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+    </nav>
+
+    <main class="content-area">
+      <!-- 1. AIM AND OBJECTIVES -->
+      <section id="aim" class="tab-content active" data-tab-panel="aim">
+        <div class="content-placeholder aim-page">
+          <div class="aim-hero">
+            <p class="aim-eyebrow">Virtual Cryptography Laboratory</p>
             <h2>Aim &amp; Objectives</h2>
-            <p><strong>Aim:</strong> Generate the hash of a message, create an RSA digital signature using the hash, and verify the signature using the corresponding public key.</p>
-            <p><strong>Objectives:</strong></p>
-            <ul>
-              <li>Understand the "hash-then-sign" paradigm in digital signature algorithms.</li>
-              <li>Observe why hashing is necessary to prevent existential forgery and manage arbitrarily large messages.</li>
-              <li>Perform RSA signature generation using private key <em>d</em> and signature verification using public key <em>e</em>.</li>
-            </ul>
+            <p>To generate the SHA-256 hash of a message, create an RSA digital signature using the hash and the sender’s private key, verify the signature using the corresponding public key, and demonstrate message integrity through tamper detection.</p>
           </div>
-        </section>
 
-        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>In RSA Digital Signatures, signing a message directly with modular exponentiation <em>S = M<sup>d</sup> mod n</em> is vulnerable to mathematical attacks and is computationally slow for large documents. In standard practice (PKCS#1 v1.5 / PSS), a secure hash <em>h = H(M)</em> is computed first, and the signature is generated by computing <em>S = (h)<sup>d</sup> mod n</em>. Verification checks if <em>S<sup>e</sup> mod n == H(M)</em>.</p>
+          <h3 class="aim-section-title">What this experiment helps you understand</h3>
+          <div class="aim-card-grid">
+            <article class="aim-card"><span class="aim-card-number">01</span><h3>Message Hashing</h3><p>Apply SHA-256 to convert a message of any practical length into a fixed-size 256-bit digest represented by 64 hexadecimal characters.</p></article>
+            <article class="aim-card"><span class="aim-card-number">02</span><h3>Hash-Then-Sign</h3><p>Understand why the message digest is signed rather than directly applying the RSA operation to an entire message.</p></article>
+            <article class="aim-card"><span class="aim-card-number">03</span><h3>RSA Key Pair</h3><p>Distinguish the private key used to create a signature from the public key used to verify it.</p></article>
+            <article class="aim-card"><span class="aim-card-number">04</span><h3>Signature Formats</h3><p>Observe the digital signature in hexadecimal and Base64 formats and understand that these are different representations of the same signature bytes.</p></article>
+            <article class="aim-card"><span class="aim-card-number">05</span><h3>Verification</h3><p>Compare the digest calculated from the received message with the digest validated by the RSA signature verification process.</p></article>
+            <article class="aim-card"><span class="aim-card-number">06</span><h3>Tamper Detection</h3><p>Modify the message and observe how its SHA-256 digest changes, causing verification against the original signature to fail.</p></article>
           </div>
-        </section>
 
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <div class="content-placeholder">
+          <div class="aim-two-column">
+            <article class="aim-info-card"><h3>Learning outcomes</h3><p>After completing the experiment, you should be able to explain the role of hashing in digital signatures, identify the purpose of RSA public and private keys, interpret the verification result, and explain why message changes are detected.</p></article>
+            <article class="aim-info-card"><h3>Expected outcome</h3><p>The original message should verify successfully when it is checked with the matching RSA public key and signature. A modified message should produce a different digest and fail verification against the original signature.</p></article>
+          </div>
+
+          <h3 class="aim-section-title">Digital-signature workflow</h3>
+          <div class="aim-flow" aria-label="Digital signature workflow">
+            <div class="aim-flow-item"><strong>1. Message</strong><span>Enter the original text</span></div>
+            <div class="aim-flow-item"><strong>2. SHA-256</strong><span>Calculate the digest</span></div>
+            <div class="aim-flow-item"><strong>3. Sign</strong><span>Use the RSA private key</span></div>
+            <div class="aim-flow-item"><strong>4. Verify</strong><span>Use the RSA public key</span></div>
+            <div class="aim-flow-item"><strong>5. Decide</strong><span>Accept or reject the signature</span></div>
+          </div>
+          <div class="aim-note"><strong>Important:</strong> A digital signature supports authenticity and integrity; it does not encrypt the message or make the message secret. Keep the private key confidential.</div>
+        </div>
+      </section>
+
+      <!-- 2. THEORY -->
+      <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+        <div class="content-placeholder">
+          <h2>Theory</h2>
+
+          <h3>1. Introduction to Digital Signatures</h3>
+          <p>
+            A digital signature is a cryptographic mechanism for verifying
+            the authenticity and integrity of digital messages or documents.
+            Analogous to a traditional handwritten signature or stamped seal,
+            a valid digital signature provides the recipient with strong
+            cryptographic proof that the message was created by a known sender
+            (<strong>authentication</strong>), that the sender cannot deny
+            having sent the message (<strong>non-repudiation</strong>), and
+            that the message was not altered in transit
+            (<strong>integrity</strong>).
+          </p>
+
+          <h3 style="margin-top: 16px;">2. The RSA Key Pair</h3>
+          <p>
+            The RSA cryptosystem, developed by Ron Rivest, Adi Shamir,
+            and Leonard Adleman in 1977, is an asymmetric algorithm based
+            on the computational difficulty of factoring the product of
+            two large prime numbers.
+          </p>
+
+          <ul>
+            <li>
+              <strong>Modulus <em>n</em>:</strong>
+              Computed as <em>n = p &times; q</em>.
+            </li>
+            <li>
+              <strong>Euler's Totient &phi;(<em>n</em>):</strong>
+              Calculated as <em>&phi;(n) = (p - 1)(q - 1)</em>.
+            </li>
+            <li>
+              <strong>Public Exponent <em>e</em>:</strong>
+              Typically 65537.
+            </li>
+            <li>
+              <strong>Private Exponent <em>d</em>:</strong>
+              Computed as the modular multiplicative inverse of
+              <em>e</em> modulo &phi;(<em>n</em>).
+            </li>
+          </ul>
+
+          <h3 style="margin-top: 16px;">3. The "Hash-Then-Sign" Paradigm &amp; SHA-256</h3>
+
+          <p>
+            The signer first applies SHA-256 to the message to produce
+            a fixed-length 256-bit message digest.
+          </p>
+
+          <p style="text-align: center; margin: 12px 0;">
+            <em>h = H(M) = SHA-256(M)</em>
+          </p>
+
+          <p>
+            SHA-256 provides preimage resistance, second-preimage
+            resistance, and collision resistance.
+          </p>
+
+          <h3 style="margin-top: 16px;">4. RSA Digital Signature Equations</h3>
+
+          <ul>
+            <li>
+              <strong>Signature Generation:</strong>
+              <br>
+              <code>s = (h)<sup>d</sup> mod n</code>
+            </li>
+            <li>
+              <strong>Transmission:</strong>
+              The message and digital signature are transmitted to
+              the verifier.
+            </li>
+            <li>
+              <strong>Signature Verification:</strong>
+              <br>
+              <code>h' = (s)<sup>e</sup> mod n</code>
+              <br>
+              The verifier independently calculates:
+              <br>
+              <code>h<sub>computed</sub> = SHA-256(M')</code>
+            </li>
+            <li>
+              <strong>Decision Rule:</strong>
+              If both hashes match, the signature is
+              <strong>VALID</strong>.
+            </li>
+          </ul>
+
+          <h3 style="margin-top: 16px;">5. Why Message Tampering Causes Verification Failure</h3>
+
+          <p>
+            Cryptographic hash functions demonstrate the avalanche effect.
+            A small modification to the original message produces a
+            completely different hash value. Therefore, when a modified
+            message is verified against the original signature, the newly
+            calculated SHA-256 hash will not match the digest contained
+            within the signature.
+          </p>
+        </div>
+      </section>
+
+      <!-- 3. PROCEDURE -->
+      <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+        <div class="content-placeholder procedure-page">
+          <div class="procedure-hero">
+            <p class="procedure-eyebrow">Step-by-step practical</p>
             <h2>Procedure</h2>
-            <ol>
-              <li>Generate an RSA key pair (or use demo parameters).</li>
-              <li>Compute the cryptographic hash (SHA-256) of the input message.</li>
-              <li>Sign the hash digest using the private key.</li>
-              <li>Verify the signature using the public key against original and modified messages.</li>
-            </ol>
+            <p>Follow these steps in order to generate a signature, verify the original message, and test whether a change to the message is detected. Use the Simulation tab for the interactive controls and outputs.</p>
           </div>
-        </section>
 
-        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <h2>Simulation Controls</h2>
-            <label for="rsaMsg">Original Message:</label>
-            <textarea id="rsaMsg" rows="2">Transfer 1000 INR to Alice.</textarea>
-            <button type="button" id="btnSign">Sign Message (Hash + RSA)</button>
+          <div class="procedure-stepper">
+            <article class="procedure-step"><span class="procedure-step-number">1</span><h3>Prepare the RSA key pair</h3><p>In the Simulation tab, click <strong>Generate Random Key</strong> to populate the RSA key fields, then click <strong>Use This Key</strong>. The public key contains the modulus <em>n</em> and exponent <em>e</em>; the private exponent <em>d</em> must be kept secret.</p></article>
+            <article class="procedure-step"><span class="procedure-step-number">2</span><h3>Enter the original message</h3><p>Enter a message in the signing section, for example, “Transfer 1000 INR to Alice.” Use the same message for the first verification test.</p></article>
+            <article class="procedure-step"><span class="procedure-step-number">3</span><h3>Generate the SHA-256 digest</h3><p>Click the relevant <strong>Generate SHA-256</strong> control. Observe the digest and note that SHA-256 produces a fixed 256-bit output, commonly displayed as 64 hexadecimal characters.</p></article>
+            <article class="procedure-step"><span class="procedure-step-number">4</span><h3>Create the digital signature</h3><p>Click <strong>Create RSA Digital Signature</strong> in the signing section. The application hashes the message and signs the digest using the RSA private key. Observe the signature in hexadecimal and Base64 formats.</p></article>
+            <article class="procedure-step"><span class="procedure-step-number">5</span><h3>Verify the original message</h3><p>Use the same message and the generated signature in the verification section, then click <strong>Verify Signature</strong>. A valid result indicates that the signature matches the message and corresponding public key.</p></article>
+            <article class="procedure-step"><span class="procedure-step-number">6</span><h3>Modify the message</h3><p>Change one character, word, or number in the message while keeping the original signature unchanged. Generate or inspect the new SHA-256 digest and compare it with the original digest.</p></article>
+            <article class="procedure-step"><span class="procedure-step-number">7</span><h3>Verify the modified message</h3><p>Verify the modified message against the original signature. The verification should fail because the digest of the modified message does not match the digest associated with the original signature.</p></article>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <h2>Simulation Output</h2>
-            <div id="rsaOutput">Click Sign Message to view signature...</div>
-          </div>
-        </section>
 
-        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <div class="quiz-panel">
-            <h2>Assessment / Quiz</h2>
-            <p>1. Which key is used to create an RSA digital signature?</p>
-            <p>2. Why is the message hashed before signing rather than signing the raw message directly?</p>
-          </div>
-        </section>
-
-        <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="content-placeholder">
-            <h2>References</h2>
+          <div class="procedure-observations">
+            <h3>Observations to record</h3>
             <ul>
-              <li>RFC 8017: PKCS #1: RSA Cryptography Specifications Version 2.2.</li>
-              <li>NIST FIPS 186-4: Digital Signature Standard (DSS).</li>
+              <li>The SHA-256 digest is 256 bits long regardless of the message length.</li>
+              <li>The original message and its signature should pass verification when the correct key pair is used.</li>
+              <li>A small change in the message normally produces a substantially different SHA-256 digest.</li>
+              <li>The original signature should not validate the modified message.</li>
+              <li>Hexadecimal and Base64 are encodings for displaying signature bytes; neither is the signature algorithm itself.</li>
             </ul>
           </div>
-        </section>
+          <div class="aim-note"><strong>Result:</strong> The experiment demonstrates SHA-256 message hashing, RSA digital-signature generation and verification, and the detection of message tampering through digest mismatch.</div>
+        </div>
+      </section>
 
-        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Feedback</h2>
-            <p>Please share your feedback regarding this experiment simulation.</p>
+      <!-- 4. SIMULATION -->
+      <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+
+        <!-- SIMPLE INTERACTIVE FLOW -->
+        <div class="sim-card">
+          <h2>RSA Digital Signature with Hash</h2>
+          <p class="section-intro">
+            Start with the message. Change it and generate the hash
+            to see how SHA-256 responds.
+          </p>
+
+          <div class="hash-flow">
+            <div class="flow-box"><strong>Message</strong>Your input</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box"><strong>SHA-256</strong>Hash function</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box"><strong>256-bit Hash</strong>Fixed-size digest</div>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
 
-    <script src="../../js/common.js"></script>
-    <script src="../../js/vendor/crypto-js.min.js"></script>
-    <script src="../../js/vendor/forge.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+        <!-- SHA-256 PLAYGROUND -->
+        <div class="sim-card">
+          <h2>1. Explore SHA-256</h2>
+          <p class="section-intro">
+            Type anything below. The system will convert it into a
+            fixed-length SHA-256 fingerprint.
+          </p>
+
+          <div class="hash-playground">
+            <!-- INPUT -->
+            <div class="hash-panel">
+              <label class="sim-label" for="shaMessage">
+                Enter a Message
+                <button type="button" class="help-toggle" data-help="sha-message">
+                  What is this?
+                </button>
+              </label>
+
+              <textarea id="shaMessage" class="sim-textarea">Transfer 1000 INR to Alice.</textarea>
+
+              <div class="sim-btn-row">
+                <button type="button" id="btnHash">Generate SHA-256</button>
+                <button type="button" class="secondary-btn" id="btnClearHash">Clear</button>
+              </div>
+
+              <div id="shaMessageHelp" class="help-box">
+                A message is simply the information you want to
+                process. It can be a word, sentence, number, or
+                longer text.
+                <br><br>
+                <strong>Try changing only one character.</strong>
+                You will see that the hash changes completely.
+              </div>
+            </div>
+
+            <!-- OUTPUT -->
+            <div class="hash-panel">
+              <h3>SHA-256 Result</h3>
+              <div class="hash-result">
+                <div class="hash-result-label">256-bit message digest</div>
+                <code id="hashOutput" class="hash-value-large">
+                  Click "Generate SHA-256"
+                </code>
+                <div class="hash-info-row">
+                  <span>Output size: <strong id="hashBits">256 bits</strong></span>
+                  <span>Hex characters: <strong id="hashLength">64</strong></span>
+                </div>
+              </div>
+
+              <div class="sim-btn-row">
+                <button type="button" class="help-toggle" data-help="sha-result">
+                  What does this result mean?
+                </button>
+              </div>
+
+              <div id="shaResultHelp" class="help-box">
+                The long hexadecimal value is the SHA-256 digest.
+                It is a fixed-size representation of your message.
+                <br><br>
+                Even if your message is very short or very long,
+                SHA-256 produces a <strong>256-bit</strong> digest.
+              </div>
+            </div>
+          </div>
+
+          <!-- VISUAL EXPLANATION -->
+          <div class="sha-visual">
+            <div class="sha-visual-box">
+              <strong>Your Message</strong>
+              <span id="visualMessage">Transfer 1000 INR to Alice.</span>
+            </div>
+            <div class="sha-visual-arrow">&rarr;</div>
+            <div class="sha-visual-box">
+              <strong>SHA-256 Digest</strong>
+              <span id="visualHash">Waiting...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RSA SIGNING -->
+        <div class="sim-card">
+          <h2>2. Use the Hash for RSA Signing</h2>
+          <p class="section-intro">
+            Now that you have seen how SHA-256 creates the message
+            digest, the digest can be used in the RSA digital
+            signature process.
+          </p>
+
+          <!-- SENDER'S KEY INPUTS -->
+          <div class="key-panel">
+            <h3>Sender's RSA Keys</h3>
+            <p class="section-intro" style="margin-bottom:12px;">
+              Enter the sender's <strong>public key</strong>
+              (<em>n</em>, <em>e</em>) and <strong>private key</strong>
+              <em>d</em> (decimal, or hexadecimal starting with
+              <code>0x</code>). New to RSA? Just click
+              <strong>Generate Random Key</strong> and the boxes fill
+              themselves.
+            </p>
+
+            <div class="key-grid">
+              <div>
+                <label class="sim-label" for="keyN">Public Key &mdash; modulus n</label>
+                <textarea id="keyN" class="sim-textarea key-input" spellcheck="false"></textarea>
+              </div>
+              <div>
+                <label class="sim-label" for="keyE">Public Key &mdash; exponent e</label>
+                <input id="keyE" class="sim-input" type="text" value="65537" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="key-block">
+              <label class="sim-label" for="keyD">Private Key &mdash; exponent d (keep secret)</label>
+              <textarea id="keyD" class="sim-textarea key-input" spellcheck="false"></textarea>
+            </div>
+
+            <div class="sim-btn-row">
+              <button type="button" id="btnComputeKeys">Use This Key</button>
+              <button type="button" class="secondary-btn" id="btnGenKeys">Generate Random Key</button>
+              <button type="button" class="help-toggle" data-help="keys">
+                What are these keys?
+              </button>
+            </div>
+
+            <div id="keyHelp" class="help-box">
+              An RSA key pair has two parts:
+              <br>
+              &bull; <strong>Public key (n, e)</strong> &mdash; shared with
+              everyone. It is used to <em>verify</em> signatures.
+              <br>
+              &bull; <strong>Private key d</strong> &mdash; known only to the
+              sender. It is used to <em>create</em> signatures.
+              <br><br>
+              The two keys are mathematically linked, so a random <em>d</em>
+              will not work with a given (<em>n</em>, <em>e</em>) &mdash; the
+              simulation checks this for you. Because the SHA-256 digest is
+              padded (PKCS#1 v1.5) before signing, <em>n</em> must be at least
+              512 bits.
+            </div>
+
+            <div id="keyStatus" class="status-card status-neutral" aria-live="polite">
+              Enter n, e and d, then click "Use This Key".
+            </div>
+
+            <!-- Modulus n is already shown in the Public Key box below,
+                 so the separate "Modulus n" box has been removed. -->
+            <div class="rsa-mini">
+              <div class="rsa-output">
+                <strong>Modulus size</strong>
+                <code id="keyPhiDisplay" class="crypto-code">Waiting...</code>
+              </div>
+              <div class="rsa-output">
+                <strong>Public Key (n, e)</strong>
+                <code id="keyPublicDisplay" class="crypto-code">Waiting...</code>
+              </div>
+              <div class="rsa-output">
+                <strong>Private Key d (kept secret)</strong>
+                <code id="keyPrivateDisplay" class="crypto-code">Waiting...</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="rsa-mini">
+            <div class="rsa-output">
+              <strong>SHA-256 Digest Used</strong>
+              <code id="signHashDisplay" class="crypto-code">
+                Generate a SHA-256 hash first.
+              </code>
+            </div>
+            <div class="rsa-output">
+              <strong>RSA Signature Status</strong>
+              <div id="sigStatus" style="margin-top:8px;">Waiting...</div>
+            </div>
+          </div>
+
+          <div class="sim-btn-row">
+            <button type="button" id="btnSign">Create RSA Digital Signature</button>
+            <button type="button" class="help-toggle" data-help="rsa-sign">
+              Why is RSA used here?
+            </button>
+          </div>
+
+          <div id="rsaSignHelp" class="help-box">
+            SHA-256 is the main focus of this experiment.
+            RSA is used after hashing to demonstrate how the
+            digest can be digitally signed.
+            <br><br>
+            The RSA private key creates the signature. The
+            corresponding public key is later used for verification.
+          </div>
+
+          <div class="rsa-mini" style="margin-top:15px;">
+            <div class="rsa-output">
+              <strong>Signature &mdash; Hexadecimal</strong>
+              <code id="sigHex" class="crypto-code">Waiting for signature...</code>
+            </div>
+            <div class="rsa-output">
+              <strong>Signature &mdash; Base64</strong>
+              <code id="sigBase64" class="crypto-code">Waiting for signature...</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- VERIFICATION -->
+        <div class="sim-card">
+          <h2>3. Verification</h2>
+          <p class="section-intro">
+            This section checks whether the message and signature
+            belong together.
+          </p>
+
+          <label class="sim-label" for="verifyMsg">Message to Verify</label>
+          <textarea id="verifyMsg" class="sim-textarea">Transfer 1000 INR to Alice.</textarea>
+
+          <!-- SENDER'S PUBLIC KEY FOR VERIFICATION -->
+          <div class="key-grid-2">
+            <div>
+              <label class="sim-label" for="verifyN">Sender's Public Key &mdash; modulus n</label>
+              <textarea id="verifyN" class="sim-textarea key-input" spellcheck="false"></textarea>
+            </div>
+            <div>
+              <label class="sim-label" for="verifyE">Public exponent e</label>
+              <input id="verifyE" class="sim-input" type="text" spellcheck="false">
+                          </div>
+          </div>
+
+          <div class="sim-btn-row">
+            <button type="button" id="btnVerify">Verify Signature</button>
+            <button type="button" class="help-toggle" data-help="verification">
+              What is verification?
+            </button>
+          </div>
+
+          <div id="verificationHelp" class="help-box">
+            The system calculates SHA-256 of the message above and
+            checks the RSA signature using the sender's public key (n, e).
+            <br><br>
+            If the signature is valid, the message has not been
+            changed since it was signed. The public key fields are filled
+            automatically from the sender's keys; try editing them to see
+            that a wrong public key makes verification fail.
+          </div>
+
+          <div class="hash-comparison">
+            <div class="comparison-box">
+              <strong>SHA-256 of Message</strong>
+              <code id="verifyHashComputed" class="crypto-code">Waiting...</code>
+            </div>
+            <div class="comparison-box">
+              <strong>Digest from Signature</strong>
+              <code id="verifyRecoveredHash" class="crypto-code">Waiting...</code>
+            </div>
+          </div>
+
+          <div id="verifyResult" class="status-card status-neutral" aria-live="polite">
+            Verification has not been performed yet.
+          </div>
+        </div>
+
+        <!-- TAMPERING -->
+        <div class="sim-card">
+          <h2>4. Tampering Simulation</h2>
+          <p class="section-intro">
+            Change the message below, then compare the SHA-256 hashes and
+            RSA signatures. The <strong>original signature</strong> is also
+            verified against the modified message using the public key.
+            (Create a signature in section 2 first.)
+          </p>
+
+          <div class="tamper-area">
+            <!-- ORIGINAL -->
+            <div class="tamper-box">
+              <h3>Original Message</h3>
+              <textarea id="tamperOriginal" class="sim-textarea" readonly>Transfer 1000 INR to Alice.</textarea>
+
+              <p style="font-size:0.85rem;">Original SHA-256:</p>
+              <code id="tamperOriginalHash" class="crypto-code">
+                Generate the original hash first.
+              </code>
+
+              <p style="font-size:0.85rem;">Original RSA signature (hex):</p>
+              <code id="tamperOriginalSig" class="crypto-code">
+                Create the RSA signature first (section 2).
+              </code>
+            </div>
+
+            <!-- MODIFIED -->
+            <div class="tamper-box">
+              <h3>Modified Message</h3>
+              <textarea id="tamperModified" class="sim-textarea">Transfer 5000 INR to Alice.</textarea>
+
+              <div class="sim-btn-row">
+                <button type="button" id="btnTamper">Compare Hashes &amp; Signatures</button>
+                <button type="button" class="secondary-btn" id="btnResetTamper">Reset Message</button>
+              </div>
+
+              <p style="font-size:0.85rem;">Modified SHA-256:</p>
+              <code id="tamperModifiedHash" class="crypto-code">
+                Click "Compare Hashes &amp; Signatures"
+              </code>
+
+              <p style="font-size:0.85rem;">
+                Signature that would be generated for the modified message
+                (demonstration only):
+              </p>
+              <code id="tamperModifiedSig" class="crypto-code">
+                Click "Compare Hashes &amp; Signatures"
+              </code>
+            </div>
+          </div>
+
+          <h3 class="tamper-subhead">Comparison</h3>
+          <div class="hash-comparison">
+            <div class="comparison-box">
+              <strong>SHA-256 Hashes</strong>
+              <div id="tamperHashCompare">Not compared yet.</div>
+            </div>
+            <div class="comparison-box">
+              <strong>RSA Signatures</strong>
+              <div id="tamperSigCompare">Not compared yet.</div>
+            </div>
+          </div>
+
+          <h3 class="tamper-subhead">Verify the Original Signature Against the Modified Message</h3>
+          <div class="hash-comparison">
+            <div class="comparison-box">
+              <strong>SHA-256 of Modified Message</strong>
+              <code id="tamperVerifyComputed" class="crypto-code">Waiting...</code>
+            </div>
+            <div class="comparison-box">
+              <strong>Digest Recovered from Original Signature (public key)</strong>
+              <code id="tamperVerifyRecovered" class="crypto-code">Waiting...</code>
+            </div>
+          </div>
+
+          <div id="tamperVerifyResult" class="status-card status-neutral" aria-live="polite">
+            Verification of the original signature has not been performed yet.
+          </div>
+
+          <div id="tamperResult" class="tamper-result status-neutral">
+            Modify the message and compare the hashes and signatures.
+          </div>
+
+          <div class="sim-btn-row">
+            <button type="button" class="help-toggle" data-help="tampering">
+              Why did the hash change?
+            </button>
+          </div>
+
+          <div id="tamperHelp" class="help-box">
+            SHA-256 has an important property called the
+            <strong>avalanche effect</strong>.
+            <br><br>
+            A very small change in the input can produce a
+            completely different hash.
+            <br><br>
+            The original signature contains the digest of the original
+            message. When it is checked against the modified message, the
+            recovered digest no longer matches the new SHA-256 hash, so
+            verification fails and the tampering is detected.
+          </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="sim-card">
+          <h2>Experiment Summary</h2>
+          <div id="rsaOutput">
+            <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
+              <tbody>
+                <tr style="border-bottom:1px solid var(--color-border);">
+                  <td style="padding:9px; font-weight:bold; color:var(--color-primary);">Message</td>
+                  <td id="summaryMsg" style="padding:9px;">Transfer 1000 INR to Alice.</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--color-border);">
+                  <td style="padding:9px; font-weight:bold; color:var(--color-primary);">Hash Algorithm</td>
+                  <td id="summaryAlgo" style="padding:9px;">SHA-256</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--color-border);">
+                  <td style="padding:9px; font-weight:bold; color:var(--color-primary);">SHA-256 Hash</td>
+                  <td id="summaryHash" style="padding:9px; word-break:break-all;">Waiting...</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--color-border);">
+                  <td style="padding:9px; font-weight:bold; color:var(--color-primary);">Signature</td>
+                  <td id="summarySigStatus" style="padding:9px;">Not generated</td>
+                </tr>
+                <tr>
+                  <td style="padding:9px; font-weight:bold; color:var(--color-primary);">Verification</td>
+                  <td id="summaryVerifyStatus" style="padding:9px;">Not performed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. ASSESSMENT / QUIZ -->
+      <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+        <div class="quiz-panel">
+          <h2>Assessment / Quiz</h2>
+          <p class="section-intro">
+            Answer the following 10 MCQs. The assessment focuses mainly
+            on SHA-256 hashing and its role in message integrity and
+            digital signatures.
+          </p>
+
+          <form id="quizForm">
+            <!-- Q1 -->
+            <div class="quiz-question">
+              <p><strong>1. What is the main purpose of SHA-256?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q1" value="a"> A. To encrypt a message so that only the receiver can read it</label>
+              <label class="quiz-option"><input type="radio" name="q1" value="b"> B. To convert a message into a fixed-size hash value</label>
+              <label class="quiz-option"><input type="radio" name="q1" value="c"> C. To generate an RSA private key</label>
+              <label class="quiz-option"><input type="radio" name="q1" value="d"> D. To convert hexadecimal into Base64</label>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-question">
+              <p><strong>2. What is the output size of SHA-256?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q2" value="a"> A. 64 bits</label>
+              <label class="quiz-option"><input type="radio" name="q2" value="b"> B. 128 bits</label>
+              <label class="quiz-option"><input type="radio" name="q2" value="c"> C. 256 bits</label>
+              <label class="quiz-option"><input type="radio" name="q2" value="d"> D. 1024 bits</label>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-question">
+              <p><strong>3. A SHA-256 hash is commonly described as a digital ______ of the original message.</strong></p>
+              <label class="quiz-option"><input type="radio" name="q3" value="a"> A. Fingerprint</label>
+              <label class="quiz-option"><input type="radio" name="q3" value="b"> B. Encryption key</label>
+              <label class="quiz-option"><input type="radio" name="q3" value="c"> C. Password</label>
+              <label class="quiz-option"><input type="radio" name="q3" value="d"> D. Certificate</label>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-question">
+              <p><strong>4. What happens to a SHA-256 hash if one character of the input message is changed?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q4" value="a"> A. Only the first character of the hash changes</label>
+              <label class="quiz-option"><input type="radio" name="q4" value="b"> B. The hash normally changes significantly</label>
+              <label class="quiz-option"><input type="radio" name="q4" value="c"> C. The hash remains unchanged</label>
+              <label class="quiz-option"><input type="radio" name="q4" value="d"> D. SHA-256 automatically decrypts the message</label>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-question">
+              <p><strong>5. Which property of cryptographic hashing causes a small input change to produce a very different output hash?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q5" value="a"> A. Avalanche effect</label>
+              <label class="quiz-option"><input type="radio" name="q5" value="b"> B. Modularity</label>
+              <label class="quiz-option"><input type="radio" name="q5" value="c"> C. Encryption</label>
+              <label class="quiz-option"><input type="radio" name="q5" value="d"> D. Base64 encoding</label>
+            </div>
+
+            <!-- Q6 -->
+            <div class="quiz-question">
+              <p><strong>6. Why is SHA-256 useful for checking message integrity?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q6" value="a"> A. It hides the message completely</label>
+              <label class="quiz-option"><input type="radio" name="q6" value="b"> B. A changed message produces a different digest</label>
+              <label class="quiz-option"><input type="radio" name="q6" value="c"> C. It generates the RSA public key</label>
+              <label class="quiz-option"><input type="radio" name="q6" value="d"> D. It converts a hash into plaintext</label>
+            </div>
+
+            <!-- Q7 -->
+            <div class="quiz-question">
+              <p><strong>7. If two identical messages are given to SHA-256, what should their hash values be?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q7" value="a"> A. Different every time</label>
+              <label class="quiz-option"><input type="radio" name="q7" value="b"> B. The same</label>
+              <label class="quiz-option"><input type="radio" name="q7" value="c"> C. One will be encrypted</label>
+              <label class="quiz-option"><input type="radio" name="q7" value="d"> D. Both will become RSA keys</label>
+            </div>
+
+            <!-- Q8 -->
+            <div class="quiz-question">
+              <p><strong>8. In the hash-then-sign process, what is created before the RSA signature?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q8" value="a"> A. SHA-256 digest</label>
+              <label class="quiz-option"><input type="radio" name="q8" value="b"> B. Base64 password</label>
+              <label class="quiz-option"><input type="radio" name="q8" value="c"> C. RSA ciphertext</label>
+              <label class="quiz-option"><input type="radio" name="q8" value="d"> D. Digital certificate</label>
+            </div>
+
+            <!-- Q9 -->
+            <div class="quiz-question">
+              <p><strong>9. Which key does the sender use to create the RSA digital signature?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q9" value="a"> A. The sender's private key</label>
+              <label class="quiz-option"><input type="radio" name="q9" value="b"> B. The receiver's private key</label>
+              <label class="quiz-option"><input type="radio" name="q9" value="c"> C. The sender's public key</label>
+              <label class="quiz-option"><input type="radio" name="q9" value="d"> D. The SHA-256 digest itself</label>
+            </div>
+
+            <!-- Q10 -->
+            <div class="quiz-question">
+              <p><strong>10. Which key does the receiver use to verify the signature?</strong></p>
+              <label class="quiz-option"><input type="radio" name="q10" value="a"> A. The receiver's private key</label>
+              <label class="quiz-option"><input type="radio" name="q10" value="b"> B. The sender's private key</label>
+              <label class="quiz-option"><input type="radio" name="q10" value="c"> C. The sender's public key</label>
+              <label class="quiz-option"><input type="radio" name="q10" value="d"> D. A shared secret password</label>
+            </div>
+
+            <button type="submit">Submit Quiz</button>
+          </form>
+
+          <div id="quizResult" class="quiz-score" aria-live="polite">
+            Submit the quiz to see your score.
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. REFERENCES -->
+      <section id="references" class="tab-content" data-tab-panel="references" hidden>
+        <div class="content-placeholder">
+          <h2>References</h2>
+          <ol class="ref-list">
+            <li>
+              R. L. Rivest, A. Shamir, and L. Adleman, "A Method for Obtaining
+              Digital Signatures and Public-Key Cryptosystems,"
+              <em>Communications of the ACM</em>, vol. 21, no. 2,
+              pp. 120&ndash;126, Feb. 1978.
+            </li>
+            <li>
+              National Institute of Standards and Technology,
+              <em>FIPS PUB 180-4: Secure Hash Standard (SHS)</em>,
+              Aug. 2015. DOI: 10.6028/NIST.FIPS.180-4.
+            </li>
+            <li>
+              National Institute of Standards and Technology,
+              <em>FIPS PUB 186-5: Digital Signature Standard (DSS)</em>,
+              Feb. 2023. DOI: 10.6028/NIST.FIPS.186-5.
+            </li>
+            <li>
+              K. Moriarty, B. Kaliski, J. Jonsson, and A. Rusch,
+              <em>RFC 8017: PKCS #1: RSA Cryptography Specifications
+              Version 2.2</em>, IETF, Nov. 2016.
+              <a href="https://www.rfc-editor.org/rfc/rfc8017" target="_blank" rel="noopener">https://www.rfc-editor.org/rfc/rfc8017</a>
+            </li>
+            <li>
+              W. Stallings, <em>Cryptography and Network Security:
+              Principles and Practice</em>, 8th ed. Pearson, 2020
+              (chapters on Hash Functions, Public-Key Cryptography and RSA,
+              and Digital Signatures).
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 7. FEEDBACK -->
+      <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+        <div class="content-placeholder">
+          <h2>Feedback</h2>
+          <p>Please share your feedback regarding this experiment simulation.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- COMMON JS -->
+  <script src="../../js/common.js"></script>
+
+  <!-- CRYPTOGRAPHIC LIBRARIES -->
+  <script src="../../js/vendor/crypto-js.min.js"></script>
+  <script src="../../js/vendor/forge.min.js"></script>
+
+  <!-- EXPERIMENT LOGIC -->
+  <script src="script.js"></script>
+</body>
+
 </html>
