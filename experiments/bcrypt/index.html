@@ -3,10 +3,19 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="Virtual Cryptography Laboratory experiment - Bcrypt Password Hashing and Security Analysis">
+    <title>Bcrypt Password Hashing | Virtual Cryptography Laboratory</title>
+    
+    <!-- Portal Theme Stylesheets -->
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    
+    <!-- Experiment Scoped Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Bcrypt Library (Local Vendor with CDN Fallback) -->
+    <script src="../../js/vendor/bcrypt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -19,59 +28,1799 @@
     <div class="experiment-container">
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems &middot; Group 11</p>
+        <h1 id="exp-title">Bcrypt Password Hashing &amp; Security Analysis</h1>
+        <p id="exp-description">Implement bcrypt adaptive password hashing and verification, evaluate salt randomness and non-determinism, analyze exponential cost factor scaling, inspect modular hash string formatting, and investigate the 72-byte key truncation limit.</p>
+
+        <!-- Learner Quickstart Action Strip -->
+        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+          <button type="button" class="b-concept-badge" id="bBtnOpenGuide" class="b-concept-badge">Quickstart Guide</button>
+          <button type="button" class="b-concept-badge" id="bBtnOpenGlossary" >Concept Glossary</button>
+          <button type="button" class="b-concept-badge warning" id="bBtnOpenFeistel" >Eksblowfish &amp; Cache Architecture</button>
+        </div>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
+
+        <!-- ==========================================
+             TAB 1: AIM & OBJECTIVES
+             ========================================== -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
           <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+            <h2>Aim &amp; Objectives</h2>
+            
+            <div class="b-callout info">
+              <p><strong>Aim:</strong> To study, implement, and analyze the <strong>Bcrypt adaptive password hashing algorithm</strong>. This includes understanding the role of cryptographic salts in defeating rainbow table attacks, evaluating the exponential work factor formula (2<sup>Cost Factor</sup>), parsing modular hash string components, verifying passwords client-side, and analyzing the 72-byte key truncation limitation inherent to Eksblowfish.</p>
+            </div>
+
+            <h3>Learning Objectives</h3>
+            <p>Upon completing this laboratory module, students will be able to:</p>
+            <ul>
+              <li><strong>Differentiate Hashing from Encryption:</strong> Articulate the theoretical and practical differences between irreversible one-way hash digests and reversible two-way ciphertexts.</li>
+              <li><strong>Evaluate Fast vs. Slow Hashing Vulnerabilities:</strong> Explain why high-throughput algorithms (MD5, SHA-1, SHA-256) are dangerous for password storage due to GPU-accelerated brute-force attacks computing billions of hashes per second.</li>
+              <li><strong>Analyze Salt Entropy &amp; Non-Determinism:</strong> Demonstrate how unique 128-bit random salts prevent duplicate password correlation in breached databases and neutralize precomputed lookup (rainbow) tables.</li>
+              <li><strong>Formulate the Work Factor Scaling:</strong> Calculate the exponential relationship between the cost factor parameter <em>C</em> and the internal key expansion rounds (2<sup>C</sup>).</li>
+              <li><strong>Dissect Modular Hash Formatting:</strong> Parse and decode standard 60-character Bcrypt output strings into algorithm prefix, cost factor, Radix-64 encoded salt, and ciphertext digest.</li>
+              <li><strong>Investigate Eksblowfish Key Limits:</strong> Identify the 72-byte password length boundary and implement the industry-standard SHA-256 pre-hashing mitigation pattern.</li>
+            </ul>
+
+            <h3>Assigned Student Group</h3>
+            <div class="b-card" style="margin-top: 20px;">
+              <p style="margin: 0;"><strong>Group 11:</strong> Shwet Shigwan, Daksh Shetty &bull; <em>group-bcrypt</em></p>
+              <p style="margin: 4px 0 0; font-size: 0.88rem; color: var(--color-text-muted);">Department of Computer Engineering &bull; Fr. Conceicao Rodrigues College of Engineering</p>
+            </div>
           </div>
         </section>
 
+        <!-- ==========================================
+             TAB 2: THEORY
+             ========================================== -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder">
+            <h2>Cryptographic Theory &amp; Foundations</h2>
+            <p class="b-lead">Explore the theoretical mechanisms behind adaptive key stretching, salt injection, and password storage security.</p>
+
+            <!-- Subtab Navigation for Theory Topics -->
+            <div class="b-subtabs">
+              <button type="button" class="b-subtab-btn active" data-subtab="sub-hashing-vs-enc">1. Hashing vs Encryption</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-why-bcrypt">2. Why Bcrypt? (Fast vs Slow)</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-salt-work">3. Salt &amp; Work Factor</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-hash-structure">4. Modular Hash Anatomy</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-72byte">5. The 72-Byte Limit</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-eksblowfish">6. Eksblowfish Architecture</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-revisions">7. Revisions (<code>$2a</code>, <code>$2y</code>, <code>$2b</code>)</button>
+              <button type="button" class="b-subtab-btn" data-subtab="sub-modern-kdfs">8. Modern KDFs &amp; Pepper</button>
+            </div>
+
+            <!-- Subpane 1: Hashing vs Encryption -->
+            <div class="b-subpane active" id="sub-hashing-vs-enc">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">1. Hashing versus Encryption</h3>
+                <button type="button" class="b-concept-badge" data-modal="bModalGlossary">Open Terminology Glossary</button>
+              </div>
+              <p>A common misconception in system security is confusing <strong>hashing</strong> with <strong>encryption</strong>. Both use cryptographic mathematical primitives, but their mathematical properties and reversibility are completely opposite:</p>
+              
+              <div class="b-grid-2">
+                <div class="b-card">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Cryptographic Hashing</h4>
+                  <p><strong>Property:</strong> Strictly One-Way (Irreversible)</p>
+                  <p>A cryptographic hash function <em>H(m) = h</em> deterministically transforms an arbitrary-length message $m$ into a fixed-length bit string $h$. There is no secret key that can invert $h$ back to $m$.</p>
+                  <ul>
+                    <li><strong>Primary Goal:</strong> Data integrity verification &amp; non-recoverable authentication.</li>
+                    <li><strong>Input/Output:</strong> Arbitrary input &rarr; fixed output length (e.g. 60 chars in Bcrypt).</li>
+                    <li><strong>Typical Applications:</strong> Password databases, digital signatures, blockchain proof-of-work.</li>
+                  </ul>
+                </div>
+                <div class="b-card">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Encryption &amp; Decryption</h4>
+                  <p><strong>Property:</strong> Two-Way (Reversible via Key)</p>
+                  <p>An encryption cipher <em>E<sub>k</sub>(m) = c</em> scrambles plaintext $m$ into ciphertext $c$. Knowledge of the corresponding decryption key $k$ allows exact mathematical restoration of <em>m = D<sub>k</sub>(c)</em>.</p>
+                  <ul>
+                    <li><strong>Primary Goal:</strong> Confidentiality during data transmission or at-rest storage.</li>
+                    <li><strong>Input/Output:</strong> Ciphertext size is proportional to plaintext length.</li>
+                    <li><strong>Typical Applications:</strong> HTTPS/TLS tunnels, VPNs, BitLocker disk encryption, end-to-end messaging.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="b-callout warning">
+                <strong>Key Takeaway:</strong> User passwords must <em>never</em> be encrypted. If an attacker breaches the database and discovers the decryption key, all passwords are immediately exposed. Passwords must always be <em>hashed with slow, salted key derivation functions</em> so that even if the entire database leaks, the original plaintext passwords cannot be reversed.
+              </div>
+            </div>
+
+            <!-- Subpane 2: Why Bcrypt? -->
+            <div class="b-subpane" id="sub-why-bcrypt">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">2. Why Bcrypt? The Vulnerability of Fast Hashing</h3>
+                <button type="button" class="b-concept-badge danger" data-modal="bModalFeistel">⚡ Why GPUs Cannot Easily Parallelize Bcrypt</button>
+              </div>
+              <p>Algorithms like <strong>MD5</strong>, <strong>SHA-1</strong>, and <strong>SHA-256</strong> were created for <em>high-throughput data integrity</em> — verifying file checksums over gigabytes of data as quickly as possible. When applied to passwords, this efficiency is catastrophic.</p>
+
+              <div class="b-grid-3">
+                <div class="b-card" style="text-align:center;">
+                  <span style="font-size:1.4rem; font-weight:800; color:#ef4444; font-family:var(--font-mono, monospace);">100B+ / sec</span>
+                  <p style="margin:4px 0 0; font-size:0.84rem; color:var(--color-text-muted);">SHA-256 computations/sec on modern GPU rigs</p>
+                </div>
+                <div class="b-card" style="text-align:center;">
+                  <span style="font-size:1.4rem; font-weight:800; color:#f59e0b; font-family:var(--font-mono, monospace);">130K+ / sec</span>
+                  <p style="margin:4px 0 0; font-size:0.84rem; color:var(--color-text-muted);">MD5 hashes/sec per basic cluster</p>
+                </div>
+                <div class="b-card" style="text-align:center;">
+                  <span style="font-size:1.4rem; font-weight:800; color:#22c55e; font-family:var(--font-mono, monospace);">~10 / sec</span>
+                  <p style="margin:4px 0 0; font-size:0.84rem; color:var(--color-text-muted);">Bcrypt (Cost 10) intentionally throttled for defense</p>
+                </div>
+              </div>
+
+              <div class="b-callout danger">
+                <strong>The GPU Brute-Force Threat:</strong> At 100 billion SHA-256 hashes per second, an attacker can exhaust all 8-character password combinations (letters, digits, and symbols = &approx; 6.7 &times; 10<sup>12</sup> combinations) in <strong>under 70 seconds</strong>. The same attack against Bcrypt at cost 10 requires <strong>over 21 years</strong> of continuous GPU execution.
+              </div>
+
+              <h3>Provos and Mazières Design (1999)</h3>
+              <p>Presented at the USENIX Annual Technical Conference by Niels Provos and David Mazières at OpenBSD, Bcrypt introduces two defenses:</p>
+              <ul>
+                <li><strong>Key Stretching:</strong> Thousands of iterative Blowfish cipher key expansions intentionally consume CPU clock cycles and memory registers.</li>
+                <li><strong>Configurable Work Factor:</strong> An adaptive cost parameter allowing administrators to scale computation work higher over time as computing hardware becomes more powerful.</li>
+              </ul>
+            </div>
+
+            <!-- Subpane 3: Salt & Work Factor -->
+            <div class="b-subpane" id="sub-salt-work">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">3. Cryptographic Salt &amp; Exponential Work Factor Scaling</h3>
+                <button type="button" class="b-concept-badge" data-modal="bModalSaltEntropy">Salt Entropy &amp; Rainbow Tables Deep Dive</button>
+              </div>
+              <p>A <strong>Cryptographic Salt</strong> is a unique 128-bit (16-byte) random value generated by a cryptographically secure pseudorandom number generator (CSPRNG) for each password. Bcrypt automatically embeds this salt into the final output string.</p>
+
+              <div class="b-grid-2">
+                <div class="b-card">
+                  <h4>1. Defeats Rainbow Tables</h4>
+                  <p>Precomputed hash lookup tables (rainbow tables) map millions of plaintext passwords to their precalculated hashes. Because each user has a unique 128-bit salt, an attacker must compute a custom rainbow table of 2<sup>128</sup> entries specifically for that single user, rendering precomputation economically impossible.</p>
+                </div>
+                <div class="b-card">
+                  <h4>2. Prevents Hash Correlation</h4>
+                  <p>Without a salt, two users choosing the same password (e.g. <code>Secret123</code>) produce identical hashes in the database. With unique salts, identical passwords produce completely different, uncorrelated hash strings.</p>
+                </div>
+              </div>
+
+              <h3>The Exponential Work Formula</h3>
+              <p>Bcrypt's Blowfish key expansion loop scale exponentially with the cost parameter <em>C</em>:</p>
+              
+              <div class="b-card" style="text-align:center; font-size:1.3rem; font-weight:700; color:var(--color-primary);">
+                <div class="b-card" style="text-align:center; font-size:1.15rem; font-weight:700; color:var(--color-primary);">Iterations = 2<sup>Cost Factor</sup></div>
+              </div>
+
+              <div class="b-table-wrap">
+<table class="b-table">
+                <thead>
+                  <tr>
+                    <th>Cost Factor ($C$)</th>
+                    <th>Formula</th>
+                    <th>Iterations</th>
+                    <th>Typical Latency</th>
+                    <th>Recommended Application</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>4</strong></td>
+                    <td>2<sup>4</sup></td>
+                    <td>16</td>
+                    <td>~1 ms</td>
+                    <td>Unit testing only</td>
+                  </tr>
+                  <tr>
+                    <td><strong>8</strong></td>
+                    <td>2<sup>8</sup></td>
+                    <td>256</td>
+                    <td>~15 ms</td>
+                    <td>Resource-constrained legacy microcontrollers</td>
+                  </tr>
+                  <tr>
+                    <td><strong>10</strong></td>
+                    <td>2<sup>10</sup></td>
+                    <td>1,024</td>
+                    <td>~100 ms</td>
+                    <td><strong style="color:#86efac;">✓ Recommended Production Baseline</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>12</strong></td>
+                    <td>2<sup>12</sup></td>
+                    <td>4,096</td>
+                    <td>~400 ms</td>
+                    <td>High-security applications &amp; administrative logins</td>
+                  </tr>
+                  <tr>
+                    <td><strong>14</strong></td>
+                    <td>2<sup>14</sup></td>
+                    <td>16,384</td>
+                    <td>~1.6 s</td>
+                    <td>Government &amp; financial transaction vaults</td>
+                  </tr>
+                </tbody>
+              </table>
+</div>
+            </div>
+
+            <!-- Subpane 4: Modular Hash Anatomy -->
+            <div class="b-subpane" id="sub-hash-structure">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">4. Dissecting the 60-Character Bcrypt Hash String</h3>
+                <button type="button" class="b-concept-badge warning" data-modal="bModalRevisions">Why $2b$ and not $2a$? (Revision History)</button>
+              </div>
+              <p>Bcrypt packages all information required for password authentication into a single 60-character ASCII string using Radix-64 encoding:</p>
+
+              <div class="b-card" style="text-align:center;">
+                <div class="b-mono" style="font-size:1.2rem; line-height:2.2; padding:12px; background:var(--color-background); border-radius:6px; border:1px solid var(--color-border);">
+                  <span style="color:#d4a373; font-weight:800;">$2b$</span><span style="color:#f59e0b; font-weight:800;">10$</span><span style="color:#c084fc;">N9qo8uLOickgx2ZMRZoMye</span><span style="color:#4ade80;">IjZAgcfl7p92ldGxad68LJZdL17lhWy</span>
+                </div>
+              </div>
+
+              <div class="b-grid-4">
+                <div class="b-card">
+                  <span style="color:#d4a373; font-weight:700;" class="b-mono">$2b$</span>
+                  <h4 style="margin:6px 0;">Algorithm Version</h4>
+                  <p style="font-size:0.86rem; color:var(--color-text-muted);">OpenBSD revision B (2014), which fixed a signed char wraparound security bug present in older <code>$2a$</code> implementations.</p>
+                </div>
+                <div class="b-card">
+                  <span style="color:#f59e0b; font-weight:700;" class="b-mono">10$</span>
+                  <h4 style="margin:6px 0;">Cost Factor</h4>
+                  <p style="font-size:0.86rem; color:var(--color-text-muted);">Two decimal digits indicating work factor <em>C</em> = 10 (2<sup>10</sup> = 1,024 rounds of key schedule loop).</p>
+                </div>
+                <div class="b-card">
+                  <span style="color:#c084fc; font-weight:700;" class="b-mono">22 Characters</span>
+                  <h4 style="margin:6px 0;">128-bit Salt</h4>
+                  <p style="font-size:0.86rem; color:var(--color-text-muted);">16 raw bytes of CSPRNG random salt mapped to 22 Radix-64 characters.</p>
+                </div>
+                <div class="b-card">
+                  <span style="color:#4ade80; font-weight:700;" class="b-mono">31 Characters</span>
+                  <h4 style="margin:6px 0;">192-bit Digest</h4>
+                  <p style="font-size:0.86rem; color:var(--color-text-muted);">24 raw bytes resulting from 64 rounds of Blowfish encryption of constant text, Radix-64 encoded.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subpane 5: The 72-Byte Limit -->
+            <div class="b-subpane" id="sub-72byte">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">5. The 72-Byte Password Limitation in Eksblowfish</h3>
+                <button type="button" class="b-concept-badge danger" data-modal="bModalTruncation">Technical Root Cause of 72-Byte Truncation</button>
+              </div>
+              <p>Bcrypt is based on <strong>Eksblowfish</strong> (Expensive Key Schedule Blowfish). The Blowfish cipher was designed in 1993 with a maximum key schedule buffer of 448 bits = <strong>56 to 72 bytes</strong>. In Bcrypt, any input password exceeding 72 bytes is <em>silently truncated</em>.</p>
+
+              <div class="b-card" style="background:var(--color-background);">
+                <h4 style="margin-top:0;">Silent Truncation Vulnerability</h4>
+                <p class="b-mono" style="font-size:0.88rem; margin:6px 0;">Password 1: "A" &times; 72 bytes + <span style="color:#ef4444; background:rgba(239,68,68,0.2); padding:2px 4px; border-radius:3px;">"SecretTail1"</span></p>
+                <p class="b-mono" style="font-size:0.88rem; margin:6px 0;">Password 2: "A" &times; 72 bytes + <span style="color:#ef4444; background:rgba(239,68,68,0.2); padding:2px 4px; border-radius:3px;">"DifferentTail2"</span></p>
+                <p style="color:#ef4444; font-weight:700; font-size:0.9rem; margin-top:10px;">&equals; Both produce the EXACT SAME Bcrypt hash digest!</p>
+              </div>
+
+              <h3>Industry Workaround: SHA-256 Pre-Hashing</h3>
+              <p>Modern web frameworks (e.g. Django, Laravel, Ruby on Rails) handle this limitation by pre-hashing passwords using SHA-256 before passing them to Bcrypt:</p>
+              
+              <div class="b-callout info">
+                <p class="b-mono" style="margin:0;"><strong>User Password (Arbitrary Length) &rarr; SHA-256 Digest (32 raw bytes) &rarr; Base64 Encode (44 ASCII chars) &rarr; Bcrypt Input (44 &lt; 72 bytes [Mitigated])</strong></p>
+                <p style="margin:8px 0 0; font-size:0.86rem;">Because SHA-256 is collision-resistant and always produces exactly 32 bytes, the 44-character Base64 string fits safely within the 72-byte ceiling while preserving the uniqueness of any password length.</p>
+              </div>
+            </div>
+
+            <!-- Subpane 6: Eksblowfish Architecture (NEW) -->
+            <div class="b-subpane" id="sub-eksblowfish">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">6. Eksblowfish Architecture: Subkeys, P-Arrays &amp; 4KB L1 Cache Footprint</h3>
+                <button type="button" class="b-concept-badge warning" data-modal="bModalFeistel">View Feistel Network Diagram</button>
+              </div>
+              <p>Standard Blowfish uses a fast key schedule, which would make it weak against brute force. Provos and Mazières replaced it with <strong>Eksblowfish</strong> (<em>Expensive Key Schedule Blowfish</em>), turning key setup into an intentionally heavy computational bottleneck.</p>
+
+              <div class="b-grid-2">
+                <div class="b-card">
+                  <h4>Internal State Components</h4>
+                  <ul>
+                    <li><strong>P-Array:</strong> 18 32-bit subkeys (<em>P</em><sub>1</sub>, <em>P</em><sub>2</sub>, &hellip;, <em>P</em><sub>18</sub> = 72 bytes).</li>
+                    <li><strong>Four S-Boxes (<em>S</em><sub>1</sub>, <em>S</em><sub>2</sub>, <em>S</em><sub>3</sub>, <em>S</em><sub>4</sub>):</strong> Each S-box holds 256 32-bit words (4 &times; 256 &times; 4 bytes = 4,096 bytes = 4 KB).</li>
+                    <li><strong>Total Working State:</strong> Exactly <strong>4,168 bytes</strong>.</li>
+                  </ul>
+                  <p style="font-size:0.88rem; color:var(--color-text-muted);">This state is initialized with digits from the fractional part of &pi;, ensuring "nothing-up-my-sleeve" cryptographic constants.</p>
+                </div>
+
+                <div class="b-card">
+                  <h4>Why the 4KB Cache Size Deters GPUs</h4>
+                  <p>In standard algorithms (like MD5 or SHA-256), the internal state is only 64 bytes, fitting entirely inside small registers. A modern GPU can run thousands of parallel threads simultaneously.</p>
+                  <p>In Bcrypt, each thread requires its own <strong>4KB working set</strong> in high-speed L1 cache. Because GPU Streaming Multiprocessors (SMs) share limited L1/shared memory, the GPU quickly runs out of cache and experiences catastrophic memory thrashing, severely limiting parallel cracking throughput!</p>
+                </div>
+              </div>
+
+              <h3>The Eksblowfish Key Expansion Loop</h3>
+              <p>During key stretching, the algorithm alternates between encrypting subkeys with the salt and with the password:</p>
+              <div class="b-card" style="background:var(--color-background); font-family:var(--font-mono, monospace); font-size:0.86rem; line-height:1.7;">
+                state = InitStateWithPiDigits()<br>
+                state = ExpandKey(state, salt, password)<br>
+                <strong>repeat 2<sup>Cost</sup> times:</strong><br>
+                &nbsp;&nbsp;state = ExpandKey(state, 0, password)<br>
+                &nbsp;&nbsp;state = ExpandKey(state, 0, salt)<br>
+                return state
+              </div>
+              <div class="b-callout tip">
+                <strong>Pro Tip:</strong> Notice that both the password AND the salt are fed into the state repeatedly in every one of the 2<sup>C</sup> iterations. An attacker cannot precompute any intermediate state without knowing both!
+              </div>
+            </div>
+
+            <!-- Subpane 7: Revisions History (NEW) -->
+            <div class="b-subpane" id="sub-revisions">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">7. Evolution of Bcrypt Revisions: <code>$2</code>, <code>$2a</code>, <code>$2x</code>, <code>$2y</code>, and <code>$2b</code></h3>
+                <button type="button" class="b-concept-badge" data-modal="bModalRevisions">Prefix Revision History</button>
+              </div>
+              <p>Over the past 25 years, subtle implementation discrepancies and software bugs led to multiple revision prefixes in the modular format:</p>
+
+              <div class="b-table-wrap">
+<table class="b-table">
+                <thead>
+                  <tr>
+                    <th>Prefix</th>
+                    <th>Year &amp; Origin</th>
+                    <th>Characteristics &amp; Historical Context</th>
+                    <th>Security Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>$2$</code></td>
+                    <td>1999 (OpenBSD)</td>
+                    <td>Original specification by Provos &amp; Mazières. Rarely seen today.</td>
+                    <td><span style="color:#f59e0b; font-weight:700;">Deprecated</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>$2a$</code></td>
+                    <td>Early 2000s</td>
+                    <td>Added UTF-8 string handling. Discrepancies arose in how libraries handled characters with high bits.</td>
+                    <td><span style="color:#f59e0b; font-weight:700;">Legacy</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>$2x$</code></td>
+                    <td>2011 (PHP 5.3)</td>
+                    <td>Buggy <code>crypt_blowfish</code> implementation: characters with 8th bit set caused sign extension, reducing effective password entropy to 7 bits.</td>
+                    <td><span style="color:#ef4444; font-weight:700;">Vulnerable</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>$2y$</code></td>
+                    <td>2011 (PHP 5.3.7)</td>
+                    <td>Introduced specifically by PHP developers to mark hashes generated with the sign-extension bug fixed.</td>
+                    <td><span style="color:#86efac; font-weight:700;">Acceptable</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>$2b$</code></td>
+                    <td>2014 (OpenBSD)</td>
+                    <td>Fixed a password buffer length wraparound bug where length % 256 allowed 255-byte overflows. The current gold standard across all modern languages.</td>
+                    <td><span style="color:#86efac; font-weight:700;">✓ Current Standard</span></td>
+                  </tr>
+                </tbody>
+              </table>
+</div>
+            </div>
+
+            <!-- Subpane 8: Modern KDFs & Pepper (NEW) -->
+            <div class="b-subpane" id="sub-modern-kdfs">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0;">8. Modern Password Security: Bcrypt vs. Argon2id, Pepper &amp; Migration</h3>
+                <button type="button" class="b-concept-badge" data-modal="bModalPepper">Pepper vs. Salt Architecture</button>
+              </div>
+              <p>While Bcrypt remains widely used and battle-tested for over two decades, modern authentication security incorporates defense-in-depth measures:</p>
+
+              <div class="b-grid-2">
+                <div class="b-card">
+                  <h4>Salt vs. Pepper Architecture</h4>
+                  <ul>
+                    <li><strong>Salt (Random &amp; Public):</strong> Generated per-user, stored directly in plaintext beside the hash in the database. Primary role: defeats rainbow tables and correlation.</li>
+                    <li><strong>Pepper (Secret &amp; Centralized):</strong> A secret cryptographic HMAC key stored outside the database (e.g. in AWS KMS, Azure Key Vault, or an HSM). Primary role: if the database leaks via SQL injection, the attacker cannot crack the hashes without the Pepper key!</li>
+                  </ul>
+                </div>
+                <div class="b-card">
+                  <h4>Dynamic Re-Hashing on Login</h4>
+                  <p>How do websites upgrade security when changing cost factor from 10 to 12, or migrating from MD5 to Bcrypt?</p>
+                  <p style="font-size:0.88rem; color:var(--color-text-muted);">
+                    Whenever a user logs in, the server verifies the plaintext password against the old hash. If verification succeeds and the server detects the hash uses an outdated cost factor, it transparently computes a fresh hash with the new cost factor and updates the database row.
+                  </p>
+                </div>
+              </div>
+
+              <h3>Algorithm Comparison Matrix</h3>
+              <div class="b-table-wrap">
+<table class="b-table">
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Hardness Type</th>
+                    <th>GPU/ASIC Resistance</th>
+                    <th>Standardization</th>
+                    <th>Current Recommendation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Bcrypt</strong></td>
+                    <td>CPU Hard + 4KB L1 Cache</td>
+                    <td>Good (historically strong, ASICs exist)</td>
+                    <td>OpenBSD / IETF Informational</td>
+                    <td><strong style="color:#86efac;">Recommended &amp; Ubiquitous</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>PBKDF2</strong></td>
+                    <td>Pure CPU Iterations</td>
+                    <td>Poor (GPU/ASIC highly optimized)</td>
+                    <td>NIST SP 800-132 / RFC 8018</td>
+                    <td>Legacy compliance only</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Scrypt</strong></td>
+                    <td>Sequential Memory Hard</td>
+                    <td>Very High (customizable RAM)</td>
+                    <td>RFC 7914</td>
+                    <td>High-security applications</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Argon2id</strong></td>
+                    <td>Time + Memory + Side-Channel Hard</td>
+                    <td>Maximum (Password Hashing Competition Winner)</td>
+                    <td>RFC 9106 / OWASP Tier 1</td>
+                    <td><strong style="color:#86efac;">Modern Gold Standard</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+</div>
+            </div>
+
+            <!-- =============================================================
+                 LEARNER ACTIVE RECALL: INTERACTIVE CONCEPT FLASHCARDS
+                 ============================================================= -->
+            <div style="margin-top:36px; padding-top:24px; border-top:1px solid var(--color-border);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+                <div>
+                  <h3 style="margin:0; color:var(--color-primary);">Interactive Concept Flashcards (Active Recall)</h3>
+                  <p style="margin:4px 0 0; font-size:0.88rem; color:var(--color-text-muted);">Click any card to flip and verify your understanding before attempting the assessment quiz!</p>
+                </div>
+                <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnResetCards">Reset All Cards</button>
+              </div>
+
+              <div class="b-flashcards-grid">
+                <!-- Card 1 -->
+                <div class="b-flashcard" tabindex="0" role="button" aria-label="Flip card 1">
+                  <div class="b-flashcard-inner">
+                    <div class="b-flashcard-front">
+                      <div class="b-flashcard-prompt">
+                        <span>Card 1 &bull; Foundations</span>
+                        <span class="b-card-flip-prompt">Flip Card &rarr;</span>
+                      </div>
+                      <div class="b-flashcard-title">Why can't a database administrator reverse a Bcrypt password hash?</div>
+                      <div class="b-flashcard-hint">Hint: Reversible vs Irreversible functions</div>
+                    </div>
+                    <div class="b-flashcard-back">
+                      <div class="b-flashcard-prompt">
+                        <span>Answer</span>
+                        <span class="b-card-flip-prompt">Answer</span>
+                      </div>
+                      <div style="font-size:0.88rem; line-height:1.5;">
+                        Hashing is mathematically one-way. Unlike encryption, there is no decryption key. Verification works by re-hashing the candidate password with the stored salt and checking for constant-time equality.
+                      </div>
+                      <div class="b-flashcard-hint">Click to flip back</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="b-flashcard" tabindex="0" role="button" aria-label="Flip card 2">
+                  <div class="b-flashcard-inner">
+                    <div class="b-flashcard-front">
+                      <div class="b-flashcard-prompt">
+                        <span>Card 2 &bull; Rainbow Tables</span>
+                        <span class="b-card-flip-prompt">Flip Card &rarr;</span>
+                      </div>
+                      <div class="b-flashcard-title">How does a 128-bit random salt completely defeat precomputed rainbow tables?</div>
+                      <div class="b-flashcard-hint">Hint: Keyspace size of the salt</div>
+                    </div>
+                    <div class="b-flashcard-back">
+                      <div class="b-flashcard-prompt">
+                        <span>Answer</span>
+                        <span class="b-card-flip-prompt">Answer</span>
+                      </div>
+                      <div style="font-size:0.88rem; line-height:1.5;">
+                        A rainbow table precomputes hashes for a specific salt. With 128 random bits, there are 2<sup>128</sup> possible salts (3.4 &times; 10<sup>38</sup>), forcing an attacker to generate a separate multi-terabyte table for each individual user.
+                      </div>
+                      <div class="b-flashcard-hint">Click to flip back</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="b-flashcard" tabindex="0" role="button" aria-label="Flip card 3">
+                  <div class="b-flashcard-inner">
+                    <div class="b-flashcard-front">
+                      <div class="b-flashcard-prompt">
+                        <span>Card 3 &bull; Work Factor</span>
+                        <span class="b-card-flip-prompt">Flip Card &rarr;</span>
+                      </div>
+                      <div class="b-flashcard-title">What mathematically happens when an administrator increases the Cost Factor from 10 to 11?</div>
+                      <div class="b-flashcard-hint">Hint: Exponential formula 2<sup>C</sup></div>
+                    </div>
+                    <div class="b-flashcard-back">
+                      <div class="b-flashcard-prompt">
+                        <span>Answer</span>
+                        <span class="b-card-flip-prompt">Answer</span>
+                      </div>
+                      <div style="font-size:0.88rem; line-height:1.5;">
+                        The work rounds EXACTLY DOUBLE from 2<sup>10</sup> = 1,024 to 2<sup>11</sup> = 2,048 rounds. Computation latency doubles (e.g. ~100ms becomes ~200ms), cutting attacker cracking throughput in half.
+                      </div>
+                      <div class="b-flashcard-hint">Click to flip back</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="b-flashcard" tabindex="0" role="button" aria-label="Flip card 4">
+                  <div class="b-flashcard-inner">
+                    <div class="b-flashcard-front">
+                      <div class="b-flashcard-prompt">
+                        <span>Card 4 &bull; Truncation</span>
+                        <span class="b-card-flip-prompt">Flip Card &rarr;</span>
+                      </div>
+                      <div class="b-flashcard-title">Why does Bcrypt silently truncate passwords exceeding 72 bytes?</div>
+                      <div class="b-flashcard-hint">Hint: Eksblowfish internal cipher buffer</div>
+                    </div>
+                    <div class="b-flashcard-back">
+                      <div class="b-flashcard-prompt">
+                        <span>Answer</span>
+                        <span class="b-card-flip-prompt">Answer</span>
+                      </div>
+                      <div style="font-size:0.88rem; line-height:1.5;">
+                        Blowfish's key schedule structure caps key length at 448 bits = 56 to 72 bytes. Bcrypt processes at most 72 UTF-8 bytes into the P-array; subsequent bytes are ignored.
+                      </div>
+                      <div class="b-flashcard-hint">Click to flip back</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="b-flashcard" tabindex="0" role="button" aria-label="Flip card 5">
+                  <div class="b-flashcard-inner">
+                    <div class="b-flashcard-front">
+                      <div class="b-flashcard-prompt">
+                        <span>Card 5 &bull; Defense-in-Depth</span>
+                        <span class="b-card-flip-prompt">Flip Card &rarr;</span>
+                      </div>
+                      <div class="b-flashcard-title">What is the critical difference between a Salt and a Pepper?</div>
+                      <div class="b-flashcard-hint">Hint: Where are they stored?</div>
+                    </div>
+                    <div class="b-flashcard-back">
+                      <div class="b-flashcard-prompt">
+                        <span>Answer</span>
+                        <span class="b-card-flip-prompt">Answer</span>
+                      </div>
+                      <div style="font-size:0.88rem; line-height:1.5;">
+                        Salts are public, random per-user, and stored in the database. Peppers are secret, server-wide, and stored in a secure key store (KMS/HSM) outside the database to protect against SQL dumps.
+                      </div>
+                      <div class="b-flashcard-hint">Click to flip back</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="b-flashcard" tabindex="0" role="button" aria-label="Flip card 6">
+                  <div class="b-flashcard-inner">
+                    <div class="b-flashcard-front">
+                      <div class="b-flashcard-prompt">
+                        <span>Card 6 &bull; Hardware Hardness</span>
+                        <span class="b-card-flip-prompt">Flip Card &rarr;</span>
+                      </div>
+                      <div class="b-flashcard-title">Why does Eksblowfish's 4KB S-box state hinder massive GPU parallelization?</div>
+                      <div class="b-flashcard-hint">Hint: L1 Cache contention</div>
+                    </div>
+                    <div class="b-flashcard-back">
+                      <div class="b-flashcard-prompt">
+                        <span>Answer</span>
+                        <span class="b-card-flip-prompt">Answer</span>
+                      </div>
+                      <div style="font-size:0.88rem; line-height:1.5;">
+                        Each thread needs 4KB of state in L1 cache. Unlike SHA-256 (64 bytes in registers), thousands of concurrent GPU threads quickly exhaust L1 cache lines, causing memory stalls and drastic slowdown.
+                      </div>
+                      <div class="b-flashcard-hint">Click to flip back</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 3: PROCEDURE
+             ========================================== -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
           <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+            <h2>Step-by-Step Laboratory Procedure</h2>
+            <p class="b-lead">Follow these sequential experimental steps to evaluate Bcrypt in your browser.</p>
+
+            <ol>
+              <li>
+                <strong>Experiment 1: Compute a Bcrypt Hash &amp; Measure Computation Latency</strong>
+                <p>Navigate to the <strong>Simulation</strong> tab. In the <em>Bcrypt Hash Generator</em> card, enter a test password (e.g., <code>Crypt@2026Lab</code>). Select Cost Factor 10 (1,024 rounds). Click <strong>Generate Bcrypt Hash</strong>. Observe the 60-character output, the measured execution time in milliseconds, and the calculated work rounds (2<sup>10</sup>).</p>
+              </li>
+              <li>
+                <strong>Experiment 2: Test Exponential Work Factor Scaling</strong>
+                <p>Generate hashes for the same password using cost factors 4, 8, 10, and 12. Observe how the execution time approximately doubles with each step increase in cost factor.</p>
+              </li>
+              <li>
+                <strong>Experiment 3: Test the 72-Byte Password Limitation</strong>
+                <p>In the password input field, enter a password longer than 72 bytes. Observe the real-time byte counter progress bar turning red and displaying the silent truncation warning.</p>
+              </li>
+              <li>
+                <strong>Experiment 4: Verify Password Matches Client-Side</strong>
+                <p>Click the <strong>Send to Verifier</strong> button to transfer your generated hash to Tool 2 (Password Match Verifier). Verify with the correct password (producing a green MATCH confirmation), then modify one character to observe verification rejection.</p>
+              </li>
+              <li>
+                <strong>Experiment 5: Demonstrate Non-Deterministic Salt Randomness</strong>
+                <p>Scroll down to Tool 3 (Random Salt Demonstration). Click <strong>Run Salt Randomness Test</strong>. Observe that hashing the exact same password three times yields three completely distinct hash strings due to unique 128-bit CSPRNG salts. Click <strong>Verify All 3</strong> to confirm they all validate successfully.</p>
+              </li>
+              <li>
+                <strong>Experiment 6: Parse Hash Subcomponents</strong>
+                <p>Paste any generated hash into Tool 4 (Modular Hash Inspector). Observe the highlighted token breakdown of version, cost factor, salt, and digest.</p>
+              </li>
+              <li>
+                <strong>Experiment 7: Walkthrough the Eksblowfish Pipeline</strong>
+                <p>Step through Tool 5 (5-Stage Eksblowfish Pipeline Stepper) to examine how inputs pass from byte preparation to the final modular Radix-64 assembly.</p>
+              </li>
+              <li>
+                <strong>Experiment 8: Complete Knowledge Assessment</strong>
+                <p>Switch to the <strong>Assessment / Quiz</strong> tab, answer all 10 multiple choice questions, and review the detailed rationales.</p>
+              </li>
+            </ol>
           </div>
         </section>
 
+        <!-- ==========================================
+             TAB 4: SIMULATION (INTERACTIVE WORKBENCH)
+             ========================================== -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
-          </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+              <div>
+                <h2>Interactive Simulation Workbench</h2>
+                <p class="b-lead" style="margin-bottom:0;">Execute live password hashing, match verification, non-deterministic salt tests, modular inspection, internal pipeline stepping, hardware sizing benchmarks, and vulnerability exploits.</p>
+              </div>
+            </div>
+
+            <!-- Learner Guided Tour Banner -->
+            <div class="b-tour-banner">
+              <div class="b-tour-banner-text">
+                <span class="b-tour-tag">Lab Orientation</span>
+                <div>
+                  <strong style="color:var(--color-primary); font-size:1.02rem;">New to Adaptive Key Stretching &amp; Bcrypt?</strong>
+                  <div style="font-size:0.86rem; color:var(--color-text-muted);">
+                    Explore the simulation in sequence: Start by generating a hash, then send it to the verifier, observe salt randomness, and inspect the modular string tokens.
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button type="button" class="b-btn b-btn-primary b-btn-sm" data-modal="bModalGuide">Open Guided Tour</button>
+                <button type="button" class="b-btn b-btn-outline b-btn-sm" data-modal="bModalGlossary">Concept Glossary</button>
+              </div>
+            </div>
+
+            <!-- Interactive Tools Navigation Strip -->
+            <div class="b-card" style="margin-bottom:24px; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:var(--color-surface);">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="b-bold" style="font-size:0.82rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.04em;">Workbench Tools:</span>
+                <a href="#tool-gen" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">1. Generator</a>
+                <a href="#tool-verify" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">2. Verifier</a>
+                <a href="#tool-salt" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">3. Salt Demo</a>
+                <a href="#tool-inspect" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">4. Inspector</a>
+                <a href="#tool-pipeline" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem;">5. Pipeline</a>
+                <a href="#tool-exploit" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-primary);">6. 72-Byte Exploit</a>
+                <a href="#tool-race" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-primary);">7. Hash Race</a>
+                <a href="#tool-bench" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-primary);">8. HW Benchmark</a>
+                <a href="#tool-crack" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-primary);">9. Crack Estimator</a>
+                <a href="#tool-rainbow" class="b-btn b-btn-outline b-btn-sm" style="padding:4px 8px; font-size:0.8rem; border-color:var(--color-primary);">10. Rainbow Table</a>
+              </div>
+              <button type="button" class="b-btn b-btn-primary b-btn-sm" onclick="document.getElementById('bBtnGenReport').click();">
+                Export Lab Journal Report
+              </button>
+            </div>
+
+            <div class="b-grid-2">
+              
+              <!-- Tool 1: Live Hash Generator -->
+              <div class="b-card" id="tool-gen">
+                <div class="b-card-header">
+                  <h3>1. Bcrypt Hash Generator</h3>
+                  <button type="button" class="b-concept-badge" data-modal="bModalLatency">Latency Calculation Model</button>
+                </div>
+                <form id="bGenForm" onsubmit="return false;">
+                  <div class="b-form-group">
+                    <label for="bGenPassword">Plaintext Password:</label>
+                    <div class="b-input-row">
+                      <input type="password" id="bGenPassword" class="b-input" value="Crypt@2026Lab" placeholder="Enter password to hash" autocomplete="off" required>
+                      <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bTogglePwd" style="white-space:nowrap;">Show</button>
+                    </div>
+                    
+                    <div class="b-byte-counter">
+                      <div class="b-byte-label">
+                        <span>Byte Length:</span>
+                        <span id="bByteCount" class="b-bold">13 / 72 bytes</span>
+                      </div>
+                      <div class="b-byte-track">
+                        <div class="b-byte-fill" id="bByteFill"></div>
+                      </div>
+                    </div>
+                    <div class="b-warn-box hidden" id="bTruncWarn">
+                      <strong>Warning:</strong> Password exceeds 72 bytes! Blowfish will silently discard bytes after index 71.
+                    </div>
+                  </div>
+
+                  <div class="b-form-group">
+                    <label for="bCostSelect">Cost Factor (Work Parameter <em>C</em>):</label>
+                    <select id="bCostSelect" class="b-input">
+                      <option value="4">Cost 4 (16 rounds - Instant Test)</option>
+                      <option value="8">Cost 8 (256 rounds - Fast)</option>
+                      <option value="10" selected>Cost 10 (1,024 rounds - Recommended Baseline)</option>
+                      <option value="12">Cost 12 (4,096 rounds - High Security)</option>
+                    </select>
+
+                    <div id="bCostAdvisor" class="b-callout tip" style="margin:8px 0 0; padding:8px 12px; font-size:0.83rem;">
+                      <strong>Work Factor: 2<sup>10</sup> = 1,024 rounds</strong> &bull; Recommended OWASP baseline (balanced security &amp; login speed).
+                    </div>
+                  </div>
+
+                  <button type="submit" class="b-btn b-btn-primary b-btn-block" id="bBtnGen">
+                    Generate Bcrypt Hash
+                  </button>
+                </form>
+
+                <div class="b-result-box" id="bHashResultWrapper">
+                  <div id="bHashPlaceholder" style="text-align:center; color:var(--color-text-muted);">
+                    Click <strong>Generate Bcrypt Hash</strong> to compute output.
+                  </div>
+                  <div id="bHashOutput" class="hidden">
+                    <label class="b-bold" style="font-size:0.82rem; color:var(--color-text-muted);">Bcrypt Output (60 chars):</label>
+                    <div class="b-hash-display" id="bHashText">$2b$10$...</div>
+                    
+                    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                      <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnCopy">Copy Hash</button>
+                      <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnSendVerify">Send to Verifier &rarr;</button>
+                      <button type="button" class="b-concept-badge" data-modal="bModalLatency">Latency Breakdown (<span id="bExpTimeVal">~100 ms</span>)</button>
+                    </div>
+
+                    <div class="b-metric-row">
+                      <div class="b-metric-chip">
+                        <span class="b-metric-val" id="bMetricTime">0.00 ms</span>
+                        <span class="b-metric-label">Execution Time</span>
+                      </div>
+                      <div class="b-metric-chip">
+                        <span class="b-metric-val" id="bMetricRounds">1,024</span>
+                        <span class="b-metric-label">Iterations (2<sup>C</sup>)</span>
+                      </div>
+                      <div class="b-metric-chip">
+                        <span class="b-metric-val" id="bMetricLen">60 chars</span>
+                        <span class="b-metric-label">Hash Length</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tool 2: Password Match Verifier -->
+              <div class="b-card" id="tool-verify">
+                <div class="b-card-header">
+                  <h3>2. Password Match Verifier</h3>
+                  <button type="button" class="b-concept-badge" data-modal="bModalVerifyFlow">Verification Sequence Flow</button>
+                </div>
+                <form id="bVerifyForm" onsubmit="return false;">
+                  <div class="b-form-group">
+                    <label for="bVerifyHash">Target Bcrypt Hash String:</label>
+                    <input type="text" id="bVerifyHash" class="b-input b-mono" placeholder="Paste hash e.g. $2b$10$..." autocomplete="off" required>
+                  </div>
+
+                  <div class="b-form-group">
+                    <label for="bVerifyPwd">Candidate Plaintext Password:</label>
+                    <input type="password" id="bVerifyPwd" class="b-input" placeholder="Enter candidate password" autocomplete="off" required>
+                  </div>
+
+                  <button type="submit" class="b-btn b-btn-brown b-btn-block" id="bBtnVerify">
+                    Verify Password Match
+                  </button>
+                </form>
+
+                <div class="b-result-box" id="bVerifyResultWrapper">
+                  <div id="bVerifyPlaceholder" style="text-align:center; color:var(--color-text-muted);">
+                    Provide a target hash and password to test verification.
+                  </div>
+                  <div id="bVerifyResult" class="hidden">
+                    <div class="b-status-banner success" id="bVerifyBanner">
+                      <div>
+                        <strong id="bVerifyTitle">Result</strong>
+                        <div id="bVerifyDesc" style="font-size:0.88rem;">Description</div>
+                      </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                      <button type="button" class="b-concept-badge" data-modal="bModalVerifyFlow">Verification Internals</button>
+                      <div style="font-size:0.8rem; color:var(--color-text-muted);" id="bVerifyTime">Completed in 0 ms</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Tool 3: Random Salt Demonstration -->
+            <div class="b-card" id="tool-salt">
+              <div class="b-card-header">
+                <h3>3. Random Salt Demonstration (Non-Deterministic Hashing)</h3>
+                <button type="button" class="b-concept-badge" data-modal="bModalSaltEntropy">Salt Entropy Analysis</button>
+              </div>
+              <p>Demonstrate that hashing the <strong>exact same password</strong> multiple times produces <strong>three completely distinct hashes</strong> due to 128-bit CSPRNG salt generation.</p>
+              
+              <div class="b-input-row" style="margin-bottom:18px;">
+                <input type="text" id="bSaltPwd" class="b-input" value="SameSecretPassword123" placeholder="Enter test password">
+                <button type="button" class="b-btn b-btn-primary" id="bBtnSaltDemo" style="white-space:nowrap;">Run Salt Randomness Test</button>
+              </div>
+
+              <div class="b-grid-3">
+                <div class="b-salt-card">
+                  <span class="b-salt-badge">Hash Run #1</span>
+                  <div class="b-mono" style="font-size:0.84rem; color:#86efac; margin-bottom:6px;" id="bSaltHash1">Click button to generate...</div>
+                  <div class="b-mono" style="font-size:0.76rem; color:#c084fc;" id="bSaltVal1">Salt: --</div>
+                </div>
+                <div class="b-salt-card">
+                  <span class="b-salt-badge">Hash Run #2</span>
+                  <div class="b-mono" style="font-size:0.84rem; color:#86efac; margin-bottom:6px;" id="bSaltHash2">Click button to generate...</div>
+                  <div class="b-mono" style="font-size:0.76rem; color:#c084fc;" id="bSaltVal2">Salt: --</div>
+                </div>
+                <div class="b-salt-card">
+                  <span class="b-salt-badge">Hash Run #3</span>
+                  <div class="b-mono" style="font-size:0.84rem; color:#86efac; margin-bottom:6px;" id="bSaltHash3">Click button to generate...</div>
+                  <div class="b-mono" style="font-size:0.76rem; color:#c084fc;" id="bSaltVal3">Salt: --</div>
+                </div>
+              </div>
+
+              <div style="margin-top:16px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                <button type="button" class="b-btn b-btn-outline" id="bBtnVerifySalts" disabled>Verify All 3 Hashes Against Same Password</button>
+                <div id="bSaltVerifyStatus" style="font-size:0.92rem;"></div>
+              </div>
+            </div>
+
+            <!-- Tool 4: Modular Hash Inspector -->
+            <div class="b-card" id="tool-inspect">
+              <div class="b-card-header">
+                <h3>4. Modular Hash String Inspector &amp; Breakdown</h3>
+                <button type="button" class="b-concept-badge warning" data-modal="bModalRevisions">Compare Revisions</button>
+              </div>
+              <p>Paste any 60-character Bcrypt hash to disassemble it into its cryptographic subcomponents.</p>
+
+              <div class="b-form-group">
+                <label for="bInspectInput">Bcrypt Hash String:</label>
+                <input type="text" id="bInspectInput" class="b-input b-mono" value="$2b$10$nOUIs22CharsOfSaltHere...31CharsOfHashDigestHere..." placeholder="Paste hash e.g. $2b$10$...">
+              </div>
+
+              <div class="b-seg-display">
+                <span class="b-seg b-seg-ver clickable" id="bSegVer" data-token="ver" title="Click to view explanation">$2b$</span>
+                <span class="b-seg b-seg-cost clickable" id="bSegCost" data-token="cost" title="Click to view explanation">10$</span>
+                <span class="b-seg b-seg-salt clickable" id="bSegSalt" data-token="salt" title="Click to view explanation">nOUIs22CharsOfSaltHere</span>
+                <span class="b-seg b-seg-digest clickable" id="bSegDigest" data-token="digest" title="Click to view explanation">...31CharsOfHashDigestHere...</span>
+              </div>
+              <p style="text-align:center; font-size:0.8rem; color:var(--color-text-muted); margin:4px 0 16px;"><em>Select any highlighted token above or card below to view its technical specification.</em></p>
+
+              <div class="b-grid-4">
+                <div class="b-seg-card" style="cursor:pointer;" data-token="ver">
+                  <span class="b-seg-tag b-seg-ver">Prefix</span>
+                  <div class="b-bold b-mono" id="bDVer" style="color:#d4a373;">$2b$</div>
+                  <div style="font-size:0.8rem; color:var(--color-text-muted);">OpenBSD Revision B</div>
+                </div>
+                <div class="b-seg-card" style="cursor:pointer;" data-token="cost">
+                  <span class="b-seg-tag b-seg-cost">Cost (C)</span>
+                  <div class="b-bold b-mono" id="bDCost" style="color:#f59e0b;">10</div>
+                  <div style="font-size:0.8rem; color:var(--color-text-muted);" id="bDRounds">2<sup>10</sup> = 1,024 rounds</div>
+                </div>
+                <div class="b-seg-card" style="cursor:pointer;" data-token="salt">
+                  <span class="b-seg-tag b-seg-salt">Salt</span>
+                  <div class="b-bold b-mono" id="bDSalt" style="color:#c084fc;">22 chars</div>
+                  <div style="font-size:0.8rem; color:var(--color-text-muted);">128-bit CSPRNG Salt</div>
+                </div>
+                <div class="b-seg-card" style="cursor:pointer;" data-token="digest">
+                  <span class="b-seg-tag b-seg-digest">Digest</span>
+                  <div class="b-bold b-mono" id="bDDigest" style="color:#4ade80;">31 chars</div>
+                  <div style="font-size:0.8rem; color:var(--color-text-muted);">192-bit Ciphertext Digest</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tool 5: Eksblowfish Pipeline Stepper -->
+            <div class="b-card" id="tool-pipeline">
+              <div class="b-card-header">
+                <h3>5. Internal Eksblowfish Pipeline Stepper</h3>
+                <button type="button" class="b-concept-badge warning" data-modal="bModalFeistel">Eksblowfish State &amp; Cache Architecture</button>
+              </div>
+              <p>Trace the internal sequence of transformations from plaintext input to the final 60-character modular string.</p>
+
+              <div class="b-pipeline-bar">
+                <div class="b-p-step active" data-step="1">
+                  <div class="b-p-num">1</div>
+                  <span class="b-p-lbl">1. Truncate</span>
+                </div>
+                <div class="b-p-line"></div>
+                <div class="b-p-step" data-step="2">
+                  <div class="b-p-num">2</div>
+                  <span class="b-p-lbl">2. 128-bit Salt</span>
+                </div>
+                <div class="b-p-line"></div>
+                <div class="b-p-step" data-step="3">
+                  <div class="b-p-num">3</div>
+                  <span class="b-p-lbl">3. Eksblowfish (2<sup>C</sup>)</span>
+                </div>
+                <div class="b-p-line"></div>
+                <div class="b-p-step" data-step="4">
+                  <div class="b-p-num">4</div>
+                  <span class="b-p-lbl">4. 64 Encrypts</span>
+                </div>
+                <div class="b-p-line"></div>
+                <div class="b-p-step" data-step="5">
+                  <div class="b-p-num">5</div>
+                  <span class="b-p-lbl">5. Radix-64</span>
+                </div>
+              </div>
+
+              <div class="b-pipeline-content-box">
+                <div class="b-p-stage active" id="bStage1">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 1: Input Pre-processing &amp; 72-Byte Validation</h4>
+                  <p>The plaintext password is converted to a UTF-8 byte stream. If the password exceeds 72 bytes, bytes past position 71 are silently discarded due to Blowfish key schedule constraints.</p>
+                  <p class="b-mono" style="font-size:0.88rem; background:var(--color-surface); padding:10px; border-radius:4px; border:1px solid var(--color-border);">
+                    Sample: "Crypt@2026Lab" (13 Bytes) &rarr; Accepted without truncation
+                  </p>
+                </div>
+
+                <div class="b-p-stage" id="bStage2">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 2: 128-bit CSPRNG Salt Generation</h4>
+                  <p>A Cryptographically Secure Pseudorandom Number Generator generates 16 raw random bytes (128 bits). This salt guarantees uniqueness and immunizes the hash against rainbow table precomputation.</p>
+                  <p class="b-mono" style="font-size:0.88rem; color:#c084fc; background:var(--color-surface); padding:10px; border-radius:4px; border:1px solid var(--color-border);">
+                    Raw Salt (16 Bytes): 0xA4 0x7E 0x90 0x12 0x55 0xBC 0x7F 0x3A 0x9B 0x11 0x4E 0xC8 0xD2 0x0F 0x88 0x31
+                  </p>
+                </div>
+
+                <div class="b-p-stage" id="bStage3">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 3: Eksblowfish Key Expansion (2<sup>Cost</sup> Loops)</h4>
+                  <p>Password and salt are iteratively fed into the Expensive Key Schedule (Eksblowfish). The loop runs 2<sup>C</sup> times (e.g. 1,024 rounds at Cost 10), repeatedly interweaving salt and password bytes into the P-array and S-boxes.</p>
+                  <p class="b-mono" style="font-size:0.88rem; color:#d4a373; background:var(--color-surface); padding:10px; border-radius:4px; border:1px solid var(--color-border);">
+                    Iterating 1,024 rounds of state perturbation... [CPU &amp; Memory Hard]
+                  </p>
+                </div>
+
+                <div class="b-p-stage" id="bStage4">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 4: 64 Rounds of Blowfish Encryption</h4>
+                  <p>Using the expanded key state, the constant 192-bit string <code>"OrpheanBeholderScryDoubt"</code> is encrypted 64 times in ECB mode to produce the 24-byte (192-bit) digest.</p>
+                  <p class="b-mono" style="font-size:0.88rem; color:#86efac; background:var(--color-surface); padding:10px; border-radius:4px; border:1px solid var(--color-border);">
+                    Target: "OrpheanBeholderScryDoubt" &rarr; Encrypted to 24 raw bytes
+                  </p>
+                </div>
+
+                <div class="b-p-stage" id="bStage5">
+                  <h4 style="color:var(--color-primary); margin-top:0;">Stage 5: Modular Radix-64 Assembly</h4>
+                  <p>The 16-byte salt (22 Radix-64 characters) and 24-byte digest (31 Radix-64 characters) are joined with prefix <code>$2b$</code> and cost <code>10$</code> to produce the final 60-character string.</p>
+                  <p class="b-mono" style="font-size:0.88rem; color:#86efac; background:var(--color-surface); padding:10px; border-radius:4px; border:1px solid var(--color-border);">
+                    Final: $2b$10$nOUIs22CharsOfSaltHere...31CharsOfHashDigestHere...
+                  </p>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; gap:8px;">
+                  <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnPrevStage" disabled>&larr; Previous</button>
+                  <button type="button" class="b-btn b-btn-primary b-btn-sm" id="bBtnNextStage">Next &rarr;</button>
+                </div>
+                <span id="bStageCounter" style="font-size:0.88rem; color:var(--color-text-muted); font-weight:700;">Stage 1 of 5</span>
+                <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnAutoPipeline" style="color:var(--color-primary); border-color:var(--color-primary);">▶ Auto-Play Pipeline</button>
+              </div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 6: 72-Byte Truncation Exploit & Mitigation
+                 ============================================================= -->
+            <div class="b-card" id="tool-exploit">
+              <div class="b-card-header">
+                <h3>6. 72-Byte Truncation Vulnerability &amp; SHA-256 Mitigation</h3>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <button type="button" class="b-concept-badge danger" data-modal="bModalTruncation">Technical Root Cause</button>
+                  <span class="b-badge" style="background:rgba(220,38,38,0.2); color:#fca5a5; border:1px solid #dc2626;">Security Edge Case</span>
+                </div>
+              </div>
+              <p>Blowfish's internal key schedule buffer caps password keys at 72 bytes. When passwords exceed 72 bytes, characters past byte index 71 are silently discarded! Observe how two passwords with completely different suffixes collide to the <strong>exact same Bcrypt hash</strong>, and how applying SHA-256 pre-hashing mitigates this flaw.</p>
+
+              <div class="b-exploit-box">
+                <div class="b-form-group">
+                  <label for="bExploitBase">Base Shared Prefix (72 Characters 'A'):</label>
+                  <input type="text" id="bExploitBase" class="b-input b-mono" value="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" readonly>
+                </div>
+
+                <div class="b-pass-preview-row">
+                  <div class="b-pass-preview-card">
+                    <label class="b-bold" style="font-size:0.86rem; color:#d4a373;">Password A (Base + Suffix A):</label>
+                    <div class="b-input-row" style="margin-top:6px;">
+                      <input type="text" id="bExploitSuffixA" class="b-input b-mono" value="SecretTail1" placeholder="Suffix A">
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--color-text-muted); margin-top:4px;">
+                      Total: 72 base bytes + 11 suffix bytes = <span class="b-bold" style="color:#fca5a5;">83 bytes (&gt; 72)</span>
+                    </div>
+                  </div>
+
+                  <div class="b-pass-preview-card">
+                    <label class="b-bold" style="font-size:0.86rem; color:#c084fc;">Password B (Base + Suffix B):</label>
+                    <div class="b-input-row" style="margin-top:6px;">
+                      <input type="text" id="bExploitSuffixB" class="b-input b-mono" value="DifferentTail2" placeholder="Suffix B">
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--color-text-muted); margin-top:4px;">
+                      Total: 72 base bytes + 14 suffix bytes = <span class="b-bold" style="color:#fca5a5;">86 bytes (&gt; 72)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin:16px 0;">
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.92rem; font-weight:700;">
+                    <input type="checkbox" id="bTogglePrehash" style="width:18px; height:18px; cursor:pointer;">
+                    <span>Enable SHA-256 Pre-Hashing Defense (Modern Framework Standard)</span>
+                  </label>
+                  <button type="button" class="b-btn b-btn-primary" id="bBtnRunExploit">
+                    Execute 72-Byte Test
+                  </button>
+                </div>
+
+                <div id="bExploitStatus" class="b-status-banner warning" style="margin-top:12px;">
+                  <div>
+                    <strong>Status:</strong> Ready to execute test. Toggle SHA-256 pre-hashing to observe the collision mitigation.
+                  </div>
+                </div>
+
+                <div style="margin-top:14px; background:var(--color-surface); padding:14px; border-radius:6px; border:1px solid var(--color-border);">
+                  <div style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:6px;" id="bExploitSaltUsed">Shared Salt: (Click test to generate)</div>
+                  <div style="margin-bottom:8px;">
+                    <span class="b-bold" style="font-size:0.82rem; color:#d4a373;">Password A Hash:</span>
+                    <div class="b-mono" style="font-size:0.84rem; word-break:break-all; color:var(--color-text);" id="bExploitHashA">Click 'Execute 72-Byte Test' to run...</div>
+                  </div>
+                  <div>
+                    <span class="b-bold" style="font-size:0.82rem; color:#c084fc;">Password B Hash:</span>
+                    <div class="b-mono" style="font-size:0.84rem; word-break:break-all; color:var(--color-text);" id="bExploitHashB">Click 'Execute 72-Byte Test' to run...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 7: Live Hash Race (MD5 vs SHA-256 vs Bcrypt)
+                 ============================================================= -->
+            <div class="b-card" id="tool-race">
+              <div class="b-card-header">
+                <h3>7. Live Hash Race: MD5 vs. SHA-256 vs. Bcrypt</h3>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <button type="button" class="b-concept-badge danger" data-modal="bModalFeistel">⚡ GPU Parallelism</button>
+                  <span class="b-badge" style="background:rgba(169,141,123,0.18); color:#f6f0ec; border:1px solid var(--color-border);">Latency Benchmark</span>
+                </div>
+              </div>
+              <p>Witness why cryptographic design speed determines security. MD5 and SHA-256 are engineered for raw throughput, enabling attackers to guess billions of passwords per second. Bcrypt is engineered with deliberate CPU key stretching.</p>
+
+              <div class="b-input-row" style="margin-bottom:14px;">
+                <input type="text" id="bRacePassword" class="b-input" value="BenchmarkRaceTestPass!2026" placeholder="Enter benchmark candidate string">
+                <button type="button" class="b-btn b-btn-primary" id="bBtnStartRace" style="white-space:nowrap;">
+                  Start 30-Hash Race
+                </button>
+              </div>
+
+              <div class="b-race-container">
+                <!-- MD5 -->
+                <div class="b-race-track">
+                  <div class="b-race-head">
+                    <span class="b-bold" style="color:#ef4444;">1. MD5 (High-Throughput Integrity Hash)</span>
+                    <span class="b-mono" style="font-size:0.85rem;" id="bRaceStatusMD5">Ready (0 ms)</span>
+                  </div>
+                  <div class="b-race-bar-bg">
+                    <div class="b-race-bar-fill md5" id="bRaceBarMD5"></div>
+                  </div>
+                </div>
+
+                <!-- SHA-256 -->
+                <div class="b-race-track">
+                  <div class="b-race-head">
+                    <span class="b-bold" style="color:#f59e0b;">2. SHA-256 (General Cryptographic Hash)</span>
+                    <span class="b-mono" style="font-size:0.85rem;" id="bRaceStatusSHA">Ready (0 ms)</span>
+                  </div>
+                  <div class="b-race-bar-bg">
+                    <div class="b-race-bar-fill sha256" id="bRaceBarSHA"></div>
+                  </div>
+                </div>
+
+                <!-- Bcrypt -->
+                <div class="b-race-track">
+                  <div class="b-race-head">
+                    <span class="b-bold" style="color:#22c55e;">3. Bcrypt Cost 8 (Adaptive Password Key-Stretching)</span>
+                    <span class="b-mono" style="font-size:0.85rem;" id="bRaceStatusBcrypt">Ready (0 ms)</span>
+                  </div>
+                  <div class="b-race-bar-bg">
+                    <div class="b-race-bar-fill bcrypt" id="bRaceBarBcrypt"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="bRaceSummary" class="b-callout info hidden" style="margin-top:14px;"></div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 8: Device Hardware Benchmark & Sizing
+                 ============================================================= -->
+            <div class="b-card" id="tool-bench">
+              <div class="b-card-header">
+                <h3>8. Client Hardware Benchmark &amp; OWASP Server Sizing</h3>
+                <span class="b-badge" style="background:rgba(34,197,94,0.2); color:#86efac; border:1px solid #22c55e;">Hardware Calibration</span>
+              </div>
+              <p>OWASP guidelines recommend calibrating Bcrypt so that a single login hash requires between <strong>250 ms and 500 ms</strong> of CPU execution. Run this non-blocking benchmark to evaluate your specific CPU cores across Cost 4 through Cost 11.</p>
+
+              <button type="button" class="b-btn b-btn-primary" id="bBtnRunBenchmark">
+                Calibrate Current Device (Cost 4 to 11)
+              </button>
+
+              <div class="b-bench-chart" id="bBenchChart">
+                <div style="color:var(--color-text-muted); font-size:0.9rem; padding:12px 0;">Click the calibration button to measure client latency.</div>
+              </div>
+
+              <div id="bBenchRec" class="b-callout info hidden"></div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 9: Offline Brute-Force & GPU Crack Estimator
+                 ============================================================= -->
+            <div class="b-card" id="tool-crack">
+              <div class="b-card-header">
+                <h3>9. Offline Brute-Force &amp; GPU Cluster Crack-Time Calculator</h3>
+                <span class="b-badge" style="background:rgba(192,132,252,0.2); color:#c084fc; border:1px solid #c084fc;">Cryptanalysis Math</span>
+              </div>
+              <p>Calculate total keyspace combinations, password entropy, and realistic time required for an attacker with specialized GPU cracking rigs to break the password at various Bcrypt cost factors.</p>
+
+              <div class="b-grid-2">
+                <div class="b-form-group">
+                  <label for="bCalcPassword">Password Candidate to Evaluate:</label>
+                  <input type="text" id="bCalcPassword" class="b-input" value="SecretPass1" placeholder="Enter password to test complexity">
+                </div>
+
+                <div class="b-form-group">
+                  <label for="bCalcCost">Work Factor Cost (<em>C</em>): <span id="bCalcCostVal" class="b-bold" style="color:var(--color-primary);">10</span> (2<sup>C</sup> Iterations)</label>
+                  <input type="range" id="bCalcCost" min="4" max="16" value="10" step="1" style="width:100%; cursor:pointer;">
+                </div>
+              </div>
+
+              <div class="b-metric-row" style="margin-bottom:16px;">
+                <div class="b-metric-chip">
+                  <span class="b-metric-val" id="bCalcEntropy">60 bits (72 char pool)</span>
+                  <span class="b-metric-label">Information Entropy</span>
+                </div>
+                <div class="b-metric-chip">
+                  <span class="b-metric-val" id="bCalcCombos">1.15e+18</span>
+                  <span class="b-metric-label">Keyspace Combinations (<em>P<sup>L</sup></em>)</span>
+                </div>
+                <div class="b-metric-chip">
+                  <span class="b-metric-val" id="bCalcPowerCost">~$14,200 USD</span>
+                  <span class="b-metric-label">Estimated GPU Electricity Cost</span>
+                </div>
+              </div>
+
+              <div class="b-attack-tier-grid">
+                <div class="b-tier-card">
+                  <span class="b-bold" style="color:var(--color-text-muted); font-size:0.85rem;">Single Attacker CPU</span>
+                  <div class="b-tier-time" id="bCalcCPUTime">--</div>
+                  <div style="font-size:0.78rem; color:var(--color-text-muted);">Standard 8-Core PC (~20 H/s)</div>
+                </div>
+
+                <div class="b-tier-card">
+                  <span class="b-bold" style="color:#f59e0b; font-size:0.85rem;">8&times; NVIDIA RTX 4090 Rig</span>
+                  <div class="b-tier-time" id="bCalcGPUTime" style="color:#f59e0b;">--</div>
+                  <div style="font-size:0.78rem; color:var(--color-text-muted);">Dedicated Hashcat Rig (~160,000 H/s)</div>
+                </div>
+
+                <div class="b-tier-card">
+                  <span class="b-bold" style="color:#ef4444; font-size:0.85rem;">Nation-State GPU Cluster</span>
+                  <div class="b-tier-time" id="bCalcClusterTime" style="color:#ef4444;">--</div>
+                  <div style="font-size:0.78rem; color:var(--color-text-muted);">Massive Parallel Array (~5,000,000 H/s)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 10: Rainbow Table Lookup Simulator
+                 ============================================================= -->
+            <div class="b-card" id="tool-rainbow">
+              <div class="b-card-header">
+                <h3>10. Precomputed Rainbow Table Lookup Simulator</h3>
+                <span class="b-badge" style="background:rgba(245,158,11,0.2); color:#fde68a; border:1px solid #f59e0b;">Defense Verification</span>
+              </div>
+              <p>Simulate querying a precomputed rainbow table database. Unsalted hashes (such as legacy MD5) are cracked instantaneously in under 0.001 ms. Bcrypt hashes completely invalidate precomputed tables due to individual 128-bit random salts.</p>
+
+              <div class="b-input-row" style="margin-bottom:12px;">
+                <input type="text" id="bRainbowInput" class="b-input b-mono" value="5f4dcc3b5aa765d61d8327deb882cf99" placeholder="Enter MD5 hash (e.g. 5f4dcc3b...) or Bcrypt hash ($2b$...)">
+                <button type="button" class="b-btn b-btn-primary" id="bBtnRainbowCheck" style="white-space:nowrap;">
+                  Query Rainbow Table
+                </button>
+              </div>
+
+              <div id="bRainbowResult" class="b-status-banner warning" style="margin-bottom:14px;">
+                <div>Enter a hash above or click 'Query Rainbow Table' to test the sample MD5 hash for <code>"password"</code>.</div>
+              </div>
+
+              <details style="margin-top:10px;">
+                <summary style="cursor:pointer; font-size:0.88rem; font-weight:700; color:var(--color-primary);">
+                  View Sample Rainbow Table Precomputed Keys (MD5)
+                </summary>
+                <table class="b-rainbow-table">
+                  <thead>
+                    <tr>
+                      <th>Plaintext</th>
+                      <th>MD5 Digest (Unsalted)</th>
+                      <th>Lookup Crack Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>password</td><td><code>5f4dcc3b5aa765d61d8327deb882cf99</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>123456</td><td><code>e10adc3949ba59abbe56e057f20f883e</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>admin</td><td><code>21232f297a57a5a743894a0e4a801fc3</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>welcome</td><td><code>40be4e59b9a2a2b5dffb918c0e86b3d7</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                    <tr><td>letmein</td><td><code>1a1dc91c907325c69271ddf0c944bc72</code></td><td style="color:#ef4444; font-weight:700;">&lt; 0.001 ms</td></tr>
+                  </tbody>
+                </table>
+              </details>
+            </div>
+
+            <!-- =============================================================
+                 INNOVATIVE FEATURE 11: Export Academic Lab Journal Report
+                 ============================================================= -->
+            <div class="b-card" style="border:2px solid var(--color-primary-dark); background:linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                <div>
+                  <h3 style="margin:0 0 6px 0; color:var(--color-text);">11. Academic Virtual Lab Journal Report</h3>
+                  <p style="margin:0; font-size:0.9rem; color:var(--color-text-muted);">Compile your live experimental metrics, verification results, and assessment score into a formalized, printable lab record.</p>
+                </div>
+                <button type="button" class="b-btn b-btn-primary" id="bBtnGenReport">
+                  Generate &amp; Print Report
+                </button>
+              </div>
+            </div>
+
           </div>
         </section>
 
+        <!-- ==========================================
+             TAB 5: ASSESSMENT / QUIZ
+             ========================================== -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+              <div>
+                <h2>Self Assessment &amp; Knowledge Check</h2>
+                <p>Test your comprehension of adaptive key stretching, salt security, and password vulnerabilities.</p>
+              </div>
+              <div style="display:flex; gap:12px; align-items:center;">
+                <span class="b-bold" id="bQuizScoreBadge" style="padding:6px 14px; background:var(--color-primary-dark); color:#fff; border-radius:999px; font-size:0.9rem;">Score: 0 / 10</span>
+                <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnResetQuiz">Reset Quiz</button>
+              </div>
+            </div>
+
+            <div id="bQuizList"></div>
           </div>
         </section>
+        <!-- ==========================================
+             TAB 6: REFERENCES
+             ========================================== -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="references-container">
+            <h2>References &amp; Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">N. Provos and D. Mazières (1999) — A Future-Adaptable Password Scheme</div>
+              <div class="reference-meta">Proceedings of the USENIX Annual Technical Conference, FREENIX Track, pp. 81–91. Defines the adaptive Eksblowfish key schedule, work factor formula (2<sup>cost</sup>), and 128-bit CSPRNG salt integration. <a class="reference-link" href="https://www.usenix.org/legacy/event/usenix99/provos.html" target="_blank" rel="noopener noreferrer">USENIX Publication</a>.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">Bruce Schneier (1993) — Description of a New Variable-Length Key, 64-Bit Block Cipher (Blowfish)</div>
+              <div class="reference-meta">Fast Software Encryption (FSE), Cambridge Security Workshop Proceedings, pp. 191–204. Explains the Feistel network architecture, subkey P-arrays, and S-box expansion underpinning Blowfish and Eksblowfish.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">OWASP Foundation — Password Storage Cheat Sheet</div>
+              <div class="reference-meta">OWASP Cheat Sheet Series. Current industry recommendations for password storage, cost factor scaling (&ge; 10), pre-hashing mitigations, and protection against credential stuffing. <a class="reference-link" href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">OWASP Documentation</a>.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Special Publication (SP) 800-63B — Digital Identity Guidelines</div>
+              <div class="reference-meta">Authentication and Lifecycle Management. National Institute of Standards and Technology guidelines for salt generation, work factor resistance, and password verification.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
+              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
+              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 7: FEEDBACK
+             ========================================== -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+        </section>
+
       </main>
     </div>
 
+    <!-- ==========================================
+         ACADEMIC LAB JOURNAL REPORT MODAL
+         ========================================== -->
+    <div id="bReportModalOverlay" class="b-report-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bRepModalTitle">
+      <div class="b-report-modal">
+        <div class="b-report-header">
+          <div>
+            <div style="font-size:0.82rem; font-weight:700; color:#8b6f5e; text-transform:uppercase; letter-spacing:0.05em;">Fr. Conceicao Rodrigues College of Engineering</div>
+            <h2 id="bRepModalTitle" class="b-report-title">Virtual Cryptography Laboratory — Experiment 10</h2>
+            <div class="b-report-meta">Subject: Cryptography &amp; System Security (CSS) | Module: Password Security &amp; Key Stretching</div>
+          </div>
+          <div class="b-no-print" style="display:flex; gap:8px;">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" id="bBtnPrintReport">Print / Save as PDF</button>
+            <button type="button" class="b-btn b-btn-outline b-btn-sm" id="bBtnCloseReport">Close</button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:18px;">
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#64748b;">Student / Investigator:</label>
+            <input type="text" id="bRepStudentName" class="b-input" value="Student Investigator" style="background:#f8fafc; color:#0f172a; border-color:#cbd5e1; font-weight:600; padding:6px 10px; font-size:0.9rem;">
+          </div>
+          <div>
+            <label style="font-size:0.8rem; font-weight:700; color:#64748b;">Timestamp of Verification:</label>
+            <div id="bRepTimestamp" style="padding:7px 10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:0.88rem; font-weight:600; color:#0f172a;">--</div>
+          </div>
+        </div>
+
+        <table class="b-report-table">
+          <thead>
+            <tr>
+              <th style="width:30%;">Experimental Metric</th>
+              <th>Observed Observation / Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Algorithm Standard</strong></td>
+              <td>OpenBSD Bcrypt ($2b$) based on Eksblowfish with 128-bit CSPRNG Salt</td>
+            </tr>
+            <tr>
+              <td><strong>Generated Hash String</strong></td>
+              <td><code id="bRepHash" style="word-break:break-all; font-size:0.82rem; color:#0f172a;">$2b$10$...</code></td>
+            </tr>
+            <tr>
+              <td><strong>Client Execution Latency</strong></td>
+              <td><span id="bRepDuration" style="font-weight:700; color:#0f172a;">--</span> (Meets OWASP 250-500ms recommendation)</td>
+            </tr>
+            <tr>
+              <td><strong>Blowfish Truncation Bound</strong></td>
+              <td>72-Byte Boundary Verified (SHA-256 pre-hashing mitigation tested)</td>
+            </tr>
+            <tr>
+              <td><strong>Precomputed Attack Resistance</strong></td>
+              <td>Rainbow tables defeated via 128-bit salt (2<sup>128</sup> table combinations)</td>
+            </tr>
+            <tr>
+              <td><strong>Assessment Score</strong></td>
+              <td><span id="bRepScore" style="font-weight:700; color:#16a34a;">10 / 10 (100%)</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:16px; padding:14px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; font-size:0.85rem; line-height:1.5; color:#334155;">
+          <strong>Certification of Lab Completion:</strong>
+          This document certifies that the interactive experimental pipeline, hash race benchmark, truncation vulnerability analysis, and cryptographic cost factor verification were executed in the virtual environment.
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================================================
+         LEARNER-FRIENDLY POPUP MODALS CONTAINER
+         ============================================================= -->
+    <div id="bModalsContainer">
+
+      <!-- Modal 1: Interactive Lab Quickstart Guide -->
+      <div id="bModalGuide" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleGuide">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleGuide">Quickstart Guide</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <p>Welcome to the <strong>Bcrypt Virtual Cryptography Laboratory</strong>! This guide walks you through the recommended experimental path to master adaptive password hashing:</p>
+            
+            <div style="display:flex; flex-direction:column; gap:14px; margin:16px 0;">
+              <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
+                <strong style="color:var(--color-primary);">Step 1: Compute Your First Hash (Tool 1)</strong>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Type a password, select Cost Factor 10, and click <em>Generate Bcrypt Hash</em>. Notice the 60-character formatted string and the execution latency in milliseconds.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
+                <strong style="color:var(--color-primary);">Step 2: Test Password Verification (Tool 2)</strong>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Click <em>Send to Verifier</em> to transfer your hash. Click <em>Verify</em> with the original password (success), then change one character (fails!). Notice Bcrypt never decrypts the hash.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
+                <strong style="color:var(--color-primary);">Step 3: Observe Salt Randomness (Tool 3)</strong>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Hash the exact same password 3 times. Observe 3 completely distinct hash outputs. Then click <em>Verify All 3</em> to prove all 3 match the single password!</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
+                <strong style="color:var(--color-primary);">Step 4: Dissect Modular String Tokens (Tool 4)</strong>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Inspect how the 60 characters split into version (<code>$2b$</code>), cost (<code>10$</code>), 22-char salt, and 31-char ciphertext digest. Click on any segment to read its specification.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
+                <strong style="color:var(--color-primary);">Step 5: Exploit the 72-Byte Boundary (Tool 6)</strong>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Run the 72-byte truncation test to observe two different passwords colliding to the identical hash, then enable SHA-256 pre-hashing to observe the fix.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:14px; background:var(--color-surface-muted);">
+                <strong style="color:var(--color-primary);">Step 6: Test Your Knowledge (Quiz Tab)</strong>
+                <p style="margin:4px 0 0; font-size:0.88rem;">Answer the 10 multiple choice questions, flip through the Theory Flashcards, and generate your finalized Lab Journal Report!</p>
+              </div>
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Got it, Let's Begin!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 2: Cryptographic Concept Glossary -->
+      <div id="bModalGlossary" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleGlossary">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleGlossary">Concept Glossary</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <strong style="color:#d4a373;">Cryptographic Salt</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">A unique random bit string (128 bits in Bcrypt) combined with a password before hashing. Defeats precomputed rainbow table dictionaries and prevents identical passwords from producing identical hashes.</p>
+              </div>
+              <div>
+                <strong style="color:#f59e0b;">Pepper (Secret Key)</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">A secret cryptographic key shared across the application and stored outside the database (in an HSM or KMS). Adds defense-in-depth against SQL injection breaches.</p>
+              </div>
+              <div>
+                <strong style="color:#c084fc;">Cost Factor ($C$) &amp; Key Stretching</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">An exponential parameter where internal loop rounds equal 2<sup>C</sup>. Key stretching deliberately consumes CPU clock cycles to make brute force computationally unfeasible.</p>
+              </div>
+              <div>
+                <strong style="color:#4ade80;">CSPRNG</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">Cryptographically Secure Pseudorandom Number Generator. Uses unpredictable system entropy sources (e.g. <code>crypto.getRandomValues</code>) rather than mathematical formulas like <code>Math.random()</code>.</p>
+              </div>
+              <div>
+                <strong style="color:#f87171;">Constant-Time Comparison</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">A string comparison algorithm (e.g. <code>timingSafeEqual</code>) that always inspects all bytes regardless of where differences occur, preventing side-channel timing attacks.</p>
+              </div>
+              <div>
+                <strong style="color:#e879f9;">Radix-64 Encoding</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">A customized 64-character alphabet used by Bcrypt (<code>./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789</code>) differing slightly from standard MIME Base64.</p>
+              </div>
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-outline b-btn-sm" data-close-modal>Close Glossary</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 3: Eksblowfish Feistel Network & 4KB L1 Cache Footprint -->
+      <div id="bModalFeistel" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleFeistel">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleFeistel">Eksblowfish Feistel Network &amp; 4KB L1 Cache Footprint</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <h4>16-Round Feistel Cipher Architecture</h4>
+            <p>Eksblowfish is derived from Bruce Schneier's Blowfish cipher, which operates on 64-bit plaintext blocks split into two 32-bit halves (<em>L, R</em>):</p>
+            
+            <div class="b-card" style="background:var(--color-background); font-family:var(--font-mono, monospace); font-size:0.84rem; line-height:1.6;">
+              For i = 1 to 16 rounds:<br>
+              &nbsp;&nbsp;L = L &oplus; P[i]<br>
+              &nbsp;&nbsp;R = F(L) &oplus; R<br>
+              &nbsp;&nbsp;Swap(L, R)<br>
+              Swap(L, R) [Undo final swap]<br>
+              R = R &oplus; P[17]<br>
+              L = L &oplus; P[18]<br>
+              Output: (L, R) 64-bit ciphertext
+            </div>
+
+            <h4>The Feistel Function <em>F(x)</em></h4>
+            <p>Splits a 32-bit word into 4 8-bit bytes (<em>a, b, c, d</em>) and accesses four substitution boxes:</p>
+            <div class="b-card" style="background:var(--color-background); font-family:var(--font-mono, monospace); font-size:0.88rem; color:#86efac; text-align:center;">
+              F(a, b, c, d) = ((S<sub>1</sub>[a] + S<sub>2</sub>[b]) &oplus; S<sub>3</sub>[c]) + S<sub>4</sub>[d] &nbsp; (mod 2<sup>32</sup>)
+            </div>
+
+            <h4>Why the 4,096-Byte Working State Deters GPU Cracking</h4>
+            <p>Each of the four S-boxes has 256 entries of 4 bytes (4 &times; 256 &times; 4 bytes = 4,096 bytes = 4 KB). Modern GPUs contain thousands of lightweight compute cores designed to run threads sharing small register files.</p>
+            <div class="b-callout danger">
+              <strong>GPU Bottleneck:</strong> Because every Bcrypt thread needs 4KB of state in low-latency L1 cache, GPU Streaming Multiprocessors (SMs) rapidly exhaust high-speed cache lines. Threads stall waiting on high-latency GDDR memory, slashing GPU cracking efficiency from billions of hashes/second (like SHA-256) down to thousands per second.
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Understood</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 4: Salt Entropy & Rainbow Table Defense -->
+      <div id="bModalSaltEntropy" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleSalt">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleSalt">Salt Entropy &amp; Rainbow Table Neutralization</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <h4>Mathematical Proof: Why Rainbow Tables Fail</h4>
+            <p>A rainbow table is a precomputed lookup table trading storage for time. It maps plaintext passwords to precalculated hashes. For an unsalted hash:</p>
+            
+            <div class="b-card" style="background:var(--color-background); font-size:0.88rem;">
+              Plaintext <code>"password"</code> &rarr; Hash <code>5f4dcc3b5aa765d61d8327deb882cf99</code> (MD5)<br>
+              Attacker checks lookup table &rarr; Matches in <strong>&lt; 0.001 ms</strong>!
+            </div>
+
+            <h4>With a 128-Bit CSPRNG Salt:</h4>
+            <p>Bcrypt generates 16 bytes = 128 bits of entropy per password:</p>
+            <div class="b-card" style="text-align:center; font-size:1.1rem; font-weight:700; color:var(--color-primary);">
+              Total Possible Salts = 2<sup>128</sup> &approx; 3.402 &times; 10<sup>38</sup> combinations
+            </div>
+            <p style="font-size:0.88rem; color:var(--color-text-muted);">
+              Even if an attacker stored 1 billion rainbow tables per second on petabytes of hard drives, generating tables for all possible 128-bit salts would take longer than the age of the universe.
+            </p>
+
+            <h4>CSPRNG vs. Pseudo-Random Number Generators</h4>
+            <div class="b-callout warning">
+              <strong>Never use Math.random():</strong> In JavaScript, <code>Math.random()</code> uses the XorShift128+ algorithm, which is completely predictable. Always use <code>window.crypto.getRandomValues()</code> to query the operating system kernel's true hardware entropy pool!
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 5: Bcrypt Revisions History -->
+      <div id="bModalRevisions" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleRev">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleRev">Bcrypt Revisions History: $2, $2a, $2x, $2y, $2b</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <p>Why do Bcrypt hashes start with <code>$2b$</code> rather than <code>$2$</code> or <code>$2a$</code>? Here is the complete historical roadmap:</p>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div class="b-card" style="margin:0; padding:12px;">
+                <strong style="color:#d4a373;"><code>$2$</code> (1999) — Original Specification</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">Published by Niels Provos &amp; David Mazières at OpenBSD. Did not specify character encoding handling.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:12px;">
+                <strong style="color:#f59e0b;"><code>$2a$</code> (Early 2000s) — UTF-8 Encoding Revision</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">Introduced to standardize UTF-8 strings. However, different C compilers on x86 architectures treated <code>char</code> as signed vs unsigned, causing incompatible hashes for non-ASCII characters.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:12px;">
+                <strong style="color:#ef4444;"><code>$2x$</code> (2011) — The Sign Extension Bug</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">In PHP 5.3's crypt_blowfish implementation, characters with the 8th bit set underwent sign extension to 32 bits, corrupting the key schedule and discarding 1 bit of entropy per character.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:12px;">
+                <strong style="color:#86efac;"><code>$2y$</code> (2011) — PHP Fix Prefix</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">PHP developers introduced <code>$2y$</code> to distinguish hashes generated after the sign extension bug was corrected from vulnerable <code>$2x$</code> hashes.</p>
+              </div>
+              <div class="b-card" style="margin:0; padding:12px;">
+                <strong style="color:#86efac;"><code>$2b$</code> (June 2014) — OpenBSD Buffer Fix &amp; Current Standard</strong>
+                <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">Fixed a subtle buffer overflow where password lengths congruent to 0 mod 256 could wrap around the key length counter in OpenBSD. <code>$2b$</code> is the universal production baseline today.</p>
+              </div>
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Understood</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 6: Pepper vs Salt & Migration -->
+      <div id="bModalPepper" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitlePep">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitlePep">Pepper vs. Salt &amp; Dynamic Re-Hashing Architecture</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <h4>Defense-in-Depth: Salt vs Pepper</h4>
+            <div class="b-grid-2">
+              <div class="b-card">
+                <strong style="color:#d4a373;">Cryptographic Salt</strong>
+                <ul>
+                  <li>Random per user</li>
+                  <li>Stored directly in the database row</li>
+                  <li>Publicly visible in the hash string</li>
+                  <li>Role: Prevents rainbow tables and correlation</li>
+                </ul>
+              </div>
+              <div class="b-card">
+                <strong style="color:#f59e0b;">Secret Pepper Key</strong>
+                <ul>
+                  <li>Single secret key for the application</li>
+                  <li>Stored in KMS / HSM outside the database</li>
+                  <li>Never stored in the database</li>
+                  <li>Role: Neutralizes stolen SQL database dumps</li>
+                </ul>
+              </div>
+            </div>
+
+            <h4>How Dynamic Re-Hashing Works on Login</h4>
+            <p>Suppose you want to upgrade your database from Cost 10 to Cost 12:</p>
+            <div class="b-card" style="background:var(--color-background); font-size:0.86rem; line-height:1.6; font-family:var(--font-mono, monospace);">
+              1. User submits login form with plaintext password.<br>
+              2. Server queries DB, fetches stored hash with Cost 10.<br>
+              3. Server verifies password against stored hash &rarr; MATCH!<br>
+              4. Server checks: `needsRehash(storedHash, newCost: 12)` &rarr; TRUE!<br>
+              5. Server hashes plaintext password with Cost 12.<br>
+              6. Server updates DB record with fresh Cost 12 hash.<br>
+              7. User logs in seamlessly without resetting their password!
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 7: Step-by-Step Verification Flow -->
+      <div id="bModalVerifyFlow" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleVFlow">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleVFlow">Step-by-Step Bcrypt Verification Internals</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <p>Students often ask: <em>"If hashing is strictly one-way and cannot be decrypted, how does Bcrypt check if a password is correct?"</em></p>
+            
+            <div class="b-verify-flow">
+              <div class="b-verify-step-card">
+                <div class="b-verify-step-badge">1</div>
+                <div>
+                  <strong style="color:#d4a373;">Extract Parameters from Stored Hash</strong>
+                  <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">
+                    The verifier parses the 60-character target hash: it extracts the cost factor (<em>C</em>) and the 22-character (16-byte) CSPRNG salt.
+                  </p>
+                </div>
+              </div>
+
+              <div class="b-verify-step-card">
+                <div class="b-verify-step-badge">2</div>
+                <div>
+                  <strong style="color:#f59e0b;">Re-Compute Eksblowfish Hash</strong>
+                  <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">
+                    The verifier feeds the candidate password submitted by the user together with the extracted salt into the Eksblowfish key schedule for 2<sup>C</sup> rounds, encrypting the constant text.
+                  </p>
+                </div>
+              </div>
+
+              <div class="b-verify-step-card">
+                <div class="b-verify-step-badge">3</div>
+                <div>
+                  <strong style="color:#86efac;">Constant-Time String Comparison</strong>
+                  <p style="margin:2px 0 0; font-size:0.86rem; color:var(--color-text-muted);">
+                    The newly generated hash is compared to the stored hash using a constant-time comparison function (<code>timingSafeEqual</code>). If all bytes match, authentication is granted!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="b-callout tip">
+              <strong>Constant-Time Immunity:</strong> By taking the exact same amount of time regardless of whether the first byte or the last byte differed, Bcrypt prevents hackers from using microscopic latency variations to guess passwords byte-by-byte (side-channel timing attack).
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Understood</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 8: 72-Byte Truncation Technical Root Cause -->
+      <div id="bModalTruncation" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleTrunc">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleTrunc">Technical Root Cause of 72-Byte Key Truncation</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <h4>Why 72 Bytes?</h4>
+            <p>Bruce Schneier designed Blowfish in 1993 with variable key lengths up to 448 bits. The P-array contains 18 32-bit subkeys ($18 \times 32 = 576\text{ bits} = 72\text{ bytes}$).</p>
+            
+            <div class="b-card" style="background:var(--color-background); font-family:var(--font-mono, monospace); font-size:0.85rem;">
+              for (i = 0; i &lt; 18; ++i) {<br>
+              &nbsp;&nbsp;P[i] = P[i] &oplus; key_bytes[(i * 4) % key_len];<br>
+              }
+            </div>
+
+            <p>In standard Eksblowfish, the key schedule loop copies at most 72 UTF-8 bytes into internal key buffers. Any byte at index 72 or higher is simply never referenced in the C loop!</p>
+
+            <h4>The Pre-Hashing Defense Pattern</h4>
+            <div class="b-callout info">
+              <strong>Industry Standard:</strong> Pre-hash the user password with SHA-256 before feeding it to Bcrypt. SHA-256 takes passwords of arbitrary length and produces a 32-byte binary digest. Encoded as Base64 (44 ASCII characters), this is guaranteed to fit within the 72-byte limit while preserving complete cryptographic uniqueness.
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 9: How Latency is Calculated -->
+      <div id="bModalLatency" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleLat">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleLat">How Bcrypt Latency &amp; Work Factor are Calculated</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body">
+            <h4>The Latency Formula</h4>
+            <p>Bcrypt's execution time $T$ is governed by the CPU work formula:</p>
+            <div class="b-card" style="text-align:center; font-size:1.15rem; font-weight:700; color:var(--color-primary);">
+              T &approx; 2<sup>Cost Factor</sup> &times; T<sub>single round</sub>
+            </div>
+            
+            <p>Each increment in Cost Factor $C$ exactly doubles the computational rounds:</p>
+            <ul>
+              <li><strong>Cost 4:</strong> 2<sup>4</sup> = 16 rounds (&approx; 1 ms)</li>
+              <li><strong>Cost 8:</strong> 2<sup>8</sup> = 256 rounds (&approx; 15-25 ms)</li>
+              <li><strong>Cost 10:</strong> 2<sup>10</sup> = 1,024 rounds (&approx; 100-150 ms)</li>
+              <li><strong>Cost 12:</strong> 2<sup>12</sup> = 4,096 rounds (&approx; 400-600 ms)</li>
+            </ul>
+
+            <div class="b-callout tip">
+              <strong>OWASP Recommendation:</strong> OWASP recommends calibrating <em>C</em> so that a single login check takes between <strong>250 ms and 500 ms</strong> on the target server. This is unnoticeable to a human user logging in once, but devastating to an automated bot guessing passwords!
+            </div>
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Understood</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 10: Modular Token Inspector Details -->
+      <div id="bModalInspectorDetail" class="b-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mTitleToken">
+        <div class="b-modal-dialog">
+          <div class="b-modal-header">
+            <h3 class="b-modal-title" id="mTitleToken">Modular Hash String Token Details</h3>
+            <button type="button" class="b-modal-close-btn" data-close-modal aria-label="Close modal">&times;</button>
+          </div>
+          <div class="b-modal-body" id="bModalTokenBody">
+            <!-- Dynamically populated by JS when clicking on a token -->
+          </div>
+          <div class="b-modal-footer">
+            <button type="button" class="b-btn b-btn-primary b-btn-sm" data-close-modal>Close</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Common Virtual Lab Script -->
     <script src="../../js/common.js"></script>
+
+    <!-- Bcrypt Experiment Implementation Script -->
     <script src="script.js"></script>
+      <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>

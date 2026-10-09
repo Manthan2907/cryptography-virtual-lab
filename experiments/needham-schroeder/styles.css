@@ -1,0 +1,826 @@
+/* ============================================================
+   Needham-Schroeder Protocol – Local Experiment Stylesheet
+   Works WITH the dark-coffee palette from variables.css
+   ============================================================ */
+
+/* ── VLab Custom Properties (mapped from variables.css tokens) ── */
+:root {
+  --vlab-primary-brown: var(--color-primary);
+  --vlab-primary-dark:  var(--color-primary-dark);
+  --vlab-btn-blue:      var(--color-secondary);
+  --vlab-btn-blue-dark: var(--color-secondary-dark);
+  --vlab-bg:            var(--color-background);
+  --vlab-bg-light:      var(--color-surface-muted);
+  --vlab-surface:       var(--color-surface);
+  --vlab-border:        var(--color-border);
+  --vlab-text:          var(--color-text);
+  --vlab-text-muted:    var(--color-text-muted);
+  --vlab-success-green: #2ed573;
+  --vlab-warn-red:      #ff4757;
+
+  --info-bg:    rgba(76, 140, 232, 0.15);
+  --info-color: var(--color-secondary);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+}
+
+/* ── General Overrides ── */
+.vlab-section-heading {
+  color: var(--vlab-primary-brown);
+  font-size: var(--font-size-2xl);
+  margin: 0 0 var(--space-2);
+  line-height: var(--line-height-tight);
+}
+
+.vlab-paragraph {
+  color: var(--vlab-text);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 0.85rem;
+}
+
+/* ── VLab Card ── */
+.vlab-card {
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.vlab-card-title {
+  font-weight: 700;
+  color: var(--vlab-primary-brown);
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--vlab-btn-blue);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--vlab-btn-blue-dark); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--vlab-border);
+  color: var(--vlab-text);
+}
+.btn-outline:hover {
+  background: var(--vlab-bg-light);
+  border-color: var(--vlab-primary-dark);
+}
+
+.btn-small { padding: 0.35rem 0.6rem; font-size: 0.8rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-vlab-reset {
+  background: transparent;
+  border: 1px solid var(--vlab-border);
+  color: var(--vlab-text-muted);
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-vlab-reset:hover { background: var(--vlab-bg-light); }
+
+.btn-vlab-primary {
+  background: var(--vlab-btn-blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s;
+}
+.btn-vlab-primary:hover { background: var(--vlab-btn-blue-dark); }
+
+.control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--vlab-border);
+}
+
+/* ── Aim & Objectives list fix ── */
+#aim ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: var(--vlab-text);
+  line-height: 1.7;
+}
+
+/* ── Theory & Beginner Guide – Accordion ── */
+.vlab-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.vlab-accordion-item {
+  border: 1px solid var(--vlab-border) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.75rem !important;
+  background: var(--vlab-surface) !important;
+}
+
+.vlab-accordion-header {
+  font-weight: 700 !important;
+  cursor: pointer;
+  color: var(--vlab-text) !important;
+  font-size: 0.95rem;
+}
+
+.vlab-accordion-content {
+  margin-top: 0.5rem !important;
+}
+
+.vlab-accordion-content p,
+.vlab-accordion-content li {
+  color: var(--vlab-text) !important;
+}
+
+.vlab-accordion-content ul,
+.vlab-accordion-content ol {
+  color: var(--vlab-text) !important;
+  margin-left: 1.5rem;
+  line-height: 1.7;
+}
+
+/* Callout boxes in theory */
+.vlab-callout {
+  background: var(--vlab-bg-light) !important;
+  border-left: 4px solid var(--vlab-primary-brown) !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: var(--radius-sm);
+  color: var(--vlab-text) !important;
+}
+
+.vlab-callout-key {
+  background: var(--vlab-bg-light) !important;
+  border-left: 4px solid var(--vlab-primary-brown) !important;
+  color: var(--vlab-text) !important;
+}
+
+/* Theory tables */
+.vlab-accordion-content table,
+.inspector-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  color: var(--vlab-text);
+}
+
+.vlab-accordion-content th,
+.inspector-table th {
+  padding: 0.5rem !important;
+  border-bottom: 2px solid var(--vlab-primary-brown) !important;
+  color: var(--vlab-primary-brown);
+  background: transparent !important;
+}
+
+.vlab-accordion-content td,
+.inspector-table td {
+  padding: 0.5rem !important;
+  border-bottom: 1px solid var(--vlab-border) !important;
+  color: var(--vlab-text) !important;
+}
+
+.vlab-accordion-content tr {
+  border-bottom: 1px solid var(--vlab-border) !important;
+}
+
+/* SVG diagrams in theory */
+.vlab-accordion-content svg text {
+  fill: var(--vlab-text);
+}
+
+/* Reveal buttons / spans in Check-Yourself */
+.vlab-accordion-content span[style*="display:none"] {
+  color: var(--vlab-primary-brown) !important;
+}
+
+/* ── Quiz & Pre/Post test Styles ── */
+.quiz-card,
+.question-item {
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.question-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--vlab-text);
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-size: 0.9rem;
+  color: var(--vlab-text);
+}
+.option-label:hover { background: var(--vlab-bg-light); }
+
+.option-label.correct {
+  background: rgba(46, 213, 115, 0.15);
+  border-color: var(--vlab-success-green);
+  color: var(--vlab-success-green);
+  font-weight: 600;
+}
+.option-label.incorrect {
+  background: rgba(255, 71, 87, 0.15);
+  border-color: var(--vlab-warn-red);
+  color: var(--vlab-warn-red);
+}
+
+.explanation-box {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  display: none;
+}
+.explanation-box.visible { display: block; }
+.explanation-box.correct {
+  background: rgba(46, 213, 115, 0.15);
+  color: var(--vlab-success-green);
+  border-left: 3px solid var(--vlab-success-green);
+}
+.explanation-box.incorrect {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--vlab-warn-red);
+  border-left: 3px solid var(--vlab-warn-red);
+}
+
+.quiz-score-banner {
+  background: var(--vlab-btn-blue);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+/* ── References Cards ── */
+.reference-card {
+  background: var(--vlab-surface) !important;
+  border: 1px solid var(--vlab-border) !important;
+  color: var(--vlab-text) !important;
+}
+
+.reference-title {
+  color: var(--vlab-text) !important;
+}
+
+.reference-meta {
+  color: var(--vlab-text-muted) !important;
+}
+
+/* ============================================================
+   SIMULATION TAB — Dashboard Layout
+   ============================================================ */
+
+/* Main container */
+.sim-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Top card: controls + stepper row */
+.sim-top-card {
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+}
+
+/* Controls row — inline flex wrap */
+.sim-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.sim-field-group-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.sim-field-group-inline label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--vlab-text-muted);
+  white-space: nowrap;
+}
+
+.sim-select-sm {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-sm);
+  background: var(--vlab-bg-light);
+  color: var(--vlab-text);
+  font-size: 0.85rem;
+  min-width: 170px;
+}
+.sim-select-sm:focus {
+  outline: none;
+  border-color: var(--vlab-btn-blue);
+  box-shadow: 0 0 0 3px rgba(76, 140, 232, 0.2);
+}
+
+/* ── Stepper Pills Row ── */
+.stepper-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--vlab-border);
+  flex-wrap: wrap;
+}
+
+.step-pill-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--vlab-border);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--vlab-text-muted);
+  background: transparent;
+  transition: all 0.25s ease;
+  cursor: default;
+}
+
+.step-pill-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--vlab-bg-light);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--vlab-text-muted);
+}
+
+.step-pill-item.active {
+  background: var(--vlab-primary-brown);
+  border-color: var(--vlab-primary-brown);
+  color: var(--color-on-primary);
+}
+.step-pill-item.active .step-pill-num {
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+}
+
+.step-pill-item.completed {
+  background: var(--vlab-btn-blue);
+  border-color: var(--vlab-btn-blue);
+  color: #fff;
+}
+.step-pill-item.completed .step-pill-num {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.step-pill-arrow {
+  color: var(--vlab-text-muted);
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+/* ── Beginner Concepts Collapsible ── */
+.fresher-collapsible-box {
+  display: none;
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  animation: fadeSlideDown 0.3s ease;
+}
+.fresher-collapsible-box.visible { display: block; }
+
+.fresher-concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.fresher-concept-card {
+  background: var(--vlab-bg-light);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+}
+
+.fresher-concept-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--vlab-primary-brown);
+  margin-bottom: 0.3rem;
+}
+
+.fresher-concept-body {
+  font-size: 0.82rem;
+  color: var(--vlab-text-muted);
+  line-height: 1.5;
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 2-Column Dashboard Grid ── */
+.sim-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  min-height: 400px;
+}
+
+@media (max-width: 900px) {
+  .sim-dashboard-grid { grid-template-columns: 1fr; }
+}
+
+.sim-canvas-column,
+.sim-inspector-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Topology Container (Left Column) ── */
+.topology-container-compact {
+  position: relative;
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  min-height: 380px;
+  overflow: visible;
+}
+
+.topology-svg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Base interconnection lines */
+.topology-svg-path.base-link {
+  fill: none;
+  stroke: var(--vlab-border);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  opacity: 0.6;
+}
+
+/* Active directional transmission line */
+.topology-svg-path.active-transmission {
+  fill: none;
+  stroke: var(--vlab-primary-brown);
+  stroke-width: 2.5;
+  stroke-dasharray: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.topology-svg-path.active-transmission.visible {
+  opacity: 1;
+}
+.topology-svg-path.active-transmission.animating {
+  animation: dashFlow 1.2s linear infinite;
+}
+
+@keyframes dashFlow {
+  from { stroke-dashoffset: 24; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Channel labels on topology lines */
+.topology-channel-text {
+  font-size: 10px;
+  fill: var(--vlab-text-muted);
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* ── Entity Cards (Alice, Server, Bob) ── */
+.entity-card-compact {
+  position: relative;
+  z-index: 5;
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 220px;
+}
+
+.entity-card-compact.highlight {
+  border-color: var(--vlab-btn-blue);
+  box-shadow: 0 0 12px rgba(76, 140, 232, 0.3);
+}
+
+/* Positioning: triangle layout */
+.entity-card-compact.kdc {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.entity-card-compact.alice {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+}
+
+.entity-card-compact.bob {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+}
+
+.entity-header-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--vlab-border);
+}
+
+.entity-icon-circle-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--vlab-primary-brown);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.entity-name-sm {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--vlab-text);
+  line-height: 1.2;
+}
+
+.entity-role-sm {
+  font-size: 0.68rem;
+  color: var(--vlab-text-muted);
+}
+
+/* Status badges */
+.entity-badge-sm {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.35rem;
+}
+
+.status-idle {
+  background: var(--vlab-bg-light);
+  color: var(--vlab-text-muted);
+}
+.status-requesting,
+.status-encrypting,
+.status-decrypting {
+  background: rgba(76, 140, 232, 0.2);
+  color: var(--vlab-btn-blue);
+}
+.status-waiting {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+.status-authenticated {
+  background: rgba(46, 213, 115, 0.15);
+  color: var(--vlab-success-green);
+}
+
+/* Key table inside entity cards */
+.entity-key-table-sm {
+  width: 100%;
+  font-size: 0.72rem;
+  border-collapse: collapse;
+  margin-top: 0.25rem;
+}
+.entity-key-table-sm td {
+  padding: 0.15rem 0;
+  vertical-align: top;
+}
+.entity-key-name-sm {
+  color: var(--vlab-text-muted);
+  font-weight: 600;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+}
+.entity-key-val-sm {
+  color: var(--vlab-btn-blue);
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+/* ── Animated Visual Packet ── */
+.visual-packet-sm {
+  position: absolute;
+  z-index: 10;
+  padding: 0.3rem 0.6rem;
+  background: var(--vlab-primary-brown);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+.visual-packet-sm.active { opacity: 1; }
+
+/* ── Inspector Panel (Right Column) ── */
+.inspector-card-compact {
+  background: var(--vlab-surface);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+/* Story callout box */
+.story-callout-box {
+  background: var(--vlab-bg-light);
+  border-left: 4px solid var(--vlab-primary-brown);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--vlab-text);
+  line-height: 1.5;
+}
+
+/* Code block for math/ciphertext */
+.inspector-code-block-sm {
+  background: var(--color-accent, #513F35);
+  border: 1px solid var(--vlab-border);
+  border-left: 4px solid var(--vlab-primary-brown);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: #f5c542;
+  margin-bottom: 0.6rem;
+  overflow-x: auto;
+  word-break: break-word;
+}
+
+/* Inspector breakdown table */
+.inspector-table-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.inspector-table-compact th {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  border-bottom: 2px solid var(--vlab-primary-brown);
+  color: var(--vlab-primary-brown);
+  font-weight: 700;
+  font-size: 0.72rem;
+  background: transparent;
+}
+
+.inspector-table-compact td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--vlab-border);
+  color: var(--vlab-text);
+  vertical-align: top;
+}
+
+.inspector-table-compact tr:hover {
+  background: rgba(169, 141, 123, 0.08);
+}
+
+/* ── Audit Log Console ── */
+.audit-console-compact {
+  height: 160px;
+  background: var(--color-accent, #513F35);
+  border: 1px solid var(--vlab-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.72rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--vlab-text-muted);
+}
+
+.audit-log-line {
+  line-height: 1.45;
+  border-bottom: 1px dashed rgba(115, 91, 76, 0.4);
+  padding-bottom: 0.2rem;
+}
+
+.audit-tag {
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  margin: 0 0.25rem;
+  font-size: 0.68rem;
+}
+.audit-tag.INFO    { background: rgba(76, 140, 232, 0.2); color: var(--vlab-btn-blue); }
+.audit-tag.CRYPTO  { background: rgba(156, 39, 176, 0.2); color: #ce93d8; }
+.audit-tag.SUCCESS { background: rgba(46, 213, 115, 0.15); color: var(--vlab-success-green); }
+.audit-tag.WARN    { background: rgba(255, 71, 87, 0.15); color: var(--vlab-warn-red); }
+
+/* ── Responsive tweaks ── */
+@media (max-width: 700px) {
+  .sim-controls-row { flex-direction: column; align-items: stretch; }
+  .sim-field-group-inline { width: 100%; }
+  .sim-select-sm { width: 100%; }
+
+  .entity-card-compact { width: auto; min-width: 160px; }
+  .entity-card-compact.kdc { position: relative; top: auto; left: auto; transform: none; }
+  .entity-card-compact.alice { position: relative; bottom: auto; left: auto; }
+  .entity-card-compact.bob { position: relative; bottom: auto; right: auto; }
+
+  .topology-container-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: auto;
+  }
+
+  .topology-svg-canvas { display: none; }
+}
