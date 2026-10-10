@@ -277,6 +277,13 @@
       .aim-two-column, .procedure-stepper { grid-template-columns: 1fr; }
     }
     @media (max-width: 520px) { .aim-card-grid { grid-template-columns: 1fr; } }
+    .tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
   </style>
 </head>
 
@@ -1059,25 +1066,49 @@
         </div>
       </section>
 
-      <!-- 7. FEEDBACK -->
-      <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-        <div class="content-placeholder">
-          <h2>Feedback</h2>
-          <p>Please share your feedback regarding this experiment simulation.</p>
-        </div>
-      </section>
-    </main>
+      
+
+<section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+  <div class="content-placeholder">
+    <h2>Feedback</h2>
+    <p class="section-intro">Please share your feedback regarding this experiment simulation.</p>
+
+    <form id="feedbackForm" class="sim-card" novalidate>
+      <label class="sim-label" for="fbName">Name (optional)</label>
+      <input id="fbName" class="sim-input" type="text" autocomplete="name">
+
+      <label class="sim-label" for="fbRating" style="margin-top:14px;">Overall rating</label>
+      <select id="fbRating" class="sim-input" required>
+        <option value="">Select...</option>
+        <option value="5">5 - Excellent</option>
+        <option value="4">4 - Good</option>
+        <option value="3">3 - Average</option>
+        <option value="2">2 - Poor</option>
+        <option value="1">1 - Very poor</option>
+      </select>
+
+      <label class="sim-label" for="fbComments" style="margin-top:14px;">Comments</label>
+      <textarea id="fbComments" class="sim-textarea" placeholder="What worked? What was confusing?"></textarea>
+
+      <div class="sim-btn-row">
+        <button type="submit">Submit Feedback</button>
+        <button type="reset" class="secondary-btn">Clear</button>
+      </div>
+
+      <div id="feedbackStatus" class="status-card status-neutral" aria-live="polite">
+        Your feedback has not been submitted yet.
+      </div>
+    </form>
   </div>
+</section>
 
-  <!-- COMMON JS -->
-  <script src="../../js/common.js"></script>
-
-  <!-- CRYPTOGRAPHIC LIBRARIES -->
-  <script src="../../js/vendor/crypto-js.min.js"></script>
-  <script src="../../js/vendor/forge.min.js"></script>
-
-  <!-- EXPERIMENT LOGIC -->
-  <script src="script.js"></script>
+  
+<script src="../../js/common.js"></script>
+<script src="../../js/vendor/crypto-js.min.js"></script>
+<script src="../../js/vendor/forge.min.js"></script>
+<script src="../../js/feedback.js"></script>
+<script src="../../js/crypto-feedback.js"></script>
+<script src="script.js"></script>
 </body>
 
 </html>
