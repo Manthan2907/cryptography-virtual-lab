@@ -1464,5 +1464,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   generateRandomKey();
 
+  const feedbackForm = document.getElementById("feedbackForm");
+const feedbackStatus = document.getElementById("feedbackStatus");
+
+if (feedbackForm) {
+  feedbackForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const rating = document.getElementById("fbRating").value;
+    if (!rating) {
+      feedbackStatus.className = "status-card status-invalid";
+      feedbackStatus.textContent = "Please select a rating.";
+      return;
+    }
+
+    const entry = {
+      experiment: "rsa-digital-signature-hash",
+      name: document.getElementById("fbName").value.trim(),
+      rating: Number(rating),
+      comments: document.getElementById("fbComments").value.trim(),
+      time: new Date().toISOString()
+    };
+
+    try {
+      const all = JSON.parse(localStorage.getItem("cryptoLabFeedback") || "[]");
+      all.push(entry);
+      localStorage.setItem("cryptoLabFeedback", JSON.stringify(all));
+      feedbackStatus.className = "status-card status-valid";
+      feedbackStatus.textContent = "Thank you! Your feedback was submitted.";
+      feedbackForm.reset();
+    } catch (error) {
+      feedbackStatus.className = "status-card status-invalid";
+      feedbackStatus.textContent = "Could not save feedback.";
+    }
+  });
+}
+
 
 });
