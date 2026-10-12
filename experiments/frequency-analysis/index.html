@@ -15,6 +15,19 @@
         padding: 18px 22px 20px;
         box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
       }
+      .diagram-card {
+        margin: 18px 0 26px;
+        padding: 16px 14px 12px;
+        background: rgba(61, 43, 34, 0.96);
+        border: 1px solid rgba(214, 197, 161, 0.25);
+        border-radius: 14px;
+        text-align: center;
+      }
+      .diagram-card svg { display: block; margin: 0 auto; }
+      .diagram-caption { margin-top: 10px; font-size: 0.88rem; font-style: italic; color: #f0e4d7; }
+      .ref-note { font-size: 0.8rem; font-style: italic; margin-top: 8px; color: #f0e4d7; }
+      .step-tip { margin-top: 14px; padding: 10px 14px; border-left: 4px solid #ffc107; background: rgba(255,243,205,0.12); border-radius: 4px; }
+
       .simulation-output h2 {
         font-family: Georgia, "Times New Roman", serif;
         font-size: clamp(2rem, 3vw, 3rem);
@@ -202,45 +215,171 @@
 
         <!-- Theory -->
         <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p><strong>Monoalphabetic Substitution Cipher:</strong> A cipher where each letter of the plaintext is replaced with a single corresponding letter of the ciphertext. For example, all 'A's might become 'Q's.</p>
-            <br>
-            <p><strong>What is Frequency Analysis?</strong></p>
-            <p>In any given language, certain letters appear more frequently than others. In English, the letter 'E' is the most common, followed by 'T', 'A', 'O', 'I', 'N', 'S', 'H', and 'R'. Because a monoalphabetic substitution cipher does not change the frequency of letters (it merely re-labels them), we can count the occurrences of each letter in the ciphertext and compare those counts to standard English letter frequencies.</p>
-            <br>
-            <p><strong>Frequency Percentage:</strong></p>
-            <div class="formula-box">
-              Frequency Percentage = (character count / total alphabetic characters) &times; 100
-            </div>
-            <br>
-            <p><strong>Why Frequency Analysis Works:</strong></p>
-            <p>By finding the most common letter in the ciphertext, we can guess that it might represent 'E' or 'T'. The next most common might represent the other. By mapping a few common letters, we can start to see partial words, allowing us to guess the rest using contextual and pattern analysis.</p>
-            <br>
-            <p><strong>Limitations:</strong></p>
-            <p>Frequency analysis works best on long ciphertexts. In short messages, the letter frequencies may not match average statistical distributions. For instance, a short message might not contain a single 'E'. Therefore, contextual analysis (looking at word lengths, repeated letters, common prefixes/suffixes) is critical to refine the mapping.</p>
-          </div>
-        </section>
+  <div class="content-placeholder">
+    <h2>Theory</h2>
 
-        <!-- Procedure -->
+    <p><strong>Monoalphabetic Substitution Cipher:</strong> A cipher where each letter of the plaintext is always replaced by one fixed letter of the ciphertext. For example, all 'A's might become 'Q's. A Caesar shift, Atbash and Affine cipher are special cases; a general substitution uses any rearrangement of the alphabet as the key.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 610 262" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:610px;height:auto"><title id="t">Substitution keeps repeated letters repeated</title><desc>HELLO encrypts to KHOOR with a shift of 3; both Ls become O.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs><text class="fa-l" x="20" y="88">Plain</text><text class="fa-l" x="20" y="178">Cipher</text><rect class="fa-box" x="110" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="140" y="87" style="">H</text><line class="fa-a" x1="140" y1="108" x2="140" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-box2" x="110" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="140" y="177" style="">K</text><rect class="fa-box" x="200" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="230" y="87" style="">E</text><line class="fa-a" x1="230" y1="108" x2="230" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-box2" x="200" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="230" y="177" style="">H</text><rect class="fa-hl" x="290" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="320" y="87" style="fill:#1a1630">L</text><line class="fa-a" x1="320" y1="108" x2="320" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-hl" x="290" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="320" y="177" style="fill:#1a1630">O</text><rect class="fa-hl" x="380" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="410" y="87" style="fill:#1a1630">L</text><line class="fa-a" x1="410" y1="108" x2="410" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-hl" x="380" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="410" y="177" style="fill:#1a1630">O</text><rect class="fa-box" x="470" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="500" y="87" style="">O</text><line class="fa-a" x1="500" y1="108" x2="500" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-box2" x="470" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="500" y="177" style="">R</text>
+<text class="fa-s" x="305" y="30">Example key: shift every letter 3 places (A→D, B→E, ...)</text>
+<text class="fa-s" x="305" y="226">Both L's become O: the same plaintext letter always gives the same ciphertext letter.</text>
+<text class="fa-s" x="305" y="246">Letters are only re-labelled, so counts and frequencies are preserved.</text></svg>
+<figcaption class="diagram-caption">Figure 1: Substitution only re-labels letters. Repeated plaintext letters stay repeated in the ciphertext.</figcaption>
+</figure>
+    <p><strong>How many keys are there?</strong> A general substitution key is a rearrangement of the 26 letters, so there are 26! (about 4 &times; 10<sup>26</sup>) keys. Trying them all is impossible, but the statistics of the language leak through the cipher, which is what frequency analysis exploits.</p>
+    <br>
+
+    <p><strong>What is Frequency Analysis?</strong></p>
+    <p>In any given language, certain letters appear more frequently than others. In English, the letter 'E' is the most common, followed by 'T', 'A', 'O', 'I', 'N', 'S', 'H', and 'R'. Because a monoalphabetic substitution cipher does not change the frequency of letters (it merely re-labels them), we can count the occurrences of each letter in the ciphertext and compare those counts to standard English letter frequencies. The technique was first described by the Arab scholar Al-Kindi in the 9th century.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 780 475" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:780px;height:auto"><title id="t">Encryption and frequency-analysis attack flow</title><desc>Sender encrypts plaintext with a substitution key. The attacker counts letters, compares with English, guesses a mapping, applies it, and repeats until the text reads like English.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs>
+<text class="fa-l" x="20" y="22">Sender: encryption</text>
+<rect class="fa-box" x="20" y="34" width="190" height="62" rx="10"/><text class="fa-t" x="115" y="60">Plaintext</text><text class="fa-s" x="115" y="82">THE CAT</text>
+<line class="fa-a" x1="212" y1="65" x2="283" y2="65" marker-end="url(#fa-ah)"/>
+<rect class="fa-box" x="285" y="34" width="190" height="62" rx="10"/><text class="fa-t" x="380" y="60">Substitution</text><text class="fa-s" x="380" y="82">(secret letter key)</text>
+<line class="fa-a" x1="477" y1="65" x2="548" y2="65" marker-end="url(#fa-ah)"/>
+<rect class="fa-box" x="550" y="34" width="190" height="62" rx="10"/><text class="fa-t" x="645" y="60">Ciphertext</text><text class="fa-s" x="645" y="82">WKH FDW</text>
+<path class="fa-a" stroke-dasharray="6 5" d="M645 98 V128 H97 V166" marker-end="url(#fa-ah)"/>
+<text class="fa-l" x="260" y="122">attacker intercepts the ciphertext</text>
+<text class="fa-l" x="20" y="152" style="display:none">x</text>
+<rect class="fa-box2" x="20" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="97" y="196">1. Count</text><text class="fa-s" x="97" y="216">letter frequencies</text>
+<line class="fa-a" x1="177" y1="201" x2="208" y2="201" marker-end="url(#fa-ah)"/>
+<rect class="fa-box2" x="210" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="287" y="196">2. Compare</text><text class="fa-s" x="287" y="216">with English table</text>
+<line class="fa-a" x1="367" y1="201" x2="398" y2="201" marker-end="url(#fa-ah)"/>
+<rect class="fa-box2" x="400" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="477" y="196">3. Guess</text><text class="fa-s" x="477" y="216">letter mapping</text>
+<line class="fa-a" x1="557" y1="201" x2="588" y2="201" marker-end="url(#fa-ah)"/>
+<rect class="fa-box2" x="590" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="667" y="196">4. Apply mapping</text><text class="fa-s" x="667" y="216">and read the text</text>
+<line class="fa-a" x1="667" y1="236" x2="667" y2="276" marker-end="url(#fa-ah)"/>
+<polygon class="fa-box" points="667,278 750,326 667,374 584,326"/><text class="fa-s" x="667" y="322">Reads like</text><text class="fa-s" x="667" y="340">English?</text>
+<path class="fa-a" d="M584 326 H477 V238" marker-end="url(#fa-ah)"/>
+<text class="fa-l" x="360" y="318">No: adjust the guesses</text>
+<line class="fa-a" x1="667" y1="376" x2="667" y2="408" marker-end="url(#fa-ah)"/>
+<text class="fa-l" x="676" y="396">Yes</text>
+<rect class="fa-ok" x="567" y="410" width="200" height="50" rx="10"/><text class="fa-t" x="667" y="440">Plaintext recovered</text>
+</svg>
+<figcaption class="diagram-caption">Figure 2: The attacker never sees the key. The loop of guess, apply and read is repeated until the text makes sense.</figcaption>
+</figure>
+    <p><strong>Frequency Percentage:</strong></p>
+    <div class="formula-box">
+      Frequency Percentage = (character count / total alphabetic characters) &times; 100
+    </div>
+    <br>
+
+    <p><strong>Why Frequency Analysis Works:</strong></p>
+    <p>By finding the most common letter in the ciphertext, we can guess that it might represent 'E' or 'T'. The next most common might represent the other. By mapping a few common letters, we can start to see partial words, allowing us to guess the rest using contextual and pattern analysis.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 720 355" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:720px;height:auto"><title id="t">Matching ciphertext ranks to English ranks</title><desc>Ranked ciphertext letters are paired with English letters by frequency order to form first guesses.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs><text class="fa-t" x="150" y="26">Ciphertext (counted)</text><text class="fa-t" x="540" y="26">English (reference)</text><text class="fa-m" x="30" y="69">X</text><rect fill="#9aabff" x="52" y="50" width="169.4" height="26" rx="4"/><text class="fa-s" x="227.4" y="69" style="text-anchor:start">12.1%</text><text class="fa-m" x="400" y="69">E</text><rect fill="#d6c5a1" x="422" y="50" width="177.79999999999998" height="26" rx="4"/><text class="fa-s" x="605.8" y="69" style="text-anchor:start">12.70%</text><text class="fa-m" x="30" y="121">Q</text><rect fill="#9aabff" x="52" y="102" width="131.6" height="26" rx="4"/><text class="fa-s" x="189.6" y="121" style="text-anchor:start">9.4%</text><text class="fa-m" x="400" y="121">T</text><rect fill="#d6c5a1" x="422" y="102" width="126.84" height="26" rx="4"/><text class="fa-s" x="554.84" y="121" style="text-anchor:start">9.06%</text><text class="fa-m" x="30" y="173">B</text><rect fill="#9aabff" x="52" y="154" width="112.0" height="26" rx="4"/><text class="fa-s" x="170.0" y="173" style="text-anchor:start">8.0%</text><text class="fa-m" x="400" y="173">A</text><rect fill="#d6c5a1" x="422" y="154" width="114.38" height="26" rx="4"/><text class="fa-s" x="542.38" y="173" style="text-anchor:start">8.17%</text><text class="fa-m" x="30" y="225">M</text><rect fill="#9aabff" x="52" y="206" width="100.8" height="26" rx="4"/><text class="fa-s" x="158.8" y="225" style="text-anchor:start">7.2%</text><text class="fa-m" x="400" y="225">O</text><rect fill="#d6c5a1" x="422" y="206" width="105.14" height="26" rx="4"/><text class="fa-s" x="533.14" y="225" style="text-anchor:start">7.51%</text><text class="fa-m" x="30" y="277">K</text><rect fill="#9aabff" x="52" y="258" width="95.2" height="26" rx="4"/><text class="fa-s" x="153.2" y="277" style="text-anchor:start">6.8%</text><text class="fa-m" x="400" y="277">I</text><rect fill="#d6c5a1" x="422" y="258" width="97.58" height="26" rx="4"/><text class="fa-s" x="525.58" y="277" style="text-anchor:start">6.97%</text><text class="fa-s" x="360" y="318">Highest-to-lowest ranking suggests: X→E, Q→T, B→A, M→O, K→I (first guesses only)</text><text class="fa-l" x="20" y="342">Illustrative numbers only. Confirm each guess by reading partial words.</text></svg>
+<figcaption class="diagram-caption">Figure 3: Ranking ciphertext letters and English letters by frequency gives the first guesses.</figcaption>
+</figure>
+    <p><strong>Clues beyond single letters:</strong></p>
+    <ul>
+      <li>A one-letter word is almost always <strong>A</strong> or <strong>I</strong>.</li>
+      <li>Common short words: THE, AND, OF, TO, IS, IT.</li>
+      <li>Common letter pairs (TH, HE, IN, ER, AN) and the triple THE.</li>
+      <li>Word shapes: a pattern such as <em>abcdcefg</em> (a repeated letter) narrows down which dictionary words can fit.</li>
+      <li>Double letters are usually LL, EE, SS, OO or TT.</li>
+    </ul>
+    <br>
+
+    <p><strong>Limitations:</strong></p>
+    <p>Frequency analysis works best on long ciphertexts. In short messages, the letter frequencies may not match average statistical distributions. For instance, a short message might not contain a single 'E'. Therefore, contextual analysis (looking at word lengths, repeated letters, common prefixes/suffixes) is critical to refine the mapping. Polyalphabetic ciphers such as Vigen&egrave;re flatten the frequencies, and transposition ciphers keep the frequencies but scramble the order, so simple frequency analysis does not break them directly.</p>
+    <br>
+
+    <p><strong>How the Auto-Solve button works:</strong></p>
+    <p>Auto-Solve is a teaching aid that automates the same reasoning. It first tries every Caesar, Atbash and Affine key. Otherwise it matches cipher words against a ranked English dictionary by word pattern, and for long texts that match poorly it falls back to a statistical letter-pair search. Short texts can have more than one valid reading, so always check the result yourself.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 620 575" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:620px;height:auto"><title id="t">How Auto-Solve decides which method to use</title><desc>Flowchart: classical key check, dictionary pattern matching, statistical solver for long poorly matched text, then fill the mapping boxes.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs>
+<rect class="fa-box" x="140" y="10" width="200" height="44" rx="10"/><text class="fa-t" x="240" y="38">Ciphertext entered</text>
+<line class="fa-a" x1="240" y1="56" x2="240" y2="84" marker-end="url(#fa-ah)"/>
+<polygon class="fa-box" points="240,86 380,128 240,170 100,128"/><text class="fa-s" x="240" y="122">Does a Caesar, Atbash</text><text class="fa-s" x="240" y="140">or Affine key give real words?</text>
+<line class="fa-a" x1="380" y1="128" x2="428" y2="128" marker-end="url(#fa-ah)"/><text class="fa-l" x="388" y="118">Yes</text>
+<rect class="fa-ok" x="430" y="104" width="150" height="48" rx="10"/><text class="fa-t" x="505" y="126">Use that key</text><text class="fa-s" x="505" y="143">(brute force)</text>
+<line class="fa-a" x1="240" y1="172" x2="240" y2="206" marker-end="url(#fa-ah)"/><text class="fa-l" x="250" y="195">No</text>
+<rect class="fa-box2" x="100" y="208" width="280" height="56" rx="10"/><text class="fa-t" x="240" y="233">Dictionary word-pattern match</text><text class="fa-s" x="240" y="252">(most constrained word first)</text>
+<line class="fa-a" x1="240" y1="266" x2="240" y2="296" marker-end="url(#fa-ah)"/>
+<polygon class="fa-box" points="240,298 380,340 240,382 100,340"/><text class="fa-s" x="240" y="334">200+ letters and under</text><text class="fa-s" x="240" y="352">70% of letters matched?</text>
+<line class="fa-a" x1="380" y1="340" x2="428" y2="340" marker-end="url(#fa-ah)"/><text class="fa-l" x="388" y="330">Yes</text>
+<rect class="fa-box2" x="430" y="312" width="150" height="56" rx="10"/><text class="fa-t" x="505" y="336">Statistical solver</text><text class="fa-s" x="505" y="355">(hill climbing)</text>
+<line class="fa-a" x1="240" y1="384" x2="240" y2="418" marker-end="url(#fa-ah)"/><text class="fa-l" x="250" y="407">No</text>
+<rect class="fa-box2" x="100" y="420" width="280" height="50" rx="10"/><text class="fa-t" x="240" y="443">Fill leftover letters</text><text class="fa-s" x="240" y="460">and polish by hill climbing</text>
+<path class="fa-a" d="M505 370 V496 H240 V488"/>
+<line class="fa-a" x1="240" y1="472" x2="240" y2="494"/>
+<line class="fa-a" x1="240" y1="496" x2="240" y2="512" marker-end="url(#fa-ah)"/>
+<path class="fa-a" d="M505 154 V176 H590 V496 H505"/>
+<rect class="fa-ok" x="100" y="514" width="280" height="46" rx="10"/><text class="fa-t" x="240" y="542">Mapping boxes filled + preview</text>
+</svg>
+<figcaption class="diagram-caption">Figure 4: Decision flow used by Auto-Solve.</figcaption>
+</figure>
+  </div>
+</section>
+
+
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <ol>
-              <li>Enter a custom ciphertext or select one of the predefined samples in the <strong>Simulation</strong> tab.</li>
-              <li>Click the <strong>Analyze Frequency</strong> button to process the ciphertext.</li>
-              <li>Review the generated letter-frequency table and the bar chart.</li>
-              <li>Compare your results with the standard English letter frequencies provided in the reference table.</li>
-              <li>Identify probable substitutions (e.g., mapping the most frequent ciphertext letter to 'E' or 'T').</li>
-              <li>Enter your guessed plaintext letters into the substitution mapping workspace.</li>
-              <li>Click <strong>Apply Mapping</strong> to see the partially decrypted plaintext.</li>
-              <li>If you selected a predefined sample, you can click <strong>Check Answer</strong> to verify your mappings.</li>
-              <li>Use the <strong>Hint</strong> button if you get stuck.</li>
-              <li>Click <strong>Reset</strong> to start over.</li>
-              <li>Finally, attempt the assessment quiz to test your knowledge.</li>
-            </ol>
-          </div>
-        </section>
+  <div class="content-placeholder">
+    <h2>Procedure</h2>
+    <ol>
+      <li>Open the <strong>Simulation</strong> tab. Either choose <strong>Sample 1</strong> or <strong>Sample 2</strong> from the drop-down, or type or paste your own ciphertext. Only the letters A to Z are analysed; spaces and punctuation are kept as they are.</li>
+      <li>Click <strong>Analyze Frequency</strong>. The experiment shows the bar chart of ciphertext letter frequencies, the English reference table, a frequency table sorted from most to least common, and the Substitution Mapping Workspace.</li>
+      <li>Compare the most frequent ciphertext letters with the English reference table (E, T, A, O, I, N, ...). Hover over a bar to see its exact percentage.</li>
+      <li>In the workspace, type your guessed plaintext letter below each ciphertext letter, for example the most frequent ciphertext letter &rarr; E.</li>
+      <li>Click <strong>Apply Mapping</strong>. Mapped letters appear in lowercase in the Decrypted Text Preview and unmapped letters stay in capitals, so you can read partial words such as <em>th_</em> and complete them.</li>
+      <li>Refine the guesses using word clues: one-letter words (A or I), short words (THE, AND, IS), double letters and common endings (-ING, -ED). Apply the mapping again after each change.</li>
+      <li>If you are stuck, click <strong>Hint</strong>. Each click shows the next of three hints, and the cycle then repeats.</li>
+      <li>Click <strong>Auto-Solve</strong> to see how a program tackles the same problem. It detects Caesar, Atbash or Affine ciphers, otherwise matches words against a dictionary, and fills the mapping boxes and preview. Read the message under the buttons, because short messages can be wrong or have several valid readings.</li>
+      <li>For Sample 1 or Sample 2, click <strong>Check Answer</strong> to verify your mapping. It reports incorrect letters, or confirms when every letter in the message is correct. (This button appears only for unedited samples.)</li>
+      <li>Click <strong>Reset</strong> to clear the ciphertext, chart, tables and mapping and start again.</li>
+      <li>Open the <strong>Quiz</strong> tab, answer all 10 questions and click <strong>Submit Quiz</strong>. Use <strong>Retry Quiz</strong> to try again.</li>
+      <li>Finally, share your experience in the <strong>Feedback</strong> tab.</li>
+    </ol>
+    <p class="step-tip"><strong>Tip:</strong> Try the same message in different lengths. A 300-letter paragraph follows English statistics closely, while a 20-letter message often does not. That difference is the central lesson of this experiment.</p>
+  </div>
+</section>
+
+
 
         <!-- Simulation -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
@@ -273,7 +412,7 @@
                   <p class="chart-caption">Ciphertext Letter Frequencies (%)</p>
                 </div>
                 <div class="flex-item">
-                  <h3 class="analysis-side-title">English Reference</h3>
+                  <h3 class="analysis-side-title">English Reference (default letter frequencies)</h3>
                   <table class="reference-table">
                     <tr><th>Letter</th><th>Freq (%)</th><th>Letter</th><th>Freq (%)</th></tr>
                     <tr><td>E</td><td>12.70</td><td>M</td><td>2.41</td></tr>
@@ -289,6 +428,8 @@
                     <tr><td>L</td><td>4.03</td><td>X</td><td>0.15</td></tr>
                     <tr><td>C</td><td>2.78</td><td>Q</td><td>0.10</td></tr>
                     <tr><td>U</td><td>2.76</td><td>Z</td><td>0.07</td></tr>
+                    <p class="ref-note">Source: R. Lewand, <em>Cryptological Mathematics</em>, Mathematical Association of America (2000), pp. 36&ndash;37. Values are relative frequencies in general English text, rounded to two decimals, and vary with author and subject.</p>
+
                   </table>
                 </div>
               </div>
@@ -355,6 +496,10 @@
             </div>
             <div class="reference-card">
               <div class="reference-title">Simon Singh — The Code Book: The Science of Secrecy from Ancient Egypt to Quantum Cryptography</div>
+              <div class="reference-card">
+  <div class="reference-title">Robert Lewand &mdash; Cryptological Mathematics (Mathematical Association of America, 2000)</div>
+  <div class="reference-meta">Source of the English letter frequency table, common letter pairs and triples used as the default reference in this experiment.</div>
+</div>
               <div class="reference-meta">Provides an accessible history and explanation of frequency analysis as developed by Al-Kindi.</div>
             </div>
           </div>
@@ -369,6 +514,7 @@
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="words.js"></script>
     <script src="script.js"></script>
     <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
