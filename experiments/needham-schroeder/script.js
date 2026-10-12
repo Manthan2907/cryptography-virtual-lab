@@ -272,27 +272,17 @@ const NSLab = (function() {
       });
     }
 
-    // Sidebar Tabs switching
-    els.navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetTab = link.getAttribute('data-tab');
-
-        els.navLinks.forEach(l => l.classList.remove('active'));
-        els.tabPanels.forEach(p => p.classList.remove('active'));
-
-        link.classList.add('active');
-        const targetPanel = document.getElementById(`tab-${targetTab}`);
-        if (targetPanel) {
-          targetPanel.classList.add('active');
-        }
-
-        if (targetTab === 'simulation') {
-          setTimeout(updateTopologyLines, 40);
-          setTimeout(updateTopologyLines, 180);
-        }
+      // Trigger SVG redraw when simulation tab is clicked
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (btn.getAttribute('data-tab') === 'simulation') {
+            setTimeout(updateTopologyLines, 40);
+            setTimeout(updateTopologyLines, 180);
+            setTimeout(updateTopologyLines, 400);
+          }
+        });
       });
-    });
 
     // Controls
     els.btnInitHandshake.addEventListener('click', initHandshake);
