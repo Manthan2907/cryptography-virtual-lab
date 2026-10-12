@@ -381,13 +381,18 @@ document.addEventListener('DOMContentLoaded', () => {
     traceOutput.innerHTML = outputHtml;
   });
 
-  // --- Quiz Logic ---
+  // --- Quiz Logic (10 Questions) ---
   const correctAnswers = {
     q1: { ans: 'A', text: 'An authorized registry of rules attached directly to a resource specifying who can access it.' },
     q2: { ans: 'B', text: 'The Owner/Administrator controls access rules; Creator is the user who initially created the file but may not retain ownership.' },
     q3: { ans: 'C', text: 'Top-down approach (↓): Permissions flow from Owner/Admin -> Group -> Users/Files, with directory default ACLs inherited downward.' },
     q4: { ans: 'A', text: 'Only Read (an explicit User ACE takes precedence over group or inherited permissions).' },
-    q5: { ans: 'D', text: 'The file inherits the directory default ACLs unless an explicit file rule overrides it.' }
+    q5: { ans: 'D', text: 'The file inherits the directory default ACLs unless an explicit file rule overrides it.' },
+    q6: { ans: 'B', text: 'The ACL Mask defines the maximum allowed permission ceiling filtering effective rights for Named Users and Groups.' },
+    q7: { ans: 'C', text: 'Union of permissions: Read and Write (rw-), combining all matching group entries.' },
+    q8: { ans: 'A', text: 'Root automatically bypasses DAC permission checks for Read and Write, receiving Execute if at least one execute bit exists.' },
+    q9: { ans: 'D', text: 'When the requesting subject does not match the owner, has no named user ACE, and belongs to no matching groups.' },
+    q10: { ans: 'C', text: 'Users and processes should only receive the minimum permissions necessary for their duties, minimizing security risks.' }
   };
 
   document.getElementById('btnSubmitQuiz').addEventListener('click', () => {
@@ -415,24 +420,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const scoreDiv = document.getElementById('quizScore');
     if (scoreDiv) {
-      scoreDiv.textContent = `You scored ${score} out of 5.`;
-      scoreDiv.style.color = score >= 4 ? '#10b981' : (score >= 2 ? '#f59e0b' : '#ef4444');
+      scoreDiv.textContent = `You scored ${score} out of 10.`;
+      scoreDiv.style.color = score >= 8 ? '#10b981' : (score >= 5 ? '#f59e0b' : '#ef4444');
     }
   });
-
-  // Feedback Submission Logic
-  const feedbackForm = document.getElementById('feedbackForm');
-  if (feedbackForm) {
-    feedbackForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const thanksDiv = document.getElementById('feedbackThanks');
-      if (thanksDiv) thanksDiv.style.display = 'block';
-      setTimeout(() => {
-        if (thanksDiv) thanksDiv.style.display = 'none';
-        e.target.reset();
-      }, 3000);
-    });
-  }
 
   // Initial UI Render
   renderAclTable();

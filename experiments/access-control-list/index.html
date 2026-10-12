@@ -465,10 +465,11 @@
         <!-- QUIZ SECTION -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
           <div class="quiz-panel">
-            <h2>Knowledge Assessment</h2>
-            <p>Test your understanding of Access Control Lists, the Top-Down Approach, and Entity Roles.</p>
+            <h2>Knowledge Assessment (10 Questions)</h2>
+            <p>Test your comprehensive understanding of Access Control Lists, the Top-Down Approach, Entity Roles, and Precedence.</p>
             
             <form id="quizForm">
+              <!-- Q1 -->
               <div class="quiz-question">
                 <h4>1. Conceptually, what is an Access Control List (ACL) in an operating system?</h4>
                 <ul class="quiz-options">
@@ -480,6 +481,7 @@
                 <div class="quiz-feedback" id="feedback-q1"></div>
               </div>
 
+              <!-- Q2 -->
               <div class="quiz-question">
                 <h4>2. In file access control concepts, what is the primary distinction between a "Creator" and an "Owner"?</h4>
                 <ul class="quiz-options">
@@ -491,6 +493,7 @@
                 <div class="quiz-feedback" id="feedback-q2"></div>
               </div>
 
+              <!-- Q3 -->
               <div class="quiz-question">
                 <h4>3. In the Top-Down Approach (&darr;) to file access control, how are permissions determined?</h4>
                 <ul class="quiz-options">
@@ -502,8 +505,9 @@
                 <div class="quiz-feedback" id="feedback-q3"></div>
               </div>
 
+              <!-- Q4 -->
               <div class="quiz-question">
-                <h4>4. User Bob belongs to the "devs" group. A file has an ACE giving "devs" Write access. However, there is also a Named User ACE specifically for "Bob" giving him ONLY Read access. What access will Bob have?</h4>
+                <h4>4. User Bob belongs to the "devs" group. A file grants Write access to "devs". However, there is also an explicit Named User ACE specifically for "Bob" giving him ONLY Read access. What access will Bob have?</h4>
                 <ul class="quiz-options">
                   <li><label><input type="radio" name="q4" value="A"> Only Read (the specific user ACE takes precedence over the group ACE).</label></li>
                   <li><label><input type="radio" name="q4" value="B"> Read and Write (permissions accumulate).</label></li>
@@ -513,6 +517,7 @@
                 <div class="quiz-feedback" id="feedback-q4"></div>
               </div>
 
+              <!-- Q5 -->
               <div class="quiz-question">
                 <h4>5. When an administrator configures Default ACLs on directory <code>/departments/comp_eng/</code>, how do child files behave?</h4>
                 <ul class="quiz-options">
@@ -522,6 +527,66 @@
                   <li><label><input type="radio" name="q5" value="D"> The file inherits the directory default ACLs unless an explicit file rule overrides it.</label></li>
                 </ul>
                 <div class="quiz-feedback" id="feedback-q5"></div>
+              </div>
+
+              <!-- Q6 -->
+              <div class="quiz-question">
+                <h4>6. What is the primary function of the POSIX ACL Mask (<code>mask::</code>) entry on a secured file?</h4>
+                <ul class="quiz-options">
+                  <li><label><input type="radio" name="q6" value="A"> It automatically grants execute permissions to all network users.</label></li>
+                  <li><label><input type="radio" name="q6" value="B"> It defines the maximum permission ceiling filtering effective rights for Named Users and Groups.</label></li>
+                  <li><label><input type="radio" name="q6" value="C"> It hides the filename from directory listings.</label></li>
+                  <li><label><input type="radio" name="q6" value="D"> It physically encrypts the file's contents with a symmetric cipher.</label></li>
+                </ul>
+                <div class="quiz-feedback" id="feedback-q6"></div>
+              </div>
+
+              <!-- Q7 -->
+              <div class="quiz-question">
+                <h4>7. User Charlie belongs to two groups: "devs" (granted Read <code>r--</code>) and "hr" (granted Write <code>-w-</code>) on a file. Charlie has no named user ACE. What effective permission does Charlie receive?</h4>
+                <ul class="quiz-options">
+                  <li><label><input type="radio" name="q7" value="A"> Only Read from devs.</label></li>
+                  <li><label><input type="radio" name="q7" value="B"> Only Write from hr.</label></li>
+                  <li><label><input type="radio" name="q7" value="C"> Both Read and Write (<code>rw-</code>), representing the union of permissions across matched groups.</label></li>
+                  <li><label><input type="radio" name="q7" value="D"> Access Denied because belonging to multiple groups causes an ambiguity conflict.</label></li>
+                </ul>
+                <div class="quiz-feedback" id="feedback-q7"></div>
+              </div>
+
+              <!-- Q8 -->
+              <div class="quiz-question">
+                <h4>8. How does standard POSIX DAC evaluate an access request initiated by the <code>root</code> (superuser) account?</h4>
+                <ul class="quiz-options">
+                  <li><label><input type="radio" name="q8" value="A"> Root automatically bypasses DAC permission checks for Read and Write, receiving Execute if at least one execute bit exists.</label></li>
+                  <li><label><input type="radio" name="q8" value="B"> Root is treated strictly as an "Other (World)" user with lowest priority.</label></li>
+                  <li><label><input type="radio" name="q8" value="C"> Root must always be explicitly listed in a named user ACE to open any file.</label></li>
+                  <li><label><input type="radio" name="q8" value="D"> Root is denied access to all user files for privacy protection.</label></li>
+                </ul>
+                <div class="quiz-feedback" id="feedback-q8"></div>
+              </div>
+
+              <!-- Q9 -->
+              <div class="quiz-question">
+                <h4>9. When does the authorization engine fall back to applying the "Other" (World) permissions?</h4>
+                <ul class="quiz-options">
+                  <li><label><input type="radio" name="q9" value="A"> As the very first check before examining the Owner.</label></li>
+                  <li><label><input type="radio" name="q9" value="B"> Only when the file is stored on an external USB flash drive.</label></li>
+                  <li><label><input type="radio" name="q9" value="C"> Whenever the ACL mask is deleted.</label></li>
+                  <li><label><input type="radio" name="q9" value="D"> When the requesting subject does not match the owner, has no matching named user ACE, and belongs to no matching groups.</label></li>
+                </ul>
+                <div class="quiz-feedback" id="feedback-q9"></div>
+              </div>
+
+              <!-- Q10 -->
+              <div class="quiz-question">
+                <h4>10. Why is the Principle of Least Privilege (PoLP) a fundamental guideline when configuring Access Control Lists?</h4>
+                <ul class="quiz-options">
+                  <li><label><input type="radio" name="q10" value="A"> Giving all users full permissions reduces administrative helpdesk requests.</label></li>
+                  <li><label><input type="radio" name="q10" value="B"> It guarantees that all files can be publicly shared on the internet.</label></li>
+                  <li><label><input type="radio" name="q10" value="C"> Users and processes should only receive the minimum permissions necessary for their duties, minimizing security risks.</label></li>
+                  <li><label><input type="radio" name="q10" value="D"> Operating systems run faster when files have no access control rules attached.</label></li>
+                </ul>
+                <div class="quiz-feedback" id="feedback-q10"></div>
               </div>
 
               <div style="display: flex; justify-content: flex-start; align-items: center; gap: 20px; margin-top: 30px; line-height: 1;">
@@ -556,82 +621,15 @@
 
         <!-- FEEDBACK SECTION -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2 style="text-align: center; margin-bottom: 5px;">Feedback for Access Control List (ACL)</h2>
-            <p style="text-align: center; margin-bottom: 30px;">Please share your feedback regarding this experiment simulation.</p>
-            <form id="feedbackForm">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                  <label>Full Name <span style="color: #ef4444;">*</span></label>
-                  <input type="text" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                  <label>Roll No / Student ID <span style="color: #ef4444;">*</span></label>
-                  <input type="text" placeholder="Enter roll number or student ID" required>
-                </div>
-              </div>
-              
-              <div class="form-group" style="margin-bottom: 30px;">
-                <label>Overall Experiment Rating <span style="color: #ef4444;">*</span></label>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                  <div class="star-rating" style="margin-top: 0;">
-                    <input type="radio" id="star5" name="rating" value="5" required />
-                    <label for="star5" title="5 - Excellent">&#9733;</label>
-                    <input type="radio" id="star4" name="rating" value="4" />
-                    <label for="star4" title="4 - Good">&#9733;</label>
-                    <input type="radio" id="star3" name="rating" value="3" />
-                    <label for="star3" title="3 - Average">&#9733;</label>
-                    <input type="radio" id="star2" name="rating" value="2" />
-                    <label for="star2" title="2 - Below Average">&#9733;</label>
-                    <input type="radio" id="star1" name="rating" value="1" />
-                    <label for="star1" title="1 - Poor">&#9733;</label>
-                  </div>
-                  <span style="font-style: italic; color: var(--color-text-muted);">Select rating</span>
-                </div>
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                  <label>Concept Clarity</label>
-                  <select>
-                    <option>4 - Clear & Easy to Follow</option>
-                    <option>3 - Mostly Clear</option>
-                    <option>2 - Somewhat Confusing</option>
-                    <option>1 - Very Confusing</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Simulation Ease of Use</label>
-                  <select>
-                    <option>4 - Easy to Operate</option>
-                    <option>3 - Manageable</option>
-                    <option>2 - Clunky</option>
-                    <option>1 - Difficult to Use</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div class="form-group" style="margin-top: 10px;">
-                <label>Comments, Observations & Suggestions <span style="color: #ef4444;">*</span></label>
-                <textarea rows="4" placeholder="What did you learn from this simulation? Any suggestions for improvement?" required></textarea>
-              </div>
-              
-              <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <button type="submit" class="acl-btn" style="background: #3b82f6; font-size: 16px;">Submit Feedback</button>
-              </div>
-            </form>
-            <div id="feedbackThanks" style="display:none; color: #10b981; font-weight: bold; margin-top: 15px; text-align: right;">
-              Thank you for your feedback!
-            </div>
-          </div>
+          <!-- Auto-populated by feedback.js with RSA-2048 client-side encryption transmitted to main server backend -->
         </section>
       </main>
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
     <script src="functions.js"></script>
     <script src="script.js"></script>
-      <script src="../../js/crypto-feedback.js"></script>
-    <script src="../../js/feedback.js"></script>
   </body>
 </html>
