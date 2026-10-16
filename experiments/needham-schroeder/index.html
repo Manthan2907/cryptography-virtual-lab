@@ -28,7 +28,6 @@
       <nav class="tab-navigation" aria-label="Experiment sections">
   <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim & Objectives</button>
   <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory & Beginner Guide</button>
-  <button class="tab-btn" type="button" data-tab="pretest" aria-selected="false">Pretest</button>
   <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
   <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
   <button class="tab-btn" type="button" data-tab="posttest" aria-selected="false">Posttest</button>
@@ -588,22 +587,6 @@
   </div>
 </section>
 
-        <!-- 3. PRETEST TAB -->
-        <section id="pretest" class="tab-content" data-tab-panel="pretest" hidden>
-
-          <h2 class="vlab-section-heading">Pretest Questions</h2>
-          <p class="vlab-paragraph">Evaluate your baseline knowledge of symmetric cryptography and Key Distribution
-            Centers prior to running the experiment.</p>
-
-          <div id="pretestQuestionsContainer"></div>
-
-          <div class="control-actions" style="margin-bottom: 1.5rem;">
-            <button id="btnPretestSubmit" class="btn btn-primary">Submit Pretest</button>
-            <button id="btnPretestReset" class="btn btn-outline">Reset Options</button>
-          </div>
-          <div id="pretestScore" style="display:none; margin-top:1rem;"></div>
-        
-</section>
 
         <!-- 4. PROCEDURE TAB -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
@@ -821,11 +804,11 @@
                     <span class="entity-badge-sm status-idle" id="badgeAlice">IDLE</span>
                     <table class="entity-key-table-sm">
                       <tr>
-                        <td class="entity-key-name-sm">Alice's Secret Master Password:</td>
+                        <td class="entity-key-name-sm" title="Alice's Secret Master Password">Master Key (K<sub>A</sub>):</td>
                         <td class="entity-key-val-sm" id="valAliceKA">0x9A4F8B2C</td>
                       </tr>
                       <tr>
-                        <td class="entity-key-name-sm">Temporary Session Key:</td>
+                        <td class="entity-key-name-sm" title="Temporary Session Key">Session Key (K<sub>AB</sub>):</td>
                         <td class="entity-key-val-sm" id="valAliceKAB">None</td>
                       </tr>
                     </table>
@@ -843,15 +826,15 @@
                     <span class="entity-badge-sm status-idle" id="badgeKdc">LISTENING</span>
                     <table class="entity-key-table-sm">
                       <tr>
-                        <td class="entity-key-name-sm">Alice's Secret Master Password:</td>
+                        <td class="entity-key-name-sm" title="Alice's Secret Master Password">Alice Key (K<sub>A</sub>):</td>
                         <td class="entity-key-val-sm" id="valKdcKA">0x9A4F8B2C</td>
                       </tr>
                       <tr>
-                        <td class="entity-key-name-sm">Bob's Secret Master Password:</td>
+                        <td class="entity-key-name-sm" title="Bob's Secret Master Password">Bob Key (K<sub>B</sub>):</td>
                         <td class="entity-key-val-sm" id="valKdcKB">0x3C81D5E9</td>
                       </tr>
                       <tr>
-                        <td class="entity-key-name-sm">Temporary Session Key:</td>
+                        <td class="entity-key-name-sm" title="Temporary Session Key">Session Key (K<sub>AB</sub>):</td>
                         <td class="entity-key-val-sm" id="valKdcKAB">None</td>
                       </tr>
                     </table>
@@ -869,11 +852,11 @@
                     <span class="entity-badge-sm status-idle" id="badgeBob">IDLE</span>
                     <table class="entity-key-table-sm">
                       <tr>
-                        <td class="entity-key-name-sm">Bob's Secret Master Password:</td>
+                        <td class="entity-key-name-sm" title="Bob's Secret Master Password">Master Key (K<sub>B</sub>):</td>
                         <td class="entity-key-val-sm" id="valBobKB">0x3C81D5E9</td>
                       </tr>
                       <tr>
-                        <td class="entity-key-name-sm">Temporary Session Key:</td>
+                        <td class="entity-key-name-sm" title="Temporary Session Key">Session Key (K<sub>AB</sub>):</td>
                         <td class="entity-key-val-sm" id="valBobKAB">None</td>
                       </tr>
                     </table>
@@ -884,62 +867,31 @@
                 </div>
               </div>
 
-              <!-- Right Column: Inspector & Plain English Breakdown -->
+              <!-- Right Column: Simplified Step Explanation & Variables Breakdown -->
               <div class="sim-inspector-column">
-                <div class="inspector-card-compact" style="max-height: 380px; overflow-y: auto;">
-                  <div class="vlab-card-title" id="inspectorTitle" style="font-size:0.95rem; margin-bottom:0.5rem;">Step
-                    1: System Setup (Idle)</div>
-
-                  <!-- Pinned Plain English Story Box at the top -->
-                  <div class="story-callout-box" id="inspectorStoryCallout" style="margin-bottom:0.6rem;">
-                    <strong>Plain English Story:</strong> The system is ready. Click "Initialize Handshake" to see how
-                    Alice and Bob establish a temporary session pass using Server S.
-                  </div>
-
-                  <div style="font-size:0.75rem; font-weight:600; color:var(--vlab-text-muted); margin-bottom:0.2rem;">
-                    Mathematical Structure:</div>
-                  <div class="inspector-code-block-sm" id="inspectorMath" style="color:#f59e0b;">
-                    Alice -&gt; Server : Alice, Bob, Alice Challenge Number
-                  </div>
-
-                  <div style="font-size:0.75rem; font-weight:600; color:var(--vlab-text-muted); margin-bottom:0.2rem;">
-                    Raw Wire Format Ciphertext:</div>
-                  <div class="inspector-code-block-sm" id="inspectorCiphertext">
-                    No active payload transmitted yet. Click "Initialize Handshake" to begin.
-                  </div>
-
-                  <div style="font-size:0.75rem; font-weight:600; color:var(--vlab-text-muted); margin-bottom:0.25rem;">
-                    Decrypted Field Breakdown:</div>
-                  <table class="inspector-table-compact">
-                    <thead>
-                      <tr>
-                        <th>Field</th>
-                        <th>Value</th>
-                        <th>Key Used</th>
-                        <th>Security Purpose</th>
-                        <th>Plain English Story</th>
-                      </tr>
-                    </thead>
-                    <tbody id="inspectorTableBody">
-                      <tr>
-                        <td colspan="5" style="text-align:center; color:#777;">Click "Initialize Handshake" to inspect
-                          step details.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <!-- Integrated Audit Log Console -->
                 <div class="inspector-card-compact">
-                  <div
-                    style="font-size:0.85rem; font-weight:700; color:var(--vlab-primary-brown); margin-bottom:0.35rem; display:flex; justify-content:space-between; align-items:center;">
-                    <span>Real-Time Audit Log</span>
-                    <button class="btn-vlab-reset" style="padding:0.15rem 0.45rem; font-size:0.72rem;"
-                      onclick="document.getElementById('auditConsole').innerHTML=''">Clear</button>
+                  <div class="inspector-step-header">
+                    <span class="inspector-step-badge" id="inspectorStepBadge">Setup</span>
+                    <h3 class="inspector-step-title" id="inspectorTitle">System Setup: Ready to Begin Handshake</h3>
                   </div>
-                  <div class="audit-console-compact" id="auditConsole"></div>
-                </div>
 
+                  <!-- Simplified Explanation Box -->
+                  <div class="story-callout-box" id="inspectorExplanation">
+                    <strong>Plain English Overview:</strong> The system is initialized. Alice wants to establish a secure communication line with Bob using the trusted Key Distribution Server. Click <strong>"Initialize Handshake"</strong> to begin.
+                  </div>
+
+                  <!-- Formal Protocol Message Formula -->
+                  <div class="inspector-section-label">Protocol Message Formula:</div>
+                  <div class="inspector-code-block-sm" id="inspectorFormula">
+                    A &rarr; S : A, B, N<sub>A</sub> &nbsp; (Ready to Transmit)
+                  </div>
+
+                  <!-- Variables Breakdown: K_AB, K_A, K_B, N_A, N_B, etc. -->
+                  <div class="inspector-section-label" style="margin-top: 0.65rem;">Cryptographic Variables &amp; Parameters:</div>
+                  <div class="var-breakdown-list" id="inspectorVariablesList">
+                    <!-- Dynamic Variable Breakdown populated by script.js -->
+                  </div>
+                </div>
               </div>
 
             </div>
