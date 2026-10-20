@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <title>Brute Force Attack | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -20,8 +21,8 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <h1 id="exp-title">Brute Force Attack</h1>
+        <p id="exp-description">Learn how password guessing works and why longer passwords are harder to guess.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
@@ -34,42 +35,357 @@
       </nav>
 
       <main class="content-area">
+
+        <!-- ============ THEORY ============ -->
         <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+          <div class="bf">
+            <h2 class="bf-title">Theory: Brute-Force Attack</h2>
+
+            <section>
+              <h2>Aim</h2>
+              <p>
+                To understand the basic working of a brute-force password attack
+                through a safe, local demonstration and learn why password length matters.
+              </p>
+            </section>
+
+            <section>
+              <h2>Objectives</h2>
+              <ul>
+                <li>Understand what a brute-force attack is.</li>
+                <li>Learn about character sets and password length.</li>
+                <li>Calculate the number of possible combinations.</li>
+                <li>Observe candidate guesses, attempts and progress.</li>
+                <li>Identify practical ways to improve password security.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>1. What is a brute-force attack?</h2>
+              <p>
+                A brute-force attack tries possible password combinations in a
+                systematic order until a match is found. The larger the set of
+                possible passwords, the more guesses may be needed.
+              </p>
+            </section>
+
+            <section>
+              <h2>2. How does it work?</h2>
+              <p>
+                For example, if the target password is <strong>"aba"</strong>, the
+                simulator changes one letter at a time, like a counter rolling over.
+                The <u>underlined</u> letter in each guess is the one that
+                just changed from the previous guess:
+              </p>
+              <pre style="font-size: 1.2em;">Guess 1:  aa<u>a</u>
+Guess 2:  aa<u>b</u>
+Guess 3:  aa<u>c</u>
+Guess 4:  aa<u>d</u>
+Guess 5:  aa<u>e</u>
+Guess 6:  aa<u>f</u>
+Guess 7:  aa<u>g</u>
+Guess 8:  aa<u>h</u>
+Guess 9:  aa<u>i</u>
+Guess 10: aa<u>j</u>
+...
+Guess 23: aa<u>w</u>
+Guess 24: aa<u>x</u>
+Guess 25: aa<u>y</u>
+Guess 26: aa<u>z</u>   (last letter has cycled through a–z)
+Guess 27: a<u>b</u>a   match found! (middle letter moved from a → b, last letter reset to a)</pre>
+              <p>
+                It took 27 attempts to reach <code>"aba"</code>. A password like
+                <code>"zzz"</code> would be the very last of the 17,576 possible
+                combinations.
+              </p>
+              <ol>
+                <li>Choose the characters that may be used.</li>
+                <li>Generate a candidate password.</li>
+                <li>Check whether the candidate matches the target in the demonstration.</li>
+                <li>If it does not match, try the next candidate.</li>
+                <li>Stop when a match is found or the experiment ends.</li>
+              </ol>
+              <p class="small">
+                Real websites should not reveal passwords for direct comparison.
+                They use secure password verification and security controls.
+              </p>
+            </section>
+
+            <section>
+              <h2>3. What is a character set?</h2>
+              <p>
+                A character set is the group of characters allowed in a password.
+                For example, lowercase English letters have 26 characters:
+                a through z. A set can also include uppercase letters, digits or symbols.
+              </p>
+            </section>
+
+            <section>
+              <h2>4. What is the search space?</h2>
+              <p>
+                The search space is the total number of possible combinations
+                for the chosen character set and password length.
+              </p>
+              <pre>Search space = C^L</pre>
+              <p><strong>C</strong> is the number of available characters.</p>
+              <p><strong>L</strong> is the password length.</p>
+              <p>
+                For 26 lowercase letters and a 3-character password:
+                26³ = 17,576 combinations.
+              </p>
+              <p>
+                The simulator does not always need to test every combination.
+                It stops if it finds the target earlier.
+              </p>
+            </section>
+
+            <section>
+              <h2>5. Brute force vs. dictionary attack</h2>
+              <p>
+                A brute-force method systematically tries combinations from a
+                defined set. A dictionary attack tries candidates from a list
+                of common words or likely passwords. Both are password-guessing
+                approaches, but they choose candidates differently.
+              </p>
+            </section>
+
+            <section>
+              <h2>6. Why does password length matter?</h2>
+              <p>
+                Each extra character creates more possible combinations.
+                With 26 lowercase letters, a one-character password has 26
+                combinations, while a two-character password has 676.
+                Longer, unpredictable passwords are generally harder to guess.
+              </p>
+            </section>
+
+            <section>
+              <h2>7. Why can the time vary?</h2>
+              <p>
+                Time depends on how quickly guesses are tested, the size of the
+                search space, the order of guesses and security controls.
+                This browser demo is for learning and does not represent
+                real-world cracking speeds.
+              </p>
+            </section>
+
+            <section>
+              <h2>8. How can brute-force attacks be prevented?</h2>
+              <ul>
+                <li>Use long, unique passwords or passphrases.</li>
+                <li>Use a password manager.</li>
+                <li>Enable multi-factor authentication (MFA).</li>
+                <li>Apply rate limits and monitor suspicious sign-ins.</li>
+                <li>Store passwords using secure salted password-hashing methods.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>Learning outcome</h2>
+              <p>
+                By the end, you should be able to explain brute-force guessing,
+                calculate a simple search space, interpret simulation results
+                and suggest basic password protections.
+              </p>
+              <p class="small">
+                For education only. The simulation runs locally and does not connect
+                to real accounts or systems.
+              </p>
+            </section>
+
+            <button type="button" class="btn" data-go="procedure">Next: Procedure →</button>
           </div>
         </section>
 
+        <!-- ============ PROCEDURE ============ -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+          <div class="bf">
+            <h2 class="bf-title">Procedure</h2>
+            <p>
+              Follow these steps to see how the simulator guesses a short sample
+              password. You do not need any prior knowledge to try it.
+            </p>
+
+            <section>
+              <h2>Before you start</h2>
+              <p>
+                <strong>Target password:</strong> the sample value the simulator
+                is trying to find. Use a made-up example, not a real password.
+              </p>
+              <p>
+                <strong>Character set:</strong> the characters the simulator is
+                allowed to use. For example, lowercase letters means a, b, c … z.
+              </p>
+            </section>
+
+            <section>
+              <h2>How to perform the experiment</h2>
+              <ol>
+                <li>Open the <a href="#simulation" data-go="simulation">Simulation tab</a>.</li>
+                <li>Enter a short sample target such as <code>ab</code>.</li>
+                <li>Select a character set that contains every character in your target.</li>
+                <li>Review the total number of possible combinations.</li>
+                <li>Press <strong>Start</strong>. The simulator generates guesses in a defined order.</li>
+                <li>Watch the current guess, attempt count, progress and elapsed time.</li>
+                <li>If a guess is wrong, the simulator tries another. When it finds the target, it stops and shows a success message.</li>
+                <li>Use <strong>Pause</strong> to pause and <strong>Resume</strong> to continue. Use <strong>Reset</strong> to start a fresh experiment.</li>
+              </ol>
+            </section>
+
+            <section>
+              <h2>Understand the formula</h2>
+              <pre>Search space = C^L</pre>
+              <p><strong>C</strong> = number of available characters at each position.</p>
+              <p><strong>L</strong> = number of characters in the password.</p>
+              <p><strong>C^L</strong> = total possible combinations.</p>
+
+              <h3>Example: 3 lowercase letters</h3>
+              <p>
+                There are 26 lowercase letters, so C = 26.
+                If the password has 3 characters, L = 3.
+              </p>
+              <pre>26^3 = 26 × 26 × 26 = 17,576 combinations</pre>
+              <p>
+                Why multiply 26 three times? Each of the three positions can
+                contain any of the 26 letters.
+              </p>
+
+              <h3>Two smaller examples</h3>
+              <ul>
+                <li>Length 1: 26¹ = 26 combinations.</li>
+                <li>Length 2: 26² = 26 × 26 = 676 combinations.</li>
+              </ul>
+              <p>Notice how the total grows quickly as the password gets longer.</p>
+            </section>
+
+            <section>
+              <h2>Does it always try every combination?</h2>
+              <p>
+                <strong>No.</strong> The search space is the total number of
+                possible candidates, but the simulator stops as soon as it finds
+                the target. The number of actual attempts depends on where the
+                target appears in the guessing order.
+              </p>
+            </section>
+
+            <section>
+              <h2>What do the results mean?</h2>
+              <ul>
+                <li><strong>Current guess:</strong> the candidate being checked most recently.</li>
+                <li><strong>Attempts:</strong> how many candidates have been checked so far.</li>
+                <li><strong>Total combinations:</strong> the size of the complete search space.</li>
+                <li><strong>Progress:</strong> the fraction of that search space already checked.</li>
+                <li><strong>Elapsed time:</strong> time spent in this browser demonstration, not a real-world cracking estimate.</li>
+                <li><strong>Attempts per update:</strong> how many guesses are processed before the display refreshes. A larger batch may run faster but makes individual guesses less visible; it does not change the search space.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>Conclusion</h2>
+              <p>
+                The experiment shows that the number of possible passwords depends
+                on character-set size and length. Using long, unique passwords and
+                enabling multi-factor authentication makes accounts more resistant
+                to password guessing.
+              </p>
+              <p class="small">
+                Use only made-up sample passwords in this local educational activity.
+              </p>
+            </section>
+
+            <button type="button" class="btn secondary" data-go="theory">← Theory</button>
+            <button type="button" class="btn" data-go="simulation">Open simulation →</button>
           </div>
         </section>
 
+        <!-- ============ SIMULATION ============ -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+          <div class="simulation-controls bf">
+            <h2>Set up your experiment</h2>
+            <p>
+              Try the process with a short, made-up sample password.
+              Everything runs locally in your browser.
+            </p>
+
+            <label for="targetPassword">Sample target password</label>
+            <input id="targetPassword" type="password" maxlength="4"
+                   autocomplete="off" placeholder="Example: ab">
+
+            <label for="characterSet">Character set</label>
+            <select id="characterSet">
+              <option value="lower">Lowercase letters (a–z)</option>
+              <option value="upper">Uppercase letters (A–Z)</option>
+              <option value="digits">Digits (0–9)</option>
+              <option value="lowerdigits">Lowercase letters + digits</option>
+              <option value="all">Lowercase + uppercase + digits + symbols</option>
+            </select>
+
+            <label class="toggle" for="slowMode">
+              <input type="checkbox" id="slowMode">
+              Make simulation slower (ON = one guess every 0.7 s so you can see each letter change, OFF = normal speed)
+            </label>
+
+            <p class="small">
+              The target must contain 1–4 characters from the selected set.
+              Never enter a real password.
+            </p>
+
+            <p class="status" id="status" role="status" aria-live="polite">
+              Enter a sample password to calculate the search space.
+            </p>
+
+            <button type="button" class="btn" id="startBtn">Start</button>
+            <button type="button" class="btn secondary" id="pauseBtn" disabled>Pause</button>
+            <button type="button" class="btn secondary" id="resetBtn">Reset</button>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+
+          <div class="simulation-output bf" aria-live="polite">
+            <h2>Live results</h2>
+
+            <div class="metrics">
+              <div class="metric"><span>Current guess</span><strong id="currentGuess">—</strong></div>
+              <div class="metric"><span>Attempts</span><strong id="attemptCount">0</strong></div>
+              <div class="metric"><span>Total combinations</span><strong id="totalCombinations">—</strong></div>
+              <div class="metric"><span>Elapsed time</span><strong id="elapsedTime">0.00 s</strong></div>
+            </div>
+
+            <label for="progressBar">Search progress</label>
+            <progress id="progressBar" value="0" max="100"></progress>
+            <p id="progressText" class="small">0% complete</p>
+            <p class="small">Search progress shows how many of the possible combinations have been tried so far (attempts ÷ total combinations). It stops early if the password is found.</p>
+
+            <h2>Quick interpretation</h2>
+            <p>
+              A larger character set or a longer target means more possible
+              candidates. The simulator stops when it finds a match, so attempts
+              may be fewer than the total combinations. This demo's elapsed time
+              reflects browser performance, not the speed of a real attack.
+            </p>
+
+            <button type="button" class="btn secondary" data-go="procedure">← Procedure</button>
+            <button type="button" class="btn" data-go="quiz">Take the quiz →</button>
           </div>
         </section>
 
+        <!-- ============ QUIZ ============ -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
-          <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+          <div class="quiz-panel bf">
+            <h2 class="bf-title">Knowledge Assessment</h2>
+            <p>Answer all ten questions. Each question is worth one mark.</p>
+
+            <form id="quizForm">
+              <div id="quizQuestions"></div>
+              <button type="submit" class="btn">Submit answers</button>
+              <button type="button" id="retakeQuiz" class="btn secondary">Retake quiz</button>
+            </form>
+
+            <section id="quizResult" hidden aria-live="polite"></section>
+
+            <button type="button" class="btn secondary" data-go="simulation">← Simulation</button>
+            <button type="button" class="btn" data-go="references">References →</button>
           </div>
         </section>
+
               <!-- References -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="references-container">
@@ -85,6 +401,26 @@
             <div class="reference-card">
               <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
               <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">OWASP Authentication Cheat Sheet</div>
+              <div class="reference-meta">Practical guidance on authentication controls and account security.
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">Read ↗</a></div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">OWASP Password Storage Cheat Sheet</div>
+              <div class="reference-meta">Explains secure password hashing and storage.
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">Read ↗</a></div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST Digital Identity Guidelines</div>
+              <div class="reference-meta">Guidance on digital identity and authentication.
+                <a href="https://pages.nist.gov/800-63-4/" target="_blank" rel="noopener noreferrer">Read ↗</a></div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">MDN Web Docs</div>
+              <div class="reference-meta">Reference material for HTML, CSS and JavaScript.
+                <a href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">Explore ↗</a></div>
             </div>
           </div>
         </section>
