@@ -79,7 +79,7 @@ const STUDENTS_ROSTER = (() => {
   for (const [roll, name] of Object.entries(ROSTER)) {
     LOOKUP[roll] = { fullRoll: roll, name: name };
 
-    // Suffix aliases (e.g. 10748 -> 48, 10705 -> 05 and 5)
+    // Suffix aliases (e.g. 10701 -> 01, 10705 -> 05 and 5)
     if (roll.startsWith("107")) {
       const suffix = roll.slice(3); // "48", "05"
       LOOKUP[suffix] = { fullRoll: roll, name: name };

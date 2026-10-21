@@ -44,7 +44,7 @@
           <div class="feedback-row">
             <div class="feedback-field">
               <label for="fbRollNo">Roll No / Student ID <span class="required">*</span></label>
-              <input type="text" id="fbRollNo" name="rollNo" placeholder="e.g. 10748 or 48" autocomplete="off" required>
+              <input type="text" id="fbRollNo" name="rollNo" placeholder="e.g. 10701 or 01" autocomplete="off" required>
               <div id="fbRollHint" class="feedback-hint">Enter your roll number to auto-fill your verified name</div>
             </div>
 
