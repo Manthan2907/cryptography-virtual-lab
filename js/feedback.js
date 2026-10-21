@@ -1,8 +1,11 @@
 /**
  * Cryptography Virtual Lab - Universal Feedback Component
- * Standardized across all experiments.
+ * Standardized across all experiments with Roll Number Auto-Fetch.
  */
 (() => {
+  // Set to false in future if opening feedback to public / external visitors
+  const AUTO_FETCH_STUDENTS = true;
+
   function getExperimentMeta() {
     const titleEl = document.getElementById('exp-title');
     let title = titleEl ? titleEl.textContent.trim() : document.title.replace(' | Virtual Cryptography Laboratory', '').trim();
@@ -40,12 +43,17 @@
         <form id="expFeedbackForm" class="feedback-form" novalidate>
           <div class="feedback-row">
             <div class="feedback-field">
-              <label for="fbStudentName">Full Name <span class="required">*</span></label>
-              <input type="text" id="fbStudentName" name="studentName" placeholder="Enter your full name" required>
-            </div>
-            <div class="feedback-field">
               <label for="fbRollNo">Roll No / Student ID <span class="required">*</span></label>
-              <input type="text" id="fbRollNo" name="rollNo" placeholder="Enter roll number or student ID" required>
+              <input type="text" id="fbRollNo" name="rollNo" placeholder="e.g. 10748 or 48" autocomplete="off" required>
+              <div id="fbRollHint" class="feedback-hint">Enter your roll number to auto-fill your verified name</div>
+            </div>
+
+            <div class="feedback-field">
+              <label for="fbStudentName">Full Name <span class="required">*</span></label>
+              <div class="input-with-badge">
+                <input type="text" id="fbStudentName" name="studentName" placeholder="Auto-populated upon roll number entry" ${AUTO_FETCH_STUDENTS ? 'readonly' : ''} required>
+                <span id="fbVerifiedBadge" class="verified-tag" hidden>&#10003; Verified</span>
+              </div>
             </div>
           </div>
 
@@ -113,6 +121,71 @@
     const statusDiv = document.getElementById('fbStatus');
     const submitBtn = document.getElementById('fbSubmitBtn');
 
+    const rollInput = document.getElementById('fbRollNo');
+    const nameInput = document.getElementById('fbStudentName');
+    const verifiedBadge = document.getElementById('fbVerifiedBadge');
+    const rollHint = document.getElementById('fbRollHint');
+
+    let verifiedFullRoll = '';
+
+    // Live Roll Number Lookup
+    function lookupStudent() {
+      const query = rollInput.value.trim();
+      if (!query) {
+        if (AUTO_FETCH_STUDENTS) {
+          nameInput.value = '';
+          nameInput.readOnly = true;
+        }
+        nameInput.classList.remove('input-verified');
+        verifiedBadge.hidden = true;
+        rollHint.textContent = 'Enter your roll number to auto-fill your verified name';
+        rollHint.className = 'feedback-hint';
+        verifiedFullRoll = '';
+        return;
+      }
+
+      const roster = window.STUDENTS_ROSTER;
+      const student = (roster && typeof roster.findStudent === 'function')
+        ? roster.findStudent(query)
+        : null;
+
+      if (student) {
+        nameInput.value = student.name;
+        nameInput.classList.add('input-verified');
+        nameInput.readOnly = true;
+        verifiedBadge.hidden = false;
+        verifiedBadge.innerHTML = '&#10003; Verified';
+        rollHint.innerHTML = `Identified: <strong>${student.name}</strong> (Roll: ${student.fullRoll})`;
+        rollHint.className = 'feedback-hint hint-success';
+        verifiedFullRoll = student.fullRoll;
+      } else {
+        if (AUTO_FETCH_STUDENTS) {
+          nameInput.value = '';
+          nameInput.classList.remove('input-verified');
+          nameInput.readOnly = true;
+          verifiedBadge.hidden = true;
+          verifiedFullRoll = '';
+
+          if (query.length >= 2) {
+            rollHint.textContent = 'Roll number not found in class roster. Please check your roll number.';
+            rollHint.className = 'feedback-hint hint-error';
+          } else {
+            rollHint.textContent = 'Enter your roll number to auto-fill your verified name';
+            rollHint.className = 'feedback-hint';
+          }
+        } else {
+          nameInput.readOnly = false;
+          verifiedBadge.hidden = true;
+          rollHint.textContent = '';
+        }
+      }
+    }
+
+    if (rollInput) {
+      rollInput.addEventListener('input', lookupStudent);
+      rollInput.addEventListener('change', lookupStudent);
+    }
+
     const starLabels = {
       1: '1 - Needs Improvement',
       2: '2 - Fair',
@@ -153,12 +226,18 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const name = document.getElementById('fbStudentName').value.trim();
-      const rollNo = document.getElementById('fbRollNo').value.trim();
+      const rollNo = rollInput.value.trim();
+      const name = nameInput.value.trim();
       const rating = parseInt(ratingInput.value, 10) || 0;
       const clarity = document.getElementById('fbClarity').value;
       const ease = document.getElementById('fbEase').value;
       const comments = document.getElementById('fbComments').value.trim();
+
+      if (AUTO_FETCH_STUDENTS && !name) {
+        showStatus('Please enter a valid class roll number so your name is verified.', 'error');
+        rollInput.focus();
+        return;
+      }
 
       if (!name || !rollNo || !comments) {
         showStatus('Please fill out all required fields marked with *.', 'error');
@@ -175,12 +254,15 @@
         return;
       }
 
+      // Standardize roll number to full 5 digits if verified
+      const finalRoll = verifiedFullRoll || rollNo;
+
       // Prepare feedback object
       const feedbackPayload = {
         experimentSlug: slug,
         experimentTitle: title,
         studentName: name,
-        rollNo: rollNo,
+        rollNo: finalRoll,
         rating: rating,
         clarityRating: clarity,
         easeRating: ease,
@@ -200,6 +282,7 @@
         form.reset();
         ratingInput.value = '0';
         updateStars(0);
+        lookupStudent();
       } catch (err) {
         console.error('Feedback submit error:', err);
         showStatus('Failed to transmit feedback. Please check your internet connection.', 'error');
