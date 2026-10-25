@@ -97,10 +97,18 @@ const STUDENTS_ROSTER = (() => {
     }
   }
 
+  // Aliases for special/external student logins
+  const ALIASES = {
+    "kevin": { fullRoll: "Kevin Synet", name: "Kevin Synet" },
+    "kevinsynet": { fullRoll: "Kevin Synet", name: "Kevin Synet" },
+    "kevin synet": { fullRoll: "Kevin Synet", name: "Kevin Synet" }
+  };
+
   function findStudent(query) {
     if (!query) return null;
     const clean = String(query).trim().replace(/^#/, '');
-    return LOOKUP[clean] || null;
+    const lower = clean.toLowerCase();
+    return LOOKUP[clean] || ALIASES[lower] || null;
   }
 
   return {
