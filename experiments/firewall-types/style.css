@@ -1,0 +1,208 @@
+.fw-lab{--cream:#f8f5f0;--paper:var(--color-surface);--ink:#302d2a;--muted:#766f69;--brown:#976c58;--dark:#75513f;--line:#e9e2d9;--tint:#f0e6dd;--green:#34705c;--red:#ad4944;--shadow:0 6px 24px #49311a06;--radius:16px}
+.fw-lab *{box-sizing:border-box}
+.fw-lab button,.fw-lab input,.fw-lab select,.fw-lab textarea{font:inherit}
+.fw-lab button,.fw-lab a,.fw-lab input,.fw-lab select,.fw-lab textarea{outline-offset:4px}
+.fw-lab a{color:var(--dark)}
+.fw-lab button{cursor:pointer;border:1px solid var(--line);border-radius:9px;background:var(--color-surface);padding:10px 16px;color:var(--ink);transition:background .18s,transform .18s}
+.fw-lab button:hover{background:var(--tint);transform:translateY(-1px)}
+.fw-lab button:disabled{opacity:.6;cursor:wait}
+.fw-lab button.primary{background:var(--brown);color:var(--color-surface);border-color:var(--brown)}
+.fw-lab button.primary:hover{background:var(--dark)}
+.fw-lab .brand-icon{display:grid;place-items:center;background:var(--brown);color:white;font-size:31px;width:43px;height:43px;border-radius:12px}
+.fw-lab .eyebrow{font-size:10px;font-weight:750;letter-spacing:1.7px;color:var(--brown)}
+.fw-lab progress{width:100%;height:6px;accent-color:var(--brown);display:block;margin:12px 0}
+.fw-lab h1{font:normal 32px/1.2 Georgia,serif;letter-spacing:-.9px;margin:10px 0}
+.fw-lab p{color:var(--muted);margin:8px 0 16px}
+.fw-lab .context-title{font-size:9px;font-weight:700;letter-spacing:1.6px;display:flex;justify-content:space-between}
+.fw-lab .context-title span{font-size:18px;color:var(--brown)}
+.fw-lab .companion-icon{font-size:42px;color:var(--brown);margin:27px 0 13px;width:68px;height:68px;background:var(--tint);border-radius:18px;text-align:center}
+.fw-lab .context-divider{border-top:1px solid var(--line);margin:27px 0}
+.fw-lab .concept{display:flex;gap:12px;margin:20px 0}
+.fw-lab .concept>span{font-size:10px;color:var(--brown);background:var(--tint);border-radius:50%;width:27px;height:27px;display:grid;place-items:center}
+.fw-lab .concept strong{font-size:11px}
+.fw-lab .concept small{display:block;color:var(--muted);font-size:10px}
+.fw-lab .note{margin-top:30px;border:1px dashed #cdb8a6;padding:14px;border-radius:10px;font-size:9px;letter-spacing:1px;color:var(--brown)}
+.fw-lab .note p{margin:7px 0 0;font-size:10px;letter-spacing:0}
+.fw-lab .hero{background:var(--color-surface-muted);border:1px solid var(--color-border);border-radius:var(--radius);padding:29px;position:relative;overflow:hidden}
+.fw-lab .hero h2{font:32px/1.2 Georgia,serif;max-width:420px;margin:14px 0}
+.fw-lab .hero p{max-width:440px;font-size:13px}
+.fw-lab .hero .actions{margin-top:24px}
+.fw-lab .hero-top{display:flex;justify-content:space-between}
+.fw-lab .tag{font-size:9px;text-transform:uppercase;letter-spacing:1px;background:#ffffff85;border-radius:20px;padding:5px 10px;color:var(--dark)}
+.fw-lab .topology{display:flex;align-items:center;justify-content:center;gap:0;padding:26px 8px;position:relative}
+.fw-lab .node{background:var(--color-surface);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;min-width:100px;z-index:1;box-shadow:var(--shadow)}
+.fw-lab .node svg{width:33px;height:33px;display:block;margin:0 auto 7px;stroke:var(--brown);fill:none;stroke-width:1.6}
+.fw-lab .node strong{font-size:11px;display:block}
+.fw-lab .node small{font-size:9px;color:var(--muted)}
+.fw-lab .node.firewall{background:var(--brown);color:white;border:0}
+.fw-lab .node.firewall svg{stroke:white}
+.fw-lab .node.firewall small{color:#f1e3d9}
+.fw-lab .wire{height:1px;flex:1;max-width:110px;background:var(--color-primary);position:relative}
+.fw-lab .wire:after{content:"›";position:absolute;right:0;top:-14px;color:var(--brown);font-size:20px}
+.fw-lab .packet{position:absolute;left:10%;top:45%;width:9px;height:9px;border-radius:3px;background:var(--green);z-index:3;opacity:0}
+.fw-lab .running .packet{animation:fw-travel .8s ease-in-out}
+.fw-lab .running.blocked .packet{animation-name:fw-stop-packet;background:var(--red)}
+@keyframes fw-travel{0%{left:12%;opacity:1}100%{left:86%;opacity:1}}
+@keyframes fw-stop-packet{0%{left:12%;opacity:1}100%{left:49%;opacity:1}}
+.fw-lab .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:18px 0 28px}
+.fw-lab .stat{background:var(--color-surface);border:1px solid var(--line);border-radius:12px;padding:17px;display:flex;gap:13px;align-items:center}
+.fw-lab .stat b{font:26px Georgia,serif;color:var(--brown)}
+.fw-lab .stat span{font-size:11px;color:var(--muted)}
+.fw-lab .section-title{display:flex;align-items:center;justify-content:space-between;margin:25px 0 14px}
+.fw-lab .section-title h2{font:22px Georgia,serif;margin:0}
+.fw-lab .section-title small{color:var(--muted);font-size:10px}
+.fw-lab .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.fw-lab .card{padding:22px;background:var(--color-surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.fw-lab .card h3{font-size:14px;margin:9px 0}
+.fw-lab .card p,.fw-lab .card li{font-size:12px}
+.fw-lab .card-number{font-size:10px;color:var(--brown);letter-spacing:1px}
+.fw-lab .card ul{padding-left:18px;color:var(--muted)}
+.fw-lab .actions{display:flex;flex-wrap:wrap;gap:9px}
+.fw-lab .text-link{font-size:11px;text-decoration:none;font-weight:650}
+.fw-lab .section-intro{margin-bottom:20px}
+.fw-lab .section-intro h2{font:26px Georgia,serif;margin:0 0 7px}
+.fw-lab .section-intro p{font-size:12px}
+.fw-lab details{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+.fw-lab summary{cursor:pointer;font-size:11px;color:var(--dark);font-weight:600}
+.fw-lab .sim-top{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.fw-lab .sim-top label{flex:1}
+.fw-lab .sim-top .tag{background:var(--tint)}
+.fw-lab label{display:block;font-size:11px;color:var(--muted)}
+.fw-lab input,.fw-lab select,.fw-lab textarea{display:block;width:100%;background:var(--color-surface-muted);border:1px solid var(--color-border);border-radius:7px;padding:9px 10px;color:var(--ink);margin-top:5px;min-width:0}
+.fw-lab textarea{min-height:110px;resize:vertical}
+.fw-lab .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.fw-lab .presets{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.fw-lab .presets button{font-size:10px;padding:6px 10px}
+.fw-lab .mini-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--brown);margin:20px 0 7px}
+.fw-lab .rule{display:grid;grid-template-columns:50px 1fr 1fr 1fr 1fr 1fr 1fr 35px;gap:6px;align-items:end;margin:10px 0}
+.fw-lab .rule input,.fw-lab .rule select{font-size:10px;padding:7px 4px}
+.fw-lab .rule button{padding:6px}
+.fw-lab .rule label{font-size:9px}
+.fw-lab .scroll{overflow-x:auto}
+.fw-lab .rules-inner{min-width:650px}
+.fw-lab .verdict{border-radius:10px;padding:16px;margin-top:19px;background:#f3f1ec;color:var(--muted)}
+.fw-lab .verdict.allowed{background:#edf5ef;color:var(--green)}
+.fw-lab .verdict.blocked{background:#fbefed;color:var(--red)}
+.fw-lab .verdict p{color:inherit;font-size:12px;margin:5px 0}
+.fw-lab .verdict ol{font-size:11px;padding-left:18px}
+.fw-lab .empty{padding:25px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:10px}
+.fw-lab table{border-collapse:collapse;width:100%;font-size:11px}
+.fw-lab th,.fw-lab td{text-align:left;border-bottom:1px solid var(--line);padding:12px 9px}
+.fw-lab th{color:var(--muted);font-weight:500;background:var(--color-surface-muted)}
+.fw-lab .badge{font-size:9px;font-weight:700;padding:4px 7px;border-radius:5px;background:#edf5ef;color:var(--green)}
+.fw-lab .badge.blocked{background:#fbefed;color:var(--red)}
+.fw-lab .log-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:20px 0 10px}
+.fw-lab .log-toolbar select{width:auto;margin:0}
+.fw-lab .quiz-option{display:block;width:100%;text-align:left;margin:10px 0}
+.fw-lab .quiz-option.selected{border-color:var(--brown);background:var(--tint)}
+.fw-lab .quiz-option.correct{border-color:var(--green);background:#edf5ef}
+.fw-lab .quiz-option.wrong{border-color:var(--red);background:#fbefed}
+.fw-lab .feedback-message{font-size:12px;margin:14px 0;color:var(--green)}
+.fw-lab .result{text-align:center;padding:35px}
+.fw-lab .result .score{font:64px Georgia,serif;color:var(--brown)}
+.fw-lab .step{display:flex;gap:18px;margin-bottom:14px}
+.fw-lab .step>span{flex-shrink:0;background:var(--tint);color:var(--brown);width:34px;height:34px;border-radius:10px;display:grid;place-items:center}
+.fw-lab .step h3{margin:0}
+.fw-lab .step p{margin-bottom:0}
+.fw-lab .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--dark);color:white;border-radius:10px;padding:12px 23px;font-size:12px;transition:.2s;z-index:10}
+.fw-lab .toast.show{opacity:1;transform:translate(-50%,0)}
+@keyframes fw-appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (min-width:1500px){.fw-lab .hero{padding:36px}}
+@media (max-width:1200px){}
+@media (max-width:760px){.fw-lab h1{font-size:27px}
+.fw-lab .hero{padding:22px}
+.fw-lab .hero h2{font-size:29px}
+.fw-lab .stats{gap:8px}
+.fw-lab .stat{padding:12px;gap:8px}
+.fw-lab .stat b{font-size:23px}
+.fw-lab .stat span{font-size:9px}
+.fw-lab .grid{grid-template-columns:1fr}
+.fw-lab .fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fw-lab .card{padding:18px}
+.fw-lab .node{min-width:80px;padding:12px 6px}
+.fw-lab .node strong{font-size:10px}
+.fw-lab .hero .topology{padding-top:30px}
+.fw-lab .hero-top .tag{font-size:8px}}
+@media (prefers-reduced-motion:reduce){.fw-lab *,.fw-lab *:before,.fw-lab *:after{animation:none!important;transition:none!important}}
+.fw-lab #packet-controls{border:0;padding:0;margin:0;min-width:0}
+.fw-lab #advanced{margin-top:24px;padding-top:18px}
+.fw-lab #advanced>summary{font-size:13px;padding:6px 0}
+.fw-lab #advanced>p{font-size:12px;margin-top:12px}
+.fw-lab .packet-summary{font-size:12px;text-align:center;margin:0 0 18px}
+.fw-lab .presets button[aria-pressed="true"]{background:var(--tint);border-color:var(--brown);color:var(--dark);font-weight:700}
+.fw-lab .apply-run{margin:18px 0 0 10px}
+.fw-lab .running .packet{animation-duration:1.8s;width:12px;height:12px;box-shadow:0 0 0 5px #34705c20}
+.fw-lab .running.blocked .packet{box-shadow:0 0 0 5px #ad494420}
+.fw-lab #topology{scroll-margin-top:25px}
+@media (max-width:760px){.fw-lab #advanced .rule{grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;padding:12px;gap:10px}
+.fw-lab #advanced .rules-inner{min-width:0}
+.fw-lab #advanced .rule input,.fw-lab #advanced .rule select{font-size:12px;padding:9px}
+.fw-lab #advanced .rule button{align-self:end}
+.fw-lab #advanced .rule label{font-size:11px}}
+.fw-lab .topology{overflow:hidden;border-radius:14px}
+.fw-lab #packet-summary{margin-top:12px}
+.fw-lab .topology .packet{left:var(--packet-start,0px);top:var(--packet-y,50%);transform:translate(-50%,-50%);width:14px;height:14px;border:2px solid white;border-radius:4px;background:var(--brown);opacity:0;box-shadow:0 0 0 5px #976c5820;pointer-events:none}
+.fw-lab .topology.sending .packet{animation:fw-packet-send .7s ease-in-out forwards}
+.fw-lab .topology.inspecting .packet{left:var(--packet-gate);opacity:1;background:var(--brown)}
+.fw-lab .topology.delivering .packet{background:var(--green);animation:fw-packet-deliver .7s ease-in-out forwards}
+.fw-lab .topology.rejected .packet{left:var(--packet-gate);opacity:1;background:var(--red);box-shadow:0 0 0 6px #ad494420}
+.fw-lab .topology.rejected .packet:after{content:"×";position:absolute;inset:-4px;color:white;text-align:center;font:bold 16px/18px sans-serif}
+.fw-lab .topology.delivered .packet{left:var(--packet-end);opacity:0}
+.fw-lab .topology.inspecting .firewall{animation:fw-gate-pulse .55s ease-in-out infinite alternate}
+.fw-lab .topology.delivered .node:last-of-type{border-color:var(--green);background:#edf5ef;box-shadow:0 0 0 4px #34705c12}
+.fw-lab .topology.rejected .firewall{background:var(--red);box-shadow:0 0 0 4px #ad494415}
+.fw-lab .journey{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.fw-lab .journey span{flex:1;max-width:170px;padding:7px 9px;border-radius:7px;background:var(--cream);color:var(--muted);font-size:11px;text-align:center;border:1px solid var(--line)}
+.fw-lab .journey span.active{color:var(--dark);background:var(--tint);border-color:var(--brown);font-weight:700}
+.fw-lab .journey-status{text-align:center;font-size:12px;min-height:38px;margin:12px 0 0;color:var(--dark)}
+.fw-lab .scope-warning{border-top:1px solid #b8cdbc;padding-top:10px;font-weight:600}
+@keyframes fw-packet-send{from{left:var(--packet-start);opacity:1}to{left:var(--packet-gate);opacity:1}}
+@keyframes fw-packet-deliver{from{left:var(--packet-gate);opacity:1}90%{opacity:1}to{left:var(--packet-end);opacity:0}}
+@keyframes fw-gate-pulse{from{box-shadow:0 0 0 3px #976c5810}to{box-shadow:0 0 0 9px #976c5830}}
+@media (prefers-reduced-motion:reduce){.fw-lab .topology.sending .packet{left:var(--packet-gate);opacity:1}
+.fw-lab .topology.delivering .packet{left:var(--packet-end);opacity:1}}
+.fw-lab .learning-guide{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 14px;margin-bottom:20px;border:1px solid var(--line);border-radius:12px;background:var(--color-surface)}
+.fw-lab .learning-guide strong{font-size:11px;margin-right:7px}
+.fw-lab .learning-guide a{padding:6px 9px;font-size:10px;text-decoration:none;border-radius:6px}
+.fw-lab .learning-guide a[aria-current]{background:var(--tint);font-weight:700}
+.fw-lab .capabilities{display:flex;flex-wrap:wrap;gap:6px;margin:15px 0}
+.fw-lab .capability{font-size:10px;padding:4px 8px;background:#edf5ef;color:#285844;border:1px solid #cbded2;border-radius:20px}
+.fw-lab .capability.unavailable{color:#766f69;background:var(--color-surface-muted);border-color:var(--line)}
+.fw-lab .scenario-story{background:var(--cream);border-left:3px solid var(--brown);padding:12px 15px;border-radius:0 8px 8px 0;font-size:13px}
+.fw-lab .prediction{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.fw-lab .prediction>span{font-size:11px;color:var(--muted)}
+.fw-lab .prediction button{font-size:10px;padding:6px 9px}
+.fw-lab .prediction button[aria-pressed="true"]{background:var(--tint);border-color:var(--brown)}
+.fw-lab .prediction p{width:100%;font-size:11px;margin:0;color:var(--dark)}
+.fw-lab .comparison-pair{margin:15px 0}
+.fw-lab .comparison-pair .card{padding:15px}
+.fw-lab .comparison-pair strong{font-size:12px}
+.fw-lab .mini-route{border:1px solid var(--line);border-radius:8px;padding:16px 8px;margin:15px 0;font-size:11px;text-align:center}
+.fw-lab .route-allow{background:#edf5ef;color:#285844}
+.fw-lab .route-block{background:#fbefed;color:#963a35}
+.fw-lab .start-guide,.fw-lab .completion-report{margin-top:20px}
+.fw-lab .completion-report li{margin:8px 0}
+.fw-lab .completion-report .actions{align-items:center;gap:18px}
+.fw-lab .glossary p{font-size:12px}
+.fw-lab .sim-top{flex-wrap:wrap}
+.fw-lab .sim-top label{min-width:160px}
+.fw-lab {--cream:var(--color-background);--paper:var(--color-surface);--ink:var(--color-text);--muted:var(--color-text-muted);--brown:var(--color-primary);--dark:var(--color-text);--line:var(--color-border);--tint:var(--color-surface-muted);--green:#285844;--red:#963a35;--shadow:var(--shadow-sm);--radius:var(--radius-md);color:var(--color-text);font-family:inherit;min-width:0}
+.fw-lab button.primary,.fw-lab .node.firewall {color:var(--color-on-primary)}
+.fw-lab button.primary:hover {background:var(--color-primary-dark);color:var(--color-text)}
+.fw-lab .node.firewall svg {stroke:var(--color-on-primary)}
+.fw-lab .node.firewall small {color:var(--color-on-primary)}
+.fw-lab .node.firewall.rejected,.fw-lab .topology.rejected .firewall {color:#fff}
+.fw-lab .sim-top select {min-height:44px}
+.fw-lab .fw-subnav {display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.fw-lab .fw-subnav button[aria-pressed="true"] {background:var(--color-primary);color:var(--color-on-primary)}
+.fw-lab .card {background:var(--color-surface)}
+.fw-lab .toast {background:var(--color-primary);color:var(--color-on-primary)}
+.fw-lab .hero h2 {max-width:none}
+.fw-lab .grid {min-width:0}
+.fw-lab .scope-warning {color:inherit}
+
+.fw-lab .topology.rejected .firewall small {color:#fff}
+.fw-lab .topology.rejected .firewall svg {stroke:#fff}
+.fw-lab .topology.delivered .node:last-of-type {color:#285844}
+.fw-lab .topology.delivered .node:last-of-type small {color:#285844}
+.fw-lab .verdict summary {color:inherit}
