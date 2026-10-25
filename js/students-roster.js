@@ -101,7 +101,13 @@ const STUDENTS_ROSTER = (() => {
   const ALIASES = {
     "kevin": { fullRoll: "Kevin Synet", name: "Kevin Synet" },
     "kevinsynet": { fullRoll: "Kevin Synet", name: "Kevin Synet" },
-    "kevin synet": { fullRoll: "Kevin Synet", name: "Kevin Synet" }
+    "kevin synet": { fullRoll: "Kevin Synet", name: "Kevin Synet" },
+    "abhishek": { fullRoll: "10739", name: "Abhishek Jose" },
+    "abhishek jose": { fullRoll: "10739", name: "Abhishek Jose" },
+    "abhishek roy jose": { fullRoll: "10739", name: "Abhishek Roy Jose" },
+    "johann": { fullRoll: "Johann Joseph", name: "Johann Joseph" },
+    "johannjoseph": { fullRoll: "Johann Joseph", name: "Johann Joseph" },
+    "johann joseph": { fullRoll: "Johann Joseph", name: "Johann Joseph" }
   };
 
   function findStudent(query) {
