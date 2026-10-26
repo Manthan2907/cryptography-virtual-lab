@@ -1,0 +1,328 @@
+/* ---------------------------------------------------------------------------
+   Extended Euclidean Algorithm — Euclidean Algorithm Steps visualization
+   Scoped to this experiment only. Draws the diagonal transition arrows and the
+   GCD ring (both inside #stepsArrows) plus the legend beneath the table.
+   --------------------------------------------------------------------------- */
+
+.steps-scroll {
+  position: relative;
+}
+
+/* SVG overlay. It scrolls with the table because it is positioned inside the
+   horizontally scrollable container and sized to the table. It is purely
+   decorative, so it must never intercept pointer events. */
+.steps-arrows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.steps-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-top: 12px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.steps-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.steps-legend__arrow {
+  flex: 0 0 auto;
+}
+
+.steps-legend__ring {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid #2ed573;
+  border-radius: 50%;
+}
+
+@media (max-width: 560px) {
+  .steps-legend {
+    gap: 6px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The overlay is static; nothing animates. */
+  .steps-arrows line,
+  .steps-arrows ellipse {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Bézout's Identity proof card (Simulation output)
+   Values are injected by script.js from the current calculation.
+   --------------------------------------------------------------------------- */
+
+.bezout-verification {
+  position: relative;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.bezout-verification[data-state="verified"] {
+  border-color: rgba(46, 213, 115, 0.55);
+  box-shadow: 0 0 0 1px rgba(46, 213, 115, 0.18);
+}
+
+.bezout-verification[data-state="failed"] {
+  border-color: rgba(248, 113, 113, 0.55);
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.18);
+}
+
+/* Accent spine reflecting the verification state. */
+.bezout-verification::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  background: var(--color-border-strong);
+  transition: background-color 220ms ease;
+}
+.bezout-verification[data-state="verified"]::before { background: #2ed573; }
+.bezout-verification[data-state="failed"]::before { background: #f87171; }
+
+.bezout-verification__title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+}
+
+.proof-card {
+  display: grid;
+  gap: 12px;
+  animation: proof-reveal 260ms ease both;
+}
+
+/* The headline equation: a × x + b × y = gcd(a, b) */
+.proof-card__equation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 8px 14px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.05em;
+  line-height: var(--line-height-body);
+}
+
+.proof-term { color: var(--color-text); }
+.proof-op { color: var(--color-text-muted); }
+
+/* The final a × x + b × y result. Ringed to match the GCD circle in the
+   steps table (same colour, stroke weight, faint halo and tilt). */
+.proof-result {
+  position: relative;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0 3px;
+  transition: color 220ms ease;
+}
+.proof-result::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 2.5px solid currentColor;
+  border-radius: 50%;
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+.bezout-verification[data-state="verified"] .proof-result { color: #2ed573; }
+.bezout-verification[data-state="failed"] .proof-result { color: #f87171; }
+.bezout-verification[data-state="verified"] .proof-result::before {
+  box-shadow: 0 0 6px 1px rgba(46, 213, 115, 0.35);
+}
+.bezout-verification[data-state="failed"] .proof-result::before {
+  box-shadow: 0 0 6px 1px rgba(248, 113, 113, 0.35);
+}
+
+/* Names the ringed value so it cannot be mistaken for a coefficient/product. */
+.proof-result-tag {
+  align-self: center;
+  padding: 1px 8px;
+  font-family: Arial, sans-serif;
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.bezout-verification[data-state="verified"] .proof-result-tag {
+  color: #2ed573;
+  background: rgba(46, 213, 115, 0.12);
+  border: 1px solid rgba(46, 213, 115, 0.4);
+}
+.bezout-verification[data-state="failed"] .proof-result-tag {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.proof-grid {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.proof-row {
+  display: grid;
+  grid-template-columns: minmax(90px, auto) 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.proof-row--sum {
+  background: rgba(169, 141, 123, 0.16);
+  border: 1px solid var(--color-border);
+}
+
+.proof-row__label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.proof-row__expr,
+.proof-row__value {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-size-sm);
+}
+
+.proof-row__expr { color: var(--color-text-muted); }
+
+.proof-row__value {
+  font-weight: 700;
+  text-align: right;
+  color: var(--color-text);
+}
+
+.proof-row--sum .proof-row__value { color: var(--color-primary); }
+
+.proof-compare {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 0 2px;
+  color: var(--color-text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-size-sm);
+}
+
+.proof-compare strong { color: var(--color-text); }
+
+.proof-compare__sep {
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+}
+
+.proof-status { margin-top: 12px; }
+
+.proof-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.proof-badge--success {
+  color: #2ed573;
+  background: rgba(46, 213, 115, 0.14);
+  border: 1px solid rgba(46, 213, 115, 0.5);
+}
+
+.proof-badge--error {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+.proof-note {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+}
+
+.proof-mono {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Echoes the GCD ring colour, linking the proof to the circled value. */
+.proof-link {
+  margin: 6px 0 0;
+  color: #2ed573;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+}
+
+/* Restrained progressive reveal, replayed on each recalculation. */
+.proof-status {
+  animation: proof-reveal 320ms ease both;
+  animation-delay: 90ms;
+}
+
+@keyframes proof-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 560px) {
+  .proof-row {
+    grid-template-columns: 1fr auto;
+  }
+  .proof-row__expr {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof-card,
+  .proof-status {
+    animation: none;
+  }
+  .bezout-verification,
+  .bezout-verification::before,
+  .proof-result {
+    transition: none;
+  }
+}

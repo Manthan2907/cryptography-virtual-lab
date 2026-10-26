@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="Extended Euclidean Algorithm experiment - Virtual Cryptography Laboratory">
+    <title>Extended Euclidean Algorithm | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="theory.css">
+    <link rel="stylesheet" href="simulation.css">
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -20,58 +22,872 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <h1 id="exp-title">Extended Euclidean Algorithm</h1>
+        <p id="exp-description">Calculate the GCD of two integers and determine the B&eacute;zout coefficients using the Extended Euclidean Algorithm.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim & Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
+        <!-- Aim & Objectives -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
           <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+            <h2>Aim & Objectives</h2>
+            <p><strong>Aim:</strong> Implement the Extended Euclidean Algorithm to compute the greatest common divisor (GCD) of two integers and find the B&eacute;zout coefficients that satisfy B&eacute;zout's identity.</p>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Understand the Euclidean Algorithm for computing GCD of two integers.</li>
+              <li>Extend the algorithm to compute B&eacute;zout coefficients (x, y) such that a&times;x + b&times;y = gcd(a, b).</li>
+              <li>Visualize the step-by-step division process of the Euclidean Algorithm.</li>
+              <li>Verify B&eacute;zout's identity for given input values.</li>
+              <li>Understand the relationship between B&eacute;zout coefficients and modular multiplicative inverses.</li>
+              <li>Apply the algorithm to cryptographic contexts (RSA key generation, modular inverses).</li>
+            </ul>
           </div>
         </section>
 
+        <!-- Theory -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="content-placeholder theory-content">
+
+            <h2>Theory</h2>
+            <p class="theory-lede">
+              This page builds the Extended Euclidean Algorithm step by step. Work through the four
+              sections in order, or jump to any single idea. Every interactive control can be operated
+              with a mouse, a touch, or the keyboard.
+            </p>
+
+            <!-- ================= SECTION 1: EUCLIDEAN ALGORITHM ================= -->
+            <article class="theory-block" id="theory-euclidean">
+              <p class="theory-eyebrow">Section 1</p>
+              <h3>The Euclidean Algorithm &mdash; finding the GCD</h3>
+
+              <p>
+                The <strong>greatest common divisor</strong> (GCD) of two integers is the largest
+                positive integer that divides both of them exactly. For example, the divisors shared by
+                <span class="mono">240</span> and <span class="mono">46</span> are
+                <span class="mono">1</span> and <span class="mono">2</span>, so
+                <span class="mono">gcd(240, 46) = 2</span>.
+              </p>
+
+              <p>
+                The <strong>Euclidean Algorithm</strong> finds the GCD using only ordinary division.
+                Every division can be written as:
+              </p>
+
+              <div class="equation-box" role="math" aria-label="dividend equals divisor times quotient plus remainder">
+                <span class="tok tok-dividend">dividend</span>
+                <span class="op">=</span>
+                <span class="tok tok-divisor">divisor</span>
+                <span class="op">&times;</span>
+                <span class="tok tok-quotient">quotient</span>
+                <span class="op">+</span>
+                <span class="tok tok-remainder">remainder</span>
+              </div>
+
+              <p>
+                Walk through the algorithm for <span class="mono">240</span> and
+                <span class="mono">46</span>. Use <strong>Next</strong> and <strong>Previous</strong>
+                (or the <kbd>&larr;</kbd> / <kbd>&rarr;</kbd> arrow keys) to reveal one division at a
+                time.
+              </p>
+
+              <!-- Interactive stepper: Euclidean Algorithm -->
+              <div class="theory-stepper" data-theory-stepper data-stepper-name="euclidean" data-step-unit="Division" role="group" aria-label="Euclidean Algorithm step by step">
+                <div class="stepper-toolbar">
+                  <button type="button" class="stepper-btn" data-step-prev>&larr; Previous</button>
+                  <span class="stepper-progress" data-step-progress aria-live="polite">Division 1 of 5</span>
+                  <button type="button" class="stepper-btn" data-step-next>Next &rarr;</button>
+                </div>
+
+                <ol class="stepper-steps">
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">
+                      <span class="tok tok-dividend">240</span>
+                      <span class="op">=</span>
+                      <span class="tok tok-divisor">46</span>
+                      <span class="op">&times;</span>
+                      <span class="tok tok-quotient">5</span>
+                      <span class="op">+</span>
+                      <span class="tok tok-remainder">10</span>
+                    </div>
+                    <p class="step-caption">
+                      Divide <span class="tok tok-dividend">240</span> by
+                      <span class="tok tok-divisor">46</span>: the quotient is
+                      <span class="tok tok-quotient">5</span> and the remainder is
+                      <span class="tok tok-remainder">10</span>.
+                    </p>
+                  </li>
+
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">
+                      <span class="tok tok-dividend">46</span>
+                      <span class="op">=</span>
+                      <span class="tok tok-divisor">10</span>
+                      <span class="op">&times;</span>
+                      <span class="tok tok-quotient">4</span>
+                      <span class="op">+</span>
+                      <span class="tok tok-remainder">6</span>
+                    </div>
+                    <p class="step-caption">
+                      The previous divisor <span class="mono">46</span> is now the dividend, and the
+                      previous remainder <span class="mono">10</span> is now the divisor.
+                    </p>
+                  </li>
+
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">
+                      <span class="tok tok-dividend">10</span>
+                      <span class="op">=</span>
+                      <span class="tok tok-divisor">6</span>
+                      <span class="op">&times;</span>
+                      <span class="tok tok-quotient">1</span>
+                      <span class="op">+</span>
+                      <span class="tok tok-remainder">4</span>
+                    </div>
+                    <p class="step-caption">
+                      Divide <span class="mono">10</span> by <span class="mono">6</span>:
+                      quotient <span class="mono">1</span>, remainder <span class="mono">4</span>.
+                    </p>
+                  </li>
+
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">
+                      <span class="tok tok-dividend">6</span>
+                      <span class="op">=</span>
+                      <span class="tok tok-divisor">4</span>
+                      <span class="op">&times;</span>
+                      <span class="tok tok-quotient">1</span>
+                      <span class="op">+</span>
+                      <span class="tok tok-remainder">2</span>
+                    </div>
+                    <p class="step-caption">
+                      Divide <span class="mono">6</span> by <span class="mono">4</span>:
+                      quotient <span class="mono">1</span>, remainder <span class="mono">2</span>.
+                    </p>
+                  </li>
+
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">
+                      <span class="tok tok-dividend">4</span>
+                      <span class="op">=</span>
+                      <span class="tok tok-divisor">2</span>
+                      <span class="op">&times;</span>
+                      <span class="tok tok-quotient">2</span>
+                      <span class="op">+</span>
+                      <span class="tok tok-remainder">0</span>
+                    </div>
+                    <p class="step-caption">
+                      Divide <span class="mono">4</span> by <span class="mono">2</span>: the remainder
+                      is <span class="mono">0</span>, so the algorithm stops here.
+                    </p>
+                  </li>
+                </ol>
+
+                <ul class="stepper-legend">
+                  <li><span class="legend-swatch sw-dividend"></span> Dividend</li>
+                  <li><span class="legend-swatch sw-divisor"></span> Divisor</li>
+                  <li><span class="legend-swatch sw-quotient"></span> Quotient</li>
+                  <li><span class="legend-swatch sw-remainder"></span> Remainder</li>
+                </ul>
+
+                <p class="stepper-conclusion" data-step-conclusion hidden>
+                  The final non-zero remainder is <strong>2</strong>, so
+                  <strong>gcd(240, 46) = 2</strong>.
+                </p>
+              </div>
+
+              <h4>Why the divisor and remainder move along</h4>
+              <p>
+                If a number divides both the dividend and the divisor, it must also divide the
+                remainder (because <span class="mono">remainder = dividend &minus; divisor &times; quotient</span>).
+                And if a number divides both the divisor and the remainder, it must also divide the
+                dividend. So the pair <span class="mono">(dividend, divisor)</span> and the pair
+                <span class="mono">(divisor, remainder)</span> share exactly the same common divisors
+                &mdash; which is why the algorithm may replace the first pair by the second without
+                changing the GCD.
+              </p>
+
+              <h4>Why the last non-zero remainder is the GCD</h4>
+              <p>
+                Each step keeps the GCD the same while making the numbers smaller, so the process must
+                eventually reach a remainder of zero. The step just before that is
+                <span class="mono">6 = 4 &times; 1 + 2</span>, and the final step is
+                <span class="mono">4 = 2 &times; 2 + 0</span>. This last step shows that
+                <span class="mono">2</span> divides <span class="mono">4</span> exactly, and the
+                step before shows that <span class="mono">2</span> divides
+                <span class="mono">6</span>. Working upwards, <span class="mono">2</span> divides every
+                earlier number too, so it is a common divisor. No larger number can work, so
+                <span class="mono">2</span> is the greatest common divisor.
+              </p>
+
+              <!-- Knowledge check 1 -->
+              <div class="theory-check" data-check data-explanation="The previous divisor (46) becomes the new dividend, and the remainder (10) becomes the new divisor. That is what makes the numbers shrink.">
+                <p class="check-question"><span class="check-tag">Quick check</span> After working out <span class="mono">240 = 46 &times; 5 + 10</span>, which two numbers are used in the next division?</p>
+                <div class="check-options" role="group" aria-label="Quick check options">
+                  <button type="button" class="check-option" data-correct="false">240 and 46</button>
+                  <button type="button" class="check-option" data-correct="true">46 and 10</button>
+                  <button type="button" class="check-option" data-correct="false">5 and 10</button>
+                  <button type="button" class="check-option" data-correct="false">240 and 10</button>
+                </div>
+                <div class="check-feedback" data-check-feedback aria-live="polite" hidden></div>
+              </div>
+            </article>
+
+            <!-- ================= SECTION 2: EXTENDED EUCLIDEAN ALGORITHM ================= -->
+            <article class="theory-block" id="theory-eea">
+              <p class="theory-eyebrow">Section 2</p>
+              <h3>The Extended Euclidean Algorithm &mdash; finding x and y</h3>
+
+              <p>
+                The Euclidean Algorithm gives us the GCD, but it throws away the quotients. The
+                <strong>Extended Euclidean Algorithm</strong> (EEA) keeps that information and finds two
+                integers <span class="mono">x</span> and <span class="mono">y</span> such that:
+              </p>
+
+              <div class="equation-box equation-box--hero" role="math" aria-label="a times x plus b times y equals gcd of a and b">
+                <span class="tok tok-dividend">a</span>
+                <span class="op">&times;</span>
+                <span class="tok tok-quotient">x</span>
+                <span class="op">+</span>
+                <span class="tok tok-divisor">b</span>
+                <span class="op">&times;</span>
+                <span class="tok tok-quotient">y</span>
+                <span class="op">=</span>
+                <span class="tok tok-remainder">gcd(a, b)</span>
+              </div>
+
+              <dl class="symbol-list">
+                <div class="symbol-row">
+                  <dt><span class="tok tok-dividend">a</span>, <span class="tok tok-divisor">b</span></dt>
+                  <dd>the two integers we start with (here 240 and 46).</dd>
+                </div>
+                <div class="symbol-row">
+                  <dt><span class="tok tok-quotient">x</span></dt>
+                  <dd>an integer, possibly negative, that multiplies <span class="mono">a</span>.</dd>
+                </div>
+                <div class="symbol-row">
+                  <dt><span class="tok tok-quotient">y</span></dt>
+                  <dd>an integer, possibly negative, that multiplies <span class="mono">b</span>.</dd>
+                </div>
+                <div class="symbol-row">
+                  <dt><span class="tok tok-remainder">gcd(a, b)</span></dt>
+                  <dd>the greatest common divisor of <span class="mono">a</span> and <span class="mono">b</span>.</dd>
+                </div>
+              </dl>
+
+              <p>
+                The method is called <em>extended</em> because after finishing the ordinary divisions we
+                run them <strong>backwards</strong>, substituting each remainder into the one above it
+                until the GCD is written purely in terms of <span class="mono">a</span> and
+                <span class="mono">b</span>. Follow that backward substitution for the same
+                <span class="mono">240</span> and <span class="mono">46</span> example.
+              </p>
+
+              <!-- Interactive stepper: EEA backward substitution -->
+              <div class="theory-stepper" data-theory-stepper data-stepper-name="eea" data-step-unit="Substitution" role="group" aria-label="Extended Euclidean Algorithm backward substitution">
+                <div class="stepper-toolbar">
+                  <button type="button" class="stepper-btn" data-step-prev>&larr; Previous</button>
+                  <span class="stepper-progress" data-step-progress aria-live="polite">Substitution 1 of 7</span>
+                  <button type="button" class="stepper-btn" data-step-next>Next &rarr;</button>
+                </div>
+
+                <ol class="stepper-steps">
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">2 = 6 &minus; 4 &times; 1</div>
+                    <p class="step-caption">Start from the second-to-last division <span class="mono">6 = 4 &times; 1 + 2</span>, then rearrange it to make 2 the subject.</p>
+                  </li>
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">4 = 10 &minus; 6 &times; 1</div>
+                    <p class="step-caption">From <span class="mono">10 = 6 &times; 1 + 4</span>, express 4 in terms of 10 and 6.</p>
+                  </li>
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">2 = 6 &minus; (10 &minus; 6 &times; 1) &times; 1 = 6 &times; 2 &minus; 10</div>
+                    <p class="step-caption">Replace 4 in the first line with its expression from the second line, and tidy up.</p>
+                  </li>
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">6 = 46 &minus; 10 &times; 4</div>
+                    <p class="step-caption">From <span class="mono">46 = 10 &times; 4 + 6</span>, express 6 in terms of 46 and 10.</p>
+                  </li>
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">2 = (46 &minus; 10 &times; 4) &times; 2 &minus; 10 = 46 &times; 2 &minus; 10 &times; 9</div>
+                    <p class="step-caption">Replace 6 in the third line. We now have 2 written using 46 and 10.</p>
+                  </li>
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">10 = 240 &minus; 46 &times; 5</div>
+                    <p class="step-caption">From <span class="mono">240 = 46 &times; 5 + 10</span>, express 10 in terms of 240 and 46.</p>
+                  </li>
+                  <li class="theory-step" data-step>
+                    <div class="step-equation">2 = 46 &times; 2 &minus; (240 &minus; 46 &times; 5) &times; 9 = 46 &times; 47 &minus; 240 &times; 9 = 240 &times; (&minus;9) + 46 &times; 47</div>
+                    <p class="step-caption">Substitute 10 into the previous line. The GCD is now a combination of 240 and 46 only.</p>
+                  </li>
+                </ol>
+
+                <p class="stepper-conclusion" data-step-conclusion hidden>
+                  Reading the coefficients: <strong>x = &minus;9</strong> and <strong>y = 47</strong>, so
+                  <strong>240 &times; (&minus;9) + 46 &times; 47 = 2</strong>.
+                </p>
+              </div>
+
+              <div class="callout callout--result">
+                <span class="callout-label">Result</span>
+                <span class="mono">240 &times; (&minus;9) + 46 &times; 47 = 2</span>
+                &nbsp;&rarr;&nbsp; <span class="mono">x = &minus;9</span>, <span class="mono">y = 47</span>
+              </div>
+
+              <p>
+                The pair <span class="mono">(x, y)</span> is not unique. If <span class="mono">(x, y)</span>
+                is one solution, then every solution has the form
+                <span class="mono">x' = x + k &middot; (b / gcd)</span> and
+                <span class="mono">y' = y &minus; k &middot; (a / gcd)</span> for any integer
+                <span class="mono">k</span>. The EEA simply returns the solution produced by the
+                backward substitution.
+              </p>
+
+              <!-- Knowledge check 2 -->
+              <div class="theory-check" data-check data-explanation="x is an integer coefficient that multiplies a. It may be negative — in our example x = −9 and y = 47.">
+                <p class="check-question"><span class="check-tag">Quick check</span> In <span class="mono">a &times; x + b &times; y = gcd(a, b)</span>, what does the coefficient <span class="mono">x</span> represent?</p>
+                <div class="check-options" role="group" aria-label="Quick check options">
+                  <button type="button" class="check-option" data-correct="false">The remainder at the last step</button>
+                  <button type="button" class="check-option" data-correct="true">An integer, possibly negative, that multiplies a</button>
+                  <button type="button" class="check-option" data-correct="false">The quotient of the first division</button>
+                  <button type="button" class="check-option" data-correct="false">The modulus used for an inverse</button>
+                </div>
+                <div class="check-feedback" data-check-feedback aria-live="polite" hidden></div>
+              </div>
+            </article>
+
+            <!-- ================= SECTION 3: BEZOUT'S IDENTITY ================= -->
+            <article class="theory-block" id="theory-bezout">
+              <p class="theory-eyebrow">Section 3</p>
+              <h3>B&eacute;zout's identity &mdash; the relationship behind the coefficients</h3>
+
+              <p>
+                <strong>B&eacute;zout's identity</strong> is a mathematical statement: for any integers
+                <span class="mono">a</span> and <span class="mono">b</span>, there exist integers
+                <span class="mono">x</span> and <span class="mono">y</span> such that
+                <span class="mono">a &times; x + b &times; y = gcd(a, b)</span>.
+              </p>
+
+              <div class="concept-pair">
+                <div class="concept-card">
+                  <h4>The algorithm</h4>
+                  <p>
+                    A <em>procedure</em> &mdash; a finite sequence of division and substitution steps.
+                    The <strong>Extended Euclidean Algorithm</strong> is the procedure that
+                    <em>computes</em> the GCD together with suitable coefficients.
+                  </p>
+                </div>
+                <div class="concept-card">
+                  <h4>The identity</h4>
+                  <p>
+                    A <em>guarantee</em> &mdash; the fact that such coefficients always exist.
+                    <strong>B&eacute;zout's identity</strong> is the equation those coefficients satisfy.
+                    It tells us a solution exists before we compute it.
+                  </p>
+                </div>
+              </div>
+
+              <p>
+                The identity does the predicting; the algorithm does the finding. We can test the
+                identity directly by substituting the coefficients the EEA produced. Choose a pair below
+                to see the substitution and whether the result matches the GCD.
+              </p>
+
+              <!-- Interactive Bezout verification -->
+              <div class="theory-verify" data-verify data-a="240" data-b="46" data-gcd="2">
+                <p class="verify-prompt">
+                  Substitute a pair <span class="mono">(x, y)</span> into
+                  <span class="mono">a &times; x + b &times; y</span> and compare with
+                  <span class="mono">gcd(240, 46) = 2</span>.
+                </p>
+                <div class="verify-buttons">
+                  <button type="button" class="verify-btn" data-coeffs="-9,47">Check x = &minus;9, y = 47</button>
+                  <button type="button" class="verify-btn" data-coeffs="1,0">Check x = 1, y = 0</button>
+                </div>
+                <div class="verify-output" data-verify-output aria-live="polite"></div>
+              </div>
+
+              <!-- Knowledge check 3 -->
+              <div class="theory-check" data-check data-explanation="Bézout's identity says that integers x and y always exist with a×x + b×y = gcd(a, b). The Extended Euclidean Algorithm is the procedure that finds them. The identity holds for all integers a and b, not only coprime ones.">
+                <p class="check-question"><span class="check-tag">Quick check</span> Which statement best describes B&eacute;zout's identity?</p>
+                <div class="check-options" role="group" aria-label="Quick check options">
+                  <button type="button" class="check-option" data-correct="false">It is an algorithm that computes the GCD.</button>
+                  <button type="button" class="check-option" data-correct="true">It is the equation a &times; x + b &times; y = gcd(a, b), guaranteed to have integer solutions x and y.</button>
+                  <button type="button" class="check-option" data-correct="false">It only holds when a and b are coprime.</button>
+                  <button type="button" class="check-option" data-correct="false">It gives the prime factorisation of a and b.</button>
+                </div>
+                <div class="check-feedback" data-check-feedback aria-live="polite" hidden></div>
+              </div>
+            </article>
+
+            <!-- ================= SECTION 4: MODULAR INVERSE ================= -->
+            <article class="theory-block" id="theory-modinverse">
+              <p class="theory-eyebrow">Section 4</p>
+              <h3>The modular inverse &mdash; undoing multiplication</h3>
+
+              <p>
+                Working &ldquo;modulo <span class="mono">m</span>&rdquo; means keeping only the remainder
+                after dividing by <span class="mono">m</span>. The <strong>modular inverse</strong> of
+                <span class="mono">a</span> modulo <span class="mono">m</span> is a number
+                <span class="mono">a&#8315;&sup1;</span> that behaves like a reciprocal:
+              </p>
+
+              <div class="equation-box" role="math" aria-label="a times a inverse is congruent to 1 modulo m">
+                <span class="mono">a &times; a&#8315;&sup1; &equiv; 1 (mod m)</span>
+              </div>
+
+              <p>
+                In other words, <span class="mono">a &times; a&#8315;&sup1;</span> leaves remainder
+                <span class="mono">1</span> when divided by <span class="mono">m</span>. It is the
+                modular version of &ldquo;dividing&rdquo;, and the Extended Euclidean Algorithm is exactly
+                how we compute it.
+              </p>
+
+              <div class="mod-grid">
+                <div class="mod-card">
+                  <h4>Example: 17 modulo 5</h4>
+                  <p>
+                    Try the inverse candidate <span class="mono">3</span>. Then
+                    <span class="mono">17 &times; 3 = 51</span> and
+                    <span class="mono">51 = 5 &times; 10 + 1</span>, so
+                    <span class="mono">51 &equiv; 1 (mod 5)</span>. That means
+                    <strong>3 is the inverse of 17 modulo 5</strong>.
+                  </p>
+                  <p class="mod-note">
+                    (Equivalently, <span class="mono">17 &equiv; 2 (mod 5)</span> and
+                    <span class="mono">2 &times; 3 = 6 &equiv; 1 (mod 5)</span>.)
+                  </p>
+                  <button type="button" class="verify-btn" data-modcheck data-a="17" data-m="5" data-x="3" data-message="3 is the inverse of 17 modulo 5.">Check 17 &times; 3 mod 5</button>
+                  <div class="verify-output" data-mod-output aria-live="polite"></div>
+                </div>
+
+                <div class="mod-card mod-card--negative">
+                  <h4>Non-example: 12 modulo 8</h4>
+                  <p>
+                    Here <span class="mono">gcd(12, 8) = 4 &ne; 1</span>, so
+                    <strong>no inverse of 12 exists modulo 8</strong>. Any candidate
+                    <span class="mono">x</span> gives a multiple of 4, never a remainder of 1.
+                  </p>
+                  <p class="mod-note">
+                    Try <span class="mono">x = 3</span> and see what the remainder is.
+                  </p>
+                  <button type="button" class="verify-btn" data-modcheck data-a="12" data-m="8" data-x="3" data-message="12 has no inverse modulo 8, because gcd(12, 8) = 4 ≠ 1.">Check 12 &times; 3 mod 8</button>
+                  <div class="verify-output" data-mod-output aria-live="polite"></div>
+                </div>
+              </div>
+
+              <div class="callout callout--rule">
+                <span class="callout-label">Rule</span>
+                A modular inverse of <span class="mono">a</span> modulo <span class="mono">m</span> exists
+                <strong>if and only if</strong> <span class="mono">a</span> and <span class="mono">m</span>
+                are coprime, that is, <span class="mono">gcd(a, m) = 1</span>.
+              </div>
+
+              <p>
+                <strong>Why this matters in cryptography.</strong> Modular inverses are used to build and
+                operate public-key systems. For instance, in RSA key generation a private exponent
+                <span class="mono">d</span> is obtained as the modular inverse of the public exponent
+                <span class="mono">e</span> modulo <span class="mono">&phi;(n)</span>. The Extended
+                Euclidean Algorithm is one of the standard tools for that step. This experiment focuses on
+                the algorithm and the inverse itself &mdash; it does not implement RSA.
+              </p>
+
+              <!-- Knowledge check 4 -->
+              <div class="theory-check" data-check data-explanation="A modular inverse of a modulo m exists only when gcd(a, m) = 1. Here gcd(12, 8) = 4, so no inverse exists.">
+                <p class="check-question"><span class="check-tag">Quick check</span> Does <span class="mono">12</span> have a modular inverse modulo <span class="mono">8</span>?</p>
+                <div class="check-options" role="group" aria-label="Quick check options">
+                  <button type="button" class="check-option" data-correct="false">Yes, the inverse is 3.</button>
+                  <button type="button" class="check-option" data-correct="false">Yes, the inverse is 5.</button>
+                  <button type="button" class="check-option" data-correct="true">No, because gcd(12, 8) = 4 &ne; 1.</button>
+                  <button type="button" class="check-option" data-correct="false">No, because 12 is larger than 8.</button>
+                </div>
+                <div class="check-feedback" data-check-feedback aria-live="polite" hidden></div>
+              </div>
+            </article>
+
+            <!-- ================= FURTHER DETAILS (preserved reference content) ================= -->
+            <article class="theory-block theory-block--details" id="theory-details">
+              <p class="theory-eyebrow">Further details</p>
+              <h3>Additional notes</h3>
+              <p class="theory-lede">Reference material for later reading. Nothing here needs to be opened in order.</p>
+
+              <details class="theory-details">
+                <summary>B&eacute;zout coefficients &mdash; extra properties</summary>
+                <ul>
+                  <li>If <span class="mono">gcd(a, b) = 1</span>, then <span class="mono">x</span> is the modular multiplicative inverse of <span class="mono">a</span> modulo <span class="mono">b</span>, and <span class="mono">y</span> is the modular inverse of <span class="mono">b</span> modulo <span class="mono">a</span>.</li>
+                  <li>The coefficients can be negative; a modular inverse is usually reported as the positive representative modulo the modulus.</li>
+                  <li>B&eacute;zout's identity guarantees the existence of such coefficients for any integers <span class="mono">a</span> and <span class="mono">b</span> (including negatives).</li>
+                </ul>
+              </details>
+
+              <details class="theory-details">
+                <summary>Iterative formulation (the version used in the Simulation tab)</summary>
+                <pre class="theory-pre">Initialize: (old_r, r) = (a, b)
+            (old_x, x) = (1, 0)
+            (old_y, y) = (0, 1)
+
+While r != 0:
+    quotient = old_r / r
+    (old_r, r) = (r, old_r - quotient * r)
+    (old_x, x) = (x, old_x - quotient * x)
+    (old_y, y) = (y, old_y - quotient * y)
+
+Result: gcd = old_r, x = old_x, y = old_y</pre>
+                <p>
+                  This is the same computation as the backward substitution, but carried out forwards.
+                  The Simulation tab uses this iterative form.
+                </p>
+              </details>
+
+              <details class="theory-details">
+                <summary>Applications in cryptography</summary>
+                <ul>
+                  <li><strong>RSA key generation:</strong> computing the private exponent <span class="mono">d = e&#8315;&sup1; mod &phi;(n)</span>.</li>
+                  <li><strong>Elliptic curve cryptography:</strong> point operations that require modular inverses.</li>
+                  <li><strong>Diffie&ndash;Hellman:</strong> computing shared secrets.</li>
+                  <li><strong>Chinese Remainder Theorem:</strong> solving systems of congruences.</li>
+                </ul>
+              </details>
+
+              <details class="theory-details">
+                <summary>Time and space complexity</summary>
+                <ul>
+                  <li><strong>Time:</strong> <span class="mono">O(log min(a, b))</span>. The number of division steps is bounded by roughly five times the number of digits in the smaller number (Lam&eacute;'s theorem).</li>
+                  <li><strong>Space:</strong> <span class="mono">O(1)</span> for the iterative form; <span class="mono">O(log min(a, b))</span> for a recursive form, because of the call stack.</li>
+                </ul>
+              </details>
+
+              <details class="theory-details">
+                <summary>Important observations and edge cases</summary>
+                <ul>
+                  <li>The algorithm terminates because the remainders form a strictly decreasing sequence of non-negative integers.</li>
+                  <li>If <span class="mono">a = 0</span>, then <span class="mono">gcd(0, b) = |b|</span> with coefficients <span class="mono">x = 0</span>, <span class="mono">y = sign(b)</span>.</li>
+                  <li>If <span class="mono">a = 0</span> and <span class="mono">b = 0</span>, the GCD is undefined (conventionally 0, but B&eacute;zout coefficients do not exist).</li>
+                  <li>Negative inputs are handled by taking absolute values for the GCD computation, then adjusting the signs of the coefficients.</li>
+                </ul>
+              </details>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- Procedure -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
           <div class="content-placeholder">
             <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+            <ol>
+              <li>Enter the first integer <strong>a</strong> in the input field.</li>
+              <li>Enter the second integer <strong>b</strong> in the input field.</li>
+              <li>Click the <strong>Calculate</strong> button to start the Extended Euclidean Algorithm.</li>
+              <li>The algorithm performs repeated division:
+                <ul>
+                  <li>Divide the current dividend by the divisor.</li>
+                  <li>Record the quotient and remainder.</li>
+                  <li>Set the divisor as the new dividend and the remainder as the new divisor.</li>
+                  <li>Continue until the remainder becomes zero.</li>
+                </ul>
+              </li>
+              <li>The last non-zero remainder is the <strong>GCD(a, b)</strong>.</li>
+              <li>Simultaneously, the algorithm tracks B&eacute;zout coefficients (x, y) using the recurrence relations.</li>
+              <li>Observe the step-by-step table showing each division step with dividend, divisor, quotient, and remainder.</li>
+              <li>View the computed B&eacute;zout coefficients x and y.</li>
+              <li>Verify B&eacute;zout's identity: a&times;x + b&times;y = gcd(a, b) with actual substituted values.</li>
+              <li>If gcd(a, b) = 1, examine the <strong>Modular Inverse</strong> section showing a⁻¹ mod b and b⁻¹ mod a.</li>
+              <li>Click <strong>Clear</strong> to reset the simulation and enter new values.</li>
+            </ol>
           </div>
         </section>
 
+        <!-- Simulation -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+            <h2>Simulation Controls</h2>
+            <div class="input-group" style="display: grid; gap: 16px; max-width: 400px;">
+              <div>
+                <label for="inputA">First integer (a):</label>
+                <input type="text" id="inputA" placeholder="e.g., 240" autocomplete="off">
+              </div>
+              <div>
+                <label for="inputB">Second integer (b):</label>
+                <input type="text" id="inputB" placeholder="e.g., 46" autocomplete="off">
+              </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+              <button type="button" id="btnCalculate" class="primary-btn">Calculate</button>
+              <button type="button" id="btnClear">Clear</button>
+            </div>
+            <p id="errorMessage" style="color: #f87171; margin-top: 12px; min-height: 1.5em; font-size: var(--font-size-sm);"></p>
           </div>
+
           <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+            <h2>Simulation Output</h2>
+            <div id="resultsContainer" style="display: none;">
+              <!-- Results Summary -->
+              <div class="result-summary" style="margin-bottom: 24px; padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+                <h3 style="margin: 0 0 12px; color: var(--color-primary);">Results</h3>
+                <div style="display: grid; gap: 8px; font-family: 'JetBrains Mono', monospace;">
+                  <div><strong>gcd(a, b) = </strong><span id="resultGcd"></span></div>
+                  <div><strong>B&eacute;zout coefficient x = </strong><span id="resultX"></span></div>
+                  <div><strong>B&eacute;zout coefficient y = </strong><span id="resultY"></span></div>
+                </div>
+              </div>
+
+              <!-- Bézout's Identity proof card -->
+              <div class="bezout-verification" id="bezoutCard">
+                <h3 class="bezout-verification__title">B&eacute;zout's Identity</h3>
+                <div id="bezoutVerification" class="proof-card"></div>
+                <div id="verificationStatus" class="proof-status" role="status"></div>
+              </div>
+
+              <!-- Euclidean Algorithm Steps Table -->
+              <div class="steps-table" style="margin-bottom: 24px;">
+                <h3 style="margin: 0 0 12px; color: var(--color-primary);">Euclidean Algorithm Steps</h3>
+                <div id="stepsScroll" class="steps-scroll" style="overflow-x: auto; position: relative;">
+                  <table id="stepsTable" style="width: 100%; border-collapse: collapse; font-size: var(--font-size-sm);">
+                    <thead>
+                      <tr style="background: var(--color-primary-dark); color: var(--color-on-primary);">
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Step</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Dividend</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Divisor</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Quotient</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Remainder</th>
+                      </tr>
+                    </thead>
+                    <tbody id="stepsTableBody"></tbody>
+                  </table>
+                  <svg id="stepsArrows" class="steps-arrows" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+                <div class="steps-legend" id="stepsLegend" role="note" aria-label="Legend for the Euclidean steps diagram and the B&eacute;zout proof card">
+                  <span class="steps-legend__item">
+                    <svg class="steps-legend__arrow" width="40" height="14" viewBox="0 0 40 14" aria-hidden="true" focusable="false">
+                      <defs>
+                        <marker id="legendArrowDivisor" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+                          <path d="M0,0 L7,3 L0,6 Z" fill="#7fb2f0"></path>
+                        </marker>
+                      </defs>
+                      <line x1="2" y1="3" x2="33" y2="11" stroke="#7fb2f0" stroke-width="2" stroke-linecap="round" marker-end="url(#legendArrowDivisor)"></line>
+                    </svg>
+                    Divisor &rarr; next Dividend
+                  </span>
+                  <span class="steps-legend__item">
+                    <svg class="steps-legend__arrow" width="40" height="14" viewBox="0 0 40 14" aria-hidden="true" focusable="false">
+                      <defs>
+                        <marker id="legendArrowRemainder" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+                          <path d="M0,0 L7,3 L0,6 Z" fill="#f5a623"></path>
+                        </marker>
+                      </defs>
+                      <line x1="2" y1="3" x2="33" y2="11" stroke="#f5a623" stroke-width="2" stroke-linecap="round" marker-end="url(#legendArrowRemainder)"></line>
+                    </svg>
+                    Remainder &rarr; next Divisor
+                  </span>
+                  <span class="steps-legend__item">
+                    <span class="steps-legend__ring" aria-hidden="true"></span>
+                    <strong>GCD</strong> &mdash; divisor of the final step (table)
+                  </span>
+                  <span class="steps-legend__item">
+                    <span class="steps-legend__ring" aria-hidden="true"></span>
+                    <strong>B&eacute;zout result</strong> &mdash; a&times;x + b&times;y (proof card)
+                  </span>
+                </div>
+              </div>
+
+              <!-- Bézout Coefficients Tracking Table -->
+              <div class="coefficients-table" style="margin-bottom: 24px;">
+                <h3 style="margin: 0 0 12px; color: var(--color-primary);">B&eacute;zout Coefficients at Each Step</h3>
+                <div style="overflow-x: auto;">
+                  <table id="coeffTable" style="width: 100%; border-collapse: collapse; font-size: var(--font-size-sm);">
+                    <thead>
+                      <tr style="background: var(--color-primary-dark); color: var(--color-on-primary);">
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Step</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">Remainder (r)</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">x</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">y</th>
+                        <th style="padding: 10px; border: 1px solid var(--color-border); text-align: center;">a×x + b×y</th>
+                      </tr>
+                    </thead>
+                    <tbody id="coeffTableBody"></tbody>
+                  </table>
+                </div>
+                <p style="margin-top: 8px; font-size: var(--font-size-sm); color: var(--color-text-muted);">
+                  This table shows how the coefficients evolve. The final row (where remainder = gcd) gives the B&eacute;zout coefficients.
+                </p>
+              </div>
+
+              <!-- Modular Inverse Section -->
+              <div class="modular-inverse" id="modularInverseSection" style="display: none; padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+                <h3 style="margin: 0 0 12px; color: var(--color-primary);">Modular Multiplicative Inverse</h3>
+                <div id="modularInverseContent"></div>
+              </div>
+            </div>
+            <div id="initialMessage" style="text-align: center; padding: 40px; color: var(--color-text-muted);">
+              Enter two integers and click <strong>Calculate</strong> to see the Extended Euclidean Algorithm in action.
+            </div>
           </div>
         </section>
 
+        <!-- Quiz -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <h2>Assessment / Quiz</h2>
+            <form id="quizForm">
+              <div class="quiz-question" data-q="1">
+                <h3>1. What is the primary purpose of the Euclidean Algorithm?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q1" value="a"> To find the modular inverse of a number</label>
+                  <label><input type="radio" name="q1" value="b"> To compute the greatest common divisor (GCD) of two integers</label>
+                  <label><input type="radio" name="q1" value="c"> To factorize large integers into primes</label>
+                  <label><input type="radio" name="q1" value="d"> To encrypt messages using public-key cryptography</label>
+                </div>
+                <div class="quiz-feedback" id="feedback1" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="2">
+                <h3>2. What does the Extended Euclidean Algorithm compute in addition to the GCD?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q2" value="a"> The least common multiple (LCM)</label>
+                  <label><input type="radio" name="q2" value="b"> B&eacute;zout coefficients x and y such that ax + by = gcd(a, b)</label>
+                  <label><input type="radio" name="q2" value="c"> The prime factorization of both numbers</label>
+                  <label><input type="radio" name="q2" value="d"> The number of steps required</label>
+                </div>
+                <div class="quiz-feedback" id="feedback2" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="3">
+                <h3>3. If gcd(a, b) = 1, what does B&eacute;zout's identity tell us about the modular inverse?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q3" value="a"> No modular inverse exists</label>
+                  <label><input type="radio" name="q3" value="b"> The modular inverse of a modulo b is x (mod b), where x is a B&eacute;zout coefficient</label>
+                  <label><input type="radio" name="q3" value="c"> The modular inverse is always equal to the GCD</label>
+                  <label><input type="radio" name="q3" value="d"> The modular inverse is y (mod a) only</label>
+                </div>
+                <div class="quiz-feedback" id="feedback3" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="4">
+                <h3>4. For a = 240 and b = 46, what is gcd(240, 46)?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q4" value="a"> 1</label>
+                  <label><input type="radio" name="q4" value="b"> 2</label>
+                  <label><input type="radio" name="q4" value="c"> 6</label>
+                  <label><input type="radio" name="q4" value="d"> 10</label>
+                </div>
+                <div class="quiz-feedback" id="feedback4" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="5">
+                <h3>5. What is the termination condition of the Euclidean Algorithm?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q5" value="a"> When the quotient becomes zero</label>
+                  <label><input type="radio" name="q5" value="b"> When the remainder becomes zero</label>
+                  <label><input type="radio" name="q5" value="c"> When the dividend equals the divisor</label>
+                  <label><input type="radio" name="q5" value="d"> When the divisor becomes negative</label>
+                </div>
+                <div class="quiz-feedback" id="feedback5" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="6">
+                <h3>6. If gcd(a, b) ≠ 1, what can we say about the modular inverse of a modulo b?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q6" value="a"> It exists and is unique</label>
+                  <label><input type="radio" name="q6" value="b"> It does not exist because a and b are not coprime</label>
+                  <label><input type="radio" name="q6" value="c"> It exists but is equal to the GCD</label>
+                  <label><input type="radio" name="q6" value="d"> It exists only if a > b</label>
+                </div>
+                <div class="quiz-feedback" id="feedback6" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="7">
+                <h3>7. In the equation a×x + b×y = gcd(a, b), if a = 17 and b = 5, what is gcd(17, 5)?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q7" value="a"> 1</label>
+                  <label><input type="radio" name="q7" value="b"> 2</label>
+                  <label><input type="radio" name="q7" value="c"> 5</label>
+                  <label><input type="radio" name="q7" value="d"> 17</label>
+                </div>
+                <div class="quiz-feedback" id="feedback7" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="8">
+                <h3>8. In the first division step of the Euclidean Algorithm for a = 240 and b = 46, what are the quotient and the remainder?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q8" value="a"> Quotient = 5, Remainder = 10</label>
+                  <label><input type="radio" name="q8" value="b"> Quotient = 10, Remainder = 5</label>
+                  <label><input type="radio" name="q8" value="c"> Quotient = 4, Remainder = 16</label>
+                  <label><input type="radio" name="q8" value="d"> Quotient = 6, Remainder = -36</label>
+                </div>
+                <div class="quiz-feedback" id="feedback8" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="9">
+                <h3>9. The Extended Euclidean Algorithm gives x = -9 and y = 47 for a = 240 and b = 46. Which equation correctly verifies B&eacute;zout's identity?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q9" value="a"> 240&times;(-9) + 46&times;47 = 2</label>
+                  <label><input type="radio" name="q9" value="b"> 240&times;47 + 46&times;(-9) = 2</label>
+                  <label><input type="radio" name="q9" value="c"> 240&times;(-9) - 46&times;47 = 2</label>
+                  <label><input type="radio" name="q9" value="d"> 240&times;9 + 46&times;47 = 2</label>
+                </div>
+                <div class="quiz-feedback" id="feedback9" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <div class="quiz-question" data-q="10">
+                <h3>10. What is the modular multiplicative inverse of 3 modulo 11 (the value x with 3x &equiv; 1 mod 11)?</h3>
+                <div class="quiz-options">
+                  <label><input type="radio" name="q10" value="a"> 4</label>
+                  <label><input type="radio" name="q10" value="b"> 3</label>
+                  <label><input type="radio" name="q10" value="c"> 7</label>
+                  <label><input type="radio" name="q10" value="d"> 11</label>
+                </div>
+                <div class="quiz-feedback" id="feedback10" style="display: none; margin-top: 8px;"></div>
+              </div>
+
+              <button type="button" id="btnSubmitQuiz" style="margin-top: 24px;">Submit Quiz</button>
+              <div id="quizScore" style="margin-top: 16px; font-weight: bold; font-size: 1.1em;"></div>
+            </form>
           </div>
+        </section>
+
+        <!-- References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div class="references-container">
+            <h2>References & Further Reading</h2>
+            <div class="reference-card">
+              <div class="reference-title">Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein, <em>Introduction to Algorithms</em>, 3rd Edition, MIT Press. Chapter 31: Number-Theoretic Algorithms.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">William Stallings, <em>Cryptography and Network Security: Principles and Practice</em>, 7th Edition, Pearson. Chapter 4: Basic Concepts in Number Theory and Finite Fields.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">Kenneth H. Rosen, <em>Elementary Number Theory and Its Applications</em>, 6th Edition, Addison-Wesley.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">NIST FIPS 186-4: Digital Signature Standard (DSS) - Appendix B.3.1: Euclidean Algorithm.</div>
+            </div>
+            <div class="reference-card">
+              <div class="reference-title">RFC 8017: PKCS #1: RSA Cryptography Specifications Version 2.2 - Appendix C: Computing the Private Exponent.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
         </section>
       </main>
     </div>
 
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
+    <script src="theory.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
   </body>
 </html>
