@@ -1,10 +1,56 @@
 // Predefined candidates are tried in this order during the dictionary attack.
+
 const CANDIDATE_PASSWORDS = [
   'admin',
   '123456',
   'password',
   'qwerty',
-  'letmein'
+  'letmein',
+  'welcome',
+  '12345678',
+  'password123',
+  'admin123',
+  'qwerty123',
+  'abc123',
+  'hello123',
+  'test123',
+  'iloveyou',
+  '123456789',
+  '12345',
+  '1234567',
+  '1234567890',
+  '111111',
+  '000000',
+  'pass123',
+  'welcome123',
+  'login123',
+  'user123',
+  'guest123',
+  'root123',
+  'passw0rd',
+  'Password1',
+  'Password123',
+  'Admin123',
+  'football',
+  'monkey',
+  'dragon',
+  'sunshine',
+  'princess',
+  'master',
+  'shadow',
+  'superman',
+  'batman',
+  'computer',
+  'internet',
+  'secret123',
+  'security123',
+  'student123',
+  'college123',
+  'india123',
+  'mumbai123',
+  'hello2026',
+  'welcome2026',
+  'password2026'
 ];
 
 /**
@@ -104,7 +150,6 @@ function initializeDictionaryAttackUI() {
   const currentCandidate = document.getElementById('current-candidate');
   const attemptCount = document.getElementById('attempt-count');
   const attackProgress = document.getElementById('attack-progress');
-  const attackLog = document.getElementById('attack-log');
   const attackResult = document.getElementById('attack-result');
 
   if (
@@ -117,7 +162,6 @@ function initializeDictionaryAttackUI() {
     !currentCandidate ||
     !attemptCount ||
     !attackProgress ||
-    !attackLog ||
     !attackResult
   ) {
     return;
@@ -133,7 +177,6 @@ function initializeDictionaryAttackUI() {
     currentCandidate.textContent = 'None';
     attemptCount.textContent = '0';
     attackProgress.value = 0;
-    attackLog.textContent = '';
     attackResult.textContent = '';
   }
 
@@ -141,14 +184,6 @@ function initializeDictionaryAttackUI() {
     startAttackButton.disabled =
       attackRunning || hashGenerationInProgress || !isValidTargetHash(targetHash);
     generateHashButton.disabled = attackRunning;
-  }
-
-  function addAttackLogEntry(attempt, candidate, candidateHash, matched) {
-    const logEntry = document.createElement('p');
-    logEntry.textContent =
-      `Attempt ${attempt}: Candidate "${candidate}" | ` +
-      `SHA-256: ${candidateHash} | ${matched ? 'Match' : 'No Match'}`;
-    attackLog.appendChild(logEntry);
   }
 
   // Generate the target hash without exposing the target password in the UI.
@@ -231,7 +266,6 @@ function initializeDictionaryAttackUI() {
         currentCandidate.textContent = candidate;
         attemptCount.textContent = String(attempts);
         attackProgress.value = (attempts / CANDIDATE_PASSWORDS.length) * 100;
-        addAttackLogEntry(attempts, candidate, candidateHash, matched);
 
         if (matched) {
           attackStatus.textContent = 'Attack Complete: Password Found';
@@ -323,6 +357,26 @@ function resetQuiz(questionFields, quizResult) {
   quizResult.textContent = '';
 }
 
+function initializeProcedureProgress() {
+  const procedureSteps = Array.from(document.querySelectorAll('#procedure [data-procedure-step]'));
+  const procedureProgress = document.getElementById('procedure-progress');
+
+  if (!procedureProgress || procedureSteps.length === 0) {
+    return;
+  }
+
+  const openedSteps = new Set();
+  procedureSteps.forEach((step) => {
+    step.addEventListener('toggle', () => {
+      if (step.open) {
+        openedSteps.add(step);
+        procedureProgress.textContent =
+          `Steps opened: ${openedSteps.size} of ${procedureSteps.length}`;
+      }
+    });
+  });
+}
+
 function initializeQuiz() {
   const quizPanel = document.querySelector('#quiz .quiz-panel');
   const submitButton = document.getElementById('submit-quiz');
@@ -347,7 +401,8 @@ function initializeQuiz() {
       (total, questionFieldset) => total + (evaluateQuestion(questionFieldset) ? 1 : 0),
       0
     );
-    const outcome = score >= 3 ? 'Passed' : 'Needs improvement';
+    const passingScore = Math.ceil(questionFields.length * 0.6);
+    const outcome = score >= passingScore ? 'Passed' : 'Needs improvement';
     quizResult.textContent = `Score: ${score}/${questionFields.length}. ${outcome}.`;
   }
 
@@ -358,9 +413,11 @@ function initializeQuiz() {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initializeDictionaryAttackUI();
+    initializeProcedureProgress();
     initializeQuiz();
   });
 } else {
   initializeDictionaryAttackUI();
+  initializeProcedureProgress();
   initializeQuiz();
 }

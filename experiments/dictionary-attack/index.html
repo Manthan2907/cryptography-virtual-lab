@@ -36,68 +36,151 @@
       <main class="content-area">
         <section id="theory" class="tab-content active" data-tab-panel="theory">
           <h2>Theory</h2>
-          <h3>What is a dictionary attack?</h3>
-          <p>
-            A dictionary attack is a password-guessing technique that tests a
-            prepared list of likely passwords against a protected password
-            representation. Unlike a brute-force attack, which generates every
-            possible combination, a dictionary attack focuses on words and
-            patterns that people commonly choose.
-          </p>
+          <details>
+            <summary>1. What is a Dictionary Attack?</summary>
+            <p>
+              A dictionary attack is a password-guessing technique that tests a
+              prepared list of likely passwords against a protected password
+              representation. It focuses on words and patterns that people
+              commonly choose.
+            </p>
+            <p>
+              Systems should store password hashes rather than plaintext
+              passwords. A hash is a one-way representation, but someone who
+              obtains a stored hash can hash guesses and compare their results
+              with it.
+            </p>
+          </details>
 
-          <h3>Targeting password hashes</h3>
-          <p>
-            Systems should store password hashes rather than plaintext
-            passwords. A hash is a one-way representation that makes it
-            difficult to recover the original password directly. If an
-            attacker obtains a stored hash, however, they can hash guessed
-            passwords and compare the results with the stolen value.
-          </p>
+          <details>
+            <summary>2. How Does a Dictionary Attack Work?</summary>
+            <p>
+              This simulation tries its predefined candidates in order:
+              <code>admin</code>, <code>123456</code>, <code>password</code>,
+              <code>qwerty</code>, and <code>letmein</code>. It hashes each
+              candidate and compares the result with the target hash. It stops
+              at the first match; if all five candidates fail, it reports that
+              no match was found in this dictionary.
+            </p>
+            <p>Example when the target password is <code>qwerty</code>:</p>
+            <ol>
+              <li>Calculate <code>SHA-256("admin")</code>; compare it with the target hash. It does not match.</li>
+              <li>Repeat for <code>123456</code> and <code>password</code>; neither matches.</li>
+              <li>Calculate <code>SHA-256("qwerty")</code>; it matches the target hash, so the simulation reports the candidate and stops.</li>
+            </ol>
+          </details>
 
-          <h3>Dictionary and SHA-256 comparison</h3>
-          <p>
-            This simulation uses a predefined dictionary of commonly used
-            passwords. Each candidate password is processed by the SHA-256
-            cryptographic hash function. The resulting hash is compared with
-            the target hash stored by the system. Because the same input
-            produces the same SHA-256 output, an equal hash indicates that the
-            candidate matches the password represented by the target hash.
-          </p>
-          <p>
-            The attack stops as soon as a matching hash is found, avoiding
-            unnecessary tests after success. If none of the dictionary
-            candidates produces the target hash, the attack fails for this
-            dictionary. This does not prove that the password is secure; it
-            means only that the password was not found among the candidates
-            tested.
-          </p>
+          <details>
+            <summary>3. Role of SHA-256 Hashing</summary>
+            <p>
+              SHA-256 is a cryptographic hash function that produces a
+              deterministic 256-bit digest (usually displayed as 64
+              hexadecimal characters). The same input produces the same
+              digest, which lets the simulation compare a candidate's digest
+              with the target digest. Hashing is not encryption and does not
+              provide a decryption operation.
+            </p>
+            <p>
+              This experiment uses plain SHA-256 to demonstrate comparison.
+              Plain SHA-256 is designed to be fast, so it is not suitable by
+              itself for storing real passwords.
+            </p>
+          </details>
 
-          <h3>Algorithm</h3>
-          <ol>
-            <li>Obtain the target SHA-256 password hash.</li>
-            <li>Read the candidate passwords in dictionary order.</li>
-            <li>Hash the current candidate with SHA-256.</li>
-            <li>Compare the candidate hash with the target hash.</li>
-            <li>If the hashes match, report the candidate and stop the attack.</li>
-            <li>If the dictionary is exhausted without a match, report failure.</li>
-          </ol>
+          <details>
+            <summary>4. Dictionary Attack vs Brute Force Attack</summary>
+            <p>
+              A dictionary attack tries a prepared set of likely words and
+              patterns. A brute-force attack systematically tries
+              combinations from a defined character set. Dictionary attacks
+              can find common or reused passwords quickly when they appear in
+              the list; brute force can cover passwords absent from that list,
+              but the number of combinations can grow rapidly with password
+              length and character variety.
+            </p>
+          </details>
+
+          <details>
+            <summary>5. Limitations of Dictionary Attacks</summary>
+            <p>
+              Success depends on whether the password or a likely variation is
+              included in the candidates. This simulation has only five
+              candidates, so a failure means only that none of those five
+              matched; it does not prove that a password is secure. A stolen
+              hash, the hashing method, salts, and available computing
+              resources also affect real-world risk.
+            </p>
+          </details>
+
+          <details>
+            <summary>6. Prevention Techniques</summary>
+            <ul>
+              <li>Use long, unique passwords or passphrases that are not based on common words or predictable patterns.</li>
+              <li>Store passwords with a dedicated, deliberately slow password-hashing scheme such as Argon2id, bcrypt, scrypt, or PBKDF2, configured appropriately and with a unique salt per password.</li>
+              <li>Use multi-factor authentication to add a second verification factor.</li>
+              <li>For online login systems, rate-limit repeated attempts and monitor suspicious activity.</li>
+            </ul>
+            <p>
+              Rate limiting helps protect online login endpoints; it cannot
+              slow guesses made offline against a hash that has already been
+              obtained. Slow password hashing and unique salts help defend
+              stored credentials in that situation.
+            </p>
+          </details>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
           <h2>Procedure</h2>
+          <p id="procedure-progress" aria-live="polite">Steps opened: 0 of 8</p>
           <ol>
-            <li>Open the <strong>Simulation</strong> tab.</li>
-            <li>Enter or select a target password for the experiment.</li>
-            <li>Generate or use its stored SHA-256 hash.</li>
-            <li>Start the dictionary attack.</li>
-            <li>Observe each candidate password as it is tested.</li>
-            <li>Observe the generated hash and its comparison result.</li>
-            <li>Observe the attack stopping when a matching hash is found.</li>
             <li>
-              Observe the failure result when the password is not present in
-              the dictionary.
+              <details data-procedure-step>
+                <summary>1. Open the Simulation tab</summary>
+                <p>Select <strong>Simulation</strong> in the experiment navigation to access the target-password and attack controls.</p>
+              </details>
             </li>
-            <li>Reset the simulation to perform another experiment.</li>
+            <li>
+              <details data-procedure-step>
+                <summary>2. Enter a target password</summary>
+                <p>Type a password into the target-password field. It will be hashed locally when you generate the target hash; changing it clears any previously generated target hash.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>3. Generate the target hash</summary>
+                <p>Select <strong>Generate Target Hash</strong>. The simulation uses the Web Crypto API to create and display the password's SHA-256 hash. A non-empty target password is required.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>4. Start the dictionary attack</summary>
+                <p>Select <strong>Start Attack</strong>. This control is enabled after a valid target hash has been generated.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>5. Observe the candidate sequence</summary>
+                <p>The simulation tests <code>admin</code>, <code>123456</code>, <code>password</code>, <code>qwerty</code>, and <code>letmein</code>, in that order, hashing one candidate at a time with a 600 ms pause after each non-match.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>6. Observe each comparison</summary>
+                <p>For each attempt, check the current candidate, attempt count, progress bar, and attack log. The log shows the candidate's SHA-256 digest and whether it matched the target.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>7. Review the result</summary>
+                <p>If a candidate matches, the attack stops and reports that a password was found. If all five candidates are tested without a match, it reports that the target was not present in this predefined dictionary.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>8. Reset the simulation</summary>
+                <p>Select <strong>Reset</strong> to stop any running attack and clear the password, target hash, progress, attempt count, log, and result before another experiment.</p>
+              </details>
+            </li>
           </ol>
         </section>
 
@@ -125,10 +208,6 @@
             <p>Attempts: <strong id="attempt-count">0</strong></p>
             <label for="attack-progress">Attack progress</label>
             <progress id="attack-progress" value="0" max="100">0%</progress>
-            <h3>Attack log</h3>
-            <div id="attack-log" class="attack-log" role="log" aria-live="polite">
-              <p>No candidates tested yet.</p>
-            </div>
             <p id="attack-result" class="attack-result"></p>
           </div>
         </section>
@@ -174,6 +253,86 @@
               <label><input type="radio" name="quiz-5" value="b"> It includes more likely passwords and patterns to test</label>
               <label><input type="radio" name="quiz-5" value="c"> It removes the need to compare hashes</label>
               <label><input type="radio" name="quiz-5" value="d"> It guarantees that every password will be found</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>6. How long is the SHA-256 digest?</legend>
+              <label><input type="radio" name="quiz-6" value="a"> 128 bits</label>
+              <label><input type="radio" name="quiz-6" value="b"> 160 bits</label>
+              <label><input type="radio" name="quiz-6" value="c"> 512 bits</label>
+              <label><input type="radio" name="quiz-6" value="d"> 256 bits</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>7. What property lets the simulation compare a candidate hash with the target hash?</legend>
+              <label><input type="radio" name="quiz-7" value="a"> The same input produces the same SHA-256 digest</label>
+              <label><input type="radio" name="quiz-7" value="b"> SHA-256 decrypts the target hash</label>
+              <label><input type="radio" name="quiz-7" value="c"> Every password has the same digest</label>
+              <label><input type="radio" name="quiz-7" value="d"> Hashing sorts passwords alphabetically</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="c">
+              <legend>8. Why is plain SHA-256 not recommended by itself for password storage?</legend>
+              <label><input type="radio" name="quiz-8" value="a"> It produces a different digest every time for the same input</label>
+              <label><input type="radio" name="quiz-8" value="b"> It can only process numeric passwords</label>
+              <label><input type="radio" name="quiz-8" value="c"> It is designed to be fast, making large numbers of guesses cheaper</label>
+              <label><input type="radio" name="quiz-8" value="d"> It stores the original password inside the digest</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="b">
+              <legend>9. What is the purpose of using a unique salt for each stored password?</legend>
+              <label><input type="radio" name="quiz-9" value="a"> To make the password recoverable</label>
+              <label><input type="radio" name="quiz-9" value="b"> To make equal passwords have different stored hash values and hinder precomputed lookups</label>
+              <label><input type="radio" name="quiz-9" value="c"> To remove the need for a password-hashing function</label>
+              <label><input type="radio" name="quiz-9" value="d"> To guarantee that no password can be guessed</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>10. Which password choice best reduces the chance of appearing in common dictionaries?</legend>
+              <label><input type="radio" name="quiz-10" value="a"> A short common word</label>
+              <label><input type="radio" name="quiz-10" value="b"> A reused password with a predictable suffix</label>
+              <label><input type="radio" name="quiz-10" value="c"> A common keyboard pattern</label>
+              <label><input type="radio" name="quiz-10" value="d"> A long, unique passphrase not based on a familiar phrase</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>11. What does it mean if this simulation does not find a match?</legend>
+              <label><input type="radio" name="quiz-11" value="a"> The target was not among the five candidates tested</label>
+              <label><input type="radio" name="quiz-11" value="b"> The target password is guaranteed to be secure</label>
+              <label><input type="radio" name="quiz-11" value="c"> SHA-256 failed to produce a hash</label>
+              <label><input type="radio" name="quiz-11" value="d"> Every possible password has been tested</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="c">
+              <legend>12. What is the main difference between dictionary and brute-force attacks?</legend>
+              <label><input type="radio" name="quiz-12" value="a"> A dictionary attack decrypts passwords; brute force hashes them</label>
+              <label><input type="radio" name="quiz-12" value="b"> A brute-force attack only tests words from a prepared list</label>
+              <label><input type="radio" name="quiz-12" value="c"> A dictionary attack tests likely prepared candidates; brute force systematically tries combinations</label>
+              <label><input type="radio" name="quiz-12" value="d"> There is no difference between them</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="b">
+              <legend>13. How does multi-factor authentication help protect an account?</legend>
+              <label><input type="radio" name="quiz-13" value="a"> It makes a weak password impossible to guess</label>
+              <label><input type="radio" name="quiz-13" value="b"> It requires another verification factor in addition to the password</label>
+              <label><input type="radio" name="quiz-13" value="c"> It replaces password storage with plain text</label>
+              <label><input type="radio" name="quiz-13" value="d"> It prevents all offline hash guessing</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>14. What does rate limiting do for an online login service?</legend>
+              <label><input type="radio" name="quiz-14" value="a"> It makes a stolen hash impossible to attack offline</label>
+              <label><input type="radio" name="quiz-14" value="b"> It changes the user's password after every attempt</label>
+              <label><input type="radio" name="quiz-14" value="c"> It guarantees every login is legitimate</label>
+              <label><input type="radio" name="quiz-14" value="d"> It restricts repeated attempts over time, slowing online guessing</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>15. Which statement correctly describes hashing versus encryption?</legend>
+              <label><input type="radio" name="quiz-15" value="a"> Hashing is designed as a one-way transformation; encryption is designed to be reversed with a key</label>
+              <label><input type="radio" name="quiz-15" value="b"> Hashing and encryption are identical operations</label>
+              <label><input type="radio" name="quiz-15" value="c"> A SHA-256 hash can be decrypted with the target password</label>
+              <label><input type="radio" name="quiz-15" value="d"> Encryption never uses keys</label>
             </fieldset>
             <div class="quiz-actions">
               <button id="submit-quiz" type="button">Submit Quiz</button>
