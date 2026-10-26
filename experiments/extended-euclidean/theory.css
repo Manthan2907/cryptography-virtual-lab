@@ -43,6 +43,14 @@
 	white-space: nowrap;
 }
 
+/* Long expressions must wrap rather than widen narrow phone layouts. */
+@media (max-width: 600px) {
+	.theory-content .mono {
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+}
+
 .theory-content kbd {
 	padding: 2px 6px;
 	border: 1px solid var(--color-border);
@@ -431,7 +439,7 @@
 /* ---- Modular inverse cards -------------------------------------------- */
 .mod-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
 	gap: var(--space-2);
 	margin: var(--space-2) 0;
 }

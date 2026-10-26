@@ -53,6 +53,12 @@
   .steps-legend {
     gap: 6px 16px;
   }
+
+  /* Long legend labels must wrap instead of widening the page. */
+  .steps-legend__item {
+    white-space: normal;
+    align-items: flex-start;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

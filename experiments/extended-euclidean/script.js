@@ -88,20 +88,19 @@ document.addEventListener('DOMContentLoaded', () => {
       coeffs.push({ r: old_r, x: old_x, y: old_y, check: originalA * old_x + originalB * old_y });
     }
 
-    // Adjust signs based on original input signs
-    let finalX = old_x;
-    let finalY = old_y;
+    // The iterative algorithm tracks coefficients for |a| and |b|. Convert
+    // every row to the original signed inputs so each row's coefficients and
+    // displayed check satisfy originalA * x + originalB * y = r.
+    const signA = originalA < 0 ? -1 : 1;
+    const signB = originalB < 0 ? -1 : 1;
+    const finalX = old_x * signA;
+    const finalY = old_y * signB;
 
-    if (originalA < 0) finalX = -finalX;
-    if (originalB < 0) finalY = -finalY;
-
-    // Recompute verification with adjusted coefficients
-    const finalCheck = originalA * finalX + originalB * finalY;
-
-    // Update the last coefficient entry with final adjusted values
-    if (coeffs.length > 0) {
-      coeffs[coeffs.length - 1] = { r: old_r, x: finalX, y: finalY, check: finalCheck };
-    }
+    coeffs.forEach((coeff) => {
+      coeff.x *= signA;
+      coeff.y *= signB;
+      coeff.check = originalA * coeff.x + originalB * coeff.y;
+    });
 
     return { gcd: old_r, x: finalX, y: finalY, steps, coeffs };
   }
@@ -268,39 +267,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Modular inverse section
+    // An inverse of u modulo m exists iff gcd(u, m) = 1 and m > 1.
+    // A zero modulus is never evaluated (u % 0 is NaN); modulus 1 is trivial.
+    const modA = Math.abs(a);
+    const modB = Math.abs(b);
+    const modNorm = (value, modulus) => ((value % modulus) + modulus) % modulus;
+
+    const inverseCard = (heading, symbol, coeffSymbol, target, coeff, modulus) => {
+      const box = 'padding: 12px; background: var(--color-surface-muted); border-radius: var(--radius-sm);';
+      if (modulus === 0) {
+        return `<div style="${box}">
+          <strong>${heading}</strong><br>
+          <span style="color: var(--color-text-muted);">Not defined: the modulus is 0, so there is no modular inverse.</span>
+        </div>`;
+      }
+      if (modulus === 1) {
+        return `<div style="${box}">
+          <strong>${heading}</strong><br>
+          <span style="color: var(--color-text-muted);">Not defined for modulus 1 (the trivial ring).</span>
+        </div>`;
+      }
+      const value = modNorm(coeff, modulus);
+      const check = modNorm(target * value, modulus);
+      return `<div style="${box}">
+          <strong>${heading}</strong><br>
+          ${symbol} &equiv; ${coeffSymbol} (mod ${formatNumber(modulus)})<br>
+          ${symbol} &equiv; ${formatNumber(coeff)} (mod ${formatNumber(modulus)})<br>
+          <strong>${symbol} = ${formatNumber(value)}</strong>
+          <div style="margin-top: 8px; font-size: var(--font-size-sm); color: var(--color-text-muted);">
+            Verification: ${formatNumber(target)} &times; ${formatNumber(value)} &equiv; ${formatNumber(check)} (mod ${formatNumber(modulus)})
+          </div>
+        </div>`;
+    };
+
     if (gcd === 1) {
       modularInverseSection.style.display = 'block';
-
-      // Modular inverse of a mod b: x mod b (make positive)
-      // Modular inverse of b mod a: y mod a (make positive)
-      let invAmodB = ((x % b) + b) % b;
-      let invBmodA = ((y % a) + a) % a;
-
       modularInverseContent.innerHTML = `
-        <p><strong>Since gcd(${aFormatted}, ${bFormatted}) = 1, modular inverses exist:</strong></p>
+        <p><strong>Since gcd(${aFormatted}, ${bFormatted}) = 1, modular inverses exist for moduli greater than 1:</strong></p>
         <div style="display: grid; gap: 12px; margin-top: 12px;">
-          <div style="padding: 12px; background: var(--color-surface-muted); border-radius: var(--radius-sm);">
-            <strong>Inverse of a modulo b:</strong><br>
-            a⁻¹ ≡ x (mod b)<br>
-            a⁻¹ ≡ ${formatNumber(x)} (mod ${formatNumber(b)})<br>
-            <strong>a⁻¹ = ${formatNumber(invAmodB)}</strong>
-            <div style="margin-top: 8px; font-size: var(--font-size-sm); color: var(--color-text-muted);">
-              Verification: ${formatNumber(a)} × ${formatNumber(invAmodB)} ≡ ${formatNumber((a * invAmodB) % b)} (mod ${formatNumber(b)})
-            </div>
-          </div>
-          <div style="padding: 12px; background: var(--color-surface-muted); border-radius: var(--radius-sm);">
-            <strong>Inverse of b modulo a:</strong><br>
-            b⁻¹ ≡ y (mod a)<br>
-            b⁻¹ ≡ ${formatNumber(y)} (mod ${formatNumber(a)})<br>
-            <strong>b⁻¹ = ${formatNumber(invBmodA)}</strong>
-            <div style="margin-top: 8px; font-size: var(--font-size-sm); color: var(--color-text-muted);">
-              Verification: ${formatNumber(b)} × ${formatNumber(invBmodA)} ≡ ${formatNumber((b * invBmodA) % a)} (mod ${formatNumber(a)})
-            </div>
-          </div>
+          ${inverseCard('Inverse of a modulo b', 'a⁻¹', 'x', a, x, modB)}
+          ${inverseCard('Inverse of b modulo a', 'b⁻¹', 'y', b, y, modA)}
         </div>
         <p style="margin-top: 16px; font-size: var(--font-size-sm); color: var(--color-text-muted);">
           <em>Note:</em> Negative B&eacute;zout coefficients are converted to their positive modular equivalents.
-          The inverse is the unique integer in [0, modulus-1] satisfying the congruence.
+          The inverse is the unique integer in [0, modulus-1] satisfying the congruence when the modulus is greater than 1.
+          A modulus of 0 is undefined; modulus 1 is the trivial ring.
         </p>
       `;
     } else {
