@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Virtual Cryptography Laboratory experiment">
+    <title>Different Types of Firewalls | Virtual Cryptography Laboratory</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- Fr. CRCE Official College Header Banner -->
+    <div class="college-banner-strip">
+      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
+        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+      </a>
+    </div>
+
+    <div class="experiment-container">
+      <header class="exp-header">
+        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
+        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
+        <h1 id="exp-title">Different Types of Firewalls</h1>
+        <p id="exp-description">Compare six firewall architectures through guided traffic simulation, policy inspection and assessment.</p>
+      </header>
+
+      <nav class="tab-navigation" aria-label="Experiment sections">
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
+        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
+        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
+      </nav>
+
+      <main class="content-area">
+        <!-- a. Aim and objectives -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div data-fw-host="aim"><div class="content-placeholder"><h2>Aim &amp; Objectives</h2><p><strong>Aim:</strong> Analyze how different types of firewalls inspect network traffic, enforce security policies, and protect systems against unauthorized access and simulated threats.</p><p><strong>Objectives:</strong></p><ul><li>Distinguish packet filtering, stateful inspection, circuit-level gateways, application proxies, next-generation firewalls and web application firewalls.</li><li>Configure traffic and firewall rules, observe packet decisions, and compare inspection capabilities.</li><li>Evaluate security limitations through practical scenarios and assessment questions.</li></ul></div></div>
+        </section>
+
+        <!-- b. Relevant theoretical concepts -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div data-fw-host="theory"><div class="content-placeholder"><h2>Theory</h2><p>A firewall applies a security policy to traffic crossing a network or application boundary. Different architectures inspect different information. An allowed connection is not proof that its content is safe; the decision depends on the configured policy and the firewall's visibility.</p><h3>1. Packet Filtering</h3><p>Matches network and transport header fields such as IP addresses, protocol and ports. A stateless filter evaluates each packet independently.</p><p>Fast and simple for basic network boundaries. It cannot infer whether an allowed web request carries an attack.</p><p><strong>In this experiment:</strong> In this lab, ordered header rules apply and unmatched traffic is denied.</p><h3>2. Stateful Inspection</h3><p>Tracks flows and uses their connection state when deciding whether traffic belongs to an accepted exchange. State is maintained by the device, not a flag a sender may freely assert.</p><p>Useful for return traffic and blocking invalid flows. Connection tracking does not inherently inspect application payloads.</p><p><strong>In this experiment:</strong> The lab accepts established traffic before new-flow rules and rejects invalid state.</p><h3>3. Circuit-Level Gateway</h3><p>A circuit gateway controls transport sessions, commonly using a SOCKS-style relay. It can validate session negotiation without understanding each application payload.</p><p>Useful for controlled session relay. It does not inherently identify SQL injection or malware in permitted content.</p><p><strong>In this experiment:</strong> This simplified gateway requires valid TCP negotiation after header approval; UDP relay is not modeled.</p><h3>4. Application-Level Gateway / Proxy</h3><p>An application gateway terminates a connection and creates another on behalf of the client. It can enforce protocol-specific commands, destinations or content rules.</p><p>Fine-grained application control, with additional processing and configuration. Support depends on the proxy protocol.</p><p><strong>In this experiment:</strong> This HTTP(S) proxy denies /admin paths. It is not a universal attack detector; HTTPS is assumed decrypted.</p><h3>5. Next-Generation Firewall</h3><p>NGFW products commonly combine stateful filtering with application identification and intrusion prevention. Features and policies vary by implementation.</p><p>Can identify disallowed applications and known attack signatures. Visibility into encrypted payloads requires appropriate inspection.</p><p><strong>In this experiment:</strong> This lab combines connection state, a declared application allowlist and explicit simulated threat indicators.</p><h3>6. Web Application Firewall</h3><p>A WAF applies application-layer rules to HTTP requests and responses to help protect web services, including checks for common injection patterns.</p><p>Complements network firewalls. It cannot replace network controls for arbitrary SSH, DNS or other non-HTTP traffic.</p><p><strong>In this experiment:</strong> This WAF inspects HTTP(S) path patterns and SQL injection / XSS flags. Other traffic passes through outside its scope.</p></div></div>
+        </section>
+
+        <!-- c. Step-by-step procedure -->
+        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+          <div data-fw-host="procedure"><div class="content-placeholder"><h2>Procedure</h2><ol><li>Read the theory and identify what each firewall architecture can inspect.</li><li>Open Simulation and select a firewall architecture.</li><li>Choose Normal browsing to automatically run a baseline packet. Observe the sending, inspection and outcome stages.</li><li>Choose Blocked SSH, DNS query, Suspicious payload, Malicious HTTP request or Established connection. Predict the outcome and inspect the explanation.</li><li>Select Compare firewalls to evaluate the same traffic against different architectures.</li><li>Open Advanced settings to change packet fields or ordered allow/deny rules. Select Apply &amp; run and inspect the traffic log.</li><li>Complete the practical assessment and ten-question quiz. Review missed topics and print the completion report if needed.</li></ol></div></div>
+        </section>
+
+        <!-- d. Interactive simulation / implementation -->
+        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+          <div class="fw-lab" data-fw-host="simulation"><p>Enable JavaScript to run the educational packet simulator.</p></div>
+        </section>
+
+        <!-- e. Assessment / Quiz -->
+        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+          <div class="fw-lab" data-fw-host="quiz"><p>Enable JavaScript to complete practical assessments and the ten-question quiz.</p></div>
+        </section>
+
+        <!-- f. References -->
+        <section id="references" class="tab-content" data-tab-panel="references" hidden>
+          <div data-fw-host="references"><div class="content-placeholder"><h2>References</h2><ul><li><a href="https://csrc.nist.gov/pubs/sp/800/41/r1/final" target="_blank" rel="noopener noreferrer">NIST SP 800-41 Revision 1: Guidelines on Firewalls and Firewall Policy</a> — architectural and policy background.</li><li><a href="https://community.owasp.org/Web_Application_Firewall" target="_blank" rel="noopener noreferrer">OWASP: Web Application Firewall</a> — HTTP inspection scope and web application protection.</li></ul><p>Firewall categories overlap in real products. This experiment uses explicit educational policies rather than a production security engine.</p></div></div>
+        </section>
+
+        <!-- g. Feedback -->
+        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+          <!-- Auto-populated by feedback.js with RSA-2048 client-side encryption -->
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/common.js"></script>
+    <script src="../../js/students-roster.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
+    <script src="../../js/feedback.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
