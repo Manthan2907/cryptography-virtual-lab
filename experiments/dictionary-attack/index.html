@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <title>Dictionary Attack | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
   </head>
@@ -20,8 +20,8 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <h1 id="exp-title">Dictionary Attack</h1>
+        <p id="exp-description">Simulate a dictionary attack by testing a predefined set of candidate passwords against a stored SHA-256 password hash.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
@@ -35,39 +35,401 @@
 
       <main class="content-area">
         <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
-          </div>
+          <h2>Theory</h2>
+          <details>
+            <summary>1. What is a Dictionary Attack?</summary>
+            <p>
+              A dictionary attack is a password-guessing technique that tests a
+              prepared list of likely passwords against a protected password
+              representation. It focuses on words and patterns that people
+              commonly choose.
+            </p>
+            <p>
+              Systems should store password hashes rather than plaintext
+              passwords. A hash is a one-way representation, but someone who
+              obtains a stored hash can hash guesses and compare their results
+              with it.
+            </p>
+          </details>
+
+          <details>
+            <summary>2. How Does a Dictionary Attack Work?</summary>
+            <p>
+              This simulation tries its predefined candidates in order:
+              <code>admin</code>, <code>123456</code>, <code>password</code>,
+              <code>qwerty</code>, and <code>letmein</code>. It hashes each
+              candidate and compares the result with the target hash. It stops
+              at the first match; if all five candidates fail, it reports that
+              no match was found in this dictionary.
+            </p>
+            <p>Example when the target password is <code>qwerty</code>:</p>
+            <ol>
+              <li>Calculate <code>SHA-256("admin")</code>; compare it with the target hash. It does not match.</li>
+              <li>Repeat for <code>123456</code> and <code>password</code>; neither matches.</li>
+              <li>Calculate <code>SHA-256("qwerty")</code>; it matches the target hash, so the simulation reports the candidate and stops.</li>
+            </ol>
+          </details>
+
+          <details>
+            <summary>3. Role of SHA-256 Hashing</summary>
+            <p>
+              SHA-256 is a cryptographic hash function that produces a
+              deterministic 256-bit digest (usually displayed as 64
+              hexadecimal characters). The same input produces the same
+              digest, which lets the simulation compare a candidate's digest
+              with the target digest. Hashing is not encryption and does not
+              provide a decryption operation.
+            </p>
+            <p>
+              This experiment uses plain SHA-256 to demonstrate comparison.
+              Plain SHA-256 is designed to be fast, so it is not suitable by
+              itself for storing real passwords.
+            </p>
+          </details>
+
+          <details>
+            <summary>4. Dictionary Attack vs Brute Force Attack</summary>
+            <p>
+              A dictionary attack tries a prepared set of likely words and
+              patterns. A brute-force attack systematically tries
+              combinations from a defined character set. Dictionary attacks
+              can find common or reused passwords quickly when they appear in
+              the list; brute force can cover passwords absent from that list,
+              but the number of combinations can grow rapidly with password
+              length and character variety.
+            </p>
+          </details>
+
+          <details>
+            <summary>5. Limitations of Dictionary Attacks</summary>
+            <p>
+              Success depends on whether the password or a likely variation is
+              included in the candidates. This simulation has only five
+              candidates, so a failure means only that none of those five
+              matched; it does not prove that a password is secure. A stolen
+              hash, the hashing method, salts, and available computing
+              resources also affect real-world risk.
+            </p>
+          </details>
+
+          <details>
+            <summary>6. Prevention Techniques</summary>
+            <ul>
+              <li>Use long, unique passwords or passphrases that are not based on common words or predictable patterns.</li>
+              <li>Store passwords with a dedicated, deliberately slow password-hashing scheme such as Argon2id, bcrypt, scrypt, or PBKDF2, configured appropriately and with a unique salt per password.</li>
+              <li>Use multi-factor authentication to add a second verification factor.</li>
+              <li>For online login systems, rate-limit repeated attempts and monitor suspicious activity.</li>
+            </ul>
+            <p>
+              Rate limiting helps protect online login endpoints; it cannot
+              slow guesses made offline against a hash that has already been
+              obtained. Slow password hashing and unique salts help defend
+              stored credentials in that situation.
+            </p>
+          </details>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
-          </div>
+          <h2>Procedure</h2>
+          <p id="procedure-progress" aria-live="polite">Steps opened: 0 of 8</p>
+          <ol>
+            <li>
+              <details data-procedure-step>
+                <summary>1. Open the Simulation tab</summary>
+                <p>Select <strong>Simulation</strong> in the experiment navigation to access the target-password and attack controls.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>2. Enter a target password</summary>
+                <p>Type a password into the target-password field. It will be hashed locally when you generate the target hash; changing it clears any previously generated target hash.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>3. Generate the target hash</summary>
+                <p>Select <strong>Generate Target Hash</strong>. The simulation uses the Web Crypto API to create and display the password's SHA-256 hash. A non-empty target password is required.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>4. Start the dictionary attack</summary>
+                <p>Select <strong>Start Attack</strong>. This control is enabled after a valid target hash has been generated.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>5. Observe the candidate sequence</summary>
+                <p>The simulation tests <code>admin</code>, <code>123456</code>, <code>password</code>, <code>qwerty</code>, and <code>letmein</code>, in that order, hashing one candidate at a time with a 600 ms pause after each non-match.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>6. Observe each comparison</summary>
+                <p>For each attempt, check the current candidate, attempt count, progress bar, and attack log. The log shows the candidate's SHA-256 digest and whether it matched the target.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>7. Review the result</summary>
+                <p>If a candidate matches, the attack stops and reports that a password was found. If all five candidates are tested without a match, it reports that the target was not present in this predefined dictionary.</p>
+              </details>
+            </li>
+            <li>
+              <details data-procedure-step>
+                <summary>8. Reset the simulation</summary>
+                <p>Select <strong>Reset</strong> to stop any running attack and clear the password, target hash, progress, attempt count, log, and result before another experiment.</p>
+              </details>
+            </li>
+          </ol>
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
             <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+            <div class="form-group">
+              <label for="target-password">Target password</label>
+              <input id="target-password" name="target-password" type="password" autocomplete="off">
+            </div>
+            <button id="generate-hash" type="button">Generate Target Hash</button>
+            <div class="form-group">
+              <label for="target-hash">Target SHA-256 hash</label>
+              <output id="target-hash" class="hash-display" aria-live="polite">No target hash generated.</output>
+            </div>
+            <div class="simulation-actions">
+              <button id="start-attack" type="button">Start Attack</button>
+              <button id="reset-attack" type="button">Reset</button>
+            </div>
           </div>
           <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
             <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+            <p id="attack-status">Ready to begin the dictionary attack.</p>
+            <p>Current candidate: <strong id="current-candidate">None</strong></p>
+            <p>Attempts: <strong id="attempt-count">0</strong></p>
+            <label for="attack-progress">Attack progress</label>
+            <progress id="attack-progress" value="0" max="100">0%</progress>
+            <p id="attack-result" class="attack-result"></p>
           </div>
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
             <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <fieldset data-correct-answer="b">
+              <legend>1. What is a dictionary attack?</legend>
+              <label><input type="radio" name="quiz-1" value="a"> Testing every possible character combination</label>
+              <label><input type="radio" name="quiz-1" value="b"> Testing passwords from a prepared list of likely candidates</label>
+              <label><input type="radio" name="quiz-1" value="c"> Encrypting a password with multiple keys</label>
+              <label><input type="radio" name="quiz-1" value="d"> Deleting a stored password hash</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="c">
+              <legend>2. Why is each candidate password hashed before comparison?</legend>
+              <label><input type="radio" name="quiz-2" value="a"> Hashing makes the candidate longer</label>
+              <label><input type="radio" name="quiz-2" value="b"> Hashing sorts candidates alphabetically</label>
+              <label><input type="radio" name="quiz-2" value="c"> The stored password is represented by a hash, not plaintext</label>
+              <label><input type="radio" name="quiz-2" value="d"> Hashing guarantees that every candidate will match</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>3. What happens when a candidate hash matches the target hash?</legend>
+              <label><input type="radio" name="quiz-3" value="a"> The matching candidate is reported and the attack stops</label>
+              <label><input type="radio" name="quiz-3" value="b"> The dictionary is automatically expanded</label>
+              <label><input type="radio" name="quiz-3" value="c"> The target hash is changed</label>
+              <label><input type="radio" name="quiz-3" value="d"> All candidates must still be tested</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>4. When does a dictionary attack fail?</legend>
+              <label><input type="radio" name="quiz-4" value="a"> When SHA-256 is used</label>
+              <label><input type="radio" name="quiz-4" value="b"> When the first candidate is tested</label>
+              <label><input type="radio" name="quiz-4" value="c"> When a candidate hash is generated</label>
+              <label><input type="radio" name="quiz-4" value="d"> When no dictionary candidate produces the target hash</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="b">
+              <legend>5. Why can a larger or better dictionary improve attack coverage?</legend>
+              <label><input type="radio" name="quiz-5" value="a"> It makes SHA-256 reversible</label>
+              <label><input type="radio" name="quiz-5" value="b"> It includes more likely passwords and patterns to test</label>
+              <label><input type="radio" name="quiz-5" value="c"> It removes the need to compare hashes</label>
+              <label><input type="radio" name="quiz-5" value="d"> It guarantees that every password will be found</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>6. How long is the SHA-256 digest?</legend>
+              <label><input type="radio" name="quiz-6" value="a"> 128 bits</label>
+              <label><input type="radio" name="quiz-6" value="b"> 160 bits</label>
+              <label><input type="radio" name="quiz-6" value="c"> 512 bits</label>
+              <label><input type="radio" name="quiz-6" value="d"> 256 bits</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>7. What property lets the simulation compare a candidate hash with the target hash?</legend>
+              <label><input type="radio" name="quiz-7" value="a"> The same input produces the same SHA-256 digest</label>
+              <label><input type="radio" name="quiz-7" value="b"> SHA-256 decrypts the target hash</label>
+              <label><input type="radio" name="quiz-7" value="c"> Every password has the same digest</label>
+              <label><input type="radio" name="quiz-7" value="d"> Hashing sorts passwords alphabetically</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="c">
+              <legend>8. Why is plain SHA-256 not recommended by itself for password storage?</legend>
+              <label><input type="radio" name="quiz-8" value="a"> It produces a different digest every time for the same input</label>
+              <label><input type="radio" name="quiz-8" value="b"> It can only process numeric passwords</label>
+              <label><input type="radio" name="quiz-8" value="c"> It is designed to be fast, making large numbers of guesses cheaper</label>
+              <label><input type="radio" name="quiz-8" value="d"> It stores the original password inside the digest</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="b">
+              <legend>9. What is the purpose of using a unique salt for each stored password?</legend>
+              <label><input type="radio" name="quiz-9" value="a"> To make the password recoverable</label>
+              <label><input type="radio" name="quiz-9" value="b"> To make equal passwords have different stored hash values and hinder precomputed lookups</label>
+              <label><input type="radio" name="quiz-9" value="c"> To remove the need for a password-hashing function</label>
+              <label><input type="radio" name="quiz-9" value="d"> To guarantee that no password can be guessed</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>10. Which password choice best reduces the chance of appearing in common dictionaries?</legend>
+              <label><input type="radio" name="quiz-10" value="a"> A short common word</label>
+              <label><input type="radio" name="quiz-10" value="b"> A reused password with a predictable suffix</label>
+              <label><input type="radio" name="quiz-10" value="c"> A common keyboard pattern</label>
+              <label><input type="radio" name="quiz-10" value="d"> A long, unique passphrase not based on a familiar phrase</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>11. What does it mean if this simulation does not find a match?</legend>
+              <label><input type="radio" name="quiz-11" value="a"> The target was not among the five candidates tested</label>
+              <label><input type="radio" name="quiz-11" value="b"> The target password is guaranteed to be secure</label>
+              <label><input type="radio" name="quiz-11" value="c"> SHA-256 failed to produce a hash</label>
+              <label><input type="radio" name="quiz-11" value="d"> Every possible password has been tested</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="c">
+              <legend>12. What is the main difference between dictionary and brute-force attacks?</legend>
+              <label><input type="radio" name="quiz-12" value="a"> A dictionary attack decrypts passwords; brute force hashes them</label>
+              <label><input type="radio" name="quiz-12" value="b"> A brute-force attack only tests words from a prepared list</label>
+              <label><input type="radio" name="quiz-12" value="c"> A dictionary attack tests likely prepared candidates; brute force systematically tries combinations</label>
+              <label><input type="radio" name="quiz-12" value="d"> There is no difference between them</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="b">
+              <legend>13. How does multi-factor authentication help protect an account?</legend>
+              <label><input type="radio" name="quiz-13" value="a"> It makes a weak password impossible to guess</label>
+              <label><input type="radio" name="quiz-13" value="b"> It requires another verification factor in addition to the password</label>
+              <label><input type="radio" name="quiz-13" value="c"> It replaces password storage with plain text</label>
+              <label><input type="radio" name="quiz-13" value="d"> It prevents all offline hash guessing</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="d">
+              <legend>14. What does rate limiting do for an online login service?</legend>
+              <label><input type="radio" name="quiz-14" value="a"> It makes a stolen hash impossible to attack offline</label>
+              <label><input type="radio" name="quiz-14" value="b"> It changes the user's password after every attempt</label>
+              <label><input type="radio" name="quiz-14" value="c"> It guarantees every login is legitimate</label>
+              <label><input type="radio" name="quiz-14" value="d"> It restricts repeated attempts over time, slowing online guessing</label>
+            </fieldset>
+
+            <fieldset data-correct-answer="a">
+              <legend>15. Which statement correctly describes hashing versus encryption?</legend>
+              <label><input type="radio" name="quiz-15" value="a"> Hashing is designed as a one-way transformation; encryption is designed to be reversed with a key</label>
+              <label><input type="radio" name="quiz-15" value="b"> Hashing and encryption are identical operations</label>
+              <label><input type="radio" name="quiz-15" value="c"> A SHA-256 hash can be decrypted with the target password</label>
+              <label><input type="radio" name="quiz-15" value="d"> Encryption never uses keys</label>
+            </fieldset>
+            <div class="quiz-actions">
+              <button id="submit-quiz" type="button">Submit Quiz</button>
+              <button id="retry-quiz" type="button">Retry Quiz</button>
+            </div>
+            <div id="quiz-result" class="quiz-result" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section id="references" class="tab-content references-panel" data-tab-panel="references" hidden>
+          <h2>References &amp; Further Reading</h2>
+          <div class="reference-list">
+            <article class="reference-card">
+              <h3>William Stallings — Cryptography and Network Security: Principles and Practice</h3>
+              <p>Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture.</p>
+              <p>Pearson Education.</p>
+            </article>
+            <article class="reference-card">
+              <h3>NIST Special Publication (SP) 800 Series</h3>
+              <p>National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</p>
+            </article>
+            <article class="reference-card">
+              <h3>IETF RFC Specifications &amp; Standards</h3>
+              <p>Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="feedback" class="tab-content feedback-panel" data-tab-panel="feedback" hidden>
+          <div class="feedback-container">
+            <div class="feedback-heading">
+              <span class="encryption-badge">🔒 End-to-End Encrypted</span>
+              <h2>Feedback for Dictionary Attack</h2>
+              <p>Please share your feedback regarding this experiment simulation. This is a UI preview only; encryption and feedback submission are not implemented.</p>
+            </div>
+
+            <div class="feedback-form">
+              <div class="feedback-grid">
+                <div class="feedback-field">
+                  <label for="feedback-name">Full Name *</label>
+                  <input id="feedback-name" name="feedback-name" type="text" placeholder="Enter your full name">
+                </div>
+                <div class="feedback-field">
+                  <label for="feedback-student-id">Roll No / Student ID *</label>
+                  <input id="feedback-student-id" name="feedback-student-id" type="text" placeholder="Enter roll number or student ID">
+                </div>
+              </div>
+
+              <fieldset class="rating-field">
+                <legend>Overall Experiment Rating *</legend>
+                <div class="rating-stars" role="radiogroup" aria-label="Overall Experiment Rating">
+                  <input id="rating-1" name="experiment-rating" type="radio" value="1">
+                  <label for="rating-1" aria-label="1 star">★</label>
+                  <input id="rating-2" name="experiment-rating" type="radio" value="2">
+                  <label for="rating-2" aria-label="2 stars">★</label>
+                  <input id="rating-3" name="experiment-rating" type="radio" value="3">
+                  <label for="rating-3" aria-label="3 stars">★</label>
+                  <input id="rating-4" name="experiment-rating" type="radio" value="4">
+                  <label for="rating-4" aria-label="4 stars">★</label>
+                  <input id="rating-5" name="experiment-rating" type="radio" value="5">
+                  <label for="rating-5" aria-label="5 stars">★</label>
+                </div>
+                <p class="rating-hint">Select rating</p>
+              </fieldset>
+
+              <div class="feedback-grid">
+                <div class="feedback-field">
+                  <label for="concept-clarity">Concept Clarity</label>
+                  <select id="concept-clarity" name="concept-clarity">
+                    <option>1 - Not Clear</option>
+                    <option>2 - Needs Improvement</option>
+                    <option>3 - Satisfactory</option>
+                    <option selected>4 - Clear &amp; Easy to Follow</option>
+                    <option>5 - Excellent</option>
+                  </select>
+                </div>
+                <div class="feedback-field">
+                  <label for="simulation-ease">Simulation Ease of Use</label>
+                  <select id="simulation-ease" name="simulation-ease">
+                    <option>1 - Very Difficult</option>
+                    <option>2 - Difficult</option>
+                    <option>3 - Average</option>
+                    <option selected>4 - Easy to Operate</option>
+                    <option>5 - Very Easy</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="feedback-field feedback-comments">
+                <label for="feedback-comments">Comments, Observations &amp; Suggestions *</label>
+                <textarea id="feedback-comments" name="feedback-comments" rows="5" placeholder="What did you learn from this simulation? Any suggestions for improvement?"></textarea>
+              </div>
+
+              <div class="feedback-actions">
+                <button class="feedback-submit" type="button">Encrypt &amp; Submit Feedback</button>
+              </div>
+            </div>
           </div>
         </section>
               <!-- References -->
