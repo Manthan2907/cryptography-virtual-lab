@@ -94,15 +94,26 @@ const CryptoFeedback = (() => {
       payload: payloadString
     });
 
-    const response = await fetch(CONFIG.SCRIPT_URL, {
-      method: 'POST',
-      body: body,
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      }
-    });
-
-    return response;
+    try {
+      const response = await fetch(CONFIG.SCRIPT_URL, {
+        method: 'POST',
+        body: body,
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        }
+      });
+      return response;
+    } catch (corsErr) {
+      // Resilient fallback: adblockers or strict privacy browsers (Brave/Safari) might block redirect
+      return await fetch(CONFIG.SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: body,
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        }
+      });
+    }
   }
 
   return {

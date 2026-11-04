@@ -1463,6 +1463,4 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   generateRandomKey();
-
-
 });
