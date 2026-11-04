@@ -60,13 +60,6 @@
       
       #cliOutput { font-family: monospace; background: #111; color: #a3e635; padding: 15px; border-radius: var(--radius-sm); margin-top: 15px; word-break: break-word; white-space: pre-wrap; font-size: 15px; line-height: 1.4; }
       
-      /* Animated Star Rating */
-      .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 5px; margin-top: 5px; }
-      .star-rating input { display: none; }
-      .star-rating label { font-size: 35px; color: #555; cursor: pointer; transition: color 0.2s, transform 0.2s; display: inline-block; user-select: none; }
-      .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #fbbf24; }
-      .star-rating label:hover { transform: scale(1.15); }
-
       /* Bottom Navigation */
       .bottom-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
       .nav-btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #e5e5e5; padding: 12px 24px; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-size: 15px; font-family: inherit; }
@@ -627,6 +620,7 @@
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="../../js/students-roster.js"></script>
     <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
     <script src="functions.js"></script>
