@@ -177,7 +177,6 @@ const NSLab = (function() {
   function init() {
     cacheDOM();
     bindEvents();
-    renderQuiz('pretestQuestionsContainer', pretestQuestions, 'btnPretestSubmit', 'btnPretestReset', 'pretestScore');
     renderQuiz('posttestQuestionsContainer', posttestQuestions, 'btnPosttestSubmit', 'btnPosttestReset', 'posttestScore');
     updateUI();
 
@@ -245,13 +244,12 @@ const NSLab = (function() {
       labelKdcBob: document.getElementById('labelKdcBob'),
       labelAliceBob: document.getElementById('labelAliceBob'),
 
-      // Inspector Panel & Audit
+      // Inspector Panel & Variables Breakdown
       inspectorTitle: document.getElementById('inspectorTitle'),
-      inspectorMath: document.getElementById('inspectorMath'),
-      inspectorCiphertext: document.getElementById('inspectorCiphertext'),
-      inspectorTableBody: document.getElementById('inspectorTableBody'),
-      inspectorStoryCallout: document.getElementById('inspectorStoryCallout'),
-      auditConsole: document.getElementById('auditConsole')
+      inspectorStepBadge: document.getElementById('inspectorStepBadge'),
+      inspectorExplanation: document.getElementById('inspectorExplanation'),
+      inspectorFormula: document.getElementById('inspectorFormula'),
+      inspectorVariablesList: document.getElementById('inspectorVariablesList')
     };
   }
 
@@ -288,6 +286,9 @@ const NSLab = (function() {
     els.btnInitHandshake.addEventListener('click', initHandshake);
     els.btnNextStep.addEventListener('click', advanceStep);
     els.btnResetSim.addEventListener('click', resetSim);
+
+    // Keep topology lines synced on window resize
+    window.addEventListener('resize', updateTopologyLines);
   }
 
   // Calculate live geometric anchor points for all entity cards
@@ -540,8 +541,8 @@ const NSLab = (function() {
     if (state.step >= 2) {
       els.valKdcKAB.textContent = state.sessionKey;
       els.valAliceKAB.textContent = state.sessionKey;
-      setBadge(els.badgeAlice, 'WAITING TICKET FORWARD', 'status-waiting');
-      setBadge(els.badgeKdc, 'ISSUED SESSION KEY AND TICKET', 'status-authenticated');
+      setBadge(els.badgeAlice, 'WAITING TICKET', 'status-waiting');
+      setBadge(els.badgeKdc, 'SESSION KEY ISSUED', 'status-authenticated');
     } else if (state.step === 1) {
       els.valKdcKAB.textContent = 'Generating...';
       els.valAliceKAB.textContent = 'None';
@@ -557,12 +558,12 @@ const NSLab = (function() {
     if (state.step >= 3) {
       els.valBobKAB.textContent = state.sessionKey;
       if (state.step === 3) {
-        setBadge(els.badgeBob, 'TICKET UNLOCKED (SESSION KEY EXTRACTED)', 'status-decrypting');
+        setBadge(els.badgeBob, 'TICKET UNLOCKED', 'status-decrypting');
       } else if (state.step === 4) {
-        setBadge(els.badgeBob, 'WAITING CHALLENGE RESPONSE', 'status-waiting');
-        setBadge(els.badgeAlice, 'DECRYPTING CHALLENGE NUMBER', 'status-decrypting');
+        setBadge(els.badgeBob, 'WAITING RESPONSE', 'status-waiting');
+        setBadge(els.badgeAlice, 'DECRYPTING NONCE', 'status-decrypting');
       } else if (state.step === 5) {
-        setBadge(els.badgeBob, 'MUTUAL AUTHENTICATION COMPLETE', 'status-authenticated');
+        setBadge(els.badgeBob, 'AUTHENTICATED', 'status-authenticated');
         setBadge(els.badgeAlice, 'AUTHENTICATED', 'status-authenticated');
       }
     } else {
@@ -593,170 +594,123 @@ const NSLab = (function() {
 
   function setBadge(element, text, statusClass) {
     element.textContent = text;
+    element.title = text;
     element.className = `entity-badge-sm ${statusClass}`;
   }
 
   function renderInspector(step) {
+    let stepBadge = '';
     let title = '';
-    let mathStr = '';
-    let ciphertext = '';
-    let tableRows = '';
-    let storyText = '';
-
-    const ticketStr = `{ Temporary Session Key: "${state.sessionKey}", Alice: "${state.aliceId}" }_BobPassword`;
+    let explanation = '';
+    let formulaHtml = '';
+    let vars = [];
 
     switch (step) {
       case 0:
-        title = 'Step 1: System Setup (Idle)';
-        mathStr = 'Alice -> Server (KDC) : Alice, Bob, Alice Challenge Number';
-        ciphertext = 'No active message payload transmitted yet.';
-        tableRows = `<tr><td colspan="5" style="text-align:center; color:#777;">Click "Initialize Handshake" to start the simulation.</td></tr>`;
-        storyText = 'The system is ready. Click "Initialize Handshake" to see how Alice and Bob establish a temporary session pass using Server S.';
+        stepBadge = 'Setup';
+        title = 'System Setup: Ready to Begin Handshake';
+        explanation = `<strong>Plain English Overview:</strong> Alice (<code>${state.aliceId}</code>) needs to establish a private, encrypted communication line with Bob (<code>${state.bobId}</code>). Neither party shares a secret password with the other yet. However, both trust the Key Distribution Center (Server S). Alice shares master password <strong>K<sub>A</sub></strong> with Server S, and Bob shares master password <strong>K<sub>B</sub></strong> with Server S. Click <strong>"Initialize Handshake"</strong> to begin.`;
+        formulaHtml = `A &rarr; S : A, B, N<sub>A</sub> &nbsp; <span style="color:#888;">(Ready to transmit)</span>`;
+        vars = [
+          { symbol: 'K<sub>A</sub>', type: 'key', name: "Alice's Master Key", val: state.keyA, desc: 'Shared symmetric secret known only to Alice and Server S. Used to protect messages between Alice and Server S.' },
+          { symbol: 'K<sub>B</sub>', type: 'key', name: "Bob's Master Key", val: state.keyB, desc: "Shared symmetric secret known only to Bob and Server S. Used by Server S to lock Bob's ticket." },
+          { symbol: 'K<sub>AB</sub>', type: 'session-key', name: 'Temporary Session Key', val: 'None (Pending)', desc: 'The temporary key to be generated by Server S for encrypting direct messages between Alice and Bob.' },
+          { symbol: 'A', type: 'id', name: 'Initiator ID', val: state.aliceId, desc: 'Identity of the client requesting the secure session.' },
+          { symbol: 'B', type: 'id', name: 'Responder ID', val: state.bobId, desc: 'Identity of the intended recipient.' }
+        ];
         break;
 
       case 1:
-        title = `Step 1: Session Key Request (${state.aliceId} -> Server)`;
-        mathStr = `${state.aliceId} -> Server : ${state.aliceId}, ${state.bobId}, ${state.nonceA}`;
-        ciphertext = `Unencrypted Request Payload: [ Client_ID: "${state.aliceId}", Target_ID: "${state.bobId}", Alice_Challenge_Number: "${state.nonceA}" ]`;
-        tableRows = `
-          <tr>
-            <td>Client ID</td>
-            <td>${state.aliceId}</td>
-            <td>Unencrypted (Plaintext)</td>
-            <td>Identifies Alice to the Server</td>
-            <td>Alice tells the Server who she is so the Server can fetch her secret password.</td>
-          </tr>
-          <tr>
-            <td>Target ID</td>
-            <td>${state.bobId}</td>
-            <td>Unencrypted (Plaintext)</td>
-            <td>Identifies intended target recipient</td>
-            <td>Alice tells the Server she wants to open a private line with Bob.</td>
-          </tr>
-          <tr>
-            <td>Alice Challenge Number</td>
-            <td>${state.nonceA}</td>
-            <td>Unencrypted (Plaintext)</td>
-            <td>Alice's Random Challenge Number (N_A)</td>
-            <td>Alice attaches a unique random number (${state.nonceA}) to ensure the Server's reply is brand new and not a hacker replaying an old answer.</td>
-          </tr>
-        `;
-        storyText = `Alice asks the Server for a temporary key to talk to Bob and sends a single-use ticket number (${state.nonceA}). Because the message is unencrypted at this stage, any eavesdropper can see who is calling whom, but they cannot steal any passwords.`;
+        stepBadge = 'Step 1 of 5';
+        title = `Step 1: Alice Requests Session Key from Server (${state.aliceId} → Server)`;
+        explanation = `<strong>Plain English Explanation:</strong> Alice initiates the protocol by contacting Server S to request a temporary session key to speak with Bob. She sends her identity (<code>${state.aliceId}</code>), Bob's identity (<code>${state.bobId}</code>), and a fresh random challenge number (<strong>N<sub>A</sub></strong>). This initial request is sent in plaintext so the Server can identify both parties.`;
+        formulaHtml = `A &rarr; S : A, B, N<sub>A</sub>`;
+        vars = [
+          { symbol: 'N<sub>A</sub>', type: 'nonce', name: "Alice's Challenge Nonce", val: state.nonceA, desc: "A fresh 16-bit random number generated by Alice. When Server S returns N<sub>A</sub> in Step 2, Alice knows the reply is brand new and not an attacker's replay." },
+          { symbol: 'A', type: 'id', name: 'Client A Identity', val: state.aliceId, desc: 'Tells Server S who is making the request so Server S can look up Alice’s secret key K<sub>A</sub>.' },
+          { symbol: 'B', type: 'id', name: 'Client B Identity', val: state.bobId, desc: 'Tells Server S whom Alice wants to contact, so Server S can look up Bob’s key K<sub>B</sub>.' },
+          { symbol: 'K<sub>A</sub>', type: 'key', name: "Alice's Master Key", val: state.keyA, desc: 'Stored securely at Alice and Server S. Will be used by Server S in Step 2 to encrypt the response.' },
+          { symbol: 'K<sub>B</sub>', type: 'key', name: "Bob's Master Key", val: state.keyB, desc: 'Stored securely at Bob and Server S. Will be used by Server S in Step 2 to seal Bob’s ticket.' }
+        ];
         break;
 
       case 2:
-        title = `Step 2: Key & Ticket Response (Server -> ${state.aliceId})`;
-        mathStr = `Server -> ${state.aliceId} : { ${state.nonceA}, ${state.bobId}, SessionKey, { SessionKey, ${state.aliceId} }_BobPassword }_AlicePassword`;
-        ciphertext = `Encrypted with Alice Password (${state.keyA}) [ Challenge_Number: "${state.nonceA}", Target: "${state.bobId}", Session_Key: "${state.sessionKey}", Ticket: "${ticketStr}" ]`;
-        tableRows = `
-          <tr>
-            <td>Challenge Number</td>
-            <td>${state.nonceA}</td>
-            <td>Alice's Secret Master Password (${state.keyA})</td>
-            <td>Matches Alice's random challenge number</td>
-            <td>Alice unlocks the box and sees her ticket number (${state.nonceA}). This proves 100% that the Server answered right now!</td>
-          </tr>
-          <tr>
-            <td>Target ID</td>
-            <td>${state.bobId}</td>
-            <td>Alice's Secret Master Password (${state.keyA})</td>
-            <td>Confirms target identity</td>
-            <td>Confirms this temporary key is meant for talking to Bob.</td>
-          </tr>
-          <tr>
-            <td>Session Key</td>
-            <td>${state.sessionKey}</td>
-            <td>Alice's Secret Master Password (${state.keyA})</td>
-            <td>Temporary Shared Secret Key (Session Key)</td>
-            <td>Alice extracts the new temporary pass (${state.sessionKey}) created for her chat with Bob.</td>
-          </tr>
-          <tr>
-            <td>Ticket</td>
-            <td><code>${ticketStr}</code></td>
-            <td>Bob's Secret Master Password (${state.keyB})</td>
-            <td>Encrypted digital envelope for Bob</td>
-            <td>The Server includes a digital pass locked with Bob's Password. Alice cannot open it, but she will forward it to Bob.</td>
-          </tr>
-        `;
-        storyText = `The Server creates a temporary visitor pass (${state.sessionKey}) and puts it inside a digital box locked with Alice's Secret Password. It also puts a locked envelope (the Ticket) inside that box for Bob. Alice unlocks her box, verifies her challenge number, and gets her pass code!`;
+        stepBadge = 'Step 2 of 5';
+        title = `Step 2: Server Issues Session Key K_AB & Bob's Ticket (${state.aliceId} ← Server)`;
+        explanation = `<strong>Plain English Explanation:</strong> Server S creates a new temporary session key (<strong>K<sub>AB</sub></strong>). It wraps K<sub>AB</sub> inside an encrypted envelope locked with Alice's password (<strong>K<sub>A</sub></strong>). Inside that envelope, it also puts a second locked box for Bob (the <em>Ticket</em>) encrypted with Bob's password (<strong>K<sub>B</sub></strong>). Alice decrypts the message using K<sub>A</sub>, checks that her challenge N<sub>A</sub> matches, and extracts K<sub>AB</sub>!`;
+        formulaHtml = `S &rarr; A : { N<sub>A</sub>, B, K<sub>AB</sub>, { K<sub>AB</sub>, A }<sub>K<sub>B</sub></sub> }<sub>K<sub>A</sub></sub>`;
+        vars = [
+          { symbol: 'K<sub>AB</sub>', type: 'session-key', name: 'Minted Session Key', val: state.sessionKey, desc: 'The newly generated shared symmetric key for private conversation between Alice and Bob.' },
+          { symbol: 'K<sub>A</sub>', type: 'key', name: "Alice's Master Key (Outer Enc)", val: state.keyA, desc: 'Used by Server S to encrypt the entire message. Only Alice can open this envelope.' },
+          { symbol: 'K<sub>B</sub>', type: 'key', name: "Bob's Master Key (Ticket Enc)", val: state.keyB, desc: 'Used by Server S to encrypt Bob’s ticket. Alice cannot open or modify this ticket.' },
+          { symbol: 'N<sub>A</sub>', type: 'nonce', name: 'Returned Nonce (Freshness)', val: state.nonceA, desc: 'Alice verifies this matches her challenge from Step 1, proving 100% that Server S answered just now.' },
+          { symbol: 'Ticket', type: 'key', name: "Bob's Ticket: { K<sub>AB</sub>, A }<sub>K<sub>B</sub></sub>", val: `Encrypted [K_B]`, desc: 'An opaque ticket containing K<sub>AB</sub> and Alice’s ID, sealed with Bob’s key K<sub>B</sub>. Alice forwards this to Bob in Step 3.' }
+        ];
         break;
 
       case 3:
-        title = `Step 3: Forward Ticket (${state.aliceId} -> ${state.bobId})`;
-        mathStr = `${state.aliceId} -> ${state.bobId} : { SessionKey, ${state.aliceId} }_BobPassword`;
-        ciphertext = `FORWARDED TICKET PAYLOAD: Encrypted with Bob Password (${state.keyB}) [ Session_Key: "${state.sessionKey}", Client_ID: "${state.aliceId}" ]`;
-        tableRows = `
-          <tr>
-            <td>Ticket Payload</td>
-            <td><code>${ticketStr}</code></td>
-            <td>Bob's Secret Master Password (${state.keyB})</td>
-            <td>Encrypted digital pass from Server</td>
-            <td>Alice passes the locked digital envelope to Bob.</td>
-          </tr>
-          <tr>
-            <td>Session Key (Extracted)</td>
-            <td>${state.sessionKey}</td>
-            <td>Bob's Secret Master Password (${state.keyB})</td>
-            <td>Bob extracts Temporary Session Key</td>
-            <td>Bob uses his Secret Master Password to unlock the envelope, retrieving the temporary pass (${state.sessionKey}).</td>
-          </tr>
-          <tr>
-            <td>Client ID</td>
-            <td>${state.aliceId}</td>
-            <td>Bob's Secret Master Password (${state.keyB})</td>
-            <td>Identifies authorized caller</td>
-            <td>Bob verifies that the Server authorized Alice to speak with him.</td>
-          </tr>
-        `;
-        storyText = `Alice forwards the locked envelope to Bob. Bob uses his secret password to open it, extracts the temporary pass code (${state.sessionKey}), and knows that Alice was authenticated by the Server!`;
+        stepBadge = 'Step 3 of 5';
+        title = `Step 3: Alice Forwards Ticket to Bob (${state.aliceId} → ${state.bobId})`;
+        explanation = `<strong>Plain English Explanation:</strong> Alice forwards the Ticket she received from Server S to Bob. Alice cannot open this ticket because it is encrypted with Bob's master password (<strong>K<sub>B</sub></strong>). Bob unlocks the ticket using his own K<sub>B</sub>, extracts the session key <strong>K<sub>AB</sub></strong>, and sees that Server S authorized Alice (<code>${state.aliceId}</code>) to speak with him!`;
+        formulaHtml = `A &rarr; B : { K<sub>AB</sub>, A }<sub>K<sub>B</sub></sub>`;
+        vars = [
+          { symbol: 'Ticket', type: 'key', name: 'Forwarded Ticket', val: `{ K_AB, ${state.aliceId} }`, desc: 'The encrypted envelope from Server S forwarded by Alice to Bob.' },
+          { symbol: 'K<sub>B</sub>', type: 'key', name: "Bob's Master Key (Decryption)", val: state.keyB, desc: 'Bob uses his private master password to decrypt the ticket.' },
+          { symbol: 'K<sub>AB</sub>', type: 'session-key', name: 'Extracted Session Key', val: state.sessionKey, desc: 'Bob retrieves the exact same session key that Alice obtained in Step 2. Both parties now share K<sub>AB</sub>!' },
+          { symbol: 'A', type: 'id', name: 'Authorized Caller ID', val: state.aliceId, desc: 'Bob verifies from the decrypted ticket that Server S authorized Alice to communicate with him.' }
+        ];
         break;
 
       case 4:
-        title = `Step 4: Nonce Challenge (${state.bobId} -> ${state.aliceId})`;
-        mathStr = `${state.bobId} -> ${state.aliceId} : { ${state.nonceB} }_SessionKey`;
-        ciphertext = `Encrypted with Session Key (${state.sessionKey}) [ Bob_Challenge_Number: "${state.nonceB}" ]`;
-        tableRows = `
-          <tr>
-            <td>Bob Challenge Number</td>
-            <td>${state.nonceB}</td>
-            <td>Temporary Shared Secret Key (${state.sessionKey})</td>
-            <td>Bob's Random Challenge Number (N_B)</td>
-            <td>Bob locks a brand new random challenge number (${state.nonceB}) with the temporary pass and sends it to Alice.</td>
-          </tr>
-        `;
-        storyText = `Bob wants to make sure that the person holding the ticket actually knows the temporary pass code! He locks a secret test number (${state.nonceB}) with the session key and challenges Alice to unlock it.`;
+        stepBadge = 'Step 4 of 5';
+        title = `Step 4: Bob Challenges Alice with Nonce N_B (${state.bobId} → ${state.aliceId})`;
+        explanation = `<strong>Plain English Explanation:</strong> Bob now has K<sub>AB</sub>, but he needs proof that the entity who forwarded the ticket actually knows K<sub>AB</sub> right now (and isn't an attacker replaying an old intercepted ticket). Bob creates a new random challenge number (<strong>N<sub>B</sub></strong>), locks it with <strong>K<sub>AB</sub></strong>, and challenges Alice to decrypt it.`;
+        formulaHtml = `B &rarr; A : { N<sub>B</sub> }<sub>K<sub>AB</sub></sub>`;
+        vars = [
+          { symbol: 'N<sub>B</sub>', type: 'nonce', name: "Bob's Challenge Nonce", val: state.nonceB, desc: 'A brand-new random challenge number generated by Bob to test Alice.' },
+          { symbol: 'K<sub>AB</sub>', type: 'session-key', name: 'Session Key (Challenge Enc)', val: state.sessionKey, desc: 'Used by Bob to encrypt N<sub>B</sub>. Only someone who knows K<sub>AB</sub> can decrypt this challenge.' },
+          { symbol: 'B', type: 'id', name: 'Challenger ID', val: state.bobId, desc: 'Bob requires live proof of key possession before accepting communication.' }
+        ];
         break;
 
       case 5:
         const nonceBVal = parseInt(state.nonceB, 16);
         const respNonceHex = '0x' + (isNaN(nonceBVal) ? '8A1B' : (nonceBVal - 1).toString(16).toUpperCase().padStart(4, '0'));
-        title = `Step 5: Challenge Response (${state.aliceId} -> ${state.bobId})`;
-        mathStr = `${state.aliceId} -> ${state.bobId} : { f(${state.nonceB}) }_SessionKey where f(N_B) = N_B - 1 (${respNonceHex})`;
-        ciphertext = `Encrypted with Session Key (${state.sessionKey}) [ Transformed_Number: "${respNonceHex}" ]`;
-        tableRows = `
-          <tr>
-            <td>f(Bob Challenge Number)</td>
-            <td>${respNonceHex}</td>
-            <td>Temporary Shared Secret Key (${state.sessionKey})</td>
-            <td>Transformed challenge number (N_B - 1)</td>
-            <td>Alice unlocks Bob's test number, subtracts 1 to get ${respNonceHex}, locks it back with the temporary pass, and returns it.</td>
-          </tr>
-          <tr>
-            <td>Mutual Authentication</td>
-            <td><span style="color:var(--vlab-success-green); font-weight:bold;">SUCCESS</span></td>
-            <td>-</td><td>Both parties authenticated</td>
-            <td>Bob sees that the number was modified correctly. This proves Alice possesses the session key! Mutual authentication is complete.</td>
-          </tr>
-        `;
-        storyText = `Alice unlocks Bob's test number, subtracts 1 to prove she didn't just echo back the same locked box, and sends it back encrypted. Bob checks the answer and confirms: Alice is genuine! Both parties now communicate safely.`;
+        stepBadge = 'Step 5 of 5';
+        title = `Step 5: Mutual Authentication Complete (${state.aliceId} ↔ ${state.bobId})`;
+        explanation = `<strong>Plain English Explanation:</strong> Alice decrypts Bob's challenge with K<sub>AB</sub> to get N<sub>B</sub>. To prove she actively decrypted it (and not simply reflecting the ciphertext back), she subtracts 1 to compute <strong>f(N<sub>B</sub>) = N<sub>B</sub> - 1</strong>. She encrypts the result with K<sub>AB</sub> and sends it back to Bob. Bob confirms N<sub>B</sub> - 1 is correct, verifying Alice holds K<sub>AB</sub>. Mutual authentication is complete!`;
+        formulaHtml = `A &rarr; B : { f(N<sub>B</sub>) }<sub>K<sub>AB</sub></sub> &nbsp; where f(N<sub>B</sub>) = N<sub>B</sub> - 1 = ${respNonceHex}`;
+        vars = [
+          { symbol: 'N<sub>B</sub>', type: 'nonce', name: 'Original Bob Nonce', val: state.nonceB, desc: 'The challenge Bob sent in Step 4.' },
+          { symbol: 'f(N<sub>B</sub>)', type: 'nonce', name: 'Transformed Nonce (N_B - 1)', val: respNonceHex, desc: `Computed as ${state.nonceB} - 1 = ${respNonceHex}. Proves to Bob that Alice actively decrypted and modified the nonce.` },
+          { symbol: 'K<sub>AB</sub>', type: 'session-key', name: 'Verified Shared Session Key', val: state.sessionKey, desc: 'Shared symmetric session key now fully authenticated between Alice and Bob for all future messages!' },
+          { symbol: 'Status', type: 'key', name: 'Mutual Authentication', val: 'SUCCESS &check;', desc: 'Both parties have verified each other’s identity and possession of K<sub>AB</sub>. Safe communication established!' }
+        ];
         break;
     }
 
-    els.inspectorTitle.textContent = title;
-    els.inspectorMath.textContent = mathStr;
-    els.inspectorCiphertext.textContent = ciphertext;
-    els.inspectorTableBody.innerHTML = tableRows;
-    els.inspectorStoryCallout.innerHTML = `<strong>Plain English Story:</strong> ${storyText}`;
+    if (els.inspectorStepBadge) els.inspectorStepBadge.textContent = stepBadge;
+    if (els.inspectorTitle) els.inspectorTitle.innerHTML = title;
+    if (els.inspectorExplanation) els.inspectorExplanation.innerHTML = explanation;
+    if (els.inspectorFormula) els.inspectorFormula.innerHTML = formulaHtml;
+
+    if (els.inspectorVariablesList) {
+      let varsHtml = '';
+      vars.forEach(v => {
+        const pillClass = v.type === 'session-key' ? 'session-key' : (v.type === 'nonce' ? 'nonce' : '');
+        varsHtml += `
+          <div class="var-breakdown-row">
+            <div class="var-breakdown-header">
+              <span class="var-symbol-pill ${pillClass}">${v.symbol}</span>
+              <span class="var-title-text">${v.name}</span>
+              <code class="var-val-code">${v.val}</code>
+            </div>
+            <div class="var-desc-text">${v.desc}</div>
+          </div>
+        `;
+      });
+      els.inspectorVariablesList.innerHTML = varsHtml;
+    }
   }
 
   // Quiz Engine for Pretest & Posttest
