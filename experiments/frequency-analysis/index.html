@@ -4,12 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <title>Frequency Analysis | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <style>
+      .simulation-output {
+        background: rgba(61, 43, 34, 0.96);
+        border: 1px solid rgba(214, 197, 161, 0.18);
+        border-radius: 18px;
+        padding: 18px 22px 20px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+      }
+      .diagram-card {
+        margin: 18px 0 26px;
+        padding: 16px 14px 12px;
+        background: rgba(61, 43, 34, 0.96);
+        border: 1px solid rgba(214, 197, 161, 0.25);
+        border-radius: 14px;
+        text-align: center;
+      }
+      .diagram-card svg { display: block; margin: 0 auto; }
+      .diagram-caption { margin-top: 10px; font-size: 0.88rem; font-style: italic; color: #f0e4d7; }
+      .ref-note { font-size: 0.8rem; font-style: italic; margin-top: 8px; color: #f0e4d7; }
+      .step-tip { margin-top: 14px; padding: 10px 14px; border-left: 4px solid #ffc107; background: rgba(255,243,205,0.12); border-radius: 4px; }
+
+      .simulation-output h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 3vw, 3rem);
+        margin: 0 0 18px;
+        color: #f6e9d8;
+        font-weight: 700;
+      }
+      .flex-container { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 15px; align-items: flex-end; }
+      .flex-item { flex: 1; min-width: 300px; }
+      .flex-item:nth-child(2) { max-width: 310px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+      th, td { border: 1px solid rgba(214, 197, 161, 0.35); padding: 6px; text-align: center; }
+      th { background-color: rgba(123, 96, 72, 0.7); color: #f8efe2; }
+      .reference-table th, .reference-table td { font-size: 0.8rem; }
+      .reference-table th { font-weight: 700; }
+      .reference-table td { color: #f3eadb; }
+      .bar-chart {
+        display: flex; align-items: flex-end; height: 440px; gap: 5px;
+        padding: 10px 8px 0 8px;
+        border-bottom: 2px solid rgba(214, 197, 161, 0.6);
+        border-left: 2px solid rgba(214, 197, 161, 0.6);
+        margin-top: 20px;
+        background: linear-gradient(to top, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+        overflow: hidden;
+      }
+      .bar-container { flex: 0 0 auto; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; height: 100%; width: 12px; min-width: 12px; }
+      .bar { width: 100%; background: linear-gradient(to top, #7a8fdd, #9aabff); transition: height 0.3s; border-radius: 2px 2px 0 0; box-shadow: 0 0 0 1px rgba(255,255,255,0.05); }
+      .bar-label { font-size: 0.68rem; margin-top: 6px; font-weight: 700; color: #f3ead9; }
+      .bar-value { font-size: 0.65rem; position: absolute; top: -18px; display: none; background: rgba(33, 24, 18, 0.9); color: #fff; padding: 2px 4px; border-radius: 3px; z-index: 10; white-space: nowrap; }
+      .bar-container:hover .bar-value { display: block; }
+      .chart-caption {
+        text-align: center;
+        font-size: 0.82rem;
+        margin-top: 10px;
+        color: #f0e4d7;
+        font-style: italic;
+      }
+      .analysis-side-title {
+        font-size: 1.05rem;
+        margin: 0 0 8px;
+        font-weight: 700;
+        color: #f6e9d8;
+      }
+      .table-heading {
+        font-size: 1.15rem;
+        margin: 24px 0 10px;
+        color: #f6e9d8;
+        font-weight: 700;
+      }
+
+      #freq-table {
+        margin-top: 0;
+        background: rgba(255,255,255,0.03);
+        overflow: hidden;
+      }
+      #freq-table thead th {
+        background: rgba(123, 96, 72, 0.7);
+        color: #f8efe2;
+        font-weight: 700;
+        padding: 8px 6px;
+      }
+      #freq-table tbody td {
+        color: #f8efe2;
+        padding: 7px 6px;
+        background: rgba(255,255,255,0.01);
+      }
+      
+      .mapping-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 8px; margin-top: 15px; }
+      .mapping-item { display: flex; flex-direction: column; align-items: center; background: var(--color-surface-muted); padding: 5px; border-radius: 4px; border: 1px solid var(--color-border); }
+      .mapping-item span { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; }
+      .mapping-item input { width: 30px; text-align: center; text-transform: uppercase; padding: 2px; font-size: 0.9rem; }
+      
+      .output-text { 
+        font-family: monospace; white-space: pre-wrap; word-wrap: break-word; 
+        font-size: 1.1rem; letter-spacing: 2px; line-height: 1.6; padding: 15px; 
+        background-color: var(--color-surface); border: 1px solid var(--color-border); 
+        border-radius: var(--radius-sm); margin-top: 10px; 
+      }
+      .output-char-mapped { color: var(--color-secondary); font-weight: bold; }
+      .output-char-unmapped { color: var(--color-text-muted); }
+      
+      .alert-box { margin-top: 15px; padding: 12px; display: none; border-radius: var(--radius-sm); font-size: 0.95rem; }
+      .alert-box.info { background-color: #fff3cd; border-left: 4px solid #ffc107; color: #856404; display: block; }
+      .alert-box.success { background-color: #d4edda; border-left: 4px solid #28a745; color: #155724; display: block; }
+      .alert-box.error { background-color: #f8d7da; border-left: 4px solid #dc3545; color: #721c24; display: block; }
+      
+      .quiz-panel {
+        background: rgba(42, 28, 22, 0.95);
+        color: #f4ead8;
+        border-radius: 14px;
+        padding: 28px 30px;
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      .quiz-panel h2 {
+        color: #f4ead8;
+        margin-bottom: 18px;
+      }
+      .quiz-question {
+        margin-bottom: 30px;
+        padding-bottom: 0;
+      }
+      .quiz-question:last-child { border-bottom: none; }
+      .quiz-question p {
+        margin: 0 0 16px 0;
+        font-size: 1.05rem;
+        line-height: 1.5;
+        font-weight: 700;
+        color: #f7f1e8;
+        font-family: var(--font-primary, "Segoe UI", sans-serif);
+      }
+      .quiz-question p span {
+        font-weight: 800;
+      }
+      .quiz-options label {
+        font-family: var(--font-primary, "Segoe UI", sans-serif);
+        font-size: 1.05rem;
+      }
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .quiz-options label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0;
+        cursor: pointer;
+        font-size: 1.05rem;
+        line-height: 1.5;
+        color: #f3ebdf;
+        font-weight: 400;
+      }
+      .quiz-options input {
+        margin: 0;
+        width: 18px;
+        height: 18px;
+        accent-color: #d6c5a1;
+        flex-shrink: 0;
+      }
+      .formula-box { background: var(--color-surface-muted); padding: 10px; border-radius: 4px; font-family: monospace; text-align: center; margin: 10px 0; }
+    </style>
   </head>
   <body>
-    <!-- Fr. CRCE Official College Header Banner -->
     <div class="college-banner-strip">
       <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
         <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
@@ -20,76 +182,330 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <h1 id="exp-title">Frequency Analysis</h1>
+        <p id="exp-description">Learn to analyze ciphertext and break substitution ciphers using letter frequency distributions.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
         <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
+        <!-- Aim -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
           <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+            <h2>Aim &amp; Objectives</h2>
+            <p><strong>Aim:</strong> To understand and apply the principles of frequency analysis to analyze and attempt to decrypt a monoalphabetic substitution cipher.</p>
+            <br>
+            <p><strong>Objectives:</strong></p>
+            <ul>
+              <li>Understand what frequency analysis is and why it is useful in cryptography.</li>
+              <li>Learn how letter frequencies can help identify possible plaintext substitutions.</li>
+              <li>Analyze a given ciphertext to generate a letter-frequency table and graph.</li>
+              <li>Map ciphertext letters to probable plaintext letters by comparing with standard English frequencies.</li>
+            </ul>
           </div>
         </section>
+
+        <!-- Theory -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+  <div class="content-placeholder">
+    <h2>Theory</h2>
+
+    <p><strong>Monoalphabetic Substitution Cipher:</strong> A cipher where each letter of the plaintext is always replaced by one fixed letter of the ciphertext. For example, all 'A's might become 'Q's. A Caesar shift, Atbash and Affine cipher are special cases; a general substitution uses any rearrangement of the alphabet as the key.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 610 262" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:610px;height:auto"><title id="t">Substitution keeps repeated letters repeated</title><desc>HELLO encrypts to KHOOR with a shift of 3; both Ls become O.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs><text class="fa-l" x="20" y="88">Plain</text><text class="fa-l" x="20" y="178">Cipher</text><rect class="fa-box" x="110" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="140" y="87" style="">H</text><line class="fa-a" x1="140" y1="108" x2="140" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-box2" x="110" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="140" y="177" style="">K</text><rect class="fa-box" x="200" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="230" y="87" style="">E</text><line class="fa-a" x1="230" y1="108" x2="230" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-box2" x="200" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="230" y="177" style="">H</text><rect class="fa-hl" x="290" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="320" y="87" style="fill:#1a1630">L</text><line class="fa-a" x1="320" y1="108" x2="320" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-hl" x="290" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="320" y="177" style="fill:#1a1630">O</text><rect class="fa-hl" x="380" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="410" y="87" style="fill:#1a1630">L</text><line class="fa-a" x1="410" y1="108" x2="410" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-hl" x="380" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="410" y="177" style="fill:#1a1630">O</text><rect class="fa-box" x="470" y="50" width="60" height="56" rx="8"/><text class="fa-m" x="500" y="87" style="">O</text><line class="fa-a" x1="500" y1="108" x2="500" y2="138" marker-end="url(#fa-ah)"/><rect class="fa-box2" x="470" y="140" width="60" height="56" rx="8"/><text class="fa-m" x="500" y="177" style="">R</text>
+<text class="fa-s" x="305" y="30">Example key: shift every letter 3 places (A→D, B→E, ...)</text>
+<text class="fa-s" x="305" y="226">Both L's become O: the same plaintext letter always gives the same ciphertext letter.</text>
+<text class="fa-s" x="305" y="246">Letters are only re-labelled, so counts and frequencies are preserved.</text></svg>
+<figcaption class="diagram-caption">Figure 1: Substitution only re-labels letters. Repeated plaintext letters stay repeated in the ciphertext.</figcaption>
+</figure>
+    <p><strong>How many keys are there?</strong> A general substitution key is a rearrangement of the 26 letters, so there are 26! (about 4 &times; 10<sup>26</sup>) keys. Trying them all is impossible, but the statistics of the language leak through the cipher, which is what frequency analysis exploits.</p>
+    <br>
+
+    <p><strong>What is Frequency Analysis?</strong></p>
+    <p>In any given language, certain letters appear more frequently than others. In English, the letter 'E' is the most common, followed by 'T', 'A', 'O', 'I', 'N', 'S', 'H', and 'R'. Because a monoalphabetic substitution cipher does not change the frequency of letters (it merely re-labels them), we can count the occurrences of each letter in the ciphertext and compare those counts to standard English letter frequencies. The technique was first described by the Arab scholar Al-Kindi in the 9th century.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 780 475" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:780px;height:auto"><title id="t">Encryption and frequency-analysis attack flow</title><desc>Sender encrypts plaintext with a substitution key. The attacker counts letters, compares with English, guesses a mapping, applies it, and repeats until the text reads like English.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs>
+<text class="fa-l" x="20" y="22">Sender: encryption</text>
+<rect class="fa-box" x="20" y="34" width="190" height="62" rx="10"/><text class="fa-t" x="115" y="60">Plaintext</text><text class="fa-s" x="115" y="82">THE CAT</text>
+<line class="fa-a" x1="212" y1="65" x2="283" y2="65" marker-end="url(#fa-ah)"/>
+<rect class="fa-box" x="285" y="34" width="190" height="62" rx="10"/><text class="fa-t" x="380" y="60">Substitution</text><text class="fa-s" x="380" y="82">(secret letter key)</text>
+<line class="fa-a" x1="477" y1="65" x2="548" y2="65" marker-end="url(#fa-ah)"/>
+<rect class="fa-box" x="550" y="34" width="190" height="62" rx="10"/><text class="fa-t" x="645" y="60">Ciphertext</text><text class="fa-s" x="645" y="82">WKH FDW</text>
+<path class="fa-a" stroke-dasharray="6 5" d="M645 98 V128 H97 V166" marker-end="url(#fa-ah)"/>
+<text class="fa-l" x="260" y="122">attacker intercepts the ciphertext</text>
+<text class="fa-l" x="20" y="152" style="display:none">x</text>
+<rect class="fa-box2" x="20" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="97" y="196">1. Count</text><text class="fa-s" x="97" y="216">letter frequencies</text>
+<line class="fa-a" x1="177" y1="201" x2="208" y2="201" marker-end="url(#fa-ah)"/>
+<rect class="fa-box2" x="210" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="287" y="196">2. Compare</text><text class="fa-s" x="287" y="216">with English table</text>
+<line class="fa-a" x1="367" y1="201" x2="398" y2="201" marker-end="url(#fa-ah)"/>
+<rect class="fa-box2" x="400" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="477" y="196">3. Guess</text><text class="fa-s" x="477" y="216">letter mapping</text>
+<line class="fa-a" x1="557" y1="201" x2="588" y2="201" marker-end="url(#fa-ah)"/>
+<rect class="fa-box2" x="590" y="168" width="155" height="66" rx="10"/><text class="fa-t" x="667" y="196">4. Apply mapping</text><text class="fa-s" x="667" y="216">and read the text</text>
+<line class="fa-a" x1="667" y1="236" x2="667" y2="276" marker-end="url(#fa-ah)"/>
+<polygon class="fa-box" points="667,278 750,326 667,374 584,326"/><text class="fa-s" x="667" y="322">Reads like</text><text class="fa-s" x="667" y="340">English?</text>
+<path class="fa-a" d="M584 326 H477 V238" marker-end="url(#fa-ah)"/>
+<text class="fa-l" x="360" y="318">No: adjust the guesses</text>
+<line class="fa-a" x1="667" y1="376" x2="667" y2="408" marker-end="url(#fa-ah)"/>
+<text class="fa-l" x="676" y="396">Yes</text>
+<rect class="fa-ok" x="567" y="410" width="200" height="50" rx="10"/><text class="fa-t" x="667" y="440">Plaintext recovered</text>
+</svg>
+<figcaption class="diagram-caption">Figure 2: The attacker never sees the key. The loop of guess, apply and read is repeated until the text makes sense.</figcaption>
+</figure>
+    <p><strong>Frequency Percentage:</strong></p>
+    <div class="formula-box">
+      Frequency Percentage = (character count / total alphabetic characters) &times; 100
+    </div>
+    <br>
+
+    <p><strong>Why Frequency Analysis Works:</strong></p>
+    <p>By finding the most common letter in the ciphertext, we can guess that it might represent 'E' or 'T'. The next most common might represent the other. By mapping a few common letters, we can start to see partial words, allowing us to guess the rest using contextual and pattern analysis.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 720 355" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:720px;height:auto"><title id="t">Matching ciphertext ranks to English ranks</title><desc>Ranked ciphertext letters are paired with English letters by frequency order to form first guesses.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs><text class="fa-t" x="150" y="26">Ciphertext (counted)</text><text class="fa-t" x="540" y="26">English (reference)</text><text class="fa-m" x="30" y="69">X</text><rect fill="#9aabff" x="52" y="50" width="169.4" height="26" rx="4"/><text class="fa-s" x="227.4" y="69" style="text-anchor:start">12.1%</text><text class="fa-m" x="400" y="69">E</text><rect fill="#d6c5a1" x="422" y="50" width="177.79999999999998" height="26" rx="4"/><text class="fa-s" x="605.8" y="69" style="text-anchor:start">12.70%</text><text class="fa-m" x="30" y="121">Q</text><rect fill="#9aabff" x="52" y="102" width="131.6" height="26" rx="4"/><text class="fa-s" x="189.6" y="121" style="text-anchor:start">9.4%</text><text class="fa-m" x="400" y="121">T</text><rect fill="#d6c5a1" x="422" y="102" width="126.84" height="26" rx="4"/><text class="fa-s" x="554.84" y="121" style="text-anchor:start">9.06%</text><text class="fa-m" x="30" y="173">B</text><rect fill="#9aabff" x="52" y="154" width="112.0" height="26" rx="4"/><text class="fa-s" x="170.0" y="173" style="text-anchor:start">8.0%</text><text class="fa-m" x="400" y="173">A</text><rect fill="#d6c5a1" x="422" y="154" width="114.38" height="26" rx="4"/><text class="fa-s" x="542.38" y="173" style="text-anchor:start">8.17%</text><text class="fa-m" x="30" y="225">M</text><rect fill="#9aabff" x="52" y="206" width="100.8" height="26" rx="4"/><text class="fa-s" x="158.8" y="225" style="text-anchor:start">7.2%</text><text class="fa-m" x="400" y="225">O</text><rect fill="#d6c5a1" x="422" y="206" width="105.14" height="26" rx="4"/><text class="fa-s" x="533.14" y="225" style="text-anchor:start">7.51%</text><text class="fa-m" x="30" y="277">K</text><rect fill="#9aabff" x="52" y="258" width="95.2" height="26" rx="4"/><text class="fa-s" x="153.2" y="277" style="text-anchor:start">6.8%</text><text class="fa-m" x="400" y="277">I</text><rect fill="#d6c5a1" x="422" y="258" width="97.58" height="26" rx="4"/><text class="fa-s" x="525.58" y="277" style="text-anchor:start">6.97%</text><text class="fa-s" x="360" y="318">Highest-to-lowest ranking suggests: X→E, Q→T, B→A, M→O, K→I (first guesses only)</text><text class="fa-l" x="20" y="342">Illustrative numbers only. Confirm each guess by reading partial words.</text></svg>
+<figcaption class="diagram-caption">Figure 3: Ranking ciphertext letters and English letters by frequency gives the first guesses.</figcaption>
+</figure>
+    <p><strong>Clues beyond single letters:</strong></p>
+    <ul>
+      <li>A one-letter word is almost always <strong>A</strong> or <strong>I</strong>.</li>
+      <li>Common short words: THE, AND, OF, TO, IS, IT.</li>
+      <li>Common letter pairs (TH, HE, IN, ER, AN) and the triple THE.</li>
+      <li>Word shapes: a pattern such as <em>abcdcefg</em> (a repeated letter) narrows down which dictionary words can fit.</li>
+      <li>Double letters are usually LL, EE, SS, OO or TT.</li>
+    </ul>
+    <br>
+
+    <p><strong>Limitations:</strong></p>
+    <p>Frequency analysis works best on long ciphertexts. In short messages, the letter frequencies may not match average statistical distributions. For instance, a short message might not contain a single 'E'. Therefore, contextual analysis (looking at word lengths, repeated letters, common prefixes/suffixes) is critical to refine the mapping. Polyalphabetic ciphers such as Vigen&egrave;re flatten the frequencies, and transposition ciphers keep the frequencies but scramble the order, so simple frequency analysis does not break them directly.</p>
+    <br>
+
+    <p><strong>How the Auto-Solve button works:</strong></p>
+    <p>Auto-Solve is a teaching aid that automates the same reasoning. It first tries every Caesar, Atbash and Affine key. Otherwise it matches cipher words against a ranked English dictionary by word pattern, and for long texts that match poorly it falls back to a statistical letter-pair search. Short texts can have more than one valid reading, so always check the result yourself.</p>
+<figure class="diagram-card">
+<svg viewBox="0 0 620 575" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t" style="width:100%;max-width:620px;height:auto"><title id="t">How Auto-Solve decides which method to use</title><desc>Flowchart: classical key check, dictionary pattern matching, statistical solver for long poorly matched text, then fill the mapping boxes.</desc><style>
+.fa-box{fill:#7b6048;stroke:#d6c5a1;stroke-width:1.5}
+.fa-box2{fill:#4a3a8a;stroke:#9aabff;stroke-width:1.5}
+.fa-ok{fill:#2f6b43;stroke:#9fe0b4;stroke-width:1.5}
+.fa-t{fill:#f8efe2;font:600 15px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-s{fill:#f0e4d7;font:13px "Segoe UI",Arial,sans-serif;text-anchor:middle}
+.fa-l{fill:#d6c5a1;font:italic 13px "Segoe UI",Arial,sans-serif}
+.fa-m{fill:#f8efe2;font:700 20px "Courier New",monospace;text-anchor:middle}
+.fa-a{stroke:#d6c5a1;stroke-width:2;fill:none}
+.fa-hl{fill:#9aabff;stroke:#f8efe2;stroke-width:2}
+</style>
+<defs><marker id="fa-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d6c5a1"/></marker></defs>
+<rect class="fa-box" x="140" y="10" width="200" height="44" rx="10"/><text class="fa-t" x="240" y="38">Ciphertext entered</text>
+<line class="fa-a" x1="240" y1="56" x2="240" y2="84" marker-end="url(#fa-ah)"/>
+<polygon class="fa-box" points="240,86 380,128 240,170 100,128"/><text class="fa-s" x="240" y="122">Does a Caesar, Atbash</text><text class="fa-s" x="240" y="140">or Affine key give real words?</text>
+<line class="fa-a" x1="380" y1="128" x2="428" y2="128" marker-end="url(#fa-ah)"/><text class="fa-l" x="388" y="118">Yes</text>
+<rect class="fa-ok" x="430" y="104" width="150" height="48" rx="10"/><text class="fa-t" x="505" y="126">Use that key</text><text class="fa-s" x="505" y="143">(brute force)</text>
+<line class="fa-a" x1="240" y1="172" x2="240" y2="206" marker-end="url(#fa-ah)"/><text class="fa-l" x="250" y="195">No</text>
+<rect class="fa-box2" x="100" y="208" width="280" height="56" rx="10"/><text class="fa-t" x="240" y="233">Dictionary word-pattern match</text><text class="fa-s" x="240" y="252">(most constrained word first)</text>
+<line class="fa-a" x1="240" y1="266" x2="240" y2="296" marker-end="url(#fa-ah)"/>
+<polygon class="fa-box" points="240,298 380,340 240,382 100,340"/><text class="fa-s" x="240" y="334">200+ letters and under</text><text class="fa-s" x="240" y="352">70% of letters matched?</text>
+<line class="fa-a" x1="380" y1="340" x2="428" y2="340" marker-end="url(#fa-ah)"/><text class="fa-l" x="388" y="330">Yes</text>
+<rect class="fa-box2" x="430" y="312" width="150" height="56" rx="10"/><text class="fa-t" x="505" y="336">Statistical solver</text><text class="fa-s" x="505" y="355">(hill climbing)</text>
+<line class="fa-a" x1="240" y1="384" x2="240" y2="418" marker-end="url(#fa-ah)"/><text class="fa-l" x="250" y="407">No</text>
+<rect class="fa-box2" x="100" y="420" width="280" height="50" rx="10"/><text class="fa-t" x="240" y="443">Fill leftover letters</text><text class="fa-s" x="240" y="460">and polish by hill climbing</text>
+<path class="fa-a" d="M505 370 V496 H240 V488"/>
+<line class="fa-a" x1="240" y1="472" x2="240" y2="494"/>
+<line class="fa-a" x1="240" y1="496" x2="240" y2="512" marker-end="url(#fa-ah)"/>
+<path class="fa-a" d="M505 154 V176 H590 V496 H505"/>
+<rect class="fa-ok" x="100" y="514" width="280" height="46" rx="10"/><text class="fa-t" x="240" y="542">Mapping boxes filled + preview</text>
+</svg>
+<figcaption class="diagram-caption">Figure 4: Decision flow used by Auto-Solve.</figcaption>
+</figure>
+  </div>
+</section>
+
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
-          </div>
-        </section>
+  <div class="content-placeholder">
+    <h2>Procedure</h2>
+    <ol>
+      <li>Open the <strong>Simulation</strong> tab. Either choose <strong>Sample 1</strong> or <strong>Sample 2</strong> from the drop-down, or type or paste your own ciphertext. Only the letters A to Z are analysed; spaces and punctuation are kept as they are.</li>
+      <li>Click <strong>Analyze Frequency</strong>. The experiment shows the bar chart of ciphertext letter frequencies, the English reference table, a frequency table sorted from most to least common, and the Substitution Mapping Workspace.</li>
+      <li>Compare the most frequent ciphertext letters with the English reference table (E, T, A, O, I, N, ...). Hover over a bar to see its exact percentage.</li>
+      <li>In the workspace, type your guessed plaintext letter below each ciphertext letter, for example the most frequent ciphertext letter &rarr; E.</li>
+      <li>Click <strong>Apply Mapping</strong>. Mapped letters appear in lowercase in the Decrypted Text Preview and unmapped letters stay in capitals, so you can read partial words such as <em>th_</em> and complete them.</li>
+      <li>Refine the guesses using word clues: one-letter words (A or I), short words (THE, AND, IS), double letters and common endings (-ING, -ED). Apply the mapping again after each change.</li>
+      <li>If you are stuck, click <strong>Hint</strong>. Each click shows the next of three hints, and the cycle then repeats.</li>
+      <li>Click <strong>Auto-Solve</strong> to see how a program tackles the same problem. It detects Caesar, Atbash or Affine ciphers, otherwise matches words against a dictionary, and fills the mapping boxes and preview. Read the message under the buttons, because short messages can be wrong or have several valid readings.</li>
+      <li>For Sample 1 or Sample 2, click <strong>Check Answer</strong> to verify your mapping. It reports incorrect letters, or confirms when every letter in the message is correct. (This button appears only for unedited samples.)</li>
+      <li>Click <strong>Reset</strong> to clear the ciphertext, chart, tables and mapping and start again.</li>
+      <li>Open the <strong>Quiz</strong> tab, answer all 10 questions and click <strong>Submit Quiz</strong>. Use <strong>Retry Quiz</strong> to try again.</li>
+      <li>Finally, share your experience in the <strong>Feedback</strong> tab.</li>
+    </ol>
+    <p class="step-tip"><strong>Tip:</strong> Try the same message in different lengths. A 300-letter paragraph follows English statistics closely, while a 20-letter message often does not. That difference is the central lesson of this experiment.</p>
+  </div>
+</section>
 
+
+
+        <!-- Simulation -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+            <h2>Ciphertext Input</h2>
+            <label for="sample-selector">Load Sample Ciphertext:</label>
+            <select id="sample-selector">
+              <option value="">-- Custom Ciphertext --</option>
+              <option value="1">Sample 1 (Easy)</option>
+              <option value="2">Sample 2 (Medium)</option>
+            </select>
+            
+            <label for="ciphertext" style="margin-top:10px;">Ciphertext:</label>
+            <textarea id="ciphertext" rows="5" placeholder="Enter ciphertext here..."></textarea>
+            
+            <div style="display:flex; gap:10px;">
+              <button id="btn-analyze">Analyze Frequency</button>
+              <button id="btn-reset" style="background-color: #6c757d;">Reset</button>
+            </div>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+          
+          <div id="analysis-section" style="display:none;">
+            <div class="simulation-output">
+              <h2>Frequency Analysis Results</h2>
+              <div class="flex-container">
+                <div class="flex-item">
+                  <div class="bar-chart" id="chart-container">
+                    <!-- Bars injected by JS -->
+                  </div>
+                  <p class="chart-caption">Ciphertext Letter Frequencies (%)</p>
+                </div>
+                <div class="flex-item">
+                  <h3 class="analysis-side-title">English Reference (default letter frequencies)</h3>
+                  <table class="reference-table">
+                    <tr><th>Letter</th><th>Freq (%)</th><th>Letter</th><th>Freq (%)</th></tr>
+                    <tr><td>E</td><td>12.70</td><td>M</td><td>2.41</td></tr>
+                    <tr><td>T</td><td>9.06</td><td>W</td><td>2.36</td></tr>
+                    <tr><td>A</td><td>8.17</td><td>F</td><td>2.23</td></tr>
+                    <tr><td>O</td><td>7.51</td><td>G</td><td>2.02</td></tr>
+                    <tr><td>I</td><td>6.97</td><td>Y</td><td>1.97</td></tr>
+                    <tr><td>N</td><td>6.75</td><td>P</td><td>1.93</td></tr>
+                    <tr><td>S</td><td>6.33</td><td>B</td><td>1.49</td></tr>
+                    <tr><td>H</td><td>6.09</td><td>V</td><td>0.98</td></tr>
+                    <tr><td>R</td><td>5.99</td><td>K</td><td>0.77</td></tr>
+                    <tr><td>D</td><td>4.25</td><td>J</td><td>0.15</td></tr>
+                    <tr><td>L</td><td>4.03</td><td>X</td><td>0.15</td></tr>
+                    <tr><td>C</td><td>2.78</td><td>Q</td><td>0.10</td></tr>
+                    <tr><td>U</td><td>2.76</td><td>Z</td><td>0.07</td></tr>
+                    <p class="ref-note">Source: R. Lewand, <em>Cryptological Mathematics</em>, Mathematical Association of America (2000), pp. 36&ndash;37. Values are relative frequencies in general English text, rounded to two decimals, and vary with author and subject.</p>
+
+                  </table>
+                </div>
+              </div>
+              
+              <div style="margin-top: 20px;">
+                <h3 class="table-heading">Ciphertext Frequency Table</h3>
+                <div style="overflow-x: auto;">
+                  <table id="freq-table">
+                    <thead>
+                      <tr id="freq-table-head"></tr>
+                    </thead>
+                    <tbody>
+                      <tr id="freq-table-count"></tr>
+                      <tr id="freq-table-percent"></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="simulation-output" style="background: var(--color-surface);">
+              <h2>Substitution Mapping Workspace</h2>
+              <p>Map ciphertext letters (top) to plaintext letters (bottom).</p>
+              <div class="mapping-container" id="mapping-container">
+                <!-- Mappings injected by JS -->
+              </div>
+              
+              <div style="display:flex; gap:10px; margin-top: 15px;">
+                <button id="btn-apply-mapping">Apply Mapping</button>
+                <button id="btn-check-answer" style="display:none; background-color: #28a745;">Check Answer</button>
+                <button id="btn-hint" style="background-color: #ffc107; color: #000;">Hint</button>
+                <button id="btn-autosolve" style="background-color: #2a2337;">Auto-Solve</button>
+              </div>
+              
+              <div id="hint-box" class="alert-box info"></div>
+              <div id="verification-box" class="alert-box"></div>
+              
+              <h3 style="margin-top:20px; font-size:1.1rem;">Decrypted Text Preview</h3>
+              <div class="output-text" id="decrypted-output"></div>
+            </div>
           </div>
         </section>
 
+        <!-- Quiz -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
           <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+            <h2>Knowledge Check</h2>
+            <div id="quiz-container">
+              <!-- Quiz rendered by JS -->
+            </div>
+            <button id="btn-submit-quiz">Submit Quiz</button>
+            <div id="quiz-result" class="alert-box" style="margin-top: 15px;"></div>
+            <button id="btn-retry-quiz" style="display:none; margin-top:10px; background-color:#6c757d;">Retry Quiz</button>
           </div>
         </section>
-              <!-- References -->
+
+        <!-- References -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="references-container">
             <h2>References &amp; Further Reading</h2>
             <div class="reference-card">
               <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
-              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+              <div class="reference-meta">Chapter on Classical Encryption Techniques covers monoalphabetic ciphers and cryptanalysis using frequency analysis.</div>
             </div>
             <div class="reference-card">
-              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
-              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
-            </div>
-            <div class="reference-card">
-              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
-              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+              <div class="reference-title">Simon Singh — The Code Book: The Science of Secrecy from Ancient Egypt to Quantum Cryptography</div>
+              <div class="reference-card">
+  <div class="reference-title">Robert Lewand &mdash; Cryptological Mathematics (Mathematical Association of America, 2000)</div>
+  <div class="reference-meta">Source of the English letter frequency table, common letter pairs and triples used as the default reference in this experiment.</div>
+</div>
+              <div class="reference-meta">Provides an accessible history and explanation of frequency analysis as developed by Al-Kindi.</div>
             </div>
           </div>
         </section>
 
-              <!-- Feedback -->
+        <!-- Feedback -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
           <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
         </section>
@@ -98,8 +514,8 @@
     </div>
 
     <script src="../../js/common.js"></script>
+    <script src="words.js"></script>
     <script src="script.js"></script>
-      <script src="../../js/students-roster.js"></script>
     <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
   </body>
