@@ -7,6 +7,7 @@
     <title>Properties of Secure Hash Function | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -51,41 +52,276 @@
         <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
           <div class="content-placeholder">
             <h2>Theory</h2>
-            <p>A cryptographic hash function must satisfy three primary security properties: Preimage Resistance (one-way property), Second Preimage Resistance (weak collision resistance), and Collision Resistance (strong collision resistance). Furthermore, an ideal hash displays the Avalanche Effect: if an input bit is toggled, each output bit changes with 50% probability.</p>
+            <p>A cryptographic hash function is a mathematical algorithm that maps data of arbitrary size (often called the "message") to a bit array of a fixed size (the "hash value", "hash", or "message digest"). To be considered secure for cryptographic applications, a hash function must satisfy several fundamental properties:</p>
+            <p><strong>1. Preimage Resistance (One-Way Property):</strong> Given a hash value <em>h</em>, it should be computationally infeasible to find any message <em>m</em> such that <em>hash(m) = h</em>. This property is crucial for storing passwords; even if an attacker gains access to the hash, they cannot easily determine the original password.</p>
+            <p><strong>2. Second-Preimage Resistance (Weak Collision Resistance):</strong> Given an input <em>m1</em>, it should be computationally infeasible to find a different input <em>m2</em> such that <em>hash(m1) = hash(m2)</em>. This protects against an attacker intercepting a message and substituting it with another message that produces the same hash, thereby maintaining message integrity.</p>
+            <p><strong>3. Collision Resistance (Strong Collision Resistance):</strong> It should be computationally infeasible to find <em>any</em> two distinct messages <em>m1</em> and <em>m2</em> such that <em>hash(m1) = hash(m2)</em>. This is a stronger requirement than second-preimage resistance. Since the input space is infinite and the output space is finite, collisions must exist (by the Pigeonhole Principle). However, a secure hash function makes finding them computationally prohibitive.</p>
+            <p><strong>4. Avalanche Effect:</strong> A desirable property of any cryptographic algorithm, including hash functions, is the avalanche effect. It means that a small change in the input (such as flipping a single bit) should cause a drastic change in the output. Specifically, for an ideal hash function, changing one bit of the input should result in each output bit flipping with a probability of 50%. This implies that the resulting hash value is entirely uncorrelated with the original hash value. In this simulation, we analyze the avalanche effect by calculating the Hamming distance (the number of differing bits) between the hashes of two messages that differ slightly. If the hash function exhibits a strong avalanche effect, the Hamming distance should be roughly half the total number of bits in the digest (e.g., about 128 bits for a 256-bit hash like SHA-256).</p>
+            <p>By understanding and validating these properties, cryptographers can evaluate the security and reliability of hash functions used in digital signatures, message authentication codes (MACs), and other security protocols.</p>
           </div>
         </section>
 
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
           <div class="content-placeholder">
             <h2>Procedure</h2>
-            <ol>
-              <li>Enter Message 1 and Message 2 (differing by just one character).</li>
-              <li>Click "Analyze Avalanche Effect".</li>
-              <li>Examine the bitwise comparison and Hamming distance.</li>
-            </ol>
+            
+            <div class="flow-diagram-wrapper" style="overflow-x: auto; margin: 24px 0 32px 0; background: var(--color-surface); padding: 32px 24px; border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+              <svg viewBox="0 0 1020 140" style="min-width: 1020px; width: 100%; display: block;" role="img" aria-labelledby="procedure-diagram-title procedure-diagram-desc">
+                <title id="procedure-diagram-title">Detailed Procedure Flowchart</title>
+                <desc id="procedure-diagram-desc">A six-step flowchart showing Input Messages, SHA-256 Engine processing, 256-bit Digests generation, Bitwise XOR comparison, Hamming Distance summation, and Avalanche Percentage calculation.</desc>
+                <defs>
+                  <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="var(--color-secondary)"/>
+                  </marker>
+                </defs>
+
+                <!-- Connectors (drawn before nodes) -->
+                <!-- 1 -> 2 -->
+                <line x1="145" y1="70" x2="185" y2="70" stroke="var(--color-secondary)" stroke-width="1.2" marker-end="url(#arrow)" />
+                <!-- 2 -> 3 -->
+                <line x1="315" y1="70" x2="355" y2="70" stroke="var(--color-secondary)" stroke-width="1.2" marker-end="url(#arrow)" />
+                <!-- 3 -> 4 -->
+                <line x1="485" y1="70" x2="525" y2="70" stroke="var(--color-secondary)" stroke-width="1.2" marker-end="url(#arrow)" />
+                <!-- 4 -> 5 -->
+                <line x1="655" y1="70" x2="695" y2="70" stroke="var(--color-secondary)" stroke-width="1.2" marker-end="url(#arrow)" />
+                <!-- 5 -> 6 -->
+                <line x1="825" y1="70" x2="865" y2="70" stroke="var(--color-secondary)" stroke-width="1.2" marker-end="url(#arrow)" />
+
+                <!-- Labels for connectors -->
+                <rect x="150" y="52" width="30" height="12" rx="2" fill="var(--color-surface)" />
+                <text x="165" y="61" fill="var(--color-text-muted)" font-size="8" font-family="'Courier New', monospace" text-anchor="middle">HASH</text>
+
+                <rect x="320" y="52" width="30" height="12" rx="2" fill="var(--color-surface)" />
+                <text x="335" y="61" fill="var(--color-text-muted)" font-size="8" font-family="'Courier New', monospace" text-anchor="middle">GEN</text>
+
+                <rect x="490" y="52" width="30" height="12" rx="2" fill="var(--color-surface)" />
+                <text x="505" y="61" fill="var(--color-text-muted)" font-size="8" font-family="'Courier New', monospace" text-anchor="middle">XOR</text>
+
+                <rect x="660" y="52" width="30" height="12" rx="2" fill="var(--color-surface)" />
+                <text x="675" y="61" fill="var(--color-text-muted)" font-size="8" font-family="'Courier New', monospace" text-anchor="middle">SUM</text>
+
+                <rect x="830" y="52" width="30" height="12" rx="2" fill="var(--color-surface)" />
+                <text x="845" y="61" fill="var(--color-text-muted)" font-size="8" font-family="'Courier New', monospace" text-anchor="middle">CALC</text>
+
+                <!-- Node 1 -->
+                <rect x="25" y="30" width="120" height="80" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" stroke-width="1"/>
+                <rect x="33" y="38" width="36" height="14" rx="2" fill="transparent" stroke="var(--color-secondary)" stroke-width="0.8"/>
+                <text x="51" y="48" fill="var(--color-secondary)" font-size="8" font-weight="700" font-family="'Courier New', monospace" text-anchor="middle">STEP 1</text>
+                <text x="85" y="70" fill="var(--color-primary)" font-size="12" font-weight="600" font-family="Arial, sans-serif" text-anchor="middle">Input Messages</text>
+                <text x="85" y="86" fill="var(--color-text-muted)" font-size="9" font-family="'Courier New', monospace" text-anchor="middle">differs by 1 bit</text>
+
+                <!-- Node 2 -->
+                <rect x="195" y="30" width="120" height="80" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" stroke-width="1"/>
+                <rect x="203" y="38" width="36" height="14" rx="2" fill="transparent" stroke="var(--color-secondary)" stroke-width="0.8"/>
+                <text x="221" y="48" fill="var(--color-secondary)" font-size="8" font-weight="700" font-family="'Courier New', monospace" text-anchor="middle">STEP 2</text>
+                <text x="255" y="70" fill="var(--color-primary)" font-size="12" font-weight="600" font-family="Arial, sans-serif" text-anchor="middle">SHA-256 Engine</text>
+                <text x="255" y="86" fill="var(--color-text-muted)" font-size="9" font-family="'Courier New', monospace" text-anchor="middle">64 non-linear rds</text>
+
+                <!-- Node 3 -->
+                <rect x="365" y="30" width="120" height="80" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" stroke-width="1"/>
+                <rect x="373" y="38" width="36" height="14" rx="2" fill="transparent" stroke="var(--color-secondary)" stroke-width="0.8"/>
+                <text x="391" y="48" fill="var(--color-secondary)" font-size="8" font-weight="700" font-family="'Courier New', monospace" text-anchor="middle">STEP 3</text>
+                <text x="425" y="70" fill="var(--color-primary)" font-size="12" font-weight="600" font-family="Arial, sans-serif" text-anchor="middle">256-bit Digests</text>
+                <text x="425" y="86" fill="var(--color-text-muted)" font-size="9" font-family="'Courier New', monospace" text-anchor="middle">Hash 1 &amp; Hash 2</text>
+
+                <!-- Node 4 -->
+                <rect x="535" y="30" width="120" height="80" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" stroke-width="1"/>
+                <rect x="543" y="38" width="36" height="14" rx="2" fill="transparent" stroke="var(--color-secondary)" stroke-width="0.8"/>
+                <text x="561" y="48" fill="var(--color-secondary)" font-size="8" font-weight="700" font-family="'Courier New', monospace" text-anchor="middle">STEP 4</text>
+                <text x="595" y="70" fill="var(--color-primary)" font-size="12" font-weight="600" font-family="Arial, sans-serif" text-anchor="middle">Bitwise XOR</text>
+                <text x="595" y="86" fill="var(--color-text-muted)" font-size="9" font-family="'Courier New', monospace" text-anchor="middle">1=diff, 0=same</text>
+
+                <!-- Node 5 -->
+                <rect x="705" y="30" width="120" height="80" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" stroke-width="1"/>
+                <rect x="713" y="38" width="36" height="14" rx="2" fill="transparent" stroke="var(--color-secondary)" stroke-width="0.8"/>
+                <text x="731" y="48" fill="var(--color-secondary)" font-size="8" font-weight="700" font-family="'Courier New', monospace" text-anchor="middle">STEP 5</text>
+                <text x="765" y="70" fill="var(--color-primary)" font-size="12" font-weight="600" font-family="Arial, sans-serif" text-anchor="middle">Hamming Dist</text>
+                <text x="765" y="86" fill="var(--color-text-muted)" font-size="9" font-family="'Courier New', monospace" text-anchor="middle">sum of '1' bits</text>
+
+                <!-- Node 6 (Focal) -->
+                <rect x="875" y="30" width="120" height="80" rx="6" fill="rgba(76, 140, 232, 0.1)" stroke="var(--color-secondary)" stroke-width="1.5"/>
+                <rect x="883" y="38" width="36" height="14" rx="2" fill="var(--color-secondary)" stroke="var(--color-secondary)" stroke-width="0.8"/>
+                <text x="901" y="48" fill="var(--color-on-secondary)" font-size="8" font-weight="700" font-family="'Courier New', monospace" text-anchor="middle">STEP 6</text>
+                <text x="935" y="70" fill="var(--color-text)" font-size="12" font-weight="600" font-family="Arial, sans-serif" text-anchor="middle">Avalanche %</text>
+                <text x="935" y="86" fill="var(--color-text-muted)" font-size="9" font-family="'Courier New', monospace" text-anchor="middle">dist ÷ 256 × 100</text>
+              </svg>
+            </div>
+
+            <div class="academic-callout">
+              <h3 style="color: var(--color-secondary); margin: 0 0 12px 0; font-size: 1.15rem;">Detailed Steps</h3>
+              <ol style="margin: 0; padding-left: 20px; line-height: 1.7; color: var(--color-text);">
+                <li>Navigate to the <strong>Simulation</strong> tab to access the interactive hash analyzer.</li>
+                <li>In the <strong>Message 1</strong> input field, enter an initial text string (e.g., "Cryptography Lab 2026").</li>
+                <li>In the <strong>Message 2</strong> input field, enter a slightly modified version differing by one character (or click <strong>Auto &plusmn;1</strong>).</li>
+                <li>Click <strong>Start 4-Step Simulation</strong> to launch the automated sequential evaluation.</li>
+                <li><strong>Step 1 (Pre-image Resistance):</strong> Observe the live brute-force inversion attack against the target digest and verify why recovering message <em>m</em> from <em>H(m)</em> requires computationally infeasible 2<sup>256</sup> operations.</li>
+                <li><strong>Step 2 (Second Pre-image Resistance):</strong> Observe the targeted forgery search on fixed message <em>m1</em> and verify why producing a collision <em>H(m2) = H(m1)</em> is practically impossible.</li>
+                <li><strong>Step 3 (Collision Resistance):</strong> Observe the live Birthday Paradox collision search detecting an actual collision on a 16-bit slice, and contrast with the 2<sup>128</sup> security bound of full SHA-256.</li>
+                <li><strong>Step 4 (Avalanche Effect):</strong> Review the Hamming distance, diffusion percentage gauge, and word-by-word 32-bit XOR comparison verifying optimal ~50% bit variation.</li>
+              </ol>
+            </div>
           </div>
         </section>
 
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
           <div class="simulation-controls">
-            <h2>Simulation Controls</h2>
-            <label for="msg1">Message 1:</label>
-            <input type="text" id="msg1" value="Cryptography Lab 2026">
-            <label for="msg2" style="margin-top: 10px;">Message 2 (Single character modification):</label>
-            <input type="text" id="msg2" value="Cryptography Lab 2027">
-            <button type="button" id="btnAnalyze">Analyze Avalanche Effect</button>
+            <h2>Interactive Hash Properties Simulator</h2>
+            <p style="margin-bottom: 16px;">
+              Analyze the four fundamental security properties of a cryptographic hash function in sequence: <strong>Pre-image Resistance</strong>, <strong>Second Pre-image Resistance</strong>, <strong>Collision Resistance</strong>, and the <strong>Avalanche Effect</strong>. Enter your input messages and launch the automated 4-step pipeline.
+            </p>
+
+            <div class="sim-controls-grid">
+              <div>
+                <label for="msg1">Message 1 (Primary Input):</label>
+                <input type="text" id="msg1" value="Cryptography Lab 2026" placeholder="Enter original message">
+              </div>
+              <div>
+                <label for="msg2">Message 2 (Single-character modification for Avalanche Analysis):</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="msg2" value="Cryptography Lab 2027" placeholder="Enter perturbed message" style="flex: 1;">
+                  <button type="button" id="btnAutoPerturb" title="Auto-flip character to create 1-char difference" style="min-height: 42px; margin-top: 0 !important; padding: 0 12px; background: var(--color-surface); border: 1px solid var(--color-border-strong); color: var(--color-text); font-size: 0.8rem; white-space: nowrap;">
+                    Auto &plusmn;1
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sim-btn-group">
+              <button type="button" id="btnStartPipeline" class="sim-action-btn primary">
+                <span id="btnStartIcon">&#9654;</span>
+                <span id="btnStartText">Start 4-Step Simulation</span>
+              </button>
+              <button type="button" id="btnPauseResume" class="sim-action-btn secondary" style="display: none;">
+                &#10074;&#10074; Pause
+              </button>
+              <button type="button" id="btnResetSim" class="sim-action-btn outline">
+                &#8634; Reset
+              </button>
+            </div>
+
+            <!-- Pipeline Progress Bar -->
+            <div class="sim-progress-box">
+              <div class="sim-progress-header">
+                <span id="pipelineStatusText" style="font-weight: 600; color: var(--color-primary);">Status: Ready. Click Start to run the 4-step analysis automatically.</span>
+                <span id="pipelineStatusPct" style="font-family: 'Courier New', monospace; color: var(--color-text-muted);">Step 0 of 4 (0%)</span>
+              </div>
+              <div class="sim-progress-bar-bg">
+                <div id="pipelineProgressBar" class="sim-progress-bar-fill"></div>
+              </div>
+            </div>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <h2>Simulation Output</h2>
-            <div id="propOutput">Click Analyze to view hash comparisons...</div>
+
+          <!-- 4 Step Tabs -->
+          <div class="sim-step-tabs" role="tablist" aria-label="Simulation Steps Navigation">
+            <button class="sim-step-tab active" data-step-tab="0" type="button" role="tab" aria-selected="true">
+              <div class="sim-step-tab-top">
+                <span class="sim-step-pill">Step 1</span>
+                <span class="sim-step-icon" id="stepIcon0">&#9203;</span>
+              </div>
+              <p class="sim-step-title">Pre-image Resistance</p>
+              <p class="sim-step-desc">One-Way Property: Given H, find m</p>
+            </button>
+
+            <button class="sim-step-tab" data-step-tab="1" type="button" role="tab" aria-selected="false">
+              <div class="sim-step-tab-top">
+                <span class="sim-step-pill">Step 2</span>
+                <span class="sim-step-icon" id="stepIcon1">&#9203;</span>
+              </div>
+              <p class="sim-step-title">Second Pre-image</p>
+              <p class="sim-step-desc">Weak Collision: Fixed m1 &rarr; m2</p>
+            </button>
+
+            <button class="sim-step-tab" data-step-tab="2" type="button" role="tab" aria-selected="false">
+              <div class="sim-step-tab-top">
+                <span class="sim-step-pill">Step 3</span>
+                <span class="sim-step-icon" id="stepIcon2">&#9203;</span>
+              </div>
+              <p class="sim-step-title">Collision Resistance</p>
+              <p class="sim-step-desc">Birthday Paradox: Any (mA, mB)</p>
+            </button>
+
+            <button class="sim-step-tab" data-step-tab="3" type="button" role="tab" aria-selected="false">
+              <div class="sim-step-tab-top">
+                <span class="sim-step-pill">Step 4</span>
+                <span class="sim-step-icon" id="stepIcon3">&#9203;</span>
+              </div>
+              <p class="sim-step-title">Avalanche Effect</p>
+              <p class="sim-step-desc">Diffusion: 1-bit input &rarr; ~50% flip</p>
+            </button>
+          </div>
+
+          <!-- 4 Step Content Panels -->
+          <div class="sim-panels-container" aria-live="polite">
+            <!-- Step 1 Panel: Pre-image Resistance -->
+            <div class="sim-step-panel active" data-step-panel="0" id="panelStep0"></div>
+
+            <!-- Step 2 Panel: Second Pre-image Resistance -->
+            <div class="sim-step-panel" data-step-panel="1" id="panelStep1" hidden></div>
+
+            <!-- Step 3 Panel: Collision Resistance -->
+            <div class="sim-step-panel" data-step-panel="2" id="panelStep2" hidden></div>
+
+            <!-- Step 4 Panel: Avalanche Effect -->
+            <div class="sim-step-panel" data-step-panel="3" id="panelStep3" hidden></div>
           </div>
         </section>
 
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
           <div class="quiz-panel">
             <h2>Assessment / Quiz</h2>
-            <p>1. What percentage of output bits should ideally flip if 1 bit of input is modified?</p>
-            <p>2. What is the difference between Preimage Resistance and Collision Resistance?</p>
+            <form id="quizForm">
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>1. What percentage of output bits should ideally flip if 1 bit of input is modified?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q1" value="a" style="width: auto; margin: 0;"> 10%</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q1" value="b" style="width: auto; margin: 0;"> 50%</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q1" value="c" style="width: auto; margin: 0;"> 100%</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q1" value="d" style="width: auto; margin: 0;"> 0%</label>
+              </div>
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>2. Which property ensures that given a hash value h, it is computationally infeasible to find any input x such that H(x) = h?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q2" value="a" style="width: auto; margin: 0;"> Collision Resistance</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q2" value="b" style="width: auto; margin: 0;"> Avalanche Effect</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q2" value="c" style="width: auto; margin: 0;"> Preimage Resistance</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q2" value="d" style="width: auto; margin: 0;"> Second-Preimage Resistance</label>
+              </div>
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>3. What is the difference between Second-Preimage Resistance and Collision Resistance?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q3" value="a" style="width: auto; margin: 0;"> Second-preimage fixes one input, collision finds any two</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q3" value="b" style="width: auto; margin: 0;"> They are the same</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q3" value="c" style="width: auto; margin: 0;"> Collision resistance is weaker</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q3" value="d" style="width: auto; margin: 0;"> Second-preimage resistance prevents length extension</label>
+              </div>
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>4. Which of the following is NOT a property of a secure cryptographic hash function?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q4" value="a" style="width: auto; margin: 0;"> Preimage Resistance</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q4" value="b" style="width: auto; margin: 0;"> Avalanche Effect</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q4" value="c" style="width: auto; margin: 0;"> Reversibility</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q4" value="d" style="width: auto; margin: 0;"> Collision Resistance</label>
+              </div>
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>5. If a cryptographic hash function produces a digest of 256 bits, how many bits on average should change if the input is altered by just 1 bit?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q5" value="a" style="width: auto; margin: 0;"> 1 bit</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q5" value="b" style="width: auto; margin: 0;"> 64 bits</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q5" value="c" style="width: auto; margin: 0;"> 128 bits</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q5" value="d" style="width: auto; margin: 0;"> 256 bits</label>
+              </div>
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>6. Why are hash functions known as "one-way" functions?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q6" value="a" style="width: auto; margin: 0;"> Because they only accept inputs in one format</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q6" value="b" style="width: auto; margin: 0;"> Because computing the input from the hash value is computationally infeasible</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q6" value="c" style="width: auto; margin: 0;"> Because they are only used for encryption, not decryption</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q6" value="d" style="width: auto; margin: 0;"> Because they map multiple outputs to one input</label>
+              </div>
+              <div class="quiz-question" style="margin-bottom: 24px;">
+                <p style="margin-bottom: 12px;"><strong>7. What does "determinism" mean in the context of hash functions?</strong></p>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q7" value="a" style="width: auto; margin: 0;"> The output is always unique</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q7" value="b" style="width: auto; margin: 0;"> The same input always produces the exact same output</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q7" value="c" style="width: auto; margin: 0;"> The hash function uses a random salt by default</label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 8px;"><input type="radio" name="q7" value="d" style="width: auto; margin: 0;"> The output length varies depending on the input size</label>
+              </div>
+              <button type="button" id="btnSubmitQuiz">Submit Quiz</button>
+              <div id="quizResult" style="margin-top: 15px; font-weight: bold;"></div>
+            </form>
           </div>
         </section>
 
@@ -110,8 +346,9 @@
 
     <script src="../../js/common.js"></script>
     <script src="../../js/vendor/crypto-js.min.js"></script>
-    <script src="script.js"></script>
-      <script src="../../js/crypto-feedback.js"></script>
+    <script src="script.js?v=20261103_4step"></script>
+    <script src="../../js/students-roster.js"></script>
+    <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
   </body>
 </html>

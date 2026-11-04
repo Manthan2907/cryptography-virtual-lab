@@ -1,0 +1,324 @@
+/* Hash Properties 4-Step Pipeline Styles */
+.sim-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.sim-btn-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sim-action-btn {
+  min-height: 42px;
+  margin-top: 0 !important;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+}
+
+.sim-action-btn.primary {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.sim-action-btn.primary:hover {
+  background: var(--color-secondary-dark);
+}
+
+.sim-action-btn.secondary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.sim-action-btn.secondary:hover {
+  background: var(--color-surface-muted);
+  border-color: var(--color-border-strong);
+}
+
+.sim-action-btn.outline {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.sim-action-btn.outline:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+/* Stepper Progress Bar */
+.sim-progress-box {
+  margin-top: 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+
+.sim-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-family: Arial, sans-serif;
+}
+
+.sim-progress-bar-bg {
+  height: 6px;
+  background: var(--color-surface-muted);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sim-progress-bar-fill {
+  height: 100%;
+  background: var(--color-secondary);
+  width: 0%;
+  transition: width 0.35s ease;
+}
+
+/* 4 Simulation Step Tabs */
+.sim-step-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 22px 0 18px 0;
+}
+
+@media (max-width: 860px) {
+  .sim-step-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .sim-step-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sim-step-tab {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+}
+
+.sim-step-tab:hover {
+  border-color: var(--color-secondary);
+  background: var(--color-surface-muted);
+}
+
+.sim-step-tab.active {
+  border-color: var(--color-secondary);
+  background: rgba(76, 140, 232, 0.12);
+  box-shadow: 0 0 0 1px var(--color-secondary);
+}
+
+.sim-step-tab-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sim-step-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.sim-step-tab.active .sim-step-pill {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  border-color: var(--color-secondary);
+}
+
+.sim-step-icon {
+  font-size: 0.95rem;
+}
+
+.sim-step-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.sim-step-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+  margin: 0;
+}
+
+/* Step Panels */
+.sim-step-panel {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  animation: content-reveal 0.25s ease;
+}
+
+.sim-step-panel[hidden] {
+  display: none !important;
+}
+
+/* Live Attack Terminal / Log */
+.sim-terminal {
+  background: #140f0d;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  max-height: 160px;
+  overflow-y: auto;
+  color: var(--color-text-muted);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.sim-terminal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  gap: 12px;
+}
+
+.sim-terminal-row:last-child {
+  border-bottom: none;
+}
+
+/* Stat Metrics */
+.sim-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.sim-metric-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  text-align: center;
+}
+
+.sim-metric-title {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.sim-metric-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  margin-top: 4px;
+  color: var(--color-primary);
+}
+
+/* Security Banner */
+.sim-verdict {
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 16px;
+  border: 1px solid #2ed573;
+  background: rgba(46, 213, 115, 0.08);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sim-verdict-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #2ed573;
+}
+
+.sim-verdict-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2ed573;
+  font-family: Arial, sans-serif;
+  margin-bottom: 4px;
+}
+
+.sim-verdict-text {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Step Footer Controls */
+.sim-panel-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Spinning and Pulsing Indicators */
+@keyframes sim-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.sim-pulsing {
+  animation: sim-pulse 1s infinite ease-in-out;
+}
+
+@keyframes sim-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.sim-spinning {
+  display: inline-block;
+  animation: sim-spin 0.8s linear infinite;
+}
+
