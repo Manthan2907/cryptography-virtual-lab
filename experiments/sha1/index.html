@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Virtual Cryptography Laboratory experiment">
-    <title>Experiment | Virtual Cryptography Laboratory</title>
+    <meta name="description" content="SHA-1 Secure Hash Algorithm - Virtual Cryptography Laboratory">
+    <title>SHA-1 Hash Algorithm | Virtual Cryptography Laboratory</title>
     <link rel="stylesheet" href="../../css/variables.css">
     <link rel="stylesheet" href="../../css/experiment.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <!-- Fr. CRCE Official College Header Banner -->
@@ -20,86 +21,1090 @@
       <header class="exp-header">
         <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
         <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Experiment Title</h1>
-        <p id="exp-description">Brief description</p>
+        <h1 id="exp-title">SHA-1 Secure Hash Algorithm</h1>
+        <p id="exp-description">Generate and analyze 160-bit SHA-1 message digests, inspect RFC 3174 padding, trace the 80-round non-linear compression pipeline with message schedule expansion, and evaluate avalanche diffusion characteristics.</p>
       </header>
 
       <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="theory" aria-selected="true">Theory</button>
+        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
+        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
         <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
         <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Quiz</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="references" aria-selected="false">References</button>
-              <button class="tab-btn" type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
+        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
+        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
       </nav>
 
       <main class="content-area">
-        <section id="theory" class="tab-content active" data-tab-panel="theory">
-          <!-- Group fills this section with theory and algorithm details. -->
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>Add the experiment background, terminology, and algorithm explanation here.</p>
+        <!-- =========================================================
+             1. AIM & OBJECTIVES TAB
+             ========================================================= -->
+        <section id="aim" class="tab-content active" data-tab-panel="aim">
+          <div class="aim-container">
+            <div class="aim-card-hero">
+              <h3>Experiment Aim</h3>
+              <p>
+                To implement, trace, and evaluate the <strong>SHA-1 (Secure Hash Algorithm 1)</strong> cryptographic hashing algorithm; to examine its message preprocessing, 512-bit block parsing, 80-word message schedule expansion ($W_0 \dots W_{79}$), and 80-step four-stage non-linear compression rounds; and to quantitatively demonstrate the <strong>Avalanche Effect</strong> and cryptanalytic security boundaries through interactive simulation.
+              </p>
+            </div>
+
+            <div class="aim-grid">
+              <div class="aim-item-box">
+                <div class="aim-item-header">
+                  <span class="aim-item-icon">1</span>
+                  <span>Message Preprocessing &amp; Padding</span>
+                </div>
+                <p>Understand UTF-8 byte conversion, single-bit <code class="code-badge">0x80</code> padding, zero-padding to 448 mod 512, and 64-bit big-endian length appending as mandated by RFC 3174 / FIPS 180-1.</p>
+              </div>
+
+              <div class="aim-item-box">
+                <div class="aim-item-header">
+                  <span class="aim-item-icon">2</span>
+                  <span>Message Schedule Expansion</span>
+                </div>
+                <p>Trace how sixteen 32-bit block words are expanded into eighty words ($W_t$) using circular left shift and bitwise XOR: $W_t = \text{ROTL}^1(W_{t-3} \oplus W_{t-8} \oplus W_{t-14} \oplus W_{t-16})$.</p>
+              </div>
+
+              <div class="aim-item-box">
+                <div class="aim-item-header">
+                  <span class="aim-item-icon">3</span>
+                  <span>80-Step Compression Pipeline</span>
+                </div>
+                <p>Observe 4 distinct non-linear stages utilizing auxiliary Boolean functions (<code class="code-badge">Ch, Parity, Maj, Parity</code>), per-stage constants (<code class="code-badge">K_t</code>), and five 32-bit working registers ($A, B, C, D, E$).</p>
+              </div>
+
+              <div class="aim-item-box">
+                <div class="aim-item-header">
+                  <span class="aim-item-icon">4</span>
+                  <span>Avalanche Effect &amp; SAC Analysis</span>
+                </div>
+                <p>Quantify bitwise Hamming distances and verify the Strict Avalanche Criterion (SAC) showing approximately 50% output bit flips across a 160-bit digest matrix when a single input bit changes.</p>
+              </div>
+
+              <div class="aim-item-box">
+                <div class="aim-item-header">
+                  <span class="aim-item-icon">5</span>
+                  <span>Cryptanalysis &amp; Modern Security</span>
+                </div>
+                <p>Evaluate the collision vulnerabilities demonstrated by Wang et al. (2005) and the practical SHAttered attack (2017), understanding why SHA-1 has been deprecated in favor of SHA-256 and SHA-3.</p>
+              </div>
+            </div>
+
+            <div class="info-table-card">
+              <h4 style="margin: 0 0 12px; color: #ffda8b;">Course &amp; Laboratory Group Details</h4>
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Parameter</th>
+                    <th>Specification</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Course</strong></td>
+                    <td>Cryptography &amp; System Security (CSS TH ISE) &middot; Third Year Computer Engineering</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Experiment Identifier</strong></td>
+                    <td>EXP04 &middot; Group 4 (<em>group-sha1</em>)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Cryptographic Standards</strong></td>
+                    <td>NIST FIPS PUB 180-1 (1995), FIPS PUB 180-4 (2015), IETF RFC 3174</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Assigned Development Team</strong></td>
+                    <td>
+                      <strong>Swar (10713)</strong> &bull; UI Architecture &amp; Preprocessing<br>
+                      <strong>Tanush Chavan (10710)</strong> &bull; SHA-1 Core Compression &amp; Schedule Expansion<br>
+                      <strong>Aaron Deniz (10719)</strong> &bull; Interactive Simulation &amp; Rounds Explorer<br>
+                      <strong>Asher (10715)</strong> &bull; Sensitivity Analysis, 160-Bit Heatmap &amp; Assessment Quiz
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
+        <!-- =========================================================
+             2. THEORY TAB
+             ========================================================= -->
+        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+          <div class="theory-section-card">
+            <h3>1. Introduction to the SHA-1 Algorithm</h3>
+            <p>
+              The <strong>Secure Hash Algorithm 1 (SHA-1)</strong> is an iterated cryptographic hash function designed by the United States <strong>National Security Agency (NSA)</strong> and published as a U.S. Federal Information Processing Standard (<strong>FIPS PUB 180-1</strong>) by NIST in 1995. It was developed to succeed SHA-0 by introducing a 1-bit circular left shift in the message expansion schedule to prevent differential cryptanalytic attacks.
+            </p>
+            <p>
+              SHA-1 maps an arbitrary-length message (up to $2^{64}-1$ bits) into a fixed-size <strong>160-bit (20-byte)</strong> message digest, rendered as a 40-character hexadecimal string. Like MD5, SHA-1 is based on the <strong>Merkle&ndash;Damg&aring;rd construction</strong>, but operates with five 32-bit registers across 80 compression rounds.
+            </p>
+
+            <h3>2. Fundamental Cryptographic Properties</h3>
+            <p>
+              A secure cryptographic hash function $H$ must fulfill three primary security properties:
+            </p>
+            <ul>
+              <li><strong>Pre-image Resistance (One-Way):</strong> Given any hash output $h$, it is computationally infeasible to find an input message $M$ such that $H(M) = h$.</li>
+              <li><strong>Second Pre-image Resistance (Weak Collision Resistance):</strong> Given an input message $M_1$, it is computationally infeasible to find another distinct message $M_2 \neq M_1$ such that $H(M_1) = H(M_2)$.</li>
+              <li><strong>Collision Resistance (Strong Collision Resistance):</strong> It is computationally infeasible to find any two distinct messages $M_1 \neq M_2$ such that $H(M_1) = H(M_2)$.</li>
+            </ul>
+
+            <h3>3. SHA-1 Technical Parameters &amp; Specifications</h3>
+            <div class="rounds-table-wrapper">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Parameter</th>
+                    <th>Specification</th>
+                    <th>Cryptographic Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Digest Size</strong></td>
+                    <td>160 bits (20 bytes / 40 hex characters)</td>
+                    <td>Consists of five 32-bit words ($A, B, C, D, E$)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Block Size</strong></td>
+                    <td>512 bits (64 bytes / 16 words)</td>
+                    <td>Processed sequentially via Merkle&ndash;Damg&aring;rd iterations</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Word Size</strong></td>
+                    <td>32 bits</td>
+                    <td>Unsigned big-endian integer representation</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Maximum Input Length</strong></td>
+                    <td>$2^{64} - 1$ bits</td>
+                    <td>Length appended as 64-bit big-endian integer</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Number of Rounds</strong></td>
+                    <td>80 steps (4 stages &times; 20 steps)</td>
+                    <td>Each stage uses a distinct function $f_t$ and constant $K_t$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Endianness</strong></td>
+                    <td>Big-Endian</td>
+                    <td>Most significant byte first (contrasts with MD5's little-endian)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>4. Mathematical Architecture &amp; Execution Pipeline</h3>
+            <p>
+              Processing an input message through SHA-1 involves five mathematical phases:
+            </p>
+
+            <h4>Phase 1: Message Padding (RFC 3174 &sect;4)</h4>
+            <p>
+              The message of bit-length $L$ is padded so that its bit length is congruent to <strong>448 modulo 512</strong> (equivalent to <strong>56 bytes modulo 64</strong>). Padding is always performed, even if the message already has the desired length.
+            </p>
+            <div class="formula-block">
+<strong>Padding Structure:</strong>
+  [Original Message (L bits)] + [1 bit '1' (byte 0x80)] + [k zero bits '0' (0x00 bytes)]
+  where (L + 1 + k) mod 512 &equiv; 448   (with 0 &le; k &le; 511 bits)
+            </div>
+
+            <h4>Phase 2: Appending 64-bit Length Value</h4>
+            <p>
+              A 64-bit unsigned representation of the original message bit-length $L$ is appended to the message. In SHA-1, this length is encoded in <strong>Big-Endian</strong> format (most significant byte first). The padded message now has an exact multiple of 512 bits:
+            </p>
+            <div class="formula-block">
+<strong>Total Padded Length:</strong>
+  N &times; 512 bits  =  N &times; 64 bytes  =  N &times; 16 (32-bit words)
+            </div>
+
+            <h4>Phase 3: Initializing 160-bit Chaining Variables</h4>
+            <p>
+              A five-word (160-bit) buffer of chaining registers ($H_0, H_1, H_2, H_3, H_4$) is initialized with standard hexadecimal constants:
+            </p>
+            <div class="formula-block">
+<strong>Initial Register Constants (IV):</strong>
+  H0 = 0x67452301
+  H1 = 0xEFCDAB89
+  H2 = 0x98BADCFE
+  H3 = 0x10325476
+  H4 = 0xC3D2E1F0
+            </div>
+
+            <h4>Phase 4: Message Schedule Expansion ($W_0 \dots W_{79}$)</h4>
+            <p>
+              Each 512-bit block is parsed into sixteen 32-bit big-endian words $W_0 \dots W_{15}$. These are expanded into 80 words $W_0 \dots W_{79}$ using the recurrence formula:
+            </p>
+            <div class="formula-block">
+<strong>Schedule Expansion (for t = 16 to 79):</strong>
+  W[t] = ROTL<sup>1</sup>( W[t-3] &oplus; W[t-8] &oplus; W[t-14] &oplus; W[t-16] )
+  where ROTL<sup>n</sup>(X) = (X &laquo; n) | (X &raquo; (32 - n))
+            </div>
+            <div class="callout-box">
+              <strong>Architectural Note:</strong> The 1-bit left circular rotation ($\text{ROTL}^1$) was the sole modification introduced in SHA-1 compared to the original SHA-0. This critical shift introduced early diffusion and disrupted linear cryptanalytic equations.
+            </div>
+
+            <h4>Phase 5: 80 Rounds of Compression (4 Stages &times; 20 Steps)</h4>
+            <p>
+              The 80 steps are grouped into 4 distinct functional stages of 20 steps each:
+            </p>
+            <div class="rounds-table-wrapper">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Stage</th>
+                    <th>Steps ($t$)</th>
+                    <th>Non-linear Function $f_t(B, C, D)$</th>
+                    <th>Function Name</th>
+                    <th>Additive Constant $K_t$</th>
+                    <th>Mathematical Derivation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Stage 1</strong></td>
+                    <td>0 &ndash; 19</td>
+                    <td><code>(B &amp; C) | (~B &amp; D)</code></td>
+                    <td>Ch (Conditional / Choose)</td>
+                    <td><code>0x5A827999</code></td>
+                    <td>$\lfloor 2^{30} \times \sqrt{2} \rfloor$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Stage 2</strong></td>
+                    <td>20 &ndash; 39</td>
+                    <td><code>B ^ C ^ D</code></td>
+                    <td>Parity (Bitwise XOR)</td>
+                    <td><code>0x6ED9EBA1</code></td>
+                    <td>$\lfloor 2^{30} \times \sqrt{3} \rfloor$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Stage 3</strong></td>
+                    <td>40 &ndash; 59</td>
+                    <td><code>(B &amp; C) | (B &amp; D) | (C &amp; D)</code></td>
+                    <td>Maj (Majority)</td>
+                    <td><code>0x8F1BBCDC</code></td>
+                    <td>$\lfloor 2^{30} \times \sqrt{5} \rfloor$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Stage 4</strong></td>
+                    <td>60 &ndash; 79</td>
+                    <td><code>B ^ C ^ D</code></td>
+                    <td>Parity (Bitwise XOR)</td>
+                    <td><code>0xCA62C1D6</code></td>
+                    <td>$\lfloor 2^{30} \times \sqrt{10} \rfloor$</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>At each step $t$ ($0 \le t \le 79$), the working registers update according to:</p>
+            <div class="formula-block">
+<strong>Per-Step Transformation:</strong>
+  TEMP = (ROTL<sup>5</sup>(A) + f<sub>t</sub>(B, C, D) + E + W[t] + K<sub>t</sub>) mod 2<sup>32</sup>
+  E    = D
+  D    = C
+  C    = ROTL<sup>30</sup>(B)
+  B    = A
+  A    = TEMP
+            </div>
+
+            <h4>Phase 6: Merkle&ndash;Damg&aring;rd Accumulation &amp; Big-Endian Digest Assembly</h4>
+            <p>
+              After completing 80 steps for a block, the working registers are accumulated into the chaining variables:
+            </p>
+            <div class="formula-block">
+<strong>Chaining Variable Update:</strong>
+  H0 = (H0 + A) mod 2<sup>32</sup>
+  H1 = (H1 + B) mod 2<sup>32</sup>
+  H2 = (H2 + C) mod 2<sup>32</sup>
+  H3 = (H3 + D) mod 2<sup>32</sup>
+  H4 = (H4 + E) mod 2<sup>32</sup>
+            </div>
+            <p>
+              The final 160-bit digest is the big-endian concatenation of $H_0, H_1, H_2, H_3, H_4$, yielding a 40-character lowercase hexadecimal string.
+            </p>
+
+            <h3>5. Avalanche Effect &amp; Strict Avalanche Criterion (SAC)</h3>
+            <p>
+              The <strong>Avalanche Effect</strong> is a vital cryptographic metric. A function satisfies the <strong>Strict Avalanche Criterion (SAC)</strong> if flipping any single bit in the input causes each output bit to flip with a probability of 50%. For SHA-1, flipping one bit or character in the input should invert approximately <strong>80 &plusmn; 8 bits out of the 160 output bits</strong>.
+            </p>
+
+            <h3>6. Security Status &amp; Modern Cryptanalysis</h3>
+            <p>
+              In 2005, cryptanalysts <strong>Xiaoyun Wang, Yiqun Lisa Yin, and Hongbo Yu</strong> presented theoretical collision attacks against full SHA-1 requiring $2^{69}$ operations (substantially less than the $2^{80}$ birthday bound). In 2017, researchers from CWI Amsterdam and Google achieved the landmark <strong>SHAttered attack</strong>, constructing the first real-world collision: two distinct PDF documents with identical SHA-1 hashes.
+            </p>
+            <div class="callout-box danger">
+              <strong>Deprecation Notice:</strong> SHA-1 is cryptographically broken for collision resistance and must <em>never</em> be used in digital signatures, TLS certificates, or authentication mechanisms. Industry standards require transitioning to <strong>SHA-256 / SHA-512 (SHA-2)</strong> or <strong>SHA-3 (Keccak)</strong>.
+            </div>
+          </div>
+        </section>
+
+        <!-- =========================================================
+             3. PROCEDURE TAB
+             ========================================================= -->
         <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <!-- Group fills this section with numbered procedure steps. -->
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <p>Add the guided steps learners will follow here.</p>
+          <div class="theory-section-card">
+            <h3>Laboratory Procedure</h3>
+            <p>Follow these structured steps to carry out the SHA-1 algorithm simulation and examine its computational mechanics:</p>
+
+            <ol class="procedure-steps-list">
+              <li>
+                <strong>Input Message Specification:</strong> Navigate to the <em>Simulation</em> tab. Enter an arbitrary text string into the input textarea, or select one of the sample preset buttons.
+              </li>
+              <li>
+                <strong>Generate SHA-1 Digest:</strong> Click the <strong>"Generate SHA-1 Hash"</strong> button. The SHA-1 engine processes the input through all 80 compression rounds and produces the 160-bit (40-hex character) digest. In <em>Dynamic Nonce / Salt Mode</em>, a unique cryptographic token is applied on each run.
+              </li>
+              <li>
+                <strong>Inspect Preprocessing &amp; RFC 3174 Padding:</strong> Switch to the <strong>Padding Inspector</strong> sub-tab. Observe the message bytes, the <code>0x80</code> byte, zero-padding, and 64-bit big-endian length descriptor.
+              </li>
+              <li>
+                <strong>Explore 80-Word Message Schedule:</strong> Switch to the <strong>Message Schedule</strong> sub-tab to inspect $W_0 \dots W_{15}$ (block words) and the expanded words $W_{16} \dots W_{79}$.
+              </li>
+              <li>
+                <strong>Trace Compression Rounds:</strong> Switch to the <strong>Rounds &amp; Step Explorer</strong> sub-tab. Use the interactive step slider ($t = 0 \dots 79$) to trace intermediate register states ($a, b, c, d, e$), auxiliary functions $f_t$, and constants $K_t$.
+              </li>
+              <li>
+                <strong>Evaluate Avalanche Effect &amp; 160-Bit Heatmap:</strong> Open the <strong>Avalanche Visualizer</strong> sub-tab. Modify the message by flipping a bit or changing a character. Examine the bitwise Hamming distance, the percentage change, and the 160-cell register heatmap diagram.
+              </li>
+              <li>
+                <strong>Knowledge Check:</strong> Open the <strong>Assessment / Quiz</strong> tab and answer all 10 diagnostic questions.
+              </li>
+            </ol>
+
+            <!-- Algorithm Execution Flowchart -->
+            <div class="flowchart-container">
+              <div class="flowchart-title">SHA-1 Execution Pipeline &mdash; Architectural Flowchart</div>
+
+              <div class="flow-steps-grid">
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">1</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">Plaintext Input Message ($M$)</div>
+                    <div class="flow-step-desc">Accepts arbitrary-length text string of length $L$ bits.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">2</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">UTF-8 Encoding &amp; Padding (<code class="code-badge">0x80</code> + Zeros)</div>
+                    <div class="flow-step-desc">Appends '1' bit (0x80 byte) followed by zero bits until length &equiv; 448 mod 512.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">3</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">Append 64-bit Big-Endian Length Field</div>
+                    <div class="flow-step-desc">Appends original length $L$ mod $2^{64}$ (big-endian). Total size becomes $N \times 512$ bits.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">4</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">Parse into 512-bit Blocks &amp; Initialize IV ($H_0 \dots H_4$)</div>
+                    <div class="flow-step-desc">Loads initial 32-bit constants: $H_0=\text{67452301}, H_1=\text{EFCDAB89}, H_2=\text{98BADCFE}, H_3=\text{10325476}, H_4=\text{C3D2E1F0}$.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">5</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">Expand Schedule into 80 Words ($W_0 \dots W_{79}$)</div>
+                    <div class="flow-step-desc">Computes $W_t = \text{ROTL}^1(W_{t-3} \oplus W_{t-8} \oplus W_{t-14} \oplus W_{t-16})$ for $t = 16 \dots 79$.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">6</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">80-Step Compression Loop (4 Stages &times; 20 Steps)</div>
+                    <div class="flow-step-desc">Executes non-linear rounds: Stage 1 (Ch), Stage 2 (Parity), Stage 3 (Maj), Stage 4 (Parity) with constants $K_t$.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">7</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">Merkle&ndash;Damg&aring;rd Chaining Accumulation</div>
+                    <div class="flow-step-desc">Adds working registers to chaining buffer: $H_i = (H_i + \text{reg}_i) \bmod 2^{32}$.</div>
+                  </div>
+                </div>
+
+                <div class="flow-arrow-down">&darr;</div>
+
+                <div class="flow-step-node">
+                  <div class="flow-step-badge">8</div>
+                  <div class="flow-step-content">
+                    <div class="flow-step-name">Big-Endian Digest Assembly &amp; Avalanche Visualizer</div>
+                    <div class="flow-step-desc">Outputs 40 lowercase hexadecimal characters (160 bits) and feeds the 160-bit Avalanche difference matrix.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Expandable Steppers -->
+            <h3 style="margin-top: 32px;">Interactive Laboratory Procedure Walkthrough</h3>
+            <div class="stepper" id="sha1-stepper" role="list">
+              <div class="stepper-item open" data-step="1">
+                <button class="stepper-header" type="button" aria-expanded="true" aria-controls="step-body-1">
+                  <span class="stepper-num">1</span>
+                  <span class="stepper-title">Select or Enter Input Message</span>
+                  <span class="stepper-chevron">&#9660;</span>
+                </button>
+                <div class="stepper-body" id="step-body-1">
+                  <p>In the <strong>Hash Generator</strong> sub-tab, type your test string or click a preset like <code>"abc"</code>. Observe the character and bit counters update in real time.</p>
+                  <div class="step-tip">&#128161; <strong>NIST Vector:</strong> The standard test vector for <code>"abc"</code> is <code>a9993e364706816aba3e25717850c26c9cd0d89d</code>.</div>
+                  <div class="stepper-nav"><button class="btn-primary btn-sm" type="button" data-step-next>Next Step &rarr;</button></div>
+                </div>
+              </div>
+
+              <div class="stepper-item" data-step="2">
+                <button class="stepper-header" type="button" aria-expanded="false" aria-controls="step-body-2">
+                  <span class="stepper-num">2</span>
+                  <span class="stepper-title">Observe Padding &amp; Length Construction</span>
+                  <span class="stepper-chevron">&#9660;</span>
+                </button>
+                <div class="stepper-body" id="step-body-2" hidden>
+                  <p>Open the <strong>Message Padding Inspector</strong> to view the byte-level breakdown: message bytes, <code>0x80</code> start byte, zero-fill, and 64-bit big-endian length bytes.</p>
+                  <div class="step-tip">&#128161; Try inputs of lengths 55, 56, and 64 characters to observe when a second 512-bit block is allocated.</div>
+                  <div class="stepper-nav"><button class="btn-primary btn-sm" type="button" data-step-next>Next Step &rarr;</button></div>
+                </div>
+              </div>
+
+              <div class="stepper-item" data-step="3">
+                <button class="stepper-header" type="button" aria-expanded="false" aria-controls="step-body-3">
+                  <span class="stepper-num">3</span>
+                  <span class="stepper-title">Inspect 80-Word Schedule Expansion</span>
+                  <span class="stepper-chevron">&#9660;</span>
+                </button>
+                <div class="stepper-body" id="step-body-3" hidden>
+                  <p>Open the <strong>Message Schedule</strong> sub-tab. Observe how words $W_0 \dots W_{15}$ are taken directly from the 512-bit block, while words $W_{16} \dots W_{79}$ are generated by rotating the XOR sum by 1 bit.</p>
+                  <div class="stepper-nav"><button class="btn-primary btn-sm" type="button" data-step-next>Next Step &rarr;</button></div>
+                </div>
+              </div>
+
+              <div class="stepper-item" data-step="4">
+                <button class="stepper-header" type="button" aria-expanded="false" aria-controls="step-body-4">
+                  <span class="stepper-num">4</span>
+                  <span class="stepper-title">Trace the 80 Compression Steps</span>
+                  <span class="stepper-chevron">&#9660;</span>
+                </button>
+                <div class="stepper-body" id="step-body-4" hidden>
+                  <p>Open the <strong>Rounds &amp; Step Explorer</strong>. Move the step slider $t$ from 0 to 79. Inspect how registers $a, b, c, d, e$ transform across the four logical stages (Ch, Parity, Maj, Parity).</p>
+                  <div class="stepper-nav"><button class="btn-primary btn-sm" type="button" data-step-next>Next Step &rarr;</button></div>
+                </div>
+              </div>
+
+              <div class="stepper-item" data-step="5">
+                <button class="stepper-header" type="button" aria-expanded="false" aria-controls="step-body-5">
+                  <span class="stepper-num">5</span>
+                  <span class="stepper-title">Evaluate Avalanche Sensitivity &amp; 160-Bit Heatmap</span>
+                  <span class="stepper-chevron">&#9660;</span>
+                </button>
+                <div class="stepper-body" id="step-body-5" hidden>
+                  <p>Open the <strong>Avalanche Visualizer</strong>. Click "Flip last bit" or "Toggle 1 Character". Examine the bitwise Hamming distance and inspect the 160-cell heatmap diagram.</p>
+                  <div class="step-tip">&#127919; <strong>Target Result:</strong> A good hash flips approximately 50% (~80 out of 160 bits).</div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
+        <!-- =========================================================
+             4. SIMULATION TAB
+             ========================================================= -->
         <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <!-- Group adds experiment-specific input fields and buttons here. -->
-            <h2>Simulation controls</h2>
-            <p>Add inputs and controls for the experiment simulation.</p>
+          <!-- Simulation Sub-Navigation Bar -->
+          <div class="sim-subnav" role="tablist" aria-label="Simulation Views">
+            <button type="button" class="sim-subtab-btn active" data-sim-view="generator">Hash Generator &amp; Registers</button>
+            <button type="button" class="sim-subtab-btn" data-sim-view="padding">Padding Inspector (RFC 3174)</button>
+            <button type="button" class="sim-subtab-btn" data-sim-view="schedule">Message Schedule ($W_0 \dots W_{79}$)</button>
+            <button type="button" class="sim-subtab-btn" data-sim-view="rounds">Rounds &amp; Step Explorer</button>
+            <button type="button" class="sim-subtab-btn" data-sim-view="avalanche">Avalanche &amp; 160-Bit Heatmap</button>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <!-- Group adds result displays here. -->
-            <h2>Simulation output</h2>
-            <p>Results will appear here after the simulation runs.</p>
+
+          <!-- =========================================================
+               SUB-VIEW 1: HASH GENERATOR & REGISTERS
+               ========================================================= -->
+          <div class="sim-panel active" id="sim-view-generator">
+            <div class="sim-box">
+              <h3>SHA-1 Hash Generator &amp; Chaining Variables</h3>
+              <p>Type or paste any text message below or select a NIST preset to compute its 160-bit SHA-1 message digest.</p>
+
+              <label for="sha1Input"><strong>Input Message:</strong></label>
+              <textarea id="sha1Input" class="sha1-large-textarea" rows="3" placeholder="Type or paste your message here (e.g. 'abc', password, or plaintext)...">abc</textarea>
+              <div class="counter-bar">
+                <span id="charCount">Characters: 3</span>
+                <span id="bitCount">Original Length: 24 bits</span>
+              </div>
+
+              <!-- Dynamic Nonce / Salt Mode Toggle -->
+              <div class="salt-toggle-card">
+                <label class="salt-toggle-label">
+                  <input type="checkbox" id="enableSaltToggle">
+                  <span><strong>Dynamic Nonce / Salt Mode</strong> (Generates unique non-repeating hash for identical inputs)</span>
+                </label>
+                <span id="saltBadgeToken" class="salt-badge-token">Deterministic Mode</span>
+              </div>
+
+              <!-- Preset Buttons -->
+              <div class="preset-buttons">
+                <span style="font-size: 12px; font-weight: bold; color: var(--color-text-muted); margin-right: 4px;">NIST &amp; Standard Presets:</span>
+                <button type="button" class="preset-btn" data-sample="">Empty string ("")</button>
+                <button type="button" class="preset-btn" data-sample="a">"a"</button>
+                <button type="button" class="preset-btn" data-sample="abc">"abc" (Standard Test Vector)</button>
+                <button type="button" class="preset-btn" data-sample="message digest">"message digest"</button>
+                <button type="button" class="preset-btn" data-sample="The quick brown fox jumps over the lazy dog">"The quick brown fox..."</button>
+                <button type="button" class="preset-btn" data-sample="Cryptography Virtual Lab 2026">"Cryptography Virtual Lab 2026"</button>
+              </div>
+
+              <div class="button-row">
+                <button type="button" id="btnGenerateHash" class="btn-primary">Generate SHA-1 Hash</button>
+                <button type="button" id="btnClearInput" class="btn-secondary">Clear</button>
+              </div>
+
+              <!-- Hash Output Display Card -->
+              <div class="hash-display-card">
+                <div style="font-size: 12px; color: #b0a59f; text-transform: uppercase; font-weight: bold; margin-bottom: 6px;">
+                  160-bit SHA-1 Digest Output (Hexadecimal):
+                </div>
+                <div class="hash-output-row">
+                  <span id="hashOutput" class="hash-hex-value">a9993e364706816aba3e25717850c26c9cd0d89d</span>
+                  <button type="button" id="btnCopyHash" class="btn-copy">Copy Hash</button>
+                </div>
+                <div style="margin-top: 8px; font-size: 13px; color: #ccc;">
+                  <strong>Digest Length:</strong> <span id="hashLength">40</span> hexadecimal characters (160 bits / 20 bytes)
+                </div>
+              </div>
+
+              <!-- Self-Check Terminal Card -->
+              <div style="margin-top: 16px;">
+                <label style="font-size: 12px; font-weight: bold; color: #ffda8b; text-transform: uppercase;">NIST FIPS 180-1 Known-Answer Self-Check:</label>
+                <div class="terminal-box" id="selfCheckTerminal"></div>
+              </div>
+
+              <!-- Output Diagnostic Analysis -->
+              <h4 style="margin: 20px 0 10px; color: #ffda8b;">Diagnostic Output Analysis</h4>
+              <div class="analysis-container">
+                <div class="metric-card">
+                  <span class="metric-label">Input Character Count</span>
+                  <span id="statCharCount" class="metric-value">3 characters</span>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">Original Bit Length</span>
+                  <span id="statOrigBits" class="metric-value">24 bits</span>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">Padded Byte Size</span>
+                  <span id="statPaddedBytes" class="metric-value">64 bytes</span>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">512-bit Block Count</span>
+                  <span id="statBlockCount" class="metric-value">1 block</span>
+                </div>
+              </div>
+
+              <!-- 5 Working Registers -->
+              <h5 style="margin: 20px 0 8px; color: #f6f0ec;">Final 160-Bit Working Register State ($A, B, C, D, E$):</h5>
+              <div class="registers-grid">
+                <div class="register-card">
+                  <div class="register-name">Register A (32-bit):</div>
+                  <div id="regA" class="register-hex">a9993e36</div>
+                </div>
+                <div class="register-card">
+                  <div class="register-name">Register B (32-bit):</div>
+                  <div id="regB" class="register-hex">4706816a</div>
+                </div>
+                <div class="register-card">
+                  <div class="register-name">Register C (32-bit):</div>
+                  <div id="regC" class="register-hex">ba3e2571</div>
+                </div>
+                <div class="register-card">
+                  <div class="register-name">Register D (32-bit):</div>
+                  <div id="regD" class="register-hex">7850c26c</div>
+                </div>
+                <div class="register-card">
+                  <div class="register-name">Register E (32-bit):</div>
+                  <div id="regE" class="register-hex">9cd0d89d</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 10px; font-size: 13px; color: var(--color-text-muted);">
+                <strong>Big-Endian Word Concatenation ($A \parallel B \parallel C \parallel D \parallel E$):</strong>
+                <code id="regHexConcat" class="code-badge">a9993e364706816aba3e25717850c26c9cd0d89d</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================================================
+               SUB-VIEW 2: RFC 3174 PADDING INSPECTOR
+               ========================================================= -->
+          <div class="sim-panel" id="sim-view-padding">
+            <div class="sim-box">
+              <h3>RFC 3174 Message Preprocessing &amp; Padding Inspector</h3>
+              <p>
+                Observe how an arbitrary text message is converted to bytes, suffixed with a mandatory <code>0x80</code> start byte, padded with zero bytes until its length is 56 mod 64 (448 mod 512), and terminated with the 64-bit big-endian length descriptor.
+              </p>
+
+              <div class="field">
+                <label for="padInputText"><strong>Message for Padding Inspection:</strong></label>
+                <input type="text" id="padInputText" class="sha1-large-textarea" style="min-height: 48px; height: 48px;" value="abc">
+              </div>
+
+              <div class="button-row">
+                <button type="button" id="btnInspectPad" class="btn-primary">Inspect Padding</button>
+              </div>
+
+              <div class="byte-legend">
+                <span class="legend-chip"><span class="byte-badge badge-msg">M</span> Original Message Bytes</span>
+                <span class="legend-chip"><span class="byte-badge badge-one">80</span> Start Byte (0x80 = 10000000<sub>2</sub>)</span>
+                <span class="legend-chip"><span class="byte-badge badge-zero">00</span> Zero-Fill Bytes (k bits)</span>
+                <span class="legend-chip"><span class="byte-badge badge-len">LEN</span> 64-bit Big-Endian Length Field</span>
+              </div>
+
+              <div class="terminal-box" id="padSummaryBox"></div>
+
+              <h4 style="margin: 16px 0 8px; color: #ffda8b;">Byte-by-Byte Hex Stream Representation:</h4>
+              <div class="byte-stream-container" id="padByteStream"></div>
+            </div>
+          </div>
+
+          <!-- =========================================================
+               SUB-VIEW 3: MESSAGE SCHEDULE (80 WORDS)
+               ========================================================= -->
+          <div class="sim-panel" id="sim-view-schedule">
+            <div class="sim-box">
+              <h3>80-Word Message Expansion Schedule ($W_0 \dots W_{79}$)</h3>
+              <p>
+                Each 512-bit block is parsed into words $W_0 \dots W_{15}$. The remaining 64 words ($W_{16} \dots W_{79}$) are generated by rotating the XOR sum of 4 earlier words left by 1 bit:
+                <br>
+                <code class="code-badge">W[t] = ROTL<sup>1</sup>( W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16] )</code>
+              </p>
+
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                <label for="schedBlockSelect"><strong>Select 512-Bit Block:</strong></label>
+                <select id="schedBlockSelect" class="form-control" style="background: #181311; color: #fff; border: 1px solid var(--color-border); padding: 6px 12px; border-radius: 4px;"></select>
+              </div>
+
+              <div class="table-scrollable">
+                <table class="styled-table">
+                  <thead>
+                    <tr>
+                      <th>Index ($t$)</th>
+                      <th>Word $W[t]$ (32-bit Hex)</th>
+                      <th>Derivation Source</th>
+                      <th>Index ($t$)</th>
+                      <th>Word $W[t]$ (32-bit Hex)</th>
+                      <th>Derivation Source</th>
+                    </tr>
+                  </thead>
+                  <tbody id="schedTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================================================
+               SUB-VIEW 4: ROUNDS & STEP EXPLORER
+               ========================================================= -->
+          <div class="sim-panel" id="sim-view-rounds">
+            <div class="sim-box">
+              <h3>80-Round Compression &amp; Intermediate Register Trace</h3>
+              <p>
+                Trace registers $A, B, C, D, E$ at the end of each 20-step stage and inspect the Merkle&ndash;Damg&aring;rd feed-forward addition.
+              </p>
+
+              <div class="rounds-table-wrapper">
+                <table class="styled-table">
+                  <thead>
+                    <tr>
+                      <th>Block &amp; Stage (Function)</th>
+                      <th>Register A</th>
+                      <th>Register B</th>
+                      <th>Register C</th>
+                      <th>Register D</th>
+                      <th>Register E</th>
+                    </tr>
+                  </thead>
+                  <tbody id="roundsTableBody"></tbody>
+                </table>
+              </div>
+
+              <h4 style="margin: 24px 0 10px; color: #ffda8b;">Interactive Step-by-Step Explorer ($t = 0 \dots 79$)</h4>
+              <div class="step-slider-container">
+                <div class="step-slider-row">
+                  <label for="stepBlockSelect"><strong>Block:</strong></label>
+                  <select id="stepBlockSelect" class="form-control" style="background: #14100e; color: #fff; border: 1px solid var(--color-border); padding: 4px 10px; border-radius: 4px;"></select>
+
+                  <label for="stepRangeInput"><strong>Step $t$ = <span id="stepLabel" style="color: #79aeff; font-size: 1.1rem;">0</span>:</strong></label>
+                  <input type="range" id="stepRangeInput" class="step-range-input" min="0" max="79" value="0">
+                </div>
+                <div class="step-info-box" id="stepInfoBox"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================================================
+               SUB-VIEW 5: AVALANCHE EFFECT & 160-BIT HEATMAP
+               ========================================================= -->
+          <div class="sim-panel" id="sim-view-avalanche">
+            <div class="avalanche-section" style="margin-top: 0;">
+              <div class="avalanche-header">
+                <h3>Avalanche Effect Visualizer &amp; 160-Bit Heatmap Matrix</h3>
+                <span class="badge-avalanche">Strict Avalanche Criterion (SAC) Verification</span>
+              </div>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 14px;">
+                The Avalanche Effect requires that altering even a single bit in the input message creates a dramatic, non-linear cascading change in approximately <strong>50% of the 160 output bits</strong> (~80 bits changed).
+              </p>
+
+              <div class="avalanche-inputs-grid">
+                <div>
+                  <label for="avMsg1"><strong>Message 1 (Baseline Message):</strong></label>
+                  <input type="text" id="avMsg1" class="sha1-large-textarea" style="min-height: 48px; height: 48px;" value="Cryptography">
+                  <div style="margin-top: 6px; font-size: 12px; font-family: monospace; color: var(--color-text-muted); word-break: break-all;">
+                    Hash 1: <strong id="avHash1" style="color: #79aeff;">—</strong>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="avMsg2"><strong>Message 2 (Mutated / Sensitivity Input):</strong></label>
+                  <input type="text" id="avMsg2" class="sha1-large-textarea" style="min-height: 48px; height: 48px;" value="cryptography">
+                  <div style="margin-top: 6px; font-size: 12px; font-family: monospace; color: var(--color-text-muted); word-break: break-all;">
+                    Hash 2: <strong id="avHash2" style="color: #79aeff;">—</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Mutation Presets -->
+              <div class="preset-buttons">
+                <span style="font-size: 12px; font-weight: bold; color: var(--color-text-muted); margin-right: 4px;">Quick Mutations:</span>
+                <button type="button" class="preset-btn" id="btnAvFlipBit">Flip Last Bit</button>
+                <button type="button" class="preset-btn" id="btnAvToggleCase">Toggle Case</button>
+                <button type="button" class="preset-btn" id="btnAvAppendChar">Append Dot (.)</button>
+                <button type="button" class="preset-btn" id="btnAvToggleChar">Change 1 Character</button>
+                <button type="button" class="preset-btn" id="btnAvCopyMsg">Copy Baseline to Msg 2</button>
+              </div>
+
+              <div class="button-row" style="margin-bottom: 16px;">
+                <button type="button" id="btnAnalyzeAvalanche" class="btn-primary">Analyze Avalanche Diffusion</button>
+              </div>
+
+              <!-- Avalanche Stat Banner -->
+              <div class="avalanche-stat-banner">
+                <div class="avalanche-stat-item">
+                  <span id="avBitsFlipped" class="stat-number stat-flipped">0 / 160</span>
+                  <span class="avalanche-stat-label">Bits Flipped (Hamming Distance)</span>
+                </div>
+                <div class="avalanche-stat-item">
+                  <span id="avPercent" class="stat-number stat-percent">0.00%</span>
+                  <span class="avalanche-stat-label">Diffusion Rate (~50% Ideal)</span>
+                </div>
+                <div class="avalanche-stat-item">
+                  <span id="avHexFlipped" class="stat-number">0 / 40</span>
+                  <span class="avalanche-stat-label">Hex Characters Changed</span>
+                </div>
+                <div class="avalanche-stat-item">
+                  <span id="avQuality" class="stat-number stat-status" style="font-size: 1.05rem;">Ready</span>
+                  <span class="avalanche-stat-label">Avalanche Assessment</span>
+                </div>
+              </div>
+
+              <!-- Hex Difference Highlight Box -->
+              <div style="background: #14100e; border: 1px solid #382c26; border-radius: 4px; padding: 12px 16px; margin: 12px 0;">
+                <div style="font-size: 12px; color: #b0a59f; text-transform: uppercase; font-weight: bold; margin-bottom: 6px;">
+                  Digest Comparison (Hex Differences Highlighted in Red):
+                </div>
+                <div id="avHexDiffDisplay" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; word-break: break-all;"></div>
+              </div>
+
+              <!-- 160-Bit Heatmap Matrix Diagram -->
+              <div class="avalanche-grid-container">
+                <div class="avalanche-grid-title">
+                  <span>160-Bit Digest Heatmap Diagram (Registers A, B, C, D, E &times; 32 Bits = 160 Cells)</span>
+                  <span style="font-size: 11px; font-weight: normal; color: #ccc;">Hover over any cell to inspect bit index and registers</span>
+                </div>
+
+                <div class="bit-matrix-160" id="bitMatrixContainer">
+                  <!-- Dynamically populated 5 rows x 32 bits -->
+                </div>
+
+                <div class="legend-bar">
+                  <div class="legend-item">
+                    <span class="legend-chip" style="background: #4a1818; border: 1px solid #7c2626; width: 14px; height: 14px; border-radius: 2px;"></span>
+                    <span>Flipped Bit ('1' &mdash; Changed via Avalanche)</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-chip" style="background: #1c271e; border: 1px solid #2c4230; width: 14px; height: 14px; border-radius: 2px;"></span>
+                    <span>Identical Bit ('0' &mdash; Unchanged)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="observation-box" id="avObservationBox"></div>
+            </div>
           </div>
         </section>
 
+        <!-- =========================================================
+             5. ASSESSMENT / QUIZ TAB (10 QUESTIONS)
+             ========================================================= -->
         <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <!-- Group adds quiz questions and answer controls here. -->
-          <div class="quiz-panel">
-            <h2>Knowledge check</h2>
-            <p>Add experiment-specific quiz questions here.</p>
+          <div class="theory-section-card">
+            <h3>Knowledge Check &amp; Assessment Quiz</h3>
+            <p>Answer all 10 questions below to evaluate your theoretical and algorithmic mastery of the SHA-1 algorithm, RFC 3174 padding, compression stages, and security cryptanalysis.</p>
+
+            <form id="quizForm" class="quiz-wrapper">
+              <!-- Q1 -->
+              <div class="quiz-card" data-q="1" data-correct="b">
+                <div class="quiz-question-title">1. What is the fixed output digest size produced by the SHA-1 hashing algorithm?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q1" value="a"> 128 bits (16 bytes / 32 hex characters)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q1" value="b"> 160 bits (20 bytes / 40 hex characters)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q1" value="c"> 256 bits (32 bytes / 64 hex characters)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q1" value="d"> 512 bits (64 bytes / 128 hex characters)</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q1">
+                  <strong>Explanation:</strong> SHA-1 maintains five 32-bit registers ($A, B, C, D, E$), producing an exact 160-bit digest represented by 40 hexadecimal characters. In contrast, MD5 is 128 bits and SHA-256 is 256 bits.
+                </div>
+              </div>
+
+              <!-- Q2 -->
+              <div class="quiz-card" data-q="2" data-correct="c">
+                <div class="quiz-question-title">2. What block size does SHA-1 process at each Merkle–Damgård compression iteration?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q2" value="a"> 64 bits (2 words)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q2" value="b"> 160 bits (5 words)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q2" value="c"> 512 bits (16 words of 32 bits each)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q2" value="d"> 1024 bits (16 words of 64 bits each)</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q2">
+                  <strong>Explanation:</strong> The SHA-1 compression function operates on 512-bit (64-byte) blocks partitioned into sixteen 32-bit words ($W_0 \dots W_{15}$).
+                </div>
+              </div>
+
+              <!-- Q3 -->
+              <div class="quiz-card" data-q="3" data-correct="c">
+                <div class="quiz-question-title">3. How many total compression steps (operations) does SHA-1 execute for each 512-bit block?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q3" value="a"> 16 operations</label>
+                  <label class="quiz-option-label"><input type="radio" name="q3" value="b"> 64 operations</label>
+                  <label class="quiz-option-label"><input type="radio" name="q3" value="c"> 80 operations</label>
+                  <label class="quiz-option-label"><input type="radio" name="q3" value="d"> 160 operations</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q3">
+                  <strong>Explanation:</strong> SHA-1 executes 80 compression steps, structured as 4 stages of 20 steps each ($t = 0 \dots 79$). MD5 uses 64 steps (4 &times; 16).
+                </div>
+              </div>
+
+              <!-- Q4 -->
+              <div class="quiz-card" data-q="4" data-correct="a">
+                <div class="quiz-question-title">4. Which sequence correctly lists the non-linear auxiliary functions used across the 4 stages of SHA-1?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q4" value="a"> Ch (Conditional), Parity (XOR), Maj (Majority), Parity (XOR)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q4" value="b"> Maj (Majority), Ch (Conditional), Parity (XOR), Parity (XOR)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q4" value="c"> Parity (XOR), Ch (Conditional), Maj (Majority), Ch (Conditional)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q4" value="d"> Ch (Conditional), Maj (Majority), Parity (XOR), Maj (Majority)</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q4">
+                  <strong>Explanation:</strong> Steps 0–19 use Ch ($f(b,c,d) = (b \land c) \lor (\neg b \land d)$), steps 20–39 use Parity ($b \oplus c \oplus d$), steps 40–59 use Maj ($ (b \land c) \lor (b \land d) \lor (c \land d) $), and steps 60–79 use Parity again.
+                </div>
+              </div>
+
+              <!-- Q5 -->
+              <div class="quiz-card" data-q="5" data-correct="b">
+                <div class="quiz-question-title">5. How does SHA-1 expand the 16 original block words ($W_0 \dots W_{15}$) into 80 words ($W_{16} \dots W_{79}$)?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q5" value="a"> Each word is the arithmetic sum of the preceding two words modulo 2^32</label>
+                  <label class="quiz-option-label"><input type="radio" name="q5" value="b"> W[t] = ROTL^1( W[t-3] &oplus; W[t-8] &oplus; W[t-14] &oplus; W[t-16] )</label>
+                  <label class="quiz-option-label"><input type="radio" name="q5" value="c"> Direct periodic copy of W[t mod 16]</label>
+                  <label class="quiz-option-label"><input type="radio" name="q5" value="d"> Running the previous 16 words through an S-box substitution table</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q5">
+                  <strong>Explanation:</strong> FIPS PUB 180-1 defines $W_t = \text{ROTL}^1(W_{t-3} \oplus W_{t-8} \oplus W_{t-14} \oplus W_{t-16})$. The 1-bit circular left shift was the critical modification distinguishing SHA-1 from SHA-0.
+                </div>
+              </div>
+
+              <!-- Q6 -->
+              <div class="quiz-card" data-q="6" data-correct="a">
+                <div class="quiz-question-title">6. For a 3-character message ("abc" = 24 bits), how many zero bytes are added after the 0x80 byte during padding?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q6" value="a"> 52 zero bytes (416 bits)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q6" value="b"> 55 zero bytes (440 bits)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q6" value="c"> 56 zero bytes (448 bits)</label>
+                  <label class="quiz-option-label"><input type="radio" name="q6" value="d"> 60 zero bytes (480 bits)</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q6">
+                  <strong>Explanation:</strong> The message before the 8-byte length field must equal 56 bytes (448 mod 512). The 3 message bytes + 1 byte (0x80) = 4 bytes. Thus, 56 - 4 = 52 zero bytes (416 zero bits) are appended.
+                </div>
+              </div>
+
+              <!-- Q7 -->
+              <div class="quiz-card" data-q="7" data-correct="c">
+                <div class="quiz-question-title">7. How is the original message bit-length encoded and appended during SHA-1 preprocessing?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q7" value="a"> As a 32-bit little-endian integer</label>
+                  <label class="quiz-option-label"><input type="radio" name="q7" value="b"> As a 64-bit little-endian integer</label>
+                  <label class="quiz-option-label"><input type="radio" name="q7" value="c"> As a 64-bit big-endian integer</label>
+                  <label class="quiz-option-label"><input type="radio" name="q7" value="d"> As an ASCII string</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q7">
+                  <strong>Explanation:</strong> SHA-1 appends the original message bit-length as a 64-bit unsigned Big-Endian integer (most significant byte first). Note that MD5 uses little-endian.
+                </div>
+              </div>
+
+              <!-- Q8 -->
+              <div class="quiz-card" data-q="8" data-correct="a">
+                <div class="quiz-question-title">8. What does the Strict Avalanche Criterion (SAC) predict when a single input bit is flipped in SHA-1?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q8" value="a"> Approximately 50% (~80 out of 160 bits) of the output digest bits will invert</label>
+                  <label class="quiz-option-label"><input type="radio" name="q8" value="b"> Exactly 1 output bit will invert</label>
+                  <label class="quiz-option-label"><input type="radio" name="q8" value="c"> 100% (all 160 bits) will invert</label>
+                  <label class="quiz-option-label"><input type="radio" name="q8" value="d"> Only bits within Register A will invert</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q8">
+                  <strong>Explanation:</strong> SAC requires that each output bit flips with a probability of 0.5 when an input bit changes, producing roughly 80 changed bits across the 160-bit SHA-1 digest.
+                </div>
+              </div>
+
+              <!-- Q9 -->
+              <div class="quiz-card" data-q="9" data-correct="b">
+                <div class="quiz-question-title">9. What was achieved by the landmark "SHAttered" attack in 2017 (CWI Amsterdam &amp; Google)?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q9" value="a"> Complete preimage recovery of any plaintext password in seconds</label>
+                  <label class="quiz-option-label"><input type="radio" name="q9" value="b"> The first practical collision attack: two distinct PDF files producing the identical SHA-1 hash</label>
+                  <label class="quiz-option-label"><input type="radio" name="q9" value="c"> An algebraic inversion of the message schedule rotation</label>
+                  <label class="quiz-option-label"><input type="radio" name="q9" value="d"> Demonstrating that SHA-1 has a backdoor planted by the NSA</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q9">
+                  <strong>Explanation:</strong> Stevens et al. created two different PDF files with identical SHA-1 hashes (approx. 9 quintillion SHA-1 computations), providing undeniable proof that SHA-1's collision resistance is broken.
+                </div>
+              </div>
+
+              <!-- Q10 -->
+              <div class="quiz-card" data-q="10" data-correct="b">
+                <div class="quiz-question-title">10. What hash algorithm family is universally recommended by NIST to replace SHA-1 for digital signatures?</div>
+                <div class="quiz-options-group">
+                  <label class="quiz-option-label"><input type="radio" name="q10" value="a"> MD5</label>
+                  <label class="quiz-option-label"><input type="radio" name="q10" value="b"> SHA-2 (e.g., SHA-256 / SHA-512) or SHA-3</label>
+                  <label class="quiz-option-label"><input type="radio" name="q10" value="c"> CRC-32</label>
+                  <label class="quiz-option-label"><input type="radio" name="q10" value="d"> SHA-0 with 1024-bit keys</label>
+                </div>
+                <div class="quiz-explanation" id="exp-q10">
+                  <strong>Explanation:</strong> NIST SP 800-131A mandated transitioning from SHA-1 to SHA-2 (specifically SHA-256, SHA-384, SHA-512) or SHA-3 for digital certificates, signatures, and cryptographic authentication.
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button type="button" id="btnSubmitQuiz" class="btn-primary">Submit Quiz</button>
+                <button type="button" id="btnRetryQuiz" class="btn-secondary" style="display: none;">Retry Quiz</button>
+              </div>
+
+              <div id="quizScoreBanner" class="quiz-score-banner"></div>
+            </form>
           </div>
         </section>
-              <!-- References -->
+
+        <!-- =========================================================
+             6. REFERENCES TAB
+             ========================================================= -->
         <section id="references" class="tab-content" data-tab-panel="references" hidden>
           <div class="references-container">
-            <h2>References &amp; Further Reading</h2>
+            <h2>References &amp; Authoritative Literature</h2>
+
             <div class="reference-card">
-              <div class="reference-title">William Stallings — Cryptography and Network Security: Principles and Practice</div>
-              <div class="reference-meta">Authoritative textbook covering mathematical foundations, cryptographic primitives, hash algorithms, and security architecture. Pearson Education.</div>
+              <div class="reference-title">1. NIST FIPS PUB 180-1 (1995) &mdash; Secure Hash Standard (SHS)</div>
+              <div class="reference-meta">
+                National Institute of Standards and Technology (NIST), U.S. Department of Commerce.
+                <br>
+                <a class="reference-link" href="https://csrc.nist.gov/publications/detail/fips/180-1/archive/1995-04-17" target="_blank" rel="noopener noreferrer">https://csrc.nist.gov/publications/detail/fips/180-1/archive/1995-04-17</a>
+                <br>
+                <em>Original federal standard specifying the SHA-1 algorithm, including the 1-bit rotation in the message schedule, padding format, and constants.</em>
+              </div>
             </div>
+
             <div class="reference-card">
-              <div class="reference-title">NIST Special Publication (SP) 800 Series</div>
-              <div class="reference-meta">National Institute of Standards and Technology Computer Security Division publications, recommendations, and cryptographic standard guidelines.</div>
+              <div class="reference-title">2. RFC 3174 (2001) &mdash; US Secure Hash Algorithm 1 (SHA1)</div>
+              <div class="reference-meta">
+                Eastlake, D., &amp; Jones, P. Internet Engineering Task Force (IETF) Request for Comments 3174.
+                <br>
+                <a class="reference-link" href="https://www.rfc-editor.org/rfc/rfc3174" target="_blank" rel="noopener noreferrer">https://www.rfc-editor.org/rfc/rfc3174</a>
+                <br>
+                <em>Canonical Internet standard describing SHA-1 architecture, bit-manipulation functions, and reference C implementation.</em>
+              </div>
             </div>
+
             <div class="reference-card">
-              <div class="reference-title">IETF RFC Specifications &amp; Standards</div>
-              <div class="reference-meta">Internet Engineering Task Force request for comments, algorithm specifications, and protocol compliance benchmarks.</div>
+              <div class="reference-title">3. The First Collision for Full SHA-1 (SHAttered &mdash; CRYPTO 2017)</div>
+              <div class="reference-meta">
+                Stevens, M., Bursztein, E., Karpman, P., Albertini, A., &amp; Markov, Y. (2017). Advances in Cryptology &ndash; CRYPTO 2017, LNCS 10401, pp. 570&ndash;596.
+                <br>
+                <a class="reference-link" href="https://shattered.io/" target="_blank" rel="noopener noreferrer">https://shattered.io/</a>
+                <br>
+                <em>Historic cryptanalytic breakthrough proving practical collision attacks against full 80-round SHA-1 by producing two colliding PDF documents.</em>
+              </div>
+            </div>
+
+            <div class="reference-card">
+              <div class="reference-title">4. Finding Collisions in the Full SHA-1 (CRYPTO 2005)</div>
+              <div class="reference-meta">
+                Wang, X., Yin, Y. L., &amp; Yu, H. (2005). Advances in Cryptology &ndash; CRYPTO 2005, Lecture Notes in Computer Science, vol 3621, pp. 17&ndash;36. Springer, Berlin.
+                <br>
+                <a class="reference-link" href="https://doi.org/10.1007/11535218_2" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/11535218_2</a>
+                <br>
+                <em>Pioneering cryptanalytic paper that broke the theoretical birthday barrier for SHA-1 with a differential attack complexity of 2<sup>69</sup>.</em>
+              </div>
+            </div>
+
+            <div class="reference-card">
+              <div class="reference-title">5. Cryptography and Network Security: Principles and Practice (7th Edition)</div>
+              <div class="reference-meta">
+                Stallings, W. (2017). Pearson Education. Chapter 11 &amp; 12: Cryptographic Hash Functions &amp; Message Authentication Codes.
+                <br>
+                <em>Comprehensive textbook explaining Merkle&ndash;Damg&aring;rd structures, SHA-1 compression equations, avalanche effect, and hash requirements.</em>
+              </div>
+            </div>
+
+            <div class="reference-card">
+              <div class="reference-title">6. NIST SP 800-131A (Rev. 2) &mdash; Transitioning the Use of Cryptographic Algorithms and Key Lengths</div>
+              <div class="reference-meta">
+                Barker, E., &amp; Roginsky, A. (2019). National Institute of Standards and Technology (NIST), U.S. Department of Commerce.
+                <br>
+                <a class="reference-link" href="https://doi.org/10.6028/NIST.SP.800-131Ar2" target="_blank" rel="noopener noreferrer">https://doi.org/10.6028/NIST.SP.800-131Ar2</a>
+                <br>
+                <em>Federal transition guidelines officially deprecating SHA-1 for digital signature generation and certificate signing.</em>
+              </div>
             </div>
           </div>
         </section>
 
-              <!-- Feedback -->
+        <!-- =========================================================
+             7. FEEDBACK TAB
+             ========================================================= -->
         <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <!-- Standardized encrypted feedback form automatically rendered by feedback.js -->
+          <!-- Auto-populated by feedback.js with RSA-2048 client-side encryption -->
         </section>
-
       </main>
     </div>
 
+    <!-- Scripts -->
     <script src="../../js/common.js"></script>
     <script src="script.js"></script>
-      <script src="../../js/students-roster.js"></script>
+    <script src="../../js/students-roster.js"></script>
     <script src="../../js/crypto-feedback.js"></script>
     <script src="../../js/feedback.js"></script>
   </body>
