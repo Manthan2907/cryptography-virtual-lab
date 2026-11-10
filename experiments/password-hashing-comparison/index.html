@@ -1,117 +1,373 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Password Hashing Comparison experiment">
-    <title>Password Hashing Comparison | Virtual Cryptography Laboratory</title>
-    <link rel="stylesheet" href="../../css/variables.css">
-    <link rel="stylesheet" href="../../css/experiment.css">
-  </head>
-  <body>
-    <!-- Fr. CRCE Official College Header Banner -->
-    <div class="college-banner-strip">
-      <a href="../../index.html" aria-label="Fr. Conceicao Rodrigues College of Engineering">
-        <img src="../../assets/logos/crce-header-banner.png" alt="Fr. Conceicao Rodrigues College of Engineering - Virtual Cryptography Laboratory" class="college-banner-img">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Password Hashing Comparison Virtual Lab">
+  <title>Password Hashing Comparison | Virtual Cryptography Laboratory</title>
+
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/experiment.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="college-banner-strip">
+    <a href="../../index.html" aria-label="CRCE Home">
+      <img src="../../assets/logos/crce-header-banner.png"
+           alt="Fr. Conceicao Rodrigues College of Engineering"
+           class="college-banner-img">
+    </a>
+  </div>
+
+  <div class="experiment-container">
+
+    <header class="exp-header">
+      <a class="back-link" href="../../index.html#experiments">
+        &larr; Back to experiment browser
       </a>
-    </div>
+      <p class="exp-kicker">CSS TH ISE · Cryptographic Security Systems</p>
+      <h1 id="exp-title">Password Hashing Comparison</h1>
+      <p id="exp-description">
+        Explore and compare six hashing algorithms and understand how
+        modern password hashing protects stored passwords.
+      </p>
+    </header>
 
-    <div class="experiment-container">
-      <header class="exp-header">
-        <a class="back-link" href="../../index.html#experiments">&larr; Back to experiment browser</a>
-        <p class="exp-kicker">CSS TH ISE &middot; Cryptographic Security Systems</p>
-        <h1 id="exp-title">Password Hashing Comparison</h1>
-        <p id="exp-description">Compare MD5, SHA-1, SHA-256, bcrypt, scrypt, and Argon2 for password hashing and analyze their security characteristics.</p>
-      </header>
+    <nav class="tab-navigation" aria-label="Experiment sections">
+      <button class="tab-btn active" data-tab="aim" type="button">Aim & Objectives</button>
+      <button class="tab-btn" data-tab="theory" type="button">Theory</button>
+      <button class="tab-btn" data-tab="procedure" type="button">Procedure</button>
+      <button class="tab-btn" data-tab="simulation" type="button">Simulation</button>
+      <button class="tab-btn" data-tab="quiz" type="button">Assessment / Quiz</button>
+      <button class="tab-btn" data-tab="references" type="button">References</button>
+      <button class="tab-btn" data-tab="feedback" type="button">Feedback</button>
+    </nav>
 
-      <nav class="tab-navigation" aria-label="Experiment sections">
-        <button class="tab-btn active" type="button" data-tab="aim" aria-selected="true">Aim &amp; Objectives</button>
-        <button class="tab-btn" type="button" data-tab="theory" aria-selected="false">Theory</button>
-        <button class="tab-btn" type="button" data-tab="procedure" aria-selected="false">Procedure</button>
-        <button class="tab-btn" type="button" data-tab="simulation" aria-selected="false">Simulation</button>
-        <button class="tab-btn" type="button" data-tab="quiz" aria-selected="false">Assessment / Quiz</button>
-        <button class="tab-btn" type="button" data-tab="references" aria-selected="false">References</button>
-        <button class="tab-btn" type="button" data-tab="feedback" aria-selected="false">Feedback</button>
-      </nav>
+    <main class="content-area">
 
-      <main class="content-area">
-        <section id="aim" class="tab-content active" data-tab-panel="aim">
-          <div class="content-placeholder">
-            <h2>Aim &amp; Objectives</h2>
-            <p><strong>Aim:</strong> Compare MD5, SHA-1, SHA-256, bcrypt, scrypt, and Argon2 for password hashing and analyze their security characteristics.</p>
-            <p><strong>Objectives:</strong></p>
-            <ul>
-              <li>Contrast fast general-purpose hashes against slow, adaptive password key derivation functions.</li>
-              <li>Evaluate the vulnerability of unsalted and fast hashes to GPU dictionary attacks and rainbow tables.</li>
-              <li>Understand the role of computational cost factors, memory hardness, and salt in password defense.</li>
-            </ul>
+      <!-- AIM -->
+      <section id="aim" class="tab-content active" data-tab-panel="aim">
+        <div class="content-placeholder">
+          <h2>Aim</h2>
+          <p>
+            To study and compare MD5, SHA-1, SHA-256, bcrypt, scrypt,
+            and Argon2id based on their working, execution time,
+            security, and suitability for password storage.
+          </p>
+
+          <h2>Objectives</h2>
+          <ul>
+            <li>Understand the concept of cryptographic hashing and password storage.</li>
+            <li>Differentiate between general-purpose hash functions and password hashing algorithms.</li>
+            <li>Understand the importance of random salts.</li>
+            <li>Compare the speed and security characteristics of six algorithms.</li>
+            <li>Understand computational cost and memory-hardness.</li>
+            <li>Identify suitable algorithms for secure password storage.</li>
+          </ul>
+
+          <div class="info-card">
+            <h3>Expected Learning Outcome</h3>
+            <p>
+              After completing this experiment, students will be able to
+              explain why modern password storage uses slow, adaptive
+              algorithms instead of ordinary fast hash functions.
+            </p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
-          <div class="content-placeholder">
-            <h2>Theory</h2>
-            <p>General-purpose hash functions (MD5, SHA-1, SHA-256) are engineered to be extremely fast for verifying file integrity. However, when used for password storage, their speed enables attackers to compute billions of guesses per second on consumer GPUs. Modern password storage requires slow, adaptive algorithms: bcrypt (computational hardness), scrypt (memory hardness), and Argon2 (PHC winner resisting both GPU and cache side-channel attacks).</p>
-          </div>
-        </section>
+      <!-- THEORY -->
+      <section id="theory" class="tab-content" data-tab-panel="theory" hidden>
+        <div class="content-placeholder">
+          <h2>1. What is Password Hashing?</h2>
+          <p>
+            Password hashing converts a password into a fixed-length
+            output called a hash. A hash function is designed to be
+            one-way, meaning the original password should not be
+            practically recoverable from the hash.
+          </p>
+          <p>
+            Websites should store password hashes rather than plain-text
+            passwords. During login, the entered password is processed
+            again and checked against the stored password hash.
+          </p>
 
-        <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
-          <div class="content-placeholder">
-            <h2>Procedure</h2>
-            <ol>
-              <li>Enter a test password.</li>
-              <li>Click "Run Benchmark Comparison".</li>
-              <li>Inspect execution times, output formats, and hardware resistance metrics in the comparison table.</li>
-            </ol>
-          </div>
-        </section>
+          <h2>2. Hashing vs Encryption</h2>
+          <table class="comparison-table">
+            <tr><th>Hashing</th><th>Encryption</th></tr>
+            <tr>
+              <td>One-way process</td>
+              <td>Reversible using a key</td>
+            </tr>
+            <tr>
+              <td>No decryption key</td>
+              <td>Requires an encryption key</td>
+            </tr>
+            <tr>
+              <td>Used for password verification</td>
+              <td>Used to protect data that must be recovered</td>
+            </tr>
+          </table>
 
-        <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
-          <div class="simulation-controls">
-            <h2>Simulation Controls</h2>
-            <label for="cmpPassword">Password to Benchmark:</label>
-            <input type="text" id="cmpPassword" value="SuperSecureP@ssw0rd!2026">
-            <button type="button" id="btnBenchmark">Run Benchmark Comparison</button>
+          <h2>3. What is a Salt?</h2>
+          <p>
+            A salt is a unique, randomly generated value added to a
+            password before hashing. It ensures that identical passwords
+            produce different stored hashes.
+          </p>
+          <div class="info-card">
+            <strong>Example:</strong>
+            <p>Password: hello123</p>
+            <p>Password + Salt A → Hash A</p>
+            <p>Password + Salt B → Hash B</p>
+            <p>Even though the password is identical, the hashes differ.</p>
           </div>
-          <div class="simulation-output" aria-live="polite">
-            <h2>Simulation Output</h2>
-            <div id="cmpOutput">Click Run Benchmark to generate comparison...</div>
-          </div>
-        </section>
 
-        <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
-          <div class="quiz-panel">
-            <h2>Assessment / Quiz</h2>
-            <p>1. Why are fast hash functions like SHA-256 dangerous for password storage?</p>
-            <p>2. What is memory hardness, and which algorithm introduced it?</p>
-          </div>
-        </section>
+          <h2>4. Types of Hashing Algorithms</h2>
 
-        <section id="references" class="tab-content" data-tab-panel="references" hidden>
-          <div class="content-placeholder">
-            <h2>References</h2>
-            <ul>
-              <li>OWASP Password Storage Cheat Sheet.</li>
-              <li>Biryukov, Dinu, &amp; Khovratovich, <em>Argon2: New Generation of Memory-Hard Functions for Password Hashing</em>.</li>
-            </ul>
-          </div>
-        </section>
+          <h3>MD5 (Message Digest 5)</h3>
+          <p>
+            MD5 produces a 128-bit (32 hexadecimal character) digest.
+            It is extremely fast and has serious collision weaknesses.
+            It should not be used for password storage.
+          </p>
 
-        <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
-          <div class="content-placeholder">
-            <h2>Feedback</h2>
-            <p>Please share your feedback regarding this experiment simulation.</p>
-          </div>
-        </section>
-      </main>
-    </div>
+          <h3>SHA-1 (Secure Hash Algorithm 1)</h3>
+          <p>
+            SHA-1 produces a 160-bit (40 hexadecimal character) digest.
+            It has known collision attacks and is unsuitable for
+            password storage.
+          </p>
 
-    <script src="../../js/common.js"></script>
-    <script src="../../js/vendor/crypto-js.min.js"></script>
-    <script src="../../js/vendor/bcrypt.min.js"></script>
-    <script src="script.js"></script>
-      <script src="../../js/students-roster.js"></script>
-    <script src="../../js/crypto-feedback.js"></script>
-    <script src="../../js/feedback.js"></script>
-  </body>
+          <h3>SHA-256</h3>
+          <p>
+            SHA-256 belongs to the SHA-2 family and produces a
+            256-bit (64 hexadecimal character) digest. It remains
+            useful for many cryptographic applications, but is too
+            fast to be used alone for password storage.
+          </p>
+
+          <h3>bcrypt</h3>
+          <p>
+            bcrypt is an adaptive password hashing algorithm based on
+            the Blowfish cipher. Its configurable cost factor controls
+            how much computation is required. A higher cost makes
+            password guessing slower.
+          </p>
+
+          <h3>scrypt</h3>
+          <p>
+            scrypt is a memory-hard password-based key derivation
+            function. It requires both computation and significant
+            memory, making large-scale parallel password guessing
+            more expensive.
+          </p>
+
+          <h3>Argon2id</h3>
+          <p>
+            Argon2id is a modern password hashing algorithm and a
+            winner of the Password Hashing Competition. It combines
+            properties of Argon2i and Argon2d and is designed to
+            provide resistance against several types of attacks.
+          </p>
+
+          <h2>5. Important Security Concepts</h2>
+          <ul>
+            <li><strong>Brute-force attack:</strong> An attacker tries many possible passwords until one matches.</li>
+            <li><strong>Dictionary attack:</strong> An attacker tries passwords from a prepared list of common passwords.</li>
+            <li><strong>Rainbow table:</strong> A precomputed collection of password hashes used to speed up hash lookup attacks.</li>
+            <li><strong>Computational cost:</strong> The amount of processing required to calculate a hash.</li>
+            <li><strong>Memory-hardness:</strong> The requirement for substantial memory during password hashing.</li>
+          </ul>
+
+          <h2>6. Algorithm Comparison</h2>
+          <div class="table-scroll">
+            <table class="comparison-table">
+              <tr>
+                <th>Algorithm</th><th>Output size</th>
+                <th>Designed for</th><th>Password storage?</th>
+              </tr>
+              <tr><td>MD5</td><td>128 bits</td><td>General hashing</td><td>No</td></tr>
+              <tr><td>SHA-1</td><td>160 bits</td><td>General hashing</td><td>No</td></tr>
+              <tr><td>SHA-256</td><td>256 bits</td><td>General hashing</td><td>No, not alone</td></tr>
+              <tr><td>bcrypt</td><td>Configurable</td><td>Password hashing</td><td>Yes</td></tr>
+              <tr><td>scrypt</td><td>Configurable</td><td>Password-based derivation</td><td>Yes</td></tr>
+              <tr><td>Argon2id</td><td>Configurable</td><td>Password hashing</td><td>Yes</td></tr>
+            </table>
+          </div>
+
+          <div class="warning-card">
+            <strong>Remember:</strong> SHA-256 is still a secure general-purpose
+            hash function for many uses. Its problem is that it is too fast
+            for password storage when used by itself.
+          </div>
+        </div>
+      </section>
+
+      <!-- PROCEDURE -->
+      <section id="procedure" class="tab-content" data-tab-panel="procedure" hidden>
+        <div class="content-placeholder">
+          <h2>Experimental Procedure</h2>
+          <ol>
+            <li>Open the Simulation section of the experiment.</li>
+            <li>Enter a sample password in the password input field.</li>
+            <li>Select the desired cost parameters for bcrypt, scrypt and Argon2id.</li>
+            <li>Click the Run Benchmark Comparison button.</li>
+            <li>Observe the generated hash outputs and execution times.</li>
+            <li>Compare the output lengths and security characteristics.</li>
+            <li>Use the salt demonstration to generate hashes with different random salts.</li>
+            <li>Observe how the same password produces different hashes when different salts are used.</li>
+            <li>Complete the assessment quiz to test your understanding.</li>
+          </ol>
+
+          <h2>Precautions</h2>
+          <ul>
+            <li>Use a sample password, not your actual account password.</li>
+            <li>Do not share generated passwords or hashes publicly.</li>
+            <li>Benchmark results depend on the device and browser.</li>
+            <li>Do not use MD5, SHA-1 or plain SHA-256 for real password storage.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SIMULATION -->
+      <section id="simulation" class="tab-content" data-tab-panel="simulation" hidden>
+        <div class="simulation-controls">
+          <h2>Password Hashing Simulation</h2>
+          <p>Enter a sample password to compare all six algorithms.</p>
+
+          <label for="cmpPassword">Enter Password</label>
+          <input type="password" id="cmpPassword" value="ExamplePassword123!">
+
+          <label class="check-label">
+            <input type="checkbox" id="showPassword">
+            Show password
+          </label>
+
+          <div class="parameter-grid">
+            <div>
+              <label for="bcryptCost">bcrypt cost</label>
+              <select id="bcryptCost">
+                <option value="8">8 - Faster</option>
+                <option value="9">9</option>
+                <option value="10" selected>10 - Default</option>
+                <option value="11">11 - Slower</option>
+              </select>
+            </div>
+            <div>
+              <label for="scryptN">scrypt N</label>
+              <select id="scryptN">
+                <option value="4096">4096</option>
+                <option value="8192">8192</option>
+                <option value="16384" selected>16384</option>
+              </select>
+            </div>
+            <div>
+              <label for="argonMemory">Argon2id memory (KiB)</label>
+              <select id="argonMemory">
+                <option value="8192">8192</option>
+                <option value="19456" selected>19456</option>
+                <option value="32768">32768</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="button" id="btnBenchmark">Run Benchmark Comparison</button>
+          <p class="small-note">
+            Higher cost settings may take longer. Do not close the page
+            while the calculations are running.
+          </p>
+          <p id="benchmarkStatus" aria-live="polite"></p>
+        </div>
+
+        <div class="simulation-output">
+          <h2>Comparison Results</h2>
+          <div id="cmpOutput" aria-live="polite">
+            Your results will appear here after running the benchmark.
+          </div>
+        </div>
+
+        <div class="simulation-output salt-panel">
+          <h2>Salt Demonstration</h2>
+          <p>
+            Generate two hashes from the same password using two
+            different random salts.
+          </p>
+          <button type="button" id="btnSaltDemo">Generate Salt Comparison</button>
+          <div id="saltOutput" aria-live="polite">
+            Salt comparison results will appear here.
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>What should you observe?</h3>
+          <ul>
+            <li>MD5, SHA-1 and SHA-256 generally calculate very quickly.</li>
+            <li>bcrypt takes more computation as its cost increases.</li>
+            <li>scrypt and Argon2id also use memory as part of their design.</li>
+            <li>Random salts make hashes different even for identical passwords.</li>
+          </ul>
+          <p class="small-note">
+            Timings are measured in your browser and are not universal
+            performance benchmarks.
+          </p>
+        </div>
+      </section>
+
+      <!-- QUIZ -->
+      <section id="quiz" class="tab-content" data-tab-panel="quiz" hidden>
+        <div class="quiz-panel">
+          <h2>Assessment / Quiz</h2>
+          <p>Choose one correct answer for each question.</p>
+          <form id="quizForm">
+            <div id="quizQuestions"></div>
+            <button type="submit" id="submitQuiz">Submit Answers</button>
+            <button type="button" id="retryQuiz" hidden>Retry Quiz</button>
+          </form>
+          <div id="quizResult" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- REFERENCES -->
+      <section id="references" class="tab-content" data-tab-panel="references" hidden>
+        <div class="content-placeholder">
+          <h2>References</h2>
+          <ul>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Password Storage Cheat Sheet</a></li>
+            <li><a href="https://www.rfc-editor.org/rfc/rfc9106" target="_blank" rel="noopener">RFC 9106 - Argon2 Memory-Hard Function</a></li>
+            <li><a href="https://www.rfc-editor.org/rfc/rfc7914" target="_blank" rel="noopener">RFC 7914 - scrypt</a></li>
+            <li><a href="https://csrc.nist.gov/pubs/sp/800/63/4/final" target="_blank" rel="noopener">NIST Digital Identity Guidelines</a></li>
+            <li><a href="https://www.rfc-editor.org/rfc/rfc1321" target="_blank" rel="noopener">RFC 1321 - MD5</a></li>
+            <li><a href="https://www.rfc-editor.org/rfc/rfc3174" target="_blank" rel="noopener">RFC 3174 - SHA-1</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- FEEDBACK -->
+      <section id="feedback" class="tab-content" data-tab-panel="feedback" hidden>
+        <div class="content-placeholder">
+          <h2>Feedback</h2>
+          <p>Please share your feedback regarding this experiment simulation.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../../js/common.js"></script>
+  <script src="../../js/vendor/crypto-js.min.js"></script>
+  <script src="../../js/vendor/bcrypt.min.js"></script>
+
+  <!-- Browser implementations for scrypt and Argon2id -->
+  <script src="https://cdn.jsdelivr.net/npm/scrypt-js@3.0.1/scrypt.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/argon2-browser/1.18.0/argon2-bundled.min.js"></script>
+
+  <script src="script.js"></script>
+  <script src="../../js/students-roster.js"></script>
+  <script src="../../js/crypto-feedback.js"></script>
+  <script src="../../js/feedback.js"></script>
+
+</body>
 </html>
